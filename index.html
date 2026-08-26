@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nameplate — Every appliance accounted for.</title>
 <meta name="description" content="Nameplate is the asset record for apartment maintenance. Tag every appliance, log every service visit, and give portfolio managers a single console for cost and shrinkage.">
+<meta name="theme-color" content="#0E1620">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230B5D8A'/%3E%3Cpath d='M4,4 L20,4 A3,3 0 0 1 23,7 L23,20 L4,20 A3,3 0 0 1 1,17 L1,7 A3,3 0 0 1 4,4 Z' fill='none' stroke='%23FAFCFD' stroke-width='1.6'/%3E%3Ccircle cx='4' cy='7' r='1.1' fill='%23F0A028'/%3E%3Ccircle cx='20' cy='17' r='1.1' fill='%23F0A028'/%3E%3C/svg%3E" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -18,13 +16,13 @@
 <header class="site-header">
   <div class="wrap header-row">
     <a class="brand" href="#top" aria-label="Nameplate home">
-      <svg class="logo-mark" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
-        <path d="M4,4 L20,4 A3,3 0 0 1 23,7 L23,20 L4,20 A3,3 0 0 1 1,17 L1,7 A3,3 0 0 1 4,4 Z" fill="none" stroke="var(--np-plate-600)" stroke-width="1.8"/>
-        <path d="M6,9 H18" fill="none" stroke="var(--np-plate-600)" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M18,9 L6,15" fill="none" stroke="var(--np-plate-600)" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M6,15 H18" fill="none" stroke="var(--np-plate-600)" stroke-width="1.6" stroke-linecap="round"/>
-        <circle cx="4" cy="7" r="1.25" fill="var(--np-signal-500)"/>
-        <circle cx="20" cy="17" r="1.25" fill="var(--np-signal-500)"/>
+      <svg class="logo-mark" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+        <path d="M4,4 L20,4 A3,3 0 0 1 23,7 L23,20 L4,20 A3,3 0 0 1 1,17 L1,7 A3,3 0 0 1 4,4 Z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M6,9 H18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M18,9 L6,15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M6,15 H18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="4" cy="7" r="1.25" fill="#F0A028"/>
+        <circle cx="20" cy="17" r="1.25" fill="#F0A028"/>
       </svg>
       <span class="wordmark">Nameplate</span>
     </a>
@@ -33,7 +31,7 @@
       <a href="#features">Features</a>
       <a href="#product">Product</a>
     </nav>
-    <a class="btn btn-primary btn-small" href="#early-access">Request early access</a>
+    <a href="#early-access" class="site-nav-cta">Request early access <span aria-hidden="true">→</span></a>
   </div>
 </header>
 
@@ -41,46 +39,82 @@
 
   <section class="hero" id="top">
     <div class="wrap hero-inner">
-      <p class="eyebrow">Asset record for apartment maintenance</p>
+      <p class="eyebrow">Asset record — for apartment maintenance</p>
       <h1>Every appliance<br>accounted for.</h1>
       <p class="hero-sub">Refrigerators, ranges, HVAC units and water heaters go missing between turns, get serviced with no paper trail, and quietly cost more than anyone in the office can see. Nameplate tags every unit, records every fix, and gives the remote manager a single screen that shows the truth.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="#early-access">Request early access</a>
-        <a class="btn btn-ghost" href="#how-it-works">See how it works</a>
+        <a class="btn-link" href="#how-it-works">See how it works <span aria-hidden="true">↓</span></a>
       </div>
     </div>
   </section>
 
-  <section class="problem">
-    <div class="wrap problem-grid">
-      <div class="problem-item">
-        <span class="problem-index">01</span>
-        <h3>Assets grow legs</h3>
-        <p>A washer walked at a turn, a control board pulled and never logged. No record, no accountability, no way to even ask the question.</p>
-      </div>
-      <div class="problem-item">
-        <span class="problem-index">02</span>
-        <h3>No maintenance history</h3>
-        <p>Service happens on a paper ticket or a text message and then disappears. Nobody can say when a compressor was last touched, or what it cost.</p>
-      </div>
-      <div class="problem-item">
-        <span class="problem-index">03</span>
-        <h3>Managers are flying blind</h3>
-        <p>A portfolio manager running six properties from a spreadsheet finds out an appliance is a decade old the day it fails, not the year before.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="how-it-works" id="how-it-works">
+  <section class="section problem" id="problem" data-animate-group>
     <div class="wrap">
-      <h2>One system, two tools</h2>
-      <p class="section-lede">Nameplate is built as a pair: a fast, offline-first tool for the person standing in the unit, and a console for the person running the portfolio.</p>
+      <p class="section-marker">01 — The problem</p>
+      <h2 data-animate>Assets that don't stay put</h2>
+
+      <div class="problem-list">
+        <div class="problem-item" data-animate>
+          <span class="problem-index">01</span>
+          <div>
+            <h3>Assets grow legs</h3>
+            <p>A washer walked at a turn, a control board pulled and never logged. No record, no accountability, no way to even ask the question.</p>
+          </div>
+        </div>
+        <div class="problem-item" data-animate>
+          <span class="problem-index">02</span>
+          <div>
+            <h3>No maintenance history</h3>
+            <p>Service happens on a paper ticket or a text message and then disappears. Nobody can say when a compressor was last touched, or what it cost.</p>
+          </div>
+        </div>
+        <div class="problem-item" data-animate>
+          <span class="problem-index">03</span>
+          <div>
+            <h3>Managers are flying blind</h3>
+            <p>A portfolio manager running six properties from a spreadsheet finds out an appliance is a decade old the day it fails, not the year before.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section how-it-works" id="how-it-works" data-animate-group>
+    <div class="wrap">
+      <p class="section-marker">02 — How it works</p>
+      <h2 data-animate>One system, two tools</h2>
+      <p class="section-lede" data-animate>Nameplate is built as a pair: a fast, offline-first tool for the person standing in the unit, and a console for the person running the portfolio.</p>
+
+      <div class="architecture-flow" data-animate aria-label="System architecture: Nameplate Field syncs to the Backend, which powers Nameplate HQ">
+        <div class="flow-node is-accent">
+          <p class="flow-node-kicker">In the field</p>
+          <h4>Nameplate Field</h4>
+          <p>Scan and log on-site, fully offline.</p>
+        </div>
+        <div class="flow-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 12h17M14 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-node">
+          <p class="flow-node-kicker">Sync layer</p>
+          <h4>Backend</h4>
+          <p>System of record — every asset, event and photo.</p>
+        </div>
+        <div class="flow-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3 12h17M14 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="flow-node is-accent-2">
+          <p class="flow-node-kicker">At the desk</p>
+          <h4>Nameplate HQ</h4>
+          <p>Portfolio dashboard, costed and dated.</p>
+        </div>
+      </div>
 
       <div class="tools-grid">
-        <article class="tool-card tool-field">
+        <article class="tool-card tool-field" data-animate>
           <p class="tool-kicker">For technicians</p>
           <h3>Nameplate Field</h3>
-          <p>Scan the plate. See the history. Log the fix.</p>
+          <p class="tool-tagline">Scan the plate. See the history. Log the fix.</p>
           <ul class="tool-list">
             <li>Sub-3-second QR scan, fully offline</li>
             <li>Claim and tag a new asset in under 15 seconds</li>
@@ -89,10 +123,10 @@
             <li>Works with zero signal, identically to full signal</li>
           </ul>
         </article>
-        <article class="tool-card tool-hq">
+        <article class="tool-card tool-hq" data-animate>
           <p class="tool-kicker">For portfolio managers</p>
           <h3>Nameplate HQ</h3>
-          <p>Run every property from one screen.</p>
+          <p class="tool-tagline">Run every property from one screen.</p>
           <ul class="tool-list">
             <li>Portfolio-wide dashboard: cost, age, and open work orders</li>
             <li>Every number drills down to the underlying rows</li>
@@ -103,80 +137,174 @@
         </article>
       </div>
 
-      <ol class="steps" aria-label="How Nameplate works, three steps">
-        <li><span class="step-num">1</span><span class="step-label">Tag</span><span class="step-desc">Every asset gets a permanent Nameplate Tag.</span></li>
-        <li><span class="step-num">2</span><span class="step-label">Scan</span><span class="step-desc">Techs scan on service, on move, on every turn.</span></li>
-        <li><span class="step-num">3</span><span class="step-label">Know</span><span class="step-desc">HQ shows what's true, costed and dated.</span></li>
+      <ol class="steps" aria-label="How Nameplate works, three steps" data-animate>
+        <li><span class="step-num">01</span><span class="step-label">Tag</span><span class="step-desc">Every asset gets a permanent Nameplate Tag.</span></li>
+        <li><span class="step-num">02</span><span class="step-label">Scan</span><span class="step-desc">Techs scan on service, on move, on every turn.</span></li>
+        <li><span class="step-num">03</span><span class="step-label">Know</span><span class="step-desc">HQ shows what's true, costed and dated.</span></li>
       </ol>
     </div>
   </section>
 
-  <section class="features" id="features">
+  <section class="section features" id="features" data-animate-group>
     <div class="wrap">
-      <h2>What you get on day one</h2>
-      <p class="section-lede">No modules to turn on later. The registry is the product, and everything below runs on top of it.</p>
+      <p class="section-marker">03 — What you get</p>
+      <h2 data-animate>Day one, not phase two</h2>
+      <p class="section-lede" data-animate>No modules to turn on later. The registry is the product, and everything below runs on top of it.</p>
+
+      <div class="floorplan-visual" data-animate>
+        <svg viewBox="0 0 640 400" role="img" aria-label="Floorplan of an apartment unit with pins showing tracked asset locations: range in the kitchen, washer in the laundry room, and HVAC and water heater in the utility closet">
+          <rect x="8" y="8" width="624" height="384" rx="4" fill="none" stroke="#DDE3EA" stroke-opacity="0.55" stroke-width="3"/>
+          <!-- Living Room -->
+          <rect x="16" y="16" width="300" height="170" fill="none" stroke="#DDE3EA" stroke-opacity="0.28" stroke-width="1.5"/>
+          <text x="28" y="36" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" letter-spacing="0.04em" fill="#DDE3EA" opacity="0.55">LIVING ROOM</text>
+          <!-- Kitchen -->
+          <rect x="324" y="16" width="150" height="170" fill="none" stroke="#DDE3EA" stroke-opacity="0.28" stroke-width="1.5"/>
+          <text x="336" y="36" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" letter-spacing="0.04em" fill="#DDE3EA" opacity="0.55">KITCHEN</text>
+          <!-- Bathroom -->
+          <rect x="482" y="16" width="142" height="170" fill="none" stroke="#DDE3EA" stroke-opacity="0.28" stroke-width="1.5"/>
+          <text x="494" y="36" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" letter-spacing="0.04em" fill="#DDE3EA" opacity="0.55">BATH</text>
+          <!-- Bedroom -->
+          <rect x="16" y="194" width="300" height="190" fill="none" stroke="#DDE3EA" stroke-opacity="0.28" stroke-width="1.5"/>
+          <text x="28" y="214" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" letter-spacing="0.04em" fill="#DDE3EA" opacity="0.55">BEDROOM</text>
+          <!-- Laundry -->
+          <rect x="324" y="194" width="150" height="190" fill="none" stroke="#DDE3EA" stroke-opacity="0.28" stroke-width="1.5"/>
+          <text x="336" y="214" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" letter-spacing="0.04em" fill="#DDE3EA" opacity="0.55">LAUNDRY</text>
+          <!-- Utility closet -->
+          <rect x="482" y="194" width="142" height="190" fill="none" stroke="#DDE3EA" stroke-opacity="0.28" stroke-width="1.5"/>
+          <text x="494" y="214" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" letter-spacing="0.04em" fill="#DDE3EA" opacity="0.55">UTILITY</text>
+
+          <!-- Asset pins -->
+          <g>
+            <circle cx="399" cy="105" r="9" fill="#F0A028"/>
+            <path d="M394 100h10v10h-10z M396 96h6v4h-6z" fill="#0E1620"/>
+            <text x="399" y="132" text-anchor="middle" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" fill="#EFF3F7">Range</text>
+          </g>
+          <g>
+            <circle cx="399" cy="269" r="9" fill="#F0A028"/>
+            <circle cx="399" cy="269" r="4" fill="none" stroke="#0E1620" stroke-width="1.5"/>
+            <text x="399" y="296" text-anchor="middle" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" fill="#EFF3F7">Washer</text>
+          </g>
+          <g>
+            <circle cx="533" cy="255" r="9" fill="#F0A028"/>
+            <path d="M528 250h10l3 5-3 5h-10l-3-5z" fill="#0E1620"/>
+            <text x="533" y="282" text-anchor="middle" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="12" fill="#EFF3F7">HVAC</text>
+          </g>
+          <g>
+            <circle cx="573" cy="320" r="9" fill="#F0A028"/>
+            <rect x="569" y="315" width="8" height="10" fill="#0E1620"/>
+            <text x="573" y="347" text-anchor="middle" font-family=""SF Mono", "IBM Plex Mono", Menlo, Consolas, monospace" font-size="11" fill="#EFF3F7">Water htr</text>
+          </g>
+        </svg>
+        <div class="floorplan-legend">
+          <p class="floorplan-caption">Location-level tracking</p>
+          <div class="legend-item"><span class="legend-dot"></span> Every asset pinned to a room, not just a property</div>
+          <div class="legend-item"><span class="legend-dot"></span> Moves and swaps update the pin, not a spreadsheet</div>
+        </div>
+      </div>
+
       <div class="features-grid">
-        <article class="feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28"><path d="M4,4 L20,4 A3,3 0 0 1 23,7 L23,20 L4,20 A3,3 0 0 1 1,17 L1,7 A3,3 0 0 1 4,4 Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6,9 H18 M6,15 H18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="4" cy="7" r="1" fill="currentColor"/><circle cx="20" cy="17" r="1" fill="currentColor"/></svg>
+        <article class="feature-card" data-animate>
+          <div class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M4,4 L20,4 A3,3 0 0 1 23,7 L23,20 L4,20 A3,3 0 0 1 1,17 L1,7 A3,3 0 0 1 4,4 Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6,9 H18 M6,15 H18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="4" cy="7" r="1" fill="currentColor"/><circle cx="20" cy="17" r="1" fill="currentColor"/></svg>
+            </div>
+            <h3>Asset registry</h3>
           </div>
-          <h3>Asset registry</h3>
           <p>Every washer, dryer, range, HVAC unit and water heater — tagged, dated, and located, down to the unit.</p>
         </article>
-        <article class="feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 3v6l4 2" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+        <article class="feature-card" data-animate>
+          <div class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 3v6l4 2" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>
+            </div>
+            <h3>Service history</h3>
           </div>
-          <h3>Service history</h3>
           <p>One reverse-chronological timeline per asset: every service event, move, and part swap, with who and when.</p>
         </article>
-        <article class="feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28"><rect x="4" y="3" width="16" height="18" rx="1.5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <article class="feature-card" data-animate>
+          <div class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><rect x="4" y="3" width="16" height="18" rx="1.5" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Work orders</h3>
           </div>
-          <h3>Work orders</h3>
           <p>Assigned, prioritized, tracked against SLA, and closed with the service event attached — not a separate system to reconcile.</p>
         </article>
-        <article class="feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 2 3 6v6c0 6 4.5 8.5 9 10 4.5-1.5 9-4 9-10V6l-9-4Z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <article class="feature-card" data-animate>
+          <div class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2 3 6v6c0 6 4.5 8.5 9 10 4.5-1.5 9-4 9-10V6l-9-4Z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Shrinkage detection</h3>
           </div>
-          <h3>Shrinkage detection</h3>
           <p>Assets not confirmed in N days surface on a review list, without ever pointing a finger at a person.</p>
         </article>
-        <article class="feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 3v18M8 7.5c0-2 1.8-3 4-3s4 1.2 4 3-1.8 2.6-4 3-4 1.2-4 3 1.8 3 4 3 4-1 4-3" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        <article class="feature-card" data-animate>
+          <div class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 3v18M8 7.5c0-2 1.8-3 4-3s4 1.2 4 3-1.8 2.6-4 3-4 1.2-4 3 1.8 3 4 3 4-1 4-3" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Cost tracking</h3>
           </div>
-          <h3>Cost tracking</h3>
           <p>Cost captured on every service event, even estimated, so repair-vs-replace is decided on your own numbers.</p>
         </article>
-        <article class="feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="28" height="28"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M3 9h18M8 4v5" stroke="currentColor" stroke-width="1.6"/></svg>
+        <article class="feature-card" data-animate>
+          <div class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><path d="M3 9h18M8 4v5" stroke="currentColor" stroke-width="1.6"/></svg>
+            </div>
+            <h3>Turn walkthroughs</h3>
           </div>
-          <h3>Turn walkthroughs</h3>
           <p>A checklist generated from the unit's actual asset roster. Complete it once; work orders write themselves.</p>
         </article>
       </div>
     </div>
   </section>
 
-  <section class="product" id="product">
+  <section class="section product" id="product" data-animate-group>
     <div class="wrap">
-      <h2>The plate is the record</h2>
-      <p class="section-lede">Every major appliance already ships with a nameplate — the stamped plate carrying manufacturer, model, serial, and date code. Ours is the one that doesn't fade, doesn't get painted over, and turns into a permanent digital record the moment it's scanned.</p>
-      <blockquote class="pull-quote">
+      <p class="section-marker">04 — The plate is the record</p>
+      <h2 data-animate>Nothing new to teach the tech</h2>
+      <p class="section-lede" data-animate>Every major appliance already ships with a nameplate — the stamped plate carrying manufacturer, model, serial, and date code. Ours is the one that doesn't fade, doesn't get painted over, and turns into a permanent digital record the moment it's scanned.</p>
+
+      <div class="plate-visual-row" data-animate>
+        <div class="tag-visual" aria-hidden="true">
+          <svg viewBox="0 0 160 200">
+            <rect x="10" y="10" width="140" height="180" rx="14" fill="#16212E" stroke="#3E9BC9" stroke-width="1.6"/>
+            <circle cx="80" cy="26" r="7" fill="#0E1620" stroke="#61748C" stroke-width="1.4"/>
+            <rect x="32" y="46" width="12" height="12" fill="#EFF3F7"/><rect x="44" y="46" width="12" height="12" fill="#EFF3F7"/><rect x="56" y="46" width="12" height="12" fill="#EFF3F7"/><rect x="92" y="46" width="12" height="12" fill="#EFF3F7"/><rect x="104" y="46" width="12" height="12" fill="#EFF3F7"/><rect x="116" y="46" width="12" height="12" fill="#EFF3F7"/><rect x="32" y="58" width="12" height="12" fill="#EFF3F7"/><rect x="56" y="58" width="12" height="12" fill="#EFF3F7"/><rect x="92" y="58" width="12" height="12" fill="#EFF3F7"/><rect x="116" y="58" width="12" height="12" fill="#EFF3F7"/><rect x="32" y="70" width="12" height="12" fill="#EFF3F7"/><rect x="44" y="70" width="12" height="12" fill="#EFF3F7"/><rect x="56" y="70" width="12" height="12" fill="#EFF3F7"/><rect x="80" y="70" width="12" height="12" fill="#EFF3F7"/><rect x="92" y="70" width="12" height="12" fill="#EFF3F7"/><rect x="104" y="70" width="12" height="12" fill="#EFF3F7"/><rect x="116" y="70" width="12" height="12" fill="#EFF3F7"/><rect x="68" y="82" width="12" height="12" fill="#EFF3F7"/><rect x="32" y="94" width="12" height="12" fill="#EFF3F7"/><rect x="56" y="94" width="12" height="12" fill="#EFF3F7"/><rect x="80" y="94" width="12" height="12" fill="#EFF3F7"/><rect x="104" y="94" width="12" height="12" fill="#EFF3F7"/><rect x="32" y="106" width="12" height="12" fill="#EFF3F7"/><rect x="44" y="106" width="12" height="12" fill="#EFF3F7"/><rect x="56" y="106" width="12" height="12" fill="#EFF3F7"/><rect x="92" y="106" width="12" height="12" fill="#EFF3F7"/><rect x="104" y="106" width="12" height="12" fill="#EFF3F7"/><rect x="116" y="106" width="12" height="12" fill="#EFF3F7"/><rect x="32" y="118" width="12" height="12" fill="#EFF3F7"/><rect x="56" y="118" width="12" height="12" fill="#EFF3F7"/><rect x="80" y="118" width="12" height="12" fill="#EFF3F7"/><rect x="104" y="118" width="12" height="12" fill="#EFF3F7"/><rect x="32" y="130" width="12" height="12" fill="#EFF3F7"/><rect x="44" y="130" width="12" height="12" fill="#EFF3F7"/><rect x="56" y="130" width="12" height="12" fill="#EFF3F7"/><rect x="80" y="130" width="12" height="12" fill="#EFF3F7"/><rect x="116" y="130" width="12" height="12" fill="#EFF3F7"/>
+            <text x="80" y="160" text-anchor="middle" font-family="&quot;SF Mono&quot;, &quot;IBM Plex Mono&quot;, Menlo, Consolas, monospace" font-size="10" letter-spacing="0.5" fill="#9AAAB8">SCAN TO LOG</text>
+            <text x="80" y="176" text-anchor="middle" font-family="&quot;SF Mono&quot;, &quot;IBM Plex Mono&quot;, Menlo, Consolas, monospace" font-size="11" font-weight="600" fill="#F0A028">NP-7X2K9M</text>
+          </svg>
+        </div>
+        <div class="scan-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28"><path d="M3 12h17M14 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="meta-card">
+          <div class="meta-card-head"><span class="meta-card-dot"></span> Asset record</div>
+          <dl class="meta-card-rows">
+            <div class="meta-row"><dt>NPID</dt><dd>NP-7X2K9M</dd></div>
+            <div class="meta-row"><dt>Manufacturer</dt><dd>Whirlpool</dd></div>
+            <div class="meta-row"><dt>Installed</dt><dd>2022-03</dd></div>
+            <div class="meta-row"><dt>Last service</dt><dd>2026-06-12</dd></div>
+            <div class="meta-row"><dt>Status</dt><dd class="status-active">Active</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      <blockquote class="pull-quote" data-animate>
+        <span class="pull-quote-mark" aria-hidden="true">NPID · 04</span>
         &ldquo;31 refrigerators are past 12 years. Replacing them costs $27,900. Repairs on them cost $9,400 last year.&rdquo;
       </blockquote>
     </div>
   </section>
 
-  <section class="cta-band" id="early-access">
+  <section class="section cta-band" id="early-access" data-animate-group>
     <div class="wrap cta-inner">
-      <h2>Get your portfolio on Nameplate</h2>
-      <p>We're onboarding a small number of design-partner properties for the V0 pilot. Tell us about your portfolio and we'll set up a walkthrough.</p>
-      <a class="btn btn-primary btn-large" href="mailto:hello@nameplate.app?subject=Nameplate%20early%20access">Request early access</a>
+      <p class="section-marker">05 — Get started</p>
+      <h2 data-animate>Get your portfolio on Nameplate</h2>
+      <p data-animate>We're onboarding a small number of design-partner properties for the V0 pilot. Tell us about your portfolio and we'll set up a walkthrough.</p>
+      <a class="btn btn-primary btn-large" href="mailto:hello@nameplate.app?subject=Nameplate%20early%20access" data-animate>Request early access</a>
       <p class="cta-fine">Or write to <a href="mailto:hello@nameplate.app">hello@nameplate.app</a> directly.</p>
     </div>
   </section>
@@ -186,13 +314,13 @@
 <footer class="site-footer">
   <div class="wrap footer-row">
     <div class="footer-brand">
-      <svg class="logo-mark" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-        <path d="M4,4 L20,4 A3,3 0 0 1 23,7 L23,20 L4,20 A3,3 0 0 1 1,17 L1,7 A3,3 0 0 1 4,4 Z" fill="none" stroke="var(--np-mist-100)" stroke-width="1.8"/>
-        <path d="M6,9 H18" stroke="var(--np-mist-100)" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M18,9 L6,15" stroke="var(--np-mist-100)" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M6,15 H18" stroke="var(--np-mist-100)" stroke-width="1.6" stroke-linecap="round"/>
-        <circle cx="4" cy="7" r="1.25" fill="var(--np-signal-500)"/>
-        <circle cx="20" cy="17" r="1.25" fill="var(--np-signal-500)"/>
+      <svg class="logo-mark" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M4,4 L20,4 A3,3 0 0 1 23,7 L23,20 L4,20 A3,3 0 0 1 1,17 L1,7 A3,3 0 0 1 4,4 Z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M6,9 H18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M18,9 L6,15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M6,15 H18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="4" cy="7" r="1.25" fill="#F0A028"/>
+        <circle cx="20" cy="17" r="1.25" fill="#F0A028"/>
       </svg>
       <span>Nameplate</span>
     </div>
