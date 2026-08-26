@@ -30,6 +30,14 @@ export class WorkOrdersController {
     });
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.prisma.workOrder.findUnique({
+      where: { id },
+      include: { unit: true, asset: true, property: true, assignee: true },
+    });
+  }
+
   @Post()
   create(@Body() body: any) {
     return this.prisma.workOrder.create({ data: body });

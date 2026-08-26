@@ -5,9 +5,10 @@ The portfolio-manager web console. React 18+ / TypeScript / Vite, per
 top-level directory" — this app has a different audience, auth model,
 and build pipeline than `website/`, so it isn't nested inside it).
 
-This is a **V0 scaffold**: a routed shell with placeholder pages, not a
-finished console. It exists so the layout, nav, and brand tokens are in
-place before wiring up real data.
+This started as a **V0 scaffold** and is now wired to the live `backend/`
+API: Dashboard, Properties, Assets, and Work Orders all fetch and render
+real seeded data (loading/error states included) via a minimal fetch
+client in `src/api/client.ts` — no heavy data-fetching library.
 
 ## What's here
 
@@ -23,11 +24,14 @@ hq/
 │   ├── components/
 │   │   ├── Layout.tsx       sidebar nav + top bar + <Outlet/>
 │   │   └── KpiTile.tsx      shared stat-tile component
+│   ├── api/
+│   │   └── client.ts        minimal fetch client — bootstraps the demo org, then
+│   │                         GET /v1/properties, /v1/assets, /v1/work-orders, etc.
 │   └── routes/
-│       ├── Dashboard.tsx    KPI tiles + property league table + reconciliation flags (placeholders)
-│       ├── Properties.tsx   properties table (placeholder)
-│       ├── Assets.tsx       asset registry/search table (placeholder)
-│       └── WorkOrders.tsx   kanban-by-status board (placeholder)
+│       ├── Dashboard.tsx    live KPI tiles + property league table + at-risk work orders
+│       ├── Properties.tsx   live properties table
+│       ├── Assets.tsx       live asset registry/search table
+│       └── WorkOrders.tsx   live kanban-by-status board
 └── vite.config.ts
 ```
 
@@ -48,27 +52,38 @@ Per `architecture.md` §6, this file should stay in lockstep with
 `website/src/styles/tokens.css` once the marketing site exists — same
 token names, same values, no drift.
 
-## Setup
+## Setup — running the demo locally
+
+This console has nothing to show without the backend running and seeded
+first — see `backend/README.md` for standing up Postgres, migrating, and
+seeding the demo portfolio. Once `backend` is running on
+`http://localhost:3000`:
 
 ```bash
 cd hq
 npm install
 npm run dev       # http://localhost:5173
+```
+
+Open `http://localhost:5173` — the Dashboard should show real KPI counts
+(assets tracked, properties, open work orders, flagged/missing assets),
+and Properties/Assets/Work Orders should list the seeded demo portfolio.
+
+By default the API client (`src/api/client.ts`) points at
+`http://localhost:3000`. Override with a `.env` containing
+`VITE_API_URL=http://localhost:PORT` if the backend runs elsewhere. CORS
+is already enabled on the backend for cross-origin requests from the Vite
+dev server.
+
+```bash
 npm run build      # tsc -b && vite build
 npm run preview
 ```
 
-No environment variables are required to view the scaffold — every page
-renders placeholder/empty states. Wiring to the live API (`api.nameplate.app`
-per `architecture.md` §6) happens through a future `src/lib/api.ts` that
-wraps the generated `@nameplate/ts-client` from the OpenAPI spec in
-`backend/packages/contracts`; that client doesn't exist yet in this V0
-scaffold.
-
 ## Next steps toward the real V0 (see `docs/v0-scope.md` §1.2)
 
-1. `src/lib/api.ts` + TanStack Query for data fetching against the `backend/` API.
-2. Auth (Supabase JWT) + route guards by role (`architecture.md` §5).
-3. Real tables (TanStack Table) replacing the empty-state placeholders.
-4. Turns, Parts/lineage, Shrinkage review, Reports, Settings, Audit log routes.
-5. Recharts for the dashboard tiles and the reports section.
+1. Auth (Supabase JWT) + route guards by role (`architecture.md` §5).
+2. Richer tables (sort/paginate/bulk-edit, TanStack Table) beyond the current simple client-side filter.
+3. Turns, Parts/lineage, Shrinkage review, Reports, Settings, Audit log routes.
+4. Recharts for the dashboard tiles and the reports section.
+5. Replace the hand-rolled fetch client with the generated `@nameplate/ts-client` once the OpenAPI spec exists.

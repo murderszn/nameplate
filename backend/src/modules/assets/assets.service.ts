@@ -17,7 +17,7 @@ export class AssetsService {
     cursor?: string;
     limit?: number;
   }) {
-    const { orgId, propertyId, status, categoryId, q, cursor, limit = 50 } =
+    const { orgId, propertyId, status, categoryId, q, cursor, limit = 200 } =
       params;
 
     return this.prisma.asset.findMany({

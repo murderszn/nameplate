@@ -10,6 +10,12 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class AssetModelsController {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** GET /v1/asset-models/categories — the category lookup (system + org-extended). */
+  @Get('categories')
+  categories() {
+    return this.prisma.assetCategory.findMany({ orderBy: { sortOrder: 'asc' } });
+  }
+
   @Get()
   findAll(@Query('manufacturer') manufacturer?: string, @Query('q') q?: string) {
     return this.prisma.assetModel.findMany({

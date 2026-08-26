@@ -5,12 +5,14 @@ described as a REST/JSON service. See **`../docs/architecture.md`** for the
 full stack decision (§2), API conventions and endpoint map (§3), and the
 offline sync design (§4). Entity shapes come from **`../docs/data-model.md`**.
 
-This is a **V0 scaffold** — lean on purpose. It stands up the project
-structure, the Prisma schema for the core entities, and working CRUD +
-scan-lookup endpoints for Assets and Service Events. Everything else
-(auth/RBAC, sync, media, reports, the custody ledger, turns) is either a
-thin stub controller or explicitly deferred — see the bottom of
-`prisma/schema.prisma` and inline comments in each module.
+This started as a **V0 scaffold** and is now a **runnable local demo**:
+migrated Postgres schema, a realistic seeded portfolio (org, properties,
+buildings, units, assets, service events with parts lineage, work orders),
+and GET endpoints wired to Prisma across every module so the HQ console
+renders real data end to end. Auth/RBAC, sync, media, reports, the custody
+ledger, and turns are still either a thin stub controller or explicitly
+deferred — see the bottom of `prisma/schema.prisma` and inline comments in
+each module.
 
 ## What's here
 
@@ -26,15 +28,15 @@ backend/
 │   ├── app.module.ts        Wires every module below
 │   ├── prisma/              PrismaService/PrismaModule (global provider)
 │   └── modules/
-│       ├── org/             GET /v1/org (stub)
-│       ├── properties/      /v1/properties CRUD + buildings sub-resource (stub CRUD)
-│       ├── buildings/       /v1/buildings + units sub-resource (stub CRUD)
-│       ├── units/           /v1/units, unit detail w/ assets + open WOs (stub)
+│       ├── org/             GET /v1/org (no orgId = the demo org), GET /v1/org/all
+│       ├── properties/      GET list/:id + buildings sub-resource, POST/PATCH (stub CRUD)
+│       ├── buildings/       GET list/:id + units sub-resource, POST (stub CRUD)
+│       ├── units/           GET list/:id (assets + open WOs), POST (stub CRUD)
 │       ├── assets/          FULL: CRUD + GET /v1/assets/lookup (the scan endpoint)
-│       ├── asset-models/    /v1/asset-models catalog (stub CRUD + simple search)
+│       ├── asset-models/    GET list + /categories, POST (stub CRUD + simple search)
 │       ├── service-events/  FULL: CRUD, POST creates event + part usages atomically
 │       ├── parts/           /v1/parts + /v1/parts/:id/lineage (stub, single-hop)
-│       ├── work-orders/     /v1/work-orders CRUD + assign/close (stub)
+│       ├── work-orders/     GET list/:id, POST/PATCH, assign/close (stub CRUD)
 │       └── users/           GET /v1/me (stub)
 └── .env                     DATABASE_URL — not committed in a real repo; here for scaffold convenience
 ```
@@ -67,53 +69,79 @@ indexes (e.g. `asset.serial_normalized` uniqueness scoped to
 constraints called out in `data-model.md`. Prisma migrations can express
 plain columns/indexes but not these Postgres-specific constructs.
 
-## Setup
+## Setup — running the demo locally
 
-Requires Node 22+ and a reachable Postgres 16 instance (local Docker,
-Supabase, whatever — see `docs/architecture.md` §7 for the `local` env,
-which is Postgres + Redis + MinIO via Docker Compose).
+Requires Node 22+ and Postgres 14+ reachable locally. On macOS with
+Homebrew's `postgresql@14`:
+
+```bash
+brew services start postgresql@14     # or: pg_ctl -D /opt/homebrew/var/postgresql@14 start
+createdb nameplate_dev                 # one-time
+```
 
 ```bash
 cd backend
 npm install
 
-# Point at your database. A .env with a placeholder is already present;
-# replace with a real connection string:
-#   DATABASE_URL="postgresql://user:password@localhost:5432/nameplate?schema=public"
+# Copy backend/.env.example to backend/.env and point DATABASE_URL at your
+# local DB, e.g.:
+#   DATABASE_URL="postgresql://<your-macos-user>@localhost:5432/nameplate_dev?schema=public"
+#   PORT=3000
+# (Note: no password needed for a default local Homebrew Postgres install
+# with peer/trust auth — adjust if yours differs.)
 
-npx prisma migrate dev     # creates the nameplate DB schema + generates the client
-npm run start:dev          # http://localhost:3000
+npx prisma migrate dev --name init     # creates the schema
+npx prisma db seed                     # loads the demo portfolio (see prisma/seed.ts)
+npm run start:dev                      # http://localhost:3000
 ```
+
+The seed script (`prisma/seed.ts`, wired via the `prisma.seed` entry in
+`package.json`) creates one demo org — **Sonoran Portfolio Management** —
+with 4 properties, ~6 buildings, ~22 units, ~22 assets across realistic
+categories (washers, dryers, ranges, refrigerators, dishwashers, water
+heaters, HVAC air handlers, microwaves) in a mix of statuses (active,
+needs_repair, in_repair, unaccounted_for, retired), several service events
+including a cross-asset **parts lineage** example (a control board
+salvaged from one failed refrigerator and installed in another), and 4
+work orders in different states (open, in_progress, awaiting_parts,
+completed). Re-running the seed against a non-empty DB will fail on
+unique constraints — reset with `npx prisma migrate reset` first if you
+need a clean slate.
 
 Other useful scripts (see `package.json`):
 
 ```bash
 npm run prisma:generate    # regenerate the Prisma client after a schema change
+npm run prisma:seed        # re-run prisma/seed.ts directly
 npm run prisma:studio      # visual DB browser
 npm run build              # nest build
 npm run test               # jest unit tests
 npm run test:e2e           # jest e2e tests
 ```
 
-## Trying the scaffolded endpoints
-
-Once running against a migrated database, seed an `Organization`,
-`AssetCategory`, etc. via `prisma studio` or a quick script, then:
+## Trying the live endpoints
 
 ```bash
-# create an asset (NPID + id are client-supplied, per asset-tagging-strategy.md)
-curl -X POST http://localhost:3000/v1/assets \
-  -H 'Content-Type: application/json' \
-  -d '{"id":"<uuid>","orgId":"<org-uuid>","npid":"NP-7K2M4QX9","categoryId":"<category-uuid>"}'
+# bootstrap: the demo org (single-tenant demo — no orgId needed)
+curl http://localhost:3000/v1/org
 
-# the scan endpoint
-curl 'http://localhost:3000/v1/assets/lookup?code=NP-7K2M4QX9&orgId=<org-uuid>'
+ORG_ID=$(curl -s http://localhost:3000/v1/org | node -pe 'JSON.parse(require("fs").readFileSync(0)).id')
+
+curl "http://localhost:3000/v1/properties?orgId=$ORG_ID"
+curl "http://localhost:3000/v1/assets?orgId=$ORG_ID"
+curl "http://localhost:3000/v1/work-orders?orgId=$ORG_ID"
+
+# the scan endpoint — grab any seeded NPID from the assets list above
+curl "http://localhost:3000/v1/assets/lookup?code=<NPID>&orgId=$ORG_ID"
 
 # log a service event with part usages, atomically
 curl -X POST http://localhost:3000/v1/service-events \
   -H 'Content-Type: application/json' \
   -d '{"id":"<uuid>","orgId":"<org-uuid>","assetId":"<asset-uuid>","technicianId":"<membership-uuid>","eventType":"repair","occurredAt":"2026-08-26T12:00:00Z"}'
 ```
+
+CORS is enabled globally (`app.enableCors()` in `main.ts`) so the HQ Vite
+dev server (`localhost:5173`) can call this API directly.
 
 ## Next steps toward the real V0 (see `docs/v0-scope.md` §1.3, §4)
 

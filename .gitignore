@@ -11,6 +11,9 @@ build/
 .env.*
 !.env.example
 
+# Playwright MCP scratch output
+.playwright-mcp/
+
 # OS / editor
 .DS_Store
 .idea/
