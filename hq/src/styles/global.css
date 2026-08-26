@@ -1,0 +1,259 @@
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--np-font-sans);
+  background: var(--np-mist-100);
+  color: var(--np-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--np-plate-600);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--np-plate-700);
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+code,
+.mono {
+  font-family: var(--np-font-mono);
+}
+
+.np-app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.np-sidebar {
+  width: var(--np-sidebar-width);
+  flex-shrink: 0;
+  background: var(--np-slate-900);
+  color: var(--np-mist-100);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+}
+
+.np-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 24px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: white;
+}
+
+.np-sidebar__brand-mark {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--np-signal-500);
+}
+
+.np-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.np-nav a {
+  color: var(--np-mist-200);
+  padding: 9px 12px;
+  border-radius: var(--np-radius);
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.np-nav a:hover {
+  background: var(--np-slate-700);
+  color: white;
+}
+
+.np-nav a.active {
+  background: var(--np-plate-600);
+  color: white;
+}
+
+.np-sidebar__footer {
+  margin-top: auto;
+  padding: 12px;
+  font-size: 0.78rem;
+  color: var(--np-steel-500);
+}
+
+.np-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.np-topbar {
+  height: 60px;
+  flex-shrink: 0;
+  background: var(--np-paper);
+  border-bottom: 1px solid var(--np-mist-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.np-topbar__title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.np-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.np-badge--info {
+  background: var(--np-plate-100);
+  color: var(--np-plate-700);
+}
+
+.np-page {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.np-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.np-card {
+  background: var(--np-paper);
+  border: 1px solid var(--np-mist-200);
+  border-radius: var(--np-radius);
+  box-shadow: var(--np-shadow-sm);
+  padding: 18px;
+}
+
+.np-kpi-card .np-kpi-label {
+  font-size: 0.8rem;
+  color: var(--np-steel-500);
+  margin-bottom: 6px;
+}
+
+.np-kpi-card .np-kpi-value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--np-ink);
+}
+
+.np-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--np-paper);
+  border: 1px solid var(--np-mist-200);
+  border-radius: var(--np-radius);
+  overflow: hidden;
+}
+
+.np-table th,
+.np-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--np-mist-200);
+  font-size: 0.88rem;
+}
+
+.np-table th {
+  background: var(--np-mist-100);
+  color: var(--np-steel-500);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.np-table tr:last-child td {
+  border-bottom: none;
+}
+
+.np-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.np-status-pill--verified {
+  background: var(--np-verified-100);
+  color: var(--np-verified-600);
+}
+
+.np-status-pill--caution {
+  background: var(--np-signal-100);
+  color: var(--np-caution-600);
+}
+
+.np-status-pill--fault {
+  background: var(--np-fault-100);
+  color: var(--np-fault-600);
+}
+
+.np-status-pill--offline {
+  background: #efe9f7;
+  color: var(--np-offline-500);
+}
+
+.np-empty-state {
+  border: 1px dashed var(--np-mist-200);
+  border-radius: var(--np-radius);
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--np-steel-500);
+}
+
+.np-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--np-plate-600);
+  color: white;
+  border: none;
+  border-radius: var(--np-radius);
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.np-btn:hover {
+  background: var(--np-plate-700);
+}

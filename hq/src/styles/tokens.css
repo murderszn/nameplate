@@ -1,0 +1,57 @@
+/*
+ * Nameplate HQ — design tokens
+ * Single source of truth for the palette: ../../docs/branding.md §6.
+ * Per architecture.md §6, this file should stay identical to
+ * website/src/styles/tokens.css when that project exists — same tokens,
+ * same names, no drift between the marketing site and the console.
+ */
+
+:root {
+  /* Core */
+  --np-ink: #0e1620;
+  --np-slate-900: #16212e;
+  --np-slate-700: #2b3a4c;
+  --np-steel-500: #61748c;
+  --np-mist-200: #dde3ea;
+  --np-mist-100: #eff3f7;
+  --np-paper: #fafcfd;
+
+  /* Brand & action */
+  --np-plate-600: #0b5d8a; /* primary brand color */
+  --np-plate-700: #084a6e; /* hover/pressed */
+  --np-plate-100: #dcedf6; /* tinted backgrounds */
+  --np-signal-500: #f0a028; /* accent / attention — background/stroke/fill ONLY, never text */
+  --np-signal-100: #fdf0da;
+
+  /* Status semantics — fixed meanings, do not reuse for decoration */
+  --np-verified-600: #137a5b;
+  --np-verified-100: #dcf1e9;
+  --np-caution-600: #b4700c; /* text-safe darkened amber */
+  --np-fault-600: #c23b3b;
+  --np-fault-100: #fbe4e4;
+  --np-offline-500: #7a5aa8; /* offline / pending sync — never a status color */
+
+  /* Data-visualization ramp */
+  --np-viz-1: #0b5d8a;
+  --np-viz-2: #f0a028;
+  --np-viz-3: #137a5b;
+  --np-viz-4: #7a5aa8;
+  --np-viz-5: #c23b3b;
+  --np-viz-6: #61748c;
+
+  /* Layout */
+  --np-radius: 8px;
+  --np-shadow-sm: 0 1px 2px rgba(14, 22, 32, 0.08);
+  --np-shadow-md: 0 4px 12px rgba(14, 22, 32, 0.1);
+  --np-sidebar-width: 240px;
+  --np-font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --np-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/* Dark mode is required for Field, optional for HQ (branding.md §6 rules). */
+:root[data-theme='dark'] {
+  --np-paper: var(--np-slate-900);
+  --np-ink: var(--np-mist-100);
+  --np-plate-600: #3e9bc9;
+}

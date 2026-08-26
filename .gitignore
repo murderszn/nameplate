@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+
+# Flutter / Dart
+app/.dart_tool/
+app/.flutter-plugin-dependencies
+app/*.iml
+app/android/local.properties
+app/android/.gradle/
+app/ios/Pods/
+app/ios/Flutter/ephemeral/

@@ -1,0 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'screens/app_shell.dart';
+import 'theme/app_theme.dart';
+
+void main() {
+  runApp(const ProviderScope(child: NameplateFieldApp()));
+}
+
+/// Nameplate Field — Flutter (iOS + Android) app for maintenance
+/// technicians. See docs/architecture.md §4 for the offline-first sync
+/// design this app is built around (Drift local mirror + append-only
+/// outbox), and docs/v0-scope.md §1.1 for the V0 feature scope.
+class NameplateFieldApp extends StatelessWidget {
+  const NameplateFieldApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Nameplate Field',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: ThemeMode.system,
+      home: const AppShell(),
+    );
+  }
+}
