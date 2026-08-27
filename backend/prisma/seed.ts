@@ -66,6 +66,12 @@ async function main() {
   const tech2 = await prisma.user.create({
     data: { email: 'elena.ruiz@sonoran.example', fullName: 'Elena Ruiz', status: 'active' },
   });
+  const techMorales = await prisma.user.create({
+    data: { email: 'j.morales@sonoran.example', fullName: 'J. Morales', status: 'active' },
+  });
+  const techVance = await prisma.user.create({
+    data: { email: 'd.vance@sonoran.example', fullName: 'D. Vance', status: 'active' },
+  });
 
   await prisma.membership.create({
     data: { orgId: org.id, userId: owner.id, role: 'owner', employmentType: 'employee', status: 'active' },
@@ -77,6 +83,26 @@ async function main() {
       role: 'technician',
       employmentType: 'employee',
       hourlyLaborRate: 28.5,
+      status: 'active',
+    },
+  });
+  const membershipMorales = await prisma.membership.create({
+    data: {
+      orgId: org.id,
+      userId: techMorales.id,
+      role: 'technician',
+      employmentType: 'employee',
+      hourlyLaborRate: 32,
+      status: 'active',
+    },
+  });
+  const membershipVance = await prisma.membership.create({
+    data: {
+      orgId: org.id,
+      userId: techVance.id,
+      role: 'technician',
+      employmentType: 'employee',
+      hourlyLaborRate: 30,
       status: 'active',
     },
   });
@@ -103,6 +129,7 @@ async function main() {
     { key: 'water_heater', displayName: 'Water Heater', defaultUsefulLifeMonths: 120, defaultReplacementCost: 1100 },
     { key: 'hvac_air_handler', displayName: 'HVAC Air Handler', defaultUsefulLifeMonths: 216, defaultReplacementCost: 3200 },
     { key: 'microwave', displayName: 'Microwave', defaultUsefulLifeMonths: 108, defaultReplacementCost: 220 },
+    { key: 'thermostat', displayName: 'Smart Thermostat', defaultUsefulLifeMonths: 84, defaultReplacementCost: 180 },
   ];
   const categories: Record<string, { id: string }> = {};
   for (const c of categoryDefs) {
@@ -124,6 +151,13 @@ async function main() {
     { manufacturer: 'Trane', modelNumber: 'TAM9A0C48H31', categoryKey: 'hvac_air_handler', displayName: 'Trane 4-Ton Air Handler', typicalReplacementCost: 3550 },
     { manufacturer: 'Maytag', modelNumber: 'MVW6230HW', categoryKey: 'washer', displayName: 'Maytag 4.7 cu ft Top-Load Washer', typicalReplacementCost: 690 },
     { manufacturer: 'Amana', modelNumber: 'AMV2307PFB', categoryKey: 'microwave', displayName: 'Amana 1.6 cu ft Over-the-Range Microwave', typicalReplacementCost: 210 },
+    { manufacturer: 'Carrier', modelNumber: 'FE4ANF002', categoryKey: 'hvac_air_handler', displayName: 'Carrier 2.5-Ton Variable Speed Air Handler', typicalReplacementCost: 3800 },
+    { manufacturer: 'Speed Queen', modelNumber: 'FF7005WN', categoryKey: 'washer', displayName: 'Speed Queen Commercial Front-Load Washer', typicalReplacementCost: 1320 },
+    { manufacturer: 'Whirlpool', modelNumber: 'WRF535SWHZ', categoryKey: 'refrigerator', displayName: 'Whirlpool 36" French Door Refrigerator', typicalReplacementCost: 1450 },
+    { manufacturer: 'Speed Queen', modelNumber: 'DF7000WE', categoryKey: 'dryer', displayName: 'Speed Queen Electric Heavy Duty Dryer', typicalReplacementCost: 1250 },
+    { manufacturer: 'GE', modelNumber: 'PDT715SYNFS', categoryKey: 'dishwasher', displayName: 'GE Profile Top Control Dishwasher', typicalReplacementCost: 899 },
+    { manufacturer: 'Honeywell', modelNumber: 'RCHT9610WFW', categoryKey: 'thermostat', displayName: 'Honeywell Home T9 Smart Thermostat', typicalReplacementCost: 180 },
+    { manufacturer: 'GE', modelNumber: 'PVM9005SJSS', categoryKey: 'microwave', displayName: 'GE Profile Over-the-Range Microwave & Vent', typicalReplacementCost: 540 },
   ];
   const models: Record<string, { id: string; categoryKey: string }> = {};
   for (const m of modelDefs) {
@@ -134,6 +168,8 @@ async function main() {
         categoryId: categories[m.categoryKey].id,
         displayName: m.displayName,
         typicalReplacementCost: m.typicalReplacementCost,
+        expectedLifeMonths: categoryDefs.find((c) => c.key === m.categoryKey)
+          ?.defaultUsefulLifeMonths,
         verificationStatus: 'verified',
         firstSeenOrgId: org.id,
       },
@@ -307,7 +343,17 @@ async function main() {
         acquisitionType: 'new_purchase',
         installDate: daysAgo(plan.installMonthsAgo * 30),
         installDateConfidence: 'known',
-        purchaseCost: 400 + i * 25,
+        expectedLifeMonths: categoryDefs.find((c) => c.key === plan.categoryKey)
+          ?.defaultUsefulLifeMonths,
+        warrantyExpiresOn: daysAgo(
+          plan.installMonthsAgo * 30 -
+            (plan.categoryKey === 'hvac_air_handler' ? 10 : 5) * 365,
+        ),
+        purchaseCost:
+          (model
+            ? modelDefs.find((d) => `${d.manufacturer}:${d.modelNumber}` === plan.modelKey)
+                ?.typicalReplacementCost
+            : undefined) ?? 400 + i * 25,
       },
     });
     assets.push({ id: asset.id, npid: asset.npid, categoryKey: plan.categoryKey });
@@ -558,12 +604,634 @@ async function main() {
     });
   }
 
+  // -------------------------------------------------------------------
+  // Marketing-demo plate: Sonoran Ridge Residences · Unit 402
+  // Mirrors website/js/main.js ASSET_RECORDS (NPIDs, warranty, lineage).
+  // -------------------------------------------------------------------
+  const ridge = await prisma.property.create({
+    data: {
+      orgId: org.id,
+      name: 'Sonoran Ridge Residences',
+      code: 'SR-05',
+      addressLine1: '4820 E Camelback Rd',
+      city: 'Phoenix',
+      state: 'AZ',
+      postalCode: '85018',
+      country: 'US',
+      latitude: 33.5092,
+      longitude: -111.9783,
+      yearBuilt: 2018,
+      unitCountDeclared: 48,
+      status: 'active',
+    },
+  });
+  properties.push({ id: ridge.id, name: ridge.name });
+  const ridgeBldg = await prisma.building.create({
+    data: { orgId: org.id, propertyId: ridge.id, name: 'Building 4', floors: 4 },
+  });
+  const unit402 = await prisma.unit.create({
+    data: {
+      orgId: org.id,
+      propertyId: ridge.id,
+      buildingId: ridgeBldg.id,
+      label: '402',
+      floor: 4,
+      bedrooms: 2,
+      bathrooms: 2,
+      squareFeet: 1180,
+      occupancyStatus: 'occupied',
+    },
+  });
+  allUnits.push({
+    id: unit402.id,
+    propertyId: ridge.id,
+    buildingId: ridgeBldg.id,
+    label: '402',
+  });
+
+  type ShowcasePart = { type: 'red' | 'white'; title: string; text: string };
+  type ShowcaseLineage = {
+    date: string;
+    part: string;
+    oem: string;
+    findings: string;
+    eventType:
+      | 'preventive_maintenance'
+      | 'part_replacement'
+      | 'installation'
+      | 'inspection'
+      | 'warranty_service'
+      | 'cleaning';
+    techId: string;
+    woNumber?: number;
+    woTitle?: string;
+    partsCost: number;
+    laborMinutes: number;
+    isWarranty: boolean;
+    resolution: 'fixed' | 'part_replaced' | 'no_fault_found';
+  };
+  type ShowcaseAsset = {
+    npid: string;
+    categoryKey: string;
+    modelKey: string;
+    serial: string;
+    serialConfidence: 'ocr' | 'scanned';
+    title: string;
+    room: string;
+    purchaseDate: string;
+    installDate: string;
+    warrantyExpiresOn: string;
+    warrantySub: string;
+    cost: number;
+    specTag: string;
+    gps: string;
+    description: string;
+    schematicKey: string;
+    parts: ShowcasePart[];
+    lineage: ShowcaseLineage[];
+  };
+
+  const OWNER = 'Sonoran Portfolio Partners LLC · Fund IV';
+  const showcaseDefs: ShowcaseAsset[] = [
+    {
+      npid: 'NP-1M4K9X23',
+      categoryKey: 'hvac_air_handler',
+      modelKey: 'Carrier:FE4ANF002',
+      serial: '4821A90124',
+      serialConfidence: 'ocr',
+      title: 'Carrier 2.5-Ton Variable Speed Air Handler',
+      room: 'Unit 402 · Utility / Mechanical Closet',
+      purchaseDate: '2021-10-18',
+      installDate: '2021-11-05',
+      warrantyExpiresOn: '2031-11-05',
+      warrantySub: '10-Yr Compressor Warranty',
+      cost: 3800,
+      specTag: 'HVAC & MECHANICAL · SPEC 01',
+      gps: '33.5092° N, 111.9783° W',
+      description:
+        'Dual-stage forced-air heating and split condenser system. Tracks refrigerant lines, blower motor amperage, heating element resistance, and thermostat telemetry.',
+      schematicKey: 'hvac',
+      parts: [
+        { type: 'red', title: 'Heating Element & Sensors', text: 'Critical thermal safety control, monitored for burnout cycles.' },
+        { type: 'red', title: 'Compressor & Thermostat Bus', text: 'High-CapEx failure risk; captures OEM warranty eligibility.' },
+        { type: 'white', title: 'Blower & Condenser Fan', text: 'Mechanical airflow system logged during semi-annual PM audits.' },
+      ],
+      lineage: [
+        {
+          date: '2026-03-20',
+          part: 'Blower Motor Amperage Certified (2.8A)',
+          oem: 'OEM-CAR-BLW48',
+          findings: 'PM: blower motor amperage certified at 2.8A.',
+          eventType: 'preventive_maintenance',
+          techId: membershipMorales.id,
+          woNumber: 1014,
+          woTitle: 'HVAC semi-annual PM — Unit 402',
+          partsCost: 0,
+          laborMinutes: 45,
+          isWarranty: false,
+          resolution: 'no_fault_found',
+        },
+        {
+          date: '2025-08-11',
+          part: 'Run Capacitor 45/5 uF Replaced',
+          oem: 'CAP-45-5-370V',
+          findings: 'Run capacitor replaced. Standard service.',
+          eventType: 'part_replacement',
+          techId: membershipMorales.id,
+          woNumber: 819,
+          woTitle: 'HVAC run capacitor replacement — Unit 402',
+          partsCost: 38,
+          laborMinutes: 40,
+          isWarranty: false,
+          resolution: 'part_replaced',
+        },
+        {
+          date: '2021-11-05',
+          part: 'Initial Hardware Tag Minted & Bound',
+          oem: 'NPID-SYSTEM',
+          findings: 'Commissioned and bound to NP-1M4K9X23.',
+          eventType: 'installation',
+          techId: membershipMorales.id,
+          partsCost: 0,
+          laborMinutes: 30,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+      ],
+    },
+    {
+      npid: 'NP-3W9Q5R71',
+      categoryKey: 'washer',
+      modelKey: 'Speed Queen:FF7005WN',
+      serial: '250608914',
+      serialConfidence: 'ocr',
+      title: 'Speed Queen Commercial Front-Load Washer',
+      room: 'Unit 402 · Laundry Closet',
+      purchaseDate: '2025-06-10',
+      installDate: '2025-06-22',
+      warrantyExpiresOn: '2030-06-22',
+      warrantySub: '5-Yr Commercial Warranty',
+      cost: 1320,
+      specTag: 'LAUNDRY SYSTEMS · SPEC 02',
+      gps: '33.5092° N, 111.9783° W',
+      description:
+        'High-efficiency direct-drive commercial washing unit. Tracks water inlet valves, drain pump health, heater elements, and spin drum vibration.',
+      schematicKey: 'washer',
+      parts: [
+        { type: 'red', title: 'Water Inlet Valve & Drain Pump', text: 'High flood-risk points; tracked for solenoid wear.' },
+        { type: 'red', title: 'Internal Water Heater & Control Panel', text: 'Monitored for power surges and electronic logic faults.' },
+        { type: 'white', title: 'Drive Motor & Outer Drum Casing', text: 'Structural balance and bearing integrity verification.' },
+      ],
+      lineage: [
+        {
+          date: '2026-05-14',
+          part: 'Door Gasket Sanitization & Balance Test',
+          oem: 'GSK-SQ-F70',
+          findings: 'Turn audit: door gasket sanitized, balance test passed.',
+          eventType: 'cleaning',
+          techId: membershipVance.id,
+          partsCost: 0,
+          laborMinutes: 25,
+          isWarranty: true,
+          resolution: 'no_fault_found',
+        },
+        {
+          date: '2025-06-22',
+          part: 'Unit Upgrade Installed & Affixed NPID',
+          oem: 'NPID-SYSTEM',
+          findings: 'Commissioned Speed Queen washer in laundry closet.',
+          eventType: 'installation',
+          techId: membershipMorales.id,
+          partsCost: 0,
+          laborMinutes: 50,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+      ],
+    },
+    {
+      npid: 'NP-7K2M4QX9',
+      categoryKey: 'refrigerator',
+      modelKey: 'Whirlpool:WRF535SWHZ',
+      serial: 'W10874291',
+      serialConfidence: 'ocr',
+      title: 'Whirlpool 36" French Door Refrigerator',
+      room: 'Unit 402 · Gourmet Kitchen (North Alcove)',
+      purchaseDate: '2023-03-15',
+      installDate: '2023-04-10',
+      warrantyExpiresOn: '2028-04-10',
+      warrantySub: '10-Yr Sealed System Warranty',
+      cost: 1450,
+      specTag: 'KITCHEN SYSTEMS · SPEC 03',
+      gps: '33.5092° N, 111.9783° W',
+      description:
+        'Multi-zone refrigeration system with hermetic compressor and dual evaporator coils. Tracks compressor cycles, defrost cycles, and door seal integrity.',
+      schematicKey: 'fridge',
+      parts: [
+        { type: 'red', title: 'Hermetic Sealed Compressor', text: 'Primary refrigeration power; core warranty recovery asset.' },
+        { type: 'red', title: 'Evaporator Coils & Defrost Loop', text: 'Cold-wall freeze risk; tracked for refrigerant efficiency.' },
+        { type: 'white', title: 'Thermostat & Magnetic Door Seals', text: 'Air-tight envelope monitoring preventing frost buildup.' },
+      ],
+      lineage: [
+        {
+          date: '2026-06-12',
+          part: 'Defrost Bi-Metal Thermostat Replaced',
+          oem: 'WPW10225581',
+          findings: 'Defrost bi-metal thermostat replaced under OEM sealed-system coverage.',
+          eventType: 'warranty_service',
+          techId: membershipMorales.id,
+          woNumber: 1048,
+          woTitle: 'Refrigerator defrost thermostat — Unit 402',
+          partsCost: 0,
+          laborMinutes: 55,
+          isWarranty: true,
+          resolution: 'part_replaced',
+        },
+        {
+          date: '2026-02-18',
+          part: 'Make-Ready Turnover Audit & Seal Check',
+          oem: 'SEAL-WP-FR535',
+          findings: 'Turn audit: door seals verified present and seating.',
+          eventType: 'inspection',
+          techId: membershipVance.id,
+          partsCost: 0,
+          laborMinutes: 20,
+          isWarranty: false,
+          resolution: 'no_fault_found',
+        },
+        {
+          date: '2024-11-04',
+          part: 'Dual Water Inlet Solenoid Valve Swapped',
+          oem: 'W10498990',
+          findings: 'Replaced dual water inlet solenoid valve.',
+          eventType: 'part_replacement',
+          techId: membershipVance.id,
+          woNumber: 612,
+          woTitle: 'Refrigerator water inlet valve — Unit 402',
+          partsCost: 38.5,
+          laborMinutes: 35,
+          isWarranty: false,
+          resolution: 'part_replaced',
+        },
+        {
+          date: '2023-04-10',
+          part: 'Initial Tag Minted & Claimed in Unit 402',
+          oem: 'NPID-SYSTEM',
+          findings: 'Onboarded and claimed NP-7K2M4QX9.',
+          eventType: 'installation',
+          techId: membershipMorales.id,
+          partsCost: 0,
+          laborMinutes: 25,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+      ],
+    },
+    {
+      npid: 'NP-6K8L2P44',
+      categoryKey: 'dryer',
+      modelKey: 'Speed Queen:DF7000WE',
+      serial: '250609318',
+      serialConfidence: 'ocr',
+      title: 'Speed Queen Electric Heavy Duty Dryer',
+      room: 'Unit 402 · Laundry Closet',
+      purchaseDate: '2025-06-10',
+      installDate: '2025-06-22',
+      warrantyExpiresOn: '2030-06-22',
+      warrantySub: '5-Yr Commercial Warranty',
+      cost: 1250,
+      specTag: 'LAUNDRY SYSTEMS · SPEC 04',
+      gps: '33.5092° N, 111.9783° W',
+      description:
+        'Commercial electric drying unit. Tracks ceramic heating element, centrifugal blower fan, thermal cutoffs, and exhaust duct airflow backpressure.',
+      schematicKey: 'dryer',
+      parts: [
+        { type: 'red', title: 'High-Density Heating Element', text: 'Critical fire-safety checkpoint; resistance certified at turns.' },
+        { type: 'white', title: 'Centrifugal Exhaust Blower & Lint Screen', text: 'Airflow backpressure tested to prevent lint accumulation.' },
+        { type: 'white', title: 'Drum Drive Belt & Idler Pulley', text: 'Mechanical rotation verified during make-ready turns.' },
+      ],
+      lineage: [
+        {
+          date: '2026-05-14',
+          part: 'Exhaust Duct Airflow Certified 480 CFM',
+          oem: 'DUCT-CFM-TEST',
+          findings: 'Turn walk: exhaust duct airflow certified 480 CFM.',
+          eventType: 'inspection',
+          techId: membershipVance.id,
+          partsCost: 0,
+          laborMinutes: 20,
+          isWarranty: true,
+          resolution: 'no_fault_found',
+        },
+        {
+          date: '2025-06-22',
+          part: 'Unit Installed & Affixed NPID Hardware',
+          oem: 'NPID-SYSTEM',
+          findings: 'Commissioned dryer paired with washer in laundry closet.',
+          eventType: 'installation',
+          techId: membershipMorales.id,
+          partsCost: 0,
+          laborMinutes: 40,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+      ],
+    },
+    {
+      npid: 'NP-8V3Z6K19',
+      categoryKey: 'dishwasher',
+      modelKey: 'GE:PDT715SYNFS',
+      serial: '340918471',
+      serialConfidence: 'scanned',
+      title: 'GE Profile Top Control Dishwasher',
+      room: 'Unit 402 · Gourmet Kitchen',
+      purchaseDate: '2023-03-15',
+      installDate: '2023-04-10',
+      warrantyExpiresOn: '2028-04-10',
+      warrantySub: '5-Yr Tub & Electronics Warranty',
+      cost: 899,
+      specTag: 'KITCHEN SYSTEMS · SPEC 05',
+      gps: '33.5092° N, 111.9783° W',
+      description:
+        'High-pressure wash system with heating boost element, multi-tier spray arms, float switch flood protection, and dual detergent solenoid actuators.',
+      schematicKey: 'dishwasher',
+      parts: [
+        { type: 'red', title: 'Internal Water Booster Heater', text: 'High-temperature sanitation verification.' },
+        { type: 'white', title: 'Float Switch & Circulation Pump', text: 'Sub-floor leak mitigation sensors tested annually.' },
+        { type: 'white', title: 'Upper/Lower Spray Arms & Racks', text: 'Mechanical wash integrity checked during turnover audits.' },
+      ],
+      lineage: [
+        {
+          date: '2026-01-09',
+          part: 'Drain Pump Filter Cleared & Calibrated',
+          oem: 'PUMP-GE-PDT7',
+          findings: 'Drain pump filter cleared and calibrated.',
+          eventType: 'part_replacement',
+          techId: membershipVance.id,
+          woNumber: 932,
+          woTitle: 'Dishwasher drain pump service — Unit 402',
+          partsCost: 24,
+          laborMinutes: 30,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+        {
+          date: '2023-04-10',
+          part: 'Initial Tag Affixed & Claimed in Unit 402',
+          oem: 'NPID-SYSTEM',
+          findings: 'Onboarded dishwasher in gourmet kitchen.',
+          eventType: 'installation',
+          techId: membershipMorales.id,
+          partsCost: 0,
+          laborMinutes: 25,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+      ],
+    },
+    {
+      npid: 'NP-2N7V9X65',
+      categoryKey: 'thermostat',
+      modelKey: 'Honeywell:RCHT9610WFW',
+      serial: '00D02D63F18A',
+      serialConfidence: 'scanned',
+      title: 'Honeywell Home T9 Smart Environmental Thermostat',
+      room: 'Unit 402 · Central Hallway',
+      purchaseDate: '2024-02-01',
+      installDate: '2024-02-18',
+      warrantyExpiresOn: '2027-02-18',
+      warrantySub: '3-Yr Honeywell Pro Warranty',
+      cost: 180,
+      specTag: 'CLIMATE & CONTROLS · SPEC 06',
+      gps: '33.5092° N, 111.9783° W',
+      description:
+        'Solid-state digital climate control bus. Interfaces with HVAC 24V relay board, ambient temperature sensors, and multi-zone remote room pucks.',
+      schematicKey: 'thermostat',
+      parts: [
+        { type: 'red', title: 'HVAC Relay Bus & Control Panel', text: '24V signaling protection against power surges.' },
+        { type: 'white', title: 'Digital LCD Display & User Interface', text: 'Hardware status telemetry reporting.' },
+        { type: 'white', title: 'Precision Temperature Sensor', text: 'Thermal calibration audit logged across seasons.' },
+      ],
+      lineage: [
+        {
+          date: '2024-02-18',
+          part: 'Remote Room Sensor Paired & Commissioned',
+          oem: 'RCHTSENSOR-V1',
+          findings: 'Remote room sensor paired; T9 commissioned on HVAC bus.',
+          eventType: 'installation',
+          techId: membershipMorales.id,
+          partsCost: 0,
+          laborMinutes: 35,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+      ],
+    },
+    {
+      npid: 'NP-5K9L1P88',
+      categoryKey: 'microwave',
+      modelKey: 'GE:PVM9005SJSS',
+      serial: '81920481',
+      serialConfidence: 'ocr',
+      title: 'GE Profile Over-the-Range Microwave & Vent',
+      room: 'Unit 402 · Gourmet Kitchen (Above Range)',
+      purchaseDate: '2024-07-02',
+      installDate: '2024-07-15',
+      warrantyExpiresOn: '2029-07-15',
+      warrantySub: '5-Yr Magnetron Tube Warranty',
+      cost: 540,
+      specTag: 'KITCHEN APPLIANCES · SPEC 07',
+      gps: '33.5092° N, 111.9783° W',
+      description:
+        'High-voltage cavity heating and exhaust ventilation unit. Tracks magnetron tube emission, high-voltage diode transformer, waveguide, and safety door interlocks.',
+      schematicKey: 'microwave',
+      parts: [
+        { type: 'red', title: 'Magnetron & High-Voltage Tube', text: 'Core microwave radiation generator.' },
+        { type: 'white', title: 'Dual Interlock Safety Door Latches', text: 'Door closure sensor preventing open-door operation.' },
+        { type: 'white', title: 'Waveguide Chamber & Exhaust Fan', text: 'Energy dissipation and kitchen grease ventilation.' },
+      ],
+      lineage: [
+        {
+          date: '2024-07-15',
+          part: 'Initial Tag Affixed & Range Hood Paired',
+          oem: 'NPID-SYSTEM',
+          findings: 'Microwave/vent commissioned above range.',
+          eventType: 'installation',
+          techId: membershipMorales.id,
+          partsCost: 0,
+          laborMinutes: 30,
+          isWarranty: false,
+          resolution: 'fixed',
+        },
+      ],
+    },
+  ];
+
+  for (const def of showcaseDefs) {
+    const model = models[def.modelKey];
+    const [manufacturer, modelNumber] = def.modelKey.split(':');
+    const asset = await prisma.asset.create({
+      data: {
+        orgId: org.id,
+        npid: def.npid,
+        categoryId: categories[def.categoryKey].id,
+        assetModelId: model?.id,
+        manufacturerRaw: manufacturer,
+        modelRaw: modelNumber,
+        serialNumber: def.serial,
+        serialConfidence: def.serialConfidence,
+        currentLocationType: 'unit',
+        currentUnitId: unit402.id,
+        currentPropertyId: ridge.id,
+        currentLocationSince: new Date(def.installDate),
+        currentLocationConfirmedAt: daysAgo(12),
+        status: 'active',
+        condition: 'good',
+        acquisitionType: 'new_purchase',
+        installDate: new Date(def.installDate),
+        installDateConfidence: 'known',
+        manufactureDate: new Date(def.purchaseDate),
+        manufactureDateSource: 'purchase_order',
+        warrantyExpiresOn: new Date(def.warrantyExpiresOn),
+        purchaseCost: def.cost,
+        expectedLifeMonths: categoryDefs.find((c) => c.key === def.categoryKey)
+          ?.defaultUsefulLifeMonths,
+        notes: def.title,
+        customFields: {
+          schematicKey: def.schematicKey,
+          specTag: def.specTag,
+          room: def.room,
+          gps: def.gps,
+          owner: OWNER,
+          warrantySub: def.warrantySub,
+          description: def.description,
+          serialLabel:
+            def.serialConfidence === 'ocr' ? 'OCR Stamped' : 'Scanned Barcode',
+          criticalParts: def.parts,
+        },
+      },
+    });
+    assets.push({ id: asset.id, npid: asset.npid, categoryKey: def.categoryKey });
+
+    for (const row of def.lineage) {
+      let workOrderId: string | undefined;
+      if (row.woNumber) {
+        const wo = await prisma.workOrder.create({
+          data: {
+            orgId: org.id,
+            propertyId: ridge.id,
+            number: row.woNumber,
+            unitId: unit402.id,
+            assetId: asset.id,
+            title: row.woTitle ?? row.part,
+            source: 'technician',
+            priority: 'standard',
+            status: 'completed',
+            assignedTo: row.techId,
+            requestedAction: 'repair',
+            resolution: row.isWarranty ? 'no_fault_found' : 'repaired',
+            completedAt: new Date(row.date),
+            slaMet: true,
+            actualCost: row.partsCost,
+            occurredAt: new Date(row.date),
+          },
+        });
+        workOrderId = wo.id;
+      }
+
+      await prisma.serviceEvent.create({
+        data: {
+          orgId: org.id,
+          assetId: asset.id,
+          workOrderId,
+          unitId: unit402.id,
+          propertyId: ridge.id,
+          technicianId: row.techId,
+          eventType: row.eventType,
+          findings: `${row.part} · OEM ${row.oem}. ${row.findings}`,
+          symptomCodes: [],
+          resolutionCode: row.resolution,
+          laborMinutes: row.laborMinutes,
+          laborRate: 32,
+          partsCost: row.partsCost,
+          costBorneBy: row.isWarranty ? 'warranty' : 'owner',
+          isWarrantyClaim: row.isWarranty,
+          occurredAt: new Date(row.date),
+        },
+      });
+    }
+  }
+
+  // Trailing-12-month spend series so HQ charts have a real curve.
+  const eventTypes: Array<
+    'repair' | 'inspection' | 'preventive_maintenance' | 'part_replacement'
+  > = ['repair', 'inspection', 'preventive_maintenance', 'part_replacement'];
+  let woSeq = 1100;
+  for (let m = 0; m < 12; m++) {
+    const count = 2 + (m % 3);
+    for (let k = 0; k < count; k++) {
+      const asset = assets[(m * 5 + k * 3) % assets.length];
+      const unit = allUnits[(m * 2 + k) % allUnits.length];
+      const partsCost = Math.round((18 + ((m * 17 + k * 13) % 160)) * 100) / 100;
+      await prisma.serviceEvent.create({
+        data: {
+          orgId: org.id,
+          assetId: asset.id,
+          unitId: unit.id,
+          propertyId: unit.propertyId,
+          technicianId: k % 2 === 0 ? membershipTech1.id : membershipTech2.id,
+          eventType: eventTypes[(m + k) % eventTypes.length],
+          findings: 'Portfolio service visit (seeded T12 series).',
+          symptomCodes: [],
+          resolutionCode: 'fixed',
+          laborMinutes: 20 + ((m * 7 + k * 5) % 50),
+          laborRate: k % 2 === 0 ? 28.5 : 34,
+          partsCost,
+          costBorneBy: 'owner',
+          occurredAt: daysAgo(m * 28 + k * 4 + 3),
+        },
+      });
+      woSeq += 1;
+    }
+  }
+  void woSeq;
+
+  await prisma.$executeRawUnsafe(`
+    UPDATE service_event
+    SET
+      labor_cost = ROUND((COALESCE(labor_minutes, 0) / 60.0) * COALESCE(labor_rate, 0), 2),
+      total_cost = ROUND((COALESCE(labor_minutes, 0) / 60.0) * COALESCE(labor_rate, 0), 2)
+                   + COALESCE(parts_cost, 0) + COALESCE(other_cost, 0)
+  `);
+
+  const allEvents = await prisma.serviceEvent.findMany({
+    select: { assetId: true, totalCost: true, occurredAt: true },
+  });
+  const rollup = new Map<string, { cost: number; n: number; last: Date }>();
+  for (const e of allEvents) {
+    const cur = rollup.get(e.assetId) ?? { cost: 0, n: 0, last: e.occurredAt };
+    cur.cost += Number(e.totalCost ?? 0);
+    cur.n += 1;
+    if (e.occurredAt > cur.last) cur.last = e.occurredAt;
+    rollup.set(e.assetId, cur);
+  }
+  for (const [id, r] of rollup) {
+    await prisma.asset.update({
+      where: { id },
+      data: {
+        lifetimeServiceCost: Math.round(r.cost * 100) / 100,
+        serviceEventCount: r.n,
+        lastServiceAt: r.last,
+      },
+    });
+  }
+
   console.log('Seed complete:');
   console.log(`  org: ${org.name} (${org.id})`);
   console.log(`  properties: ${properties.length}`);
   console.log(`  units: ${allUnits.length}`);
   console.log(`  assets: ${assets.length}`);
-  console.log(`  work orders: 4 (open, in_progress, awaiting_parts, completed)`);
+  console.log(`  showcase NPIDs: NP-1M4K9X23 … NP-5K9L1P88`);
 }
 
 main()

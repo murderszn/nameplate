@@ -1,57 +1,74 @@
 /*
  * Nameplate HQ — design tokens
- * Single source of truth for the palette: ../../docs/branding.md §6.
- * Per architecture.md §6, this file should stay identical to
- * website/src/styles/tokens.css when that project exists — same tokens,
- * same names, no drift between the marketing site and the console.
+ * Shared palette with website/css/styles.css (marketing sister page).
+ * Black / white / red editorial system — no greens, ambers, or violets.
  */
 
 :root {
-  /* Core */
-  --np-ink: #0e1620;
-  --np-slate-900: #16212e;
-  --np-slate-700: #2b3a4c;
-  --np-steel-500: #61748c;
-  --np-mist-200: #dde3ea;
-  --np-mist-100: #eff3f7;
-  --np-paper: #fafcfd;
+  --bg: #000000;
+  --bg-subtle: #080808;
+  --bg-elevated: #111111;
+  --bg-card: #141414;
 
-  /* Brand & action */
-  --np-plate-600: #0b5d8a; /* primary brand color */
-  --np-plate-700: #084a6e; /* hover/pressed */
-  --np-plate-100: #dcedf6; /* tinted backgrounds */
-  --np-signal-500: #f0a028; /* accent / attention — background/stroke/fill ONLY, never text */
-  --np-signal-100: #fdf0da;
+  --white: #ffffff;
+  --white-90: rgba(255, 255, 255, 0.9);
+  --white-70: rgba(255, 255, 255, 0.7);
+  --white-40: rgba(255, 255, 255, 0.4);
+  --white-15: rgba(255, 255, 255, 0.15);
+  --white-08: rgba(255, 255, 255, 0.08);
 
-  /* Status semantics — fixed meanings, do not reuse for decoration */
-  --np-verified-600: #137a5b;
-  --np-verified-100: #dcf1e9;
-  --np-caution-600: #b4700c; /* text-safe darkened amber */
-  --np-fault-600: #c23b3b;
-  --np-fault-100: #fbe4e4;
-  --np-offline-500: #7a5aa8; /* offline / pending sync — never a status color */
+  --red: #ff2a2a;
+  --red-hover: #ff4d4d;
+  --red-deep: #d91d1d;
+  --red-glow: rgba(255, 42, 42, 0.35);
+  --red-subtle: rgba(255, 42, 42, 0.08);
+  --red-border: rgba(255, 42, 42, 0.4);
 
-  /* Data-visualization ramp */
-  --np-viz-1: #0b5d8a;
-  --np-viz-2: #f0a028;
-  --np-viz-3: #137a5b;
-  --np-viz-4: #7a5aa8;
-  --np-viz-5: #c23b3b;
-  --np-viz-6: #61748c;
+  --gray-900: #121212;
+  --gray-800: #1f1f1f;
+  --gray-700: #2e2e2e;
+  --gray-500: #6b6b6b;
+  --gray-400: #a3a3a3;
+  --gray-300: #d4d4d4;
 
-  /* Layout */
-  --np-radius: 8px;
-  --np-shadow-sm: 0 1px 2px rgba(14, 22, 32, 0.08);
-  --np-shadow-md: 0 4px 12px rgba(14, 22, 32, 0.1);
-  --np-sidebar-width: 240px;
-  --np-font-sans:
-    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --np-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-}
+  --line: rgba(255, 255, 255, 0.1);
+  --line-light: rgba(255, 255, 255, 0.05);
+  --line-strong: rgba(255, 255, 255, 0.2);
 
-/* Dark mode is required for Field, optional for HQ (branding.md §6 rules). */
-:root[data-theme='dark'] {
-  --np-paper: var(--np-slate-900);
-  --np-ink: var(--np-mist-100);
-  --np-plate-600: #3e9bc9;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter',
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Aliases used by existing HQ class names */
+  --np-ink: var(--white);
+  --np-slate-900: var(--bg);
+  --np-slate-700: var(--gray-800);
+  --np-steel-500: var(--gray-500);
+  --np-mist-200: var(--line);
+  --np-mist-100: var(--bg-subtle);
+  --np-paper: var(--bg);
+  --np-plate-600: var(--red);
+  --np-plate-700: var(--red-deep);
+  --np-plate-100: var(--red-subtle);
+  --np-signal-500: var(--red);
+  --np-signal-100: var(--red-subtle);
+  --np-verified-600: var(--white);
+  --np-verified-100: var(--white-08);
+  --np-caution-600: var(--red);
+  --np-fault-600: var(--red);
+  --np-fault-100: var(--red-subtle);
+  --np-offline-500: var(--gray-400);
+  --np-viz-1: var(--red);
+  --np-viz-2: var(--white);
+  --np-viz-3: var(--gray-400);
+  --np-viz-4: var(--gray-700);
+  --np-viz-5: var(--white-40);
+  --np-viz-6: var(--gray-800);
+  --np-radius: 12px;
+  --np-shadow-sm: none;
+  --np-shadow-md: 0 16px 40px rgba(0, 0, 0, 0.45);
+  --np-sidebar-width: 248px;
+  --np-font-sans: var(--font-sans);
+  --np-font-mono: var(--font-mono);
 }

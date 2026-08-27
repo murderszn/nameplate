@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api, type Asset, type Property } from '../api/client';
 
 /**
@@ -7,6 +8,7 @@ import { api, type Asset, type Property } from '../api/client';
  * create form/DTO validation lands.
  */
 export function Properties() {
+  const navigate = useNavigate();
   const columns = ['Name', 'Code', 'City / State', 'Units declared', 'Assets tracked', 'Status'];
 
   const [loading, setLoading] = useState(true);
@@ -46,8 +48,8 @@ export function Properties() {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <p style={{ color: 'var(--np-steel-500)', margin: 0 }}>
+      <div className="np-toolbar">
+        <p className="np-muted">
           {loading ? 'Loading…' : `${properties.length} properties in this portfolio`}
         </p>
         <button className="np-btn">+ Add property</button>
@@ -86,7 +88,11 @@ export function Properties() {
           {!loading &&
             !error &&
             properties.map((p) => (
-              <tr key={p.id}>
+              <tr
+                key={p.id}
+                className="np-row-link"
+                onClick={() => navigate(`/properties/${p.id}`)}
+              >
                 <td>{p.name}</td>
                 <td>{p.code ?? '—'}</td>
                 <td>
@@ -95,7 +101,11 @@ export function Properties() {
                 </td>
                 <td>{p.unitCountDeclared ?? '—'}</td>
                 <td>{assetsByProperty.get(p.id) ?? 0}</td>
-                <td>{p.status}</td>
+                <td>
+                  <span className={`np-badge np-badge--status-${p.status}`}>
+                    {p.status.replaceAll('_', ' ')}
+                  </span>
+                </td>
               </tr>
             ))}
         </tbody>

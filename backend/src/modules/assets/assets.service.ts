@@ -41,12 +41,34 @@ export class AssetsService {
       take: limit,
       ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
       orderBy: { id: 'asc' },
+      include: {
+        category: true,
+        assetModel: true,
+        currentProperty: true,
+        currentUnit: { include: { building: true } },
+      },
     });
   }
 
   async findOne(id: string, orgId: string) {
     const asset = await this.prisma.asset.findFirst({
       where: { id, orgId, deletedAt: null },
+      include: {
+        category: true,
+        assetModel: true,
+        currentProperty: true,
+        currentUnit: { include: { building: true } },
+        serviceEvents: {
+          orderBy: { occurredAt: 'desc' },
+          include: {
+            technician: { include: { user: true } },
+            workOrder: true,
+            partUsages: true,
+          },
+        },
+        partsInstalled: true,
+        partsSourced: true,
+      },
     });
     if (!asset) throw new NotFoundException(`Asset ${id} not found`);
     return asset;

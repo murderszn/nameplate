@@ -7,10 +7,17 @@ export class PartsController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
-  findAll(@Query('source_asset_id') sourceAssetId?: string, @Query('status') status?: string) {
+  findAll(
+    @Query('orgId') orgId?: string,
+    @Query('source_asset_id') sourceAssetId?: string,
+    @Query('installed_in_asset_id') installedInAssetId?: string,
+    @Query('status') status?: string,
+  ) {
     return this.prisma.part.findMany({
       where: {
+        ...(orgId ? { orgId } : {}),
         ...(sourceAssetId ? { sourceAssetId } : {}),
+        ...(installedInAssetId ? { installedInAssetId } : {}),
         ...(status ? { status: status as any } : {}),
         deletedAt: null,
       },
