@@ -85,6 +85,14 @@ code,
   color: var(--white);
 }
 
+.np-sidebar__logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 42, 42, 0.4));
+  flex-shrink: 0;
+}
+
 .np-sidebar__wordmark {
   font-weight: 800;
   font-size: 1.05rem;

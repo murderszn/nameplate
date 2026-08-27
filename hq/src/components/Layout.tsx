@@ -28,7 +28,7 @@ export function Layout() {
     <div className="np-app-shell">
       <aside className="np-sidebar">
         <div className="np-sidebar__brand">
-          <span className="brand-dot" aria-hidden />
+          <img src="./images/nameplate-logo-transparent.png" alt="Nameplate" className="np-sidebar__logo" />
           <div>
             <div className="np-sidebar__wordmark">NAMEPLATE</div>
             <div className="np-sidebar__sub">HQ CONSOLE</div>
