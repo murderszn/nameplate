@@ -177,52 +177,21 @@
         </div>
       </div>
 
-      <!-- Large Featured Schematic Frame -->
-      <div class="schematic-featured-frame">
-        <div class="schematic-image-wrap">
-          <img src="images/schematics/hvac.png" id="featuredSchematicImg" alt="HVAC and Furnace Operational Schematic">
-        </div>
-
-        <div class="schematic-intel-panel">
-          <span class="schematic-intel-tag" id="schIntelTag">HVAC & MECHANICAL · SPEC 01</span>
-          <h3 class="schematic-intel-title" id="schIntelTitle">HVAC (AC & Furnace)</h3>
-          <p class="schematic-intel-desc" id="schIntelDesc">
-            Dual-stage forced-air heating and split condenser system. Tracks refrigerant lines, blower motor amperage, heating element resistance, and thermostat telemetry.
-          </p>
-
-          <div class="critical-parts-list" id="schPartsList">
-            <div class="part-row">
-              <span class="part-dot-red"></span>
-              <div>
-                <strong>Heating Element & Sensors (Red)</strong> — Critical thermal safety control, monitored for burnout cycles.
-              </div>
-            </div>
-            <div class="part-row">
-              <span class="part-dot-red"></span>
-              <div>
-                <strong>Compressor & Thermostat Bus</strong> — High-CapEx failure risk; captures OEM warranty eligibility.
-              </div>
-            </div>
-            <div class="part-row">
-              <span class="part-dot-white"></span>
-              <div>
-                <strong>Blower & Condenser Fan</strong> — Mechanical airflow system logged during semi-annual PM audits.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- ================= LIVE APP SCAN & RECORD SIMULATOR ================= -->
       <div class="app-simulator-container" id="appSimulatorView">
         <div class="sim-chrome-header">
           <div class="sim-status-group">
             <span class="sim-pulse-indicator">FIELD SCAN RESOLVED (0.3s)</span>
             <span class="sim-npid-pill" id="simHeaderNpid">NPID: NP-1M4K9X23</span>
-            <span style="color: var(--gray-500);">OFFLINE FIELD APP · SYNCED</span>
+            <span class="sim-status-verified">ACTIVE · VERIFIED</span>
           </div>
-          <div class="mono" style="font-size: 0.75rem; color: var(--gray-400);">
-            ACTIVE FIELD AUDIT · UNIT 402
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <span class="mono" style="font-size: 0.74rem; color: #888;">
+              ⚡ OFFLINE FIELD APP · SYNCED
+            </span>
+            <a href="hq/index.html#/assets/asset_carrier_58sb0a" class="sim-hq-btn">
+              Inspect in HQ Console ↗
+            </a>
           </div>
         </div>
 
@@ -231,12 +200,12 @@
           <!-- Left Sidebar: Spatial & Physical Profile -->
           <div class="sim-sidebar">
             <div class="sim-asset-schematic-box">
+              <div class="sim-schematic-overlay-tag">
+                <span id="schIntelTag">HVAC // CAD BLUEPRINT</span>
+                <span class="brand-dot"></span>
+              </div>
               <img src="images/schematics/hvac.png" id="simSidebarSchematicImg" alt="Asset Schematic">
-            </div>
-
-            <div class="sim-asset-title-group">
-              <h3 id="simAssetName">Carrier 2.5-Ton Variable Speed Air Handler</h3>
-              <p class="sim-asset-category" id="simAssetCategory">Model: FE4ANF002 · Serial: 4821A90124 (OCR Stamped)</p>
+              <div class="sim-schematic-watermark">100% CAD Scale Precision</div>
             </div>
 
             <div class="sim-meta-stack">
@@ -270,6 +239,15 @@
 
           <!-- Right Content Area: Financials, Lifecycle & Parts Lineage Table -->
           <div class="sim-content-area">
+            <!-- Asset Header -->
+            <div class="sim-asset-title-group">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+                <h3 id="simAssetName">Carrier 2.5-Ton Variable Speed Air Handler</h3>
+                <span class="mono" style="font-size: 0.72rem; color: #888;">COMMISSIONED: 2021-11-05</span>
+              </div>
+              <p class="sim-asset-category" id="simAssetCategory">Model: FE4ANF002 · Serial: 4821A90124 (OCR Stamped) · Carrier HVAC</p>
+            </div>
+
             <!-- Stat Chips Row -->
             <div class="sim-stat-chips">
               <div class="sim-stat-box">
@@ -277,9 +255,9 @@
                 <span class="sim-stat-lbl">Active Operating Age</span>
               </div>
 
-              <div class="sim-stat-box highlight-red">
-                <span class="sim-stat-val red-text" id="simStatWarranty">OEM Active (2031)</span>
-                <span class="sim-stat-lbl">10-Yr Compressor Warranty</span>
+              <div class="sim-stat-box highlight-green">
+                <span class="sim-stat-val green-text" id="simStatWarranty">OEM Active (2031)</span>
+                <span class="sim-stat-lbl" id="simStatWarrantySub">10-Yr Compressor Warranty</span>
               </div>
 
               <div class="sim-stat-box">
@@ -293,13 +271,41 @@
               </div>
             </div>
 
+            <!-- Critical Monitored Failure Points -->
+            <div class="sim-critical-points-wrap">
+              <div class="sim-critical-heading">
+                <span>Monitored Failure Points & Critical Parts</span>
+                <span class="mono" style="font-size: 0.72rem; color: #777;">REAL-TIME TELEMETRY</span>
+              </div>
+              <div class="critical-parts-list" id="schPartsList">
+                <div class="part-row">
+                  <span class="part-dot-red"></span>
+                  <div>
+                    <strong>Heating Element & Sensors</strong> — Critical thermal safety control, monitored for burnout cycles.
+                  </div>
+                </div>
+                <div class="part-row">
+                  <span class="part-dot-red"></span>
+                  <div>
+                    <strong>Compressor & Thermostat Bus</strong> — High-CapEx failure risk; captures OEM warranty eligibility.
+                  </div>
+                </div>
+                <div class="part-row">
+                  <span class="part-dot-white"></span>
+                  <div>
+                    <strong>Blower & Condenser Fan</strong> — Mechanical airflow system logged during semi-annual PM audits.
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Header for Table -->
             <div class="sim-section-header-row">
               <div class="sim-section-title">
                 <span style="color: var(--red);">●</span>
                 <span>Component-Level Service & Parts Lineage Ledger</span>
               </div>
-              <span class="mono" style="font-size: 0.75rem; color: var(--gray-400);">PURCHASED: 2021-10-18 · INSTALLED: 2021-11-05</span>
+              <span class="mono" style="font-size: 0.74rem; color: var(--gray-400);" id="simDateInstalled">PURCHASED: 2021-10-18 · INSTALLED: 2021-11-05</span>
             </div>
 
             <!-- Lineage Table -->
@@ -319,51 +325,8 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- Action Toolbar -->
-            <div class="sim-action-toolbar">
-              <button class="sim-act-btn primary" id="btnSimLogPart">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-                Log Component Swap
-              </button>
-              <button class="sim-act-btn secondary" id="btnSimCheckWarranty">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Verify OEM Warranty
-              </button>
-              <button class="sim-act-btn secondary" id="btnSimGeopinCheck">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-                Verify Unit Geofence
-              </button>
-              <button class="sim-act-btn secondary" id="btnSimExportCsv">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                Export Audit CSV
-              </button>
-            </div>
           </div>
         </div>
-      </div>
-
-      <!-- Trio Grid for Additional Equipment -->
-      <div class="schematic-grid-trio">
-        <div class="schematic-card-mini" data-select-sch="dryer">
-          <img src="images/schematics/dryer.png" alt="Dryer Schematic">
-          <h4>Electric Dryer</h4>
-          <p>Exhaust duct airflow, heating coil, lint barrier, and drum drive motor.</p>
-        </div>
-
-        <div class="schematic-card-mini" data-select-sch="dishwasher">
-          <img src="images/schematics/dishwasher.png" alt="Dishwasher Schematic">
-          <h4>Dishwasher System</h4>
-          <p>Internal heating loop, circulation pump, float switch, and spray arms.</p>
-        </div>
-
-        <div class="schematic-card-mini" data-select-sch="microwave">
-          <img src="images/schematics/microwave.png" alt="Microwave Schematic">
-          <h4>Microwave & Range Hood</h4>
-          <p>Magnetron emission tube, high-voltage control, waveguide, and safety latch.</p>
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -471,108 +434,169 @@
       
       <div class="section-header">
         <h2 class="section-title">Physical location pinned to the room.</h2>
-        <p class="section-sub">Assets are bound to physical blueprints, creating an unbroken audit trail whenever equipment moves.</p>
+        <p class="section-sub">Assets are bound to physical architectural blueprints, creating an unbroken audit trail whenever equipment moves.</p>
       </div>
 
       <div class="blueprint-container">
-        <!-- Blueprint CAD Wireframe -->
+        <!-- Blueprint CAD Wireframe Stage -->
         <div class="blueprint-stage-box">
           <div class="blueprint-header">
-            <span>SCHEMATIC · UNIT 402</span>
-            <span style="color: var(--red);">● TELEMETRY ACTIVE</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="blueprint-title-tag">CAD BLUEPRINT · UNIT 402 (BLDG 4)</span>
+              <span class="mono" style="color: #666; font-size: 0.7rem;">LEVEL 4 · PLAN B2</span>
+            </div>
+            <span class="sim-status-verified">● TELEMETRY ACTIVE (6 PINS LINKED)</span>
           </div>
 
-          <svg viewBox="0 0 760 480" id="cadSvg" role="img" aria-label="Floorplan of Unit 402 with interactive tracked appliances">
-            <!-- Exterior Walls -->
-            <path d="M 30 30 L 730 30 L 730 450 L 30 450 Z" fill="none" stroke="#FFFFFF" stroke-width="2"/>
-            
-            <!-- Interior Partitions -->
-            <path d="M 340 30 L 340 200 L 500 200" fill="none" stroke="#333333" stroke-width="2"/>
-            <path d="M 30 260 L 340 260" fill="none" stroke="#333333" stroke-width="2"/>
-            <path d="M 500 200 L 500 330 L 620 330" fill="none" stroke="#333333" stroke-width="2"/>
-            <path d="M 620 30 L 620 200 L 730 200" fill="none" stroke="#333333" stroke-width="2"/>
-            <path d="M 500 330 L 500 450" fill="none" stroke="#333333" stroke-width="2"/>
+          <svg viewBox="0 0 760 480" id="cadSvg" class="cad-floorplan-svg" role="img" aria-label="Floorplan of Unit 402 with interactive tracked appliances">
+            <defs>
+              <pattern id="cadGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+              </pattern>
+            </defs>
+
+            <!-- Background Grid -->
+            <rect width="760" height="480" fill="#040406" />
+            <rect width="760" height="480" fill="url(#cadGrid)" />
+
+            <!-- Room Zones (Subtle Fills) -->
+            <rect x="35" y="35" width="310" height="225" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.04)" />
+            <rect x="345" y="35" width="280" height="175" fill="rgba(255,42,42,0.02)" stroke="rgba(255,42,42,0.08)" />
+            <rect x="625" y="35" width="100" height="175" fill="rgba(34,197,94,0.02)" stroke="rgba(34,197,94,0.08)" />
+            <rect x="35" y="260" width="470" height="185" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.04)" />
+            <rect x="505" y="210" width="120" height="120" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" />
+            <rect x="505" y="330" width="220" height="115" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.04)" />
+
+            <!-- Exterior Perimeter Walls (Heavy double line) -->
+            <rect x="30" y="30" width="700" height="420" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
+            <rect x="26" y="26" width="708" height="428" fill="none" stroke="#333333" stroke-width="1"/>
+
+            <!-- Interior Partitions (CAD architectural walls) -->
+            <path d="M 345 30 L 345 260 L 30 260" fill="none" stroke="#888888" stroke-width="2"/>
+            <path d="M 625 30 L 625 210 L 505 210 L 505 450" fill="none" stroke="#888888" stroke-width="2"/>
+            <path d="M 505 330 L 730 330" fill="none" stroke="#888888" stroke-width="2"/>
+
+            <!-- Architectural Door Swings -->
+            <path d="M 345 190 A 45 45 0 0 0 390 235" fill="none" stroke="#444444" stroke-dasharray="3,3"/>
+            <line x1="345" y1="190" x2="345" y2="235" stroke="#666666" stroke-width="1.5"/>
+
+            <path d="M 505 240 A 35 35 0 0 1 540 210" fill="none" stroke="#444444" stroke-dasharray="3,3"/>
+            <line x1="505" y1="240" x2="505" y2="210" stroke="#666666" stroke-width="1.5"/>
+
+            <!-- Kitchen Counter & Island Layout -->
+            <rect x="355" y="40" width="260" height="40" fill="#0A0A0E" stroke="#444444" stroke-width="1.5"/>
+            <rect x="390" y="125" width="140" height="50" fill="#0A0A0E" stroke="#333333" stroke-width="1"/>
 
             <!-- Room Annotations -->
-            <text x="170" y="140" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#666666" text-anchor="middle" letter-spacing="0.1em">LIVING / DINING</text>
-            <text x="420" y="100" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#666666" text-anchor="middle" letter-spacing="0.1em">KITCHEN</text>
-            <text x="675" y="100" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#666666" text-anchor="middle" letter-spacing="0.08em">MECH / HVAC</text>
-            <text x="180" y="360" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#666666" text-anchor="middle" letter-spacing="0.1em">PRIMARY BEDROOM</text>
-            <text x="560" y="270" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#666666" text-anchor="middle" letter-spacing="0.08em">LAUNDRY</text>
-            <text x="615" y="400" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#666666" text-anchor="middle" letter-spacing="0.1em">BATH</text>
+            <text x="190" y="145" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#777777" text-anchor="middle" letter-spacing="0.1em">LIVING / DINING</text>
+            <text x="475" y="95" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#AAAAAA" text-anchor="middle" letter-spacing="0.1em">KITCHEN</text>
+            <text x="675" y="95" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="700" fill="#22c55e" text-anchor="middle" letter-spacing="0.08em">MECH / HVAC</text>
+            <text x="270" y="360" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#777777" text-anchor="middle" letter-spacing="0.1em">PRIMARY SUITE</text>
+            <text x="565" y="255" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="700" fill="#888888" text-anchor="middle" letter-spacing="0.08em">LAUNDRY</text>
+            <text x="615" y="395" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#777777" text-anchor="middle" letter-spacing="0.1em">BATH</text>
 
-            <!-- Fixture Outlines -->
-            <rect x="350" y="40" width="250" height="40" fill="none" stroke="#222222" stroke-width="1.5"/>
-
-            <!-- Asset Pins -->
-            <g class="asset-pin is-active" id="pin-fridge" data-key="fridge" transform="translate(560, 60)">
-              <circle class="pin-beacon" r="14" fill="#1A0000" stroke="#FF2A2A" stroke-width="1.5"/>
-              <circle r="5" fill="#FF2A2A"/>
-              <text y="24" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">FRIDGE</text>
+            <!-- Interactive Asset Pins (Clean, Symmetrical, Static CAD Tags) -->
+            <!-- 1. Refrigerator -->
+            <g class="asset-pin is-active" id="pin-fridge" data-key="fridge" transform="translate(565, 75)">
+              <rect class="pin-box" x="-28" y="-14" width="56" height="28" rx="2"/>
+              <circle class="pin-dot" cx="-16" cy="0" r="3.5"/>
+              <text class="pin-text" x="4" y="3.5">FRIDGE</text>
             </g>
 
-            <g class="asset-pin" id="pin-washer" data-key="washer" transform="translate(540, 290)">
-              <circle class="pin-beacon" r="14" fill="#111111" stroke="#444444" stroke-width="1.5"/>
-              <circle r="5" fill="#FFFFFF"/>
-              <text y="24" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="600" fill="#AAAAAA" text-anchor="middle">WASHER</text>
+            <!-- 2. Dishwasher -->
+            <g class="asset-pin" id="pin-dw" data-key="dishwasher" transform="translate(425, 75)">
+              <rect class="pin-box" x="-38" y="-14" width="76" height="28" rx="2"/>
+              <circle class="pin-dot" cx="-24" cy="0" r="3.5"/>
+              <text class="pin-text" x="6" y="3.5">DISHWASHER</text>
             </g>
 
-            <g class="asset-pin" id="pin-dryer" data-key="dryer" transform="translate(585, 290)">
-              <circle class="pin-beacon" r="14" fill="#111111" stroke="#444444" stroke-width="1.5"/>
-              <circle r="5" fill="#FFFFFF"/>
-              <text y="24" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="600" fill="#AAAAAA" text-anchor="middle">DRYER</text>
+            <!-- 3. Washer -->
+            <g class="asset-pin" id="pin-washer" data-key="washer" transform="translate(535, 275)">
+              <rect class="pin-box" x="-28" y="-14" width="56" height="28" rx="2"/>
+              <circle class="pin-dot" cx="-16" cy="0" r="3.5"/>
+              <text class="pin-text" x="4" y="3.5">WASHER</text>
             </g>
 
-            <g class="asset-pin" id="pin-dw" data-key="dw" transform="translate(480, 60)">
-              <circle class="pin-beacon" r="14" fill="#111111" stroke="#444444" stroke-width="1.5"/>
-              <circle r="5" fill="#FFFFFF"/>
-              <text y="24" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="600" fill="#AAAAAA" text-anchor="middle">DISHWASHER</text>
+            <!-- 4. Dryer -->
+            <g class="asset-pin" id="pin-dryer" data-key="dryer" transform="translate(595, 275)">
+              <rect class="pin-box" x="-26" y="-14" width="52" height="28" rx="2"/>
+              <circle class="pin-dot" cx="-14" cy="0" r="3.5"/>
+              <text class="pin-text" x="4" y="3.5">DRYER</text>
             </g>
 
-            <g class="asset-pin" id="pin-hvac" data-key="hvac" transform="translate(675, 60)">
-              <circle class="pin-beacon" r="14" fill="#111111" stroke="#FF2A2A" stroke-width="1.5"/>
-              <circle r="5" fill="#FF2A2A"/>
-              <text y="24" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="600" fill="#FF2A2A" text-anchor="middle">HVAC</text>
+            <!-- 5. HVAC -->
+            <g class="asset-pin" id="pin-hvac" data-key="hvac" transform="translate(675, 75)">
+              <rect class="pin-box" x="-24" y="-14" width="48" height="28" rx="2"/>
+              <circle class="pin-dot" cx="-12" cy="0" r="3.5"/>
+              <text class="pin-text" x="4" y="3.5">HVAC</text>
             </g>
 
-            <g class="asset-pin" id="pin-wh" data-key="wh" transform="translate(675, 150)">
-              <circle class="pin-beacon" r="14" fill="#111111" stroke="#444444" stroke-width="1.5"/>
-              <circle r="5" fill="#FFFFFF"/>
-              <text y="24" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="600" fill="#AAAAAA" text-anchor="middle">WATER HTR</text>
+            <!-- 6. Water Heater -->
+            <g class="asset-pin" id="pin-wh" data-key="wh" transform="translate(675, 145)">
+              <rect class="pin-box" x="-36" y="-14" width="72" height="28" rx="2"/>
+              <circle class="pin-dot" cx="-24" cy="0" r="3.5"/>
+              <text class="pin-text" x="6" y="3.5">WATER HTR</text>
             </g>
           </svg>
         </div>
 
         <!-- Telemetry HUD -->
         <div class="asset-telemetry-hud" id="telemetryHud">
-          <img src="images/schematics/fridge.png" id="hudSchematicImg" class="hud-schematic-thumb" alt="Asset Schematic Thumbnail">
-          <span class="hud-tag" id="hudLocation">KITCHEN · UNIT 402</span>
-          <h3 class="hud-title" id="hudName">French Door Refrigerator</h3>
+          <div class="hud-schematic-wrap">
+            <div class="hud-schematic-header">
+              <span id="hudSchematicTag">SCHEMATIC // CAD BLUEPRINT</span>
+              <span class="mono" style="font-size: 0.65rem; color: #22c55e;">● IN-ROOM ±1.2m</span>
+            </div>
+            <img src="images/schematics/fridge.png" id="hudSchematicImg" class="hud-schematic-thumb" alt="Asset Schematic Thumbnail">
+          </div>
+
+          <div style="margin-top: 14px;">
+            <div class="hud-tag" id="hudLocation">📍 KITCHEN · UNIT 402 · BLDG 4</div>
+            <h3 class="hud-title" id="hudName">French Door Refrigerator</h3>
+          </div>
 
           <div class="hud-grid">
-            <div>
-              <div class="hud-cell-label">NPID Identifier</div>
-              <div class="hud-cell-val" id="hudNpid">NP-7K2M4QX9</div>
+            <div class="hud-cell">
+              <div class="hud-cell-label">NPID Tag Identifier</div>
+              <div class="hud-cell-val mono" id="hudNpid">NP-7K2M4QX9</div>
             </div>
-            <div>
-              <div class="hud-cell-label">Status / Telemetry</div>
-              <div class="hud-cell-val" style="color: var(--white);" id="hudStatus">● Verified Present</div>
+            <div class="hud-cell">
+              <div class="hud-cell-label">Spatial Telemetry</div>
+              <div class="hud-cell-val" style="color: #22c55e;" id="hudStatus">● Verified Present</div>
             </div>
-            <div>
-              <div class="hud-cell-label">Lifecycle Status</div>
-              <div class="hud-cell-val" id="hudAge">Warranty Active · Healthy</div>
+            <div class="hud-cell">
+              <div class="hud-cell-label">Operating Lifecycle</div>
+              <div class="hud-cell-val" id="hudAge">4.2 Yrs · Active</div>
             </div>
-            <div>
-              <div class="hud-cell-label">CapEx Planning</div>
-              <div class="hud-cell-val" id="hudCost">Covered Under Warranty</div>
+            <div class="hud-cell">
+              <div class="hud-cell-label">Warranty / CapEx</div>
+              <div class="hud-cell-val" id="hudCost">OEM Active (2029)</div>
             </div>
           </div>
 
-          <div class="hud-timeline" id="hudTimeline">
+          <div class="hud-timeline-box" id="hudTimeline">
             <div class="hud-cell-label" style="margin-bottom: 8px;">Audit & Service Trail</div>
-            <p><strong>Defrost Thermostat Replaced</strong> · Part Warranty Logged</p>
-            <p><strong>Move-in Audit Confirmed</strong> · Physically Verified in Unit</p>
-            <p><strong>NPID Hardware Affixed</strong> · Initial Property Onboarding</p>
+            <div class="hud-timeline-item">
+              <span class="hud-dot">●</span>
+              <div>
+                <strong>Defrost Thermostat Replaced</strong>
+                <div class="hud-timeline-sub">WO-0891 · Part Warranty Logged (Tech J. Morales)</div>
+              </div>
+            </div>
+            <div class="hud-timeline-item">
+              <span class="hud-dot">●</span>
+              <div>
+                <strong>Move-In Audit Confirmed</strong>
+                <div class="hud-timeline-sub">RFID Scan Verified · Physically bound to Unit 402</div>
+              </div>
+            </div>
+            <div class="hud-timeline-item">
+              <span class="hud-dot">●</span>
+              <div>
+                <strong>NPID Hardware Affixed</strong>
+                <div class="hud-timeline-sub">Initial Property Commissioning & Tag Registration</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

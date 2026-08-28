@@ -192,7 +192,7 @@ a {
   align-items: center;
   gap: 8px;
   padding: 10px 22px;
-  border-radius: 9999px;
+  border-radius: 2px;
   background: var(--white);
   color: var(--bg);
   font-size: 0.88rem;
@@ -211,10 +211,10 @@ a {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 16px 32px;
-  border-radius: 9999px;
+  padding: 14px 28px;
+  border-radius: 2px;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: all 0.2s var(--ease);
   cursor: pointer;
   border: 1px solid transparent;
@@ -606,7 +606,7 @@ a {
 
 .schematic-tab-btn {
   padding: 8px 16px;
-  border-radius: 9999px;
+  border-radius: 2px;
   background: var(--bg-card);
   border: 1px solid var(--line);
   color: var(--gray-400);
@@ -633,7 +633,7 @@ a {
   gap: 36px;
   background: var(--bg-subtle);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 2px;
   padding: 32px;
   align-items: center;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
@@ -642,7 +642,7 @@ a {
 .schematic-image-wrap {
   background: #000000;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 2px;
   padding: 16px;
   position: relative;
   display: flex;
@@ -899,113 +899,221 @@ a {
   color: var(--gray-700);
 }
 
-/* ================= Blueprint ================= */
+/* ================= Blueprint & Spatial Telemetry ================= */
 .blueprint-container {
-  margin-top: 48px;
+  margin-top: 36px;
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
   align-items: start;
 }
 
+@media (max-width: 950px) {
+  .blueprint-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 .blueprint-stage-box {
-  background: #050505;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 28px;
+  background: #060608;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  padding: 20px;
   position: relative;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
 }
 
 .blueprint-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.blueprint-title-tag {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--gray-500);
-  letter-spacing: 0.08em;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.cad-floorplan-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
 }
 
 .asset-pin {
   cursor: pointer;
-  transition: transform 0.2s var(--ease);
-}
-.asset-pin:hover, .asset-pin.is-active {
-  transform: scale(1.15);
 }
 
-.asset-pin.is-active circle.pin-beacon {
+.asset-pin .pin-box {
+  fill: #0d0d10;
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1.2px;
+  transition: fill 0.15s ease, stroke 0.15s ease;
+}
+
+.asset-pin .pin-dot {
+  fill: #888888;
+  transition: fill 0.15s ease;
+}
+
+.asset-pin .pin-text {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  fill: #aaaaaa;
+  text-anchor: middle;
+  letter-spacing: 0.04em;
+  transition: fill 0.15s ease;
+}
+
+.asset-pin:hover .pin-box {
+  fill: #16161a;
+  stroke: rgba(255, 255, 255, 0.4);
+}
+
+.asset-pin:hover .pin-dot,
+.asset-pin:hover .pin-text {
+  fill: #ffffff;
+}
+
+.asset-pin.is-active .pin-box {
+  fill: #1a0404;
+  stroke: var(--red);
+  stroke-width: 1.5px;
+}
+
+.asset-pin.is-active .pin-dot {
   fill: var(--red);
-  stroke: var(--white);
-  stroke-width: 2px;
 }
 
+.asset-pin.is-active .pin-text {
+  fill: #ffffff;
+  font-weight: 800;
+}
+
+/* Spatial Telemetry HUD Card */
 .asset-telemetry-hud {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 24px;
-  background: var(--bg-subtle);
-  position: sticky;
-  top: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  padding: 20px;
+  background: #080808;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+}
+
+.hud-schematic-wrap {
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, transparent 70%), #040404;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 12px;
+  position: relative;
+}
+
+.hud-schematic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: #888;
 }
 
 .hud-schematic-thumb {
   width: 100%;
-  height: 140px;
+  height: 120px;
   object-fit: contain;
-  background: #000000;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  margin-bottom: 16px;
-  padding: 6px;
+  filter: contrast(1.08) drop-shadow(0 0 12px rgba(0, 0, 0, 0.8));
+  display: block;
 }
 
 .hud-tag {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--red);
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  color: #888;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
+  font-weight: 700;
 }
 
 .hud-title {
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   color: var(--white);
-  margin: 4px 0 16px;
+  margin: 4px 0 14px;
 }
 
 .hud-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-cell {
+  background: #0e0e0e;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  padding: 8px 10px;
 }
 
 .hud-cell-label {
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   color: var(--gray-500);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 3px;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  margin-bottom: 2px;
 }
 
 .hud-cell-val {
   font-family: var(--font-mono);
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 700;
   color: var(--white);
 }
 
-.hud-timeline p {
-  font-size: 0.82rem;
-  color: var(--gray-400);
-  margin-bottom: 6px;
-  line-height: 1.4;
+.hud-timeline-box {
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  padding: 12px 14px;
+}
+
+.hud-timeline-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  color: #ddd;
+}
+
+.hud-timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.hud-dot {
+  color: var(--red);
+  font-size: 0.68rem;
+  margin-top: 2px;
+}
+
+.hud-timeline-sub {
+  font-size: 0.72rem;
+  color: #777;
+  font-family: var(--font-mono);
+  margin-top: 1px;
 }
 
 /* ================= Architecture ================= */
@@ -1151,33 +1259,33 @@ a {
 
 /* ================= LIVE ASSET RECORD / APP SIMULATOR ================= */
 .app-simulator-container {
-  margin-top: 56px;
-  background: #050505;
-  border: 1px solid var(--line-strong);
-  border-radius: 16px;
+  margin-top: 36px;
+  background: #080808;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 42, 42, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
   position: relative;
 }
 
 /* Simulator Chrome / Device Topbar */
 .sim-chrome-header {
-  background: #0A0A0A;
-  border-bottom: 1px solid var(--line);
-  padding: 14px 24px;
+  background: #0c0c0c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 12px;
 }
 
 .sim-status-group {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
 }
 
 .sim-pulse-indicator {
@@ -1185,55 +1293,96 @@ a {
   align-items: center;
   gap: 6px;
   color: var(--white);
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .sim-pulse-indicator::before {
   content: "";
   width: 7px;
   height: 7px;
-  border-radius: 50%;
+  border-radius: 1px;
   background: var(--red);
   box-shadow: 0 0 8px var(--red);
 }
 
 .sim-npid-pill {
-  padding: 3px 10px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 2px;
   background: rgba(255, 42, 42, 0.12);
-  border: 1px solid var(--red-border);
+  border: 1px solid rgba(255, 42, 42, 0.35);
   color: var(--red);
+  font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.sim-status-verified {
+  padding: 2px 8px;
+  border-radius: 2px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #22c55e;
   font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+.sim-hq-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  padding: 4px 10px;
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.sim-hq-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 /* Simulator Main Workspace */
 .sim-workspace {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: 340px minmax(0, 1fr);
   width: 100%;
   box-sizing: border-box;
   min-height: 520px;
 }
 
+@media (max-width: 950px) {
+  .sim-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Left Sidebar: Asset ID & Spatial Profile */
 .sim-sidebar {
-  background: #080808;
-  border-right: 1px solid var(--line);
-  padding: 22px;
+  background: #090909;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   min-width: 0;
   box-sizing: border-box;
 }
 
 .sim-asset-schematic-box {
   width: 100%;
-  height: 160px;
-  background: #000000;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px;
+  height: 180px;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04) 0%, transparent 70%), #040404;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1241,11 +1390,41 @@ a {
   overflow: hidden;
 }
 
+.sim-schematic-overlay-tag {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #888;
+}
+
+.sim-schematic-watermark {
+  position: absolute;
+  bottom: 6px;
+  right: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: #555;
+  letter-spacing: 0.04em;
+}
+
 .sim-asset-schematic-box img {
-  width: 100%;
-  height: 100%;
+  max-width: 85%;
+  max-height: 130px;
   object-fit: contain;
-  filter: contrast(1.05);
+  filter: contrast(1.08) drop-shadow(0 0 16px rgba(0, 0, 0, 0.8));
+  transition: transform 0.2s ease;
+}
+
+.sim-asset-schematic-box:hover img {
+  transform: scale(1.04);
 }
 
 .sim-asset-title-group h3 {
@@ -1254,97 +1433,91 @@ a {
   letter-spacing: -0.02em;
   color: var(--white);
   margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .sim-asset-category {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   color: var(--gray-400);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: 0.02em;
 }
 
 .sim-meta-stack {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 16px;
 }
 
 .sim-meta-row {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .sim-meta-lbl {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: var(--gray-500);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 2px;
+  font-weight: 700;
 }
 
 .sim-meta-val {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--white);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .sim-geopin-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--red);
+  color: #22c55e;
   font-size: 0.7rem;
   font-family: var(--font-mono);
-  margin-top: 4px;
-  white-space: nowrap;
+  margin-top: 3px;
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  padding: 2px 6px;
+  border-radius: 2px;
+  width: fit-content;
 }
 
-/* Right Content Area: Multi-tab Telemetry & Lineage */
+/* Right Content Area */
 .sim-content-area {
-  padding: 24px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  background: #050505;
+  gap: 18px;
+  background: #060606;
   min-width: 0;
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .sim-section-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 10px;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 4px;
 }
 
 .sim-section-title {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  font-size: 0.88rem;
+  font-weight: 700;
   color: var(--white);
   display: flex;
   align-items: center;
   gap: 8px;
-  white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
 .sim-stat-chips {
@@ -1355,55 +1528,73 @@ a {
   box-sizing: border-box;
 }
 
+@media (max-width: 680px) {
+  .sim-stat-chips {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .sim-stat-box {
-  background: #0E0E0E;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: #0f0f0f;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
   min-width: 0;
   box-sizing: border-box;
+  gap: 3px;
 }
 
-.sim-stat-box.highlight-red {
-  border-color: var(--red-border);
-  background: rgba(255, 42, 42, 0.04);
+.sim-stat-box.highlight-green {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.05);
 }
 
 .sim-stat-val {
   font-family: var(--font-mono);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 800;
   color: var(--white);
   line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.sim-stat-val.red-text {
-  color: var(--red);
+.sim-stat-val.green-text {
+  color: #22c55e;
 }
 
 .sim-stat-lbl {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: var(--gray-500);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-top: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: 0.05em;
+}
+
+/* Critical Monitored Failure Points */
+.sim-critical-points-wrap {
+  background: #0b0b0b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  padding: 14px 16px;
+}
+
+.sim-critical-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 /* Component-Level Lineage Feed Table */
 .sim-lineage-table-wrap {
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  background: #0A0A0A;
+  background: #090909;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -1417,16 +1608,16 @@ a {
 
 .sim-lineage-table th,
 .sim-lineage-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.82rem;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.8rem;
   white-space: nowrap;
 }
 
 .sim-lineage-table th {
   background: #111111;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--gray-400);
@@ -1441,11 +1632,12 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 2px;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .sim-part-badge.warranty-covered {
@@ -1456,7 +1648,7 @@ a {
 
 .sim-part-badge.standard-service {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--white);
 }
 
