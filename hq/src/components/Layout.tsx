@@ -1,4 +1,5 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', index: '00' },
@@ -16,6 +17,8 @@ const PAGE: Record<string, { title: string; kicker: string }> = {
 
 export function Layout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [query, setQuery] = useState('');
   const page = location.pathname.includes('/units/')
     ? { title: 'Unit Record', kicker: '01 / Location' }
     : location.pathname.startsWith('/properties/')
@@ -47,6 +50,12 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
+        <div className="np-sidebar__section-label">Workspace</div>
+        <nav className="np-nav np-nav--secondary">
+          <NavLink to="/properties"><span className="np-nav__index">↳</span>Portfolio drilldown</NavLink>
+          <NavLink to="/assets"><span className="np-nav__index">⌕</span>Scan / lookup</NavLink>
+          <NavLink to="/work-orders"><span className="np-nav__index">+</span>Dispatch queue</NavLink>
+        </nav>
         <div className="np-sidebar__footer" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <a
             href="../"
@@ -75,7 +84,12 @@ export function Layout() {
             <div className="np-kicker">{page.kicker}</div>
             <h1 className="np-topbar__title">{page.title}</h1>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="np-topbar__actions">
+            <form className="np-command-search" onSubmit={(event) => { event.preventDefault(); if (query.trim()) navigate(`/assets?search=${encodeURIComponent(query.trim())}`); }}>
+              <span aria-hidden="true">⌕</span>
+              <input aria-label="Global search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search NPID, property, WO…" />
+              <kbd>⌘ K</kbd>
+            </form>
             <a
               href="../"
               className="np-badge"
