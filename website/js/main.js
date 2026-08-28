@@ -217,6 +217,36 @@
       lineage: [
         { date: '2024-07-15', part: 'Initial Tag Affixed & Range Hood Paired', oem: 'NPID-SYSTEM', tech: 'Tech J. Morales', status: 'Commissioned', statusClass: 'standard-service' }
       ]
+    },
+    wh: {
+      key: 'wh',
+      title: 'Rheem Performance Platinum 50-Gal Hybrid Water Heater',
+      shortTitle: 'Water Heater',
+      category: 'Model: PROPH50 · Serial: RH88201941 (OCR Stamped)',
+      tag: 'PLUMBING & HEATING · SPEC 08',
+      npid: 'NP-8K3M9P11',
+      img: 'images/schematics/hvac.png',
+      desc: 'High-efficiency heat pump water heating unit. Tracks upper/lower titanium heating elements, sacrificial anode rod depletion, TPR relief valve, and ambient heat pump compressor.',
+      owner: 'Sonoran Portfolio Partners LLC · Fund IV',
+      property: 'Sonoran Ridge Residences — Building 4',
+      room: 'Unit 402 · Mech / Utility Closet',
+      address: '4820 E Camelback Rd, Phoenix, AZ 85018',
+      gps: '33.5092° N, 111.9783° W',
+      dates: 'PURCHASED: 2023-01-14 · INSTALLED: 2023-01-20',
+      age: '3.6 Yrs',
+      warranty: 'OEM Active (2033)',
+      warrantySub: '10-Yr Tank & Parts Warranty',
+      cost: '$1,650.00',
+      spend: '$0.00 (0.0%)',
+      parts: [
+        { type: 'red', text: '<strong>Upper/Lower Titanium Heating Elements (Red)</strong> — Dual dry-fire protected thermal resistors.' },
+        { type: 'white', text: '<strong>Sacrificial Magnesium Anode Rod</strong> — Corrosion barrier inspected during annual turn audit.' },
+        { type: 'white', text: '<strong>Temperature & Pressure Relief Valve</strong> — Safety pressure discharge rated to 150 PSI.' }
+      ],
+      lineage: [
+        { date: '2025-06-18', part: 'Anode Rod Depletion Inspection (92% Life)', oem: 'RH-ANODE-MG', tech: 'Tech J. Morales · WO-0740', status: 'PM Passed', statusClass: 'warranty-covered' },
+        { date: '2023-01-20', part: 'Initial Tag Affixed & Pressure Test Certified', oem: 'NPID-SYSTEM', tech: 'Commissioning Team', status: 'Commissioned', statusClass: 'standard-service' }
+      ]
     }
   };
 
@@ -284,13 +314,17 @@
     // 3. Stat Chips
     var statAge = document.getElementById('simStatAge');
     var statWarr = document.getElementById('simStatWarranty');
+    var statWarrSub = document.getElementById('simStatWarrantySub');
     var statCost = document.getElementById('simStatCost');
     var statSpend = document.getElementById('simStatSpend');
+    var dateInst = document.getElementById('simDateInstalled');
 
     if (statAge) statAge.textContent = data.age;
     if (statWarr) statWarr.textContent = data.warranty;
+    if (statWarrSub) statWarrSub.textContent = data.warrantySub || 'OEM Warranty Status';
     if (statCost) statCost.textContent = data.cost;
     if (statSpend) statSpend.textContent = data.spend;
+    if (dateInst) dateInst.textContent = data.dates;
 
     // 4. Lineage Table Rows
     var tableBody = document.getElementById('simLineageTableBody');
@@ -337,77 +371,7 @@
     });
   }
 
-  // ================= 4. Simulator Interactive Actions =================
-  function initSimulatorActions() {
-    var btnLog = document.getElementById('btnSimLogPart');
-    var btnWarr = document.getElementById('btnSimCheckWarranty');
-    var btnGeo = document.getElementById('btnSimGeopinCheck');
-    var btnCsv = document.getElementById('btnSimExportCsv');
 
-    if (btnLog) {
-      btnLog.addEventListener('click', function () {
-        var tableBody = document.getElementById('simLineageTableBody');
-        if (!tableBody) return;
-        var today = new Date().toISOString().split('T')[0];
-        var newRow = '<tr>' +
-          '<td class="mono" style="color: var(--red); font-weight:700;">' + today + ' (NEW)</td>' +
-          '<td><strong>Diagnostic Sensor Sweep & Component Inspection</strong></td>' +
-          '<td class="mono" style="color: var(--gray-400);">DIAG-NPID-PASS</td>' +
-          '<td>Tech On-Site (Active Session)</td>' +
-          '<td><span class="sim-part-badge warranty-covered">Field Verified</span></td>' +
-          '</tr>';
-        tableBody.insertAdjacentHTML('afterbegin', newRow);
-
-        btnLog.textContent = '✓ Service Logged to Chain';
-        btnLog.style.background = '#FFFFFF';
-        btnLog.style.color = '#000000';
-        setTimeout(function () {
-          btnLog.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Log Component Swap';
-          btnLog.style.background = '';
-          btnLog.style.color = '';
-        }, 2200);
-      });
-    }
-
-    if (btnWarr) {
-      btnWarr.addEventListener('click', function () {
-        var rec = ASSET_RECORDS[currentActiveKey];
-        var origText = btnWarr.innerHTML;
-        btnWarr.innerHTML = '✓ ' + (rec ? rec.warrantySub : 'OEM Warranty Active');
-        btnWarr.style.borderColor = '#4ADE80';
-        btnWarr.style.color = '#4ADE80';
-        setTimeout(function () {
-          btnWarr.innerHTML = origText;
-          btnWarr.style.borderColor = '';
-          btnWarr.style.color = '';
-        }, 2500);
-      });
-    }
-
-    if (btnGeo) {
-      btnGeo.addEventListener('click', function () {
-        var badge = document.getElementById('simGpsBadge');
-        if (badge) {
-          badge.textContent = '● Pinging Spatial GPS Geofence...';
-          badge.style.color = '#FFFFFF';
-          setTimeout(function () {
-            badge.textContent = '✓ Geofence Verified: 0.2m Accuracy (In Unit 402)';
-            badge.style.color = '#4ADE80';
-          }, 600);
-        }
-      });
-    }
-
-    if (btnCsv) {
-      btnCsv.addEventListener('click', function () {
-        var origText = btnCsv.innerHTML;
-        btnCsv.innerHTML = '✓ Audit CSV Generated';
-        setTimeout(function () {
-          btnCsv.innerHTML = origText;
-        }, 2000);
-      });
-    }
-  }
 
   // ================= 5. Oversized QR Generator Studio =================
   function generateBase32Npid() {
@@ -499,6 +463,7 @@
     var hudCost = document.getElementById('hudCost');
     var hudTimeline = document.getElementById('hudTimeline');
     var hudImg = document.getElementById('hudSchematicImg');
+    var hudTag = document.getElementById('hudSchematicTag');
 
     function selectPin(key) {
       var data = ASSET_RECORDS[key];
@@ -512,18 +477,25 @@
         }
       });
 
-      if (hudLoc) hudLoc.textContent = data.room;
+      if (hudLoc) hudLoc.textContent = '📍 ' + (data.room || 'UNIT 402');
       if (hudName) hudName.textContent = data.title;
       if (hudNpid) hudNpid.textContent = data.npid;
       if (hudStatus) hudStatus.textContent = '● Verified Present';
-      if (hudAge) hudAge.textContent = data.age;
+      if (hudAge) hudAge.textContent = data.age + ' · Active';
       if (hudCost) hudCost.textContent = data.warranty;
       if (hudImg) hudImg.src = data.img;
+      if (hudTag) hudTag.textContent = (data.shortTitle || 'APPLIANCE').toUpperCase() + ' // CAD BLUEPRINT';
 
       if (hudTimeline) {
         var html = '<div class="hud-cell-label" style="margin-bottom: 8px;">Audit & Service Trail</div>';
         data.lineage.forEach(function (t) {
-          html += '<p><strong>' + t.part + '</strong> · ' + t.date + '</p>';
+          html += '<div class="hud-timeline-item">' +
+            '<span class="hud-dot">●</span>' +
+            '<div>' +
+              '<strong>' + t.part + '</strong>' +
+              '<div class="hud-timeline-sub">' + (t.tech || 'Audit Team') + ' · ' + t.date + '</div>' +
+            '</div>' +
+          '</div>';
         });
         hudTimeline.innerHTML = html;
       }
@@ -558,7 +530,6 @@
       initHeader();
       initOversizedQrStudio();
       initSchematicsViewer();
-      initSimulatorActions();
       initBlueprint();
       renderLiveAppRecord('hvac');
     });
@@ -566,7 +537,6 @@
     initHeader();
     initOversizedQrStudio();
     initSchematicsViewer();
-    initSimulatorActions();
     initBlueprint();
     renderLiveAppRecord('hvac');
   }

@@ -7,6 +7,9 @@ import { UnitDetail } from './routes/UnitDetail';
 import { Assets } from './routes/Assets';
 import { AssetDetail } from './routes/AssetDetail';
 import { WorkOrders } from './routes/WorkOrders';
+import { Analytics } from './routes/Analytics';
+import { SyncOperations } from './routes/SyncOperations';
+import { Settings } from './routes/Settings';
 
 /**
  * Nameplate HQ — route tree with HashRouter for universal static hosting.
@@ -23,6 +26,9 @@ function App() {
           <Route path="/assets" element={<Assets />} />
           <Route path="/assets/:id" element={<AssetDetail />} />
           <Route path="/work-orders" element={<WorkOrders />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/sync" element={<SyncOperations />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </HashRouter>

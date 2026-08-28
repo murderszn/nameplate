@@ -5,27 +5,70 @@ import '../../models/asset.dart';
 import '../../models/service_event.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_brand.dart';
+import '../../widgets/responsive_layout.dart';
 import '../service/log_service_event_screen.dart';
 import 'flag_missing_broken_screen.dart';
 
 /// Asset detail: header (category/model/age/status/location/last serviced),
 /// unified history timeline, and actions (log service, move, flag issue,
 /// report missing) — v0-scope.md §1.1 "Asset detail".
-///
-/// TODO(data): read Asset + ServiceEvent history from the local Drift
-/// mirror only (architecture.md §4.1) — this screen must render identically
-/// online or offline. TODO(history): also merge in location moves and work
-/// orders into one reverse-chronological timeline (v0-scope.md §1.1);
-/// currently only service events are shown.
+/// Optimized for 11" tablets (Fire Max 11 etc.) with a 2-column inspection dashboard.
 class AssetDetailScreen extends ConsumerWidget {
   final String assetId;
 
   const AssetDetailScreen({super.key, required this.assetId});
 
+  Widget _buildHistorySection(BuildContext context, WidgetRef ref, Asset asset) {
+    final eventRepo = ref.watch(serviceEventRepositoryProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const NpKicker('02 / Ledger'),
+            const SizedBox(height: 10),
+            Text(
+              'Service & Lineage History',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            FutureBuilder<List<ServiceEvent>>(
+              future: eventRepo.historyForAsset(asset.id),
+              builder: (context, historySnap) {
+                final events = historySnap.data ?? [];
+                if (events.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(
+                      child: Text(
+                        'No service events recorded yet.',
+                        style: TextStyle(color: NpColors.steel500),
+                      ),
+                    ),
+                  );
+                }
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: events.length,
+                  separatorBuilder: (_, _) => const Divider(height: 16),
+                  itemBuilder: (context, i) => _HistoryTile(event: events[i]),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final assetRepo = ref.watch(assetRepositoryProvider);
-    final eventRepo = ref.watch(serviceEventRepositoryProvider);
+    final isTablet = context.isTablet;
 
     return FutureBuilder<Asset?>(
       future: assetRepo.getById(assetId),
@@ -39,33 +82,49 @@ class AssetDetailScreen extends ConsumerWidget {
         }
 
         return Scaffold(
-          appBar: AppBar(title: Text(asset.npid)),
-          body: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _Header(asset: asset),
-              const SizedBox(height: 16),
-              _ActionsRow(asset: asset),
-              const SizedBox(height: 24),
-              Text('History', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              FutureBuilder<List<ServiceEvent>>(
-                future: eventRepo.historyForAsset(asset.id),
-                builder: (context, historySnap) {
-                  final events = historySnap.data ?? [];
-                  if (events.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Text('No service events yet.'),
-                    );
-                  }
-                  return Column(
-                    children: events.map((e) => _HistoryTile(event: e)).toList(),
-                  );
-                },
-              ),
-            ],
+          appBar: NpBrandAppBar(
+            kicker: '02 / Plate',
+            title: asset.npid,
           ),
+          body: isTablet
+              ? Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _Header(asset: asset),
+                              const SizedBox(height: 16),
+                              _ActionsRow(asset: asset),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        flex: 6,
+                        child: SingleChildScrollView(
+                          child: _buildHistorySection(context, ref, asset),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    _Header(asset: asset),
+                    const SizedBox(height: 16),
+                    _ActionsRow(asset: asset),
+                    const SizedBox(height: 20),
+                    _buildHistorySection(context, ref, asset),
+                  ],
+                ),
         );
       },
     );
@@ -95,6 +154,18 @@ class _Header extends StatelessWidget {
                 _StatusChip(status: asset.status),
               ],
             ),
+            if (NpAssets.schematicFor(asset.categoryDisplayName) != null) ...[
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  NpAssets.schematicFor(asset.categoryDisplayName)!,
+                  height: 140,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
             const SizedBox(height: 4),
             Text(asset.categoryDisplayName, style: Theme.of(context).textTheme.bodyMedium),
             const Divider(height: 24),
@@ -149,22 +220,18 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (label, color, bg) = switch (status) {
-      AssetStatus.active => ('Active', NpColors.verified600, NpColors.verified100),
-      AssetStatus.needsRepair => ('Needs repair', NpColors.caution600, NpColors.signal100),
-      AssetStatus.awaitingParts => ('Awaiting parts', NpColors.caution600, NpColors.signal100),
-      AssetStatus.inRepair => ('In repair', NpColors.caution600, NpColors.signal100),
-      AssetStatus.inStorage => ('In storage', NpColors.steel500, NpColors.mist100),
-      AssetStatus.unaccountedFor => ('Unaccounted for', NpColors.fault600, NpColors.fault100),
-      AssetStatus.retired => ('Retired', NpColors.steel500, NpColors.mist100),
-      AssetStatus.disposed => ('Disposed', NpColors.steel500, NpColors.mist100),
-      AssetStatus.salvage => ('Salvage', NpColors.steel500, NpColors.mist100),
+    final (label, tone) = switch (status) {
+      AssetStatus.active => ('Active', NpPillTone.verified),
+      AssetStatus.needsRepair => ('Needs repair', NpPillTone.caution),
+      AssetStatus.awaitingParts => ('Awaiting parts', NpPillTone.caution),
+      AssetStatus.inRepair => ('In repair', NpPillTone.caution),
+      AssetStatus.inStorage => ('In storage', NpPillTone.neutral),
+      AssetStatus.unaccountedFor => ('Unaccounted for', NpPillTone.fault),
+      AssetStatus.retired => ('Retired', NpPillTone.neutral),
+      AssetStatus.disposed => ('Disposed', NpPillTone.neutral),
+      AssetStatus.salvage => ('Salvage', NpPillTone.neutral),
     };
-    return Chip(
-      label: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-      backgroundColor: bg,
-      side: BorderSide.none,
-    );
+    return NpStatusPill(label: label, tone: tone);
   }
 }
 

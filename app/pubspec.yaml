@@ -37,6 +37,8 @@ dependencies:
 
   # State management (per architecture.md §6 repo layout: "Riverpod (state)").
   flutter_riverpod: ^2.6.1
+  qr_flutter: ^4.1.0
+  crypto: ^3.0.6
 
   # Planned for the real sync engine (architecture.md §4) — not wired up yet in this scaffold.
   # drift: ^2.20.0
@@ -66,6 +68,16 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/images/nameplate-logo-transparent.png
+    - assets/images/schematics/fridge.png
+    - assets/images/schematics/washer.png
+    - assets/images/schematics/dryer.png
+    - assets/images/schematics/hvac.png
+    - assets/images/schematics/microwave.png
+    - assets/images/schematics/dishwasher.png
+    - assets/images/schematics/thermostat.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -13,6 +13,7 @@ import { ServiceEventsModule } from './modules/service-events/service-events.mod
 import { PartsModule } from './modules/parts/parts.module';
 import { WorkOrdersModule } from './modules/work-orders/work-orders.module';
 import { UsersModule } from './modules/users/users.module';
+import { SyncModule } from './modules/sync/sync.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UsersModule } from './modules/users/users.module';
     PartsModule,
     WorkOrdersModule,
     UsersModule,
+    SyncModule,
   ],
   controllers: [AppController],
   providers: [AppService],

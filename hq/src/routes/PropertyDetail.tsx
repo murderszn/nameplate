@@ -125,23 +125,81 @@ export function PropertyDetail() {
     .filter(Boolean)
     .join(', ');
 
+  const imgKey = property.code ? property.code.toLowerCase().replace('-', '_') : 'sonoran_ridge';
+
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div className="np-toolbar">
         <Link to="/properties" className="np-back">
-          ← Portfolio
+          ← Back to Properties
         </Link>
         <span className="np-badge np-badge--info">{property.code ?? 'LOC'}</span>
       </div>
 
-      <div className="np-loc-hero">
-        <div>
-          <h2 className="np-plate-title">{property.name}</h2>
-          <p className="np-muted">{address || 'Address not on file'}</p>
+      {/* Property Hero Banner with Architecture Photo */}
+      <div
+        style={{
+          position: 'relative',
+          borderRadius: 2,
+          overflow: 'hidden',
+          border: '1px solid rgba(255,255,255,0.08)',
+          background: '#0d0d0d',
+          minHeight: 220,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          padding: 24,
+        }}
+      >
+        <img
+          src={`./images/properties/${imgKey}.jpg`}
+          alt={property.name}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            filter: 'brightness(0.38) contrast(1.1)',
+          }}
+          onError={(e) => {
+            e.currentTarget.src = './images/properties/sonoran_ridge.jpg';
+          }}
+        />
+
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+              <span className="np-badge mono">{property.code ?? 'LOC'}</span>
+              <span className={`np-badge np-badge--status-${property.status}`}>
+                {property.status.replaceAll('_', ' ')}
+              </span>
+            </div>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+              {property.name}
+            </h1>
+            <p style={{ color: '#ccc', margin: 0, fontSize: '0.88rem' }}>
+              📍 {address || 'Maricopa County, AZ'}
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '8px 14px', borderRadius: 2, border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div style={{ textAlign: 'center', padding: '0 8px' }}>
+              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#fff' }}>{units.length}</div>
+              <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Units</div>
+            </div>
+            <div style={{ width: 1, background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ textAlign: 'center', padding: '0 8px' }}>
+              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#fff' }}>{assets.length}</div>
+              <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Plates</div>
+            </div>
+            <div style={{ width: 1, background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ textAlign: 'center', padding: '0 8px' }}>
+              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#ff4d4d' }}>{openWo}</div>
+              <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Open Orders</div>
+            </div>
+          </div>
         </div>
-        <span className={`np-badge np-badge--status-${property.status}`}>
-          {property.status.replaceAll('_', ' ')}
-        </span>
       </div>
 
       <dl className="np-meta-inline">

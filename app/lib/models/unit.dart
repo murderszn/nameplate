@@ -17,10 +17,10 @@ class Unit {
   final String propertyName;
   final String buildingName;
   final String label; // "4B", "112"
-  final OccupancyStatus occupancyStatus;
-  final DateTime? lastTurnCompletedAt;
+  OccupancyStatus occupancyStatus;
+  DateTime? lastTurnCompletedAt;
 
-  const Unit({
+  Unit({
     required this.id,
     required this.propertyId,
     required this.propertyName,
@@ -30,5 +30,15 @@ class Unit {
     this.lastTurnCompletedAt,
   });
 
-  String get displayName => '$buildingName $label';
+  String get displayName => '$buildingName — $label';
+}
+
+extension OccupancyStatusX on OccupancyStatus {
+  String get label => switch (this) {
+        OccupancyStatus.occupied => 'Occupied',
+        OccupancyStatus.vacant => 'Vacant',
+        OccupancyStatus.turning => 'Turning',
+        OccupancyStatus.offline => 'Offline',
+        OccupancyStatus.model => 'Model',
+      };
 }

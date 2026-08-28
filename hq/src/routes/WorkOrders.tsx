@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import { api, type WorkOrder } from '../api/client';
 
 const COLUMNS = [
-  { status: 'open', label: 'Backlog / Open', color: '#6B6B6B' },
-  { status: 'assigned', label: 'Assigned', color: '#3B82F6' },
-  { status: 'in_progress', label: 'In Progress', color: '#F59E0B' },
-  { status: 'awaiting_parts', label: 'Awaiting Parts', color: '#EF4444' },
-  { status: 'completed', label: 'Completed', color: '#10B981' },
+  { id: 'intake', statuses: ['open', 'assigned'], label: 'Backlog & Assigned', color: '#3B82F6' },
+  { id: 'in_progress', statuses: ['in_progress'], label: 'In Progress', color: '#F59E0B' },
+  { id: 'awaiting_parts', statuses: ['awaiting_parts'], label: 'Awaiting Parts', color: '#EF4444' },
+  { id: 'completed', statuses: ['completed'], label: 'Completed', color: '#10B981' },
 ];
 
 const PRIORITIES = [
@@ -73,11 +72,12 @@ export function WorkOrders() {
 
   // Move Next / Prev in Kanban
   const handleMoveLane = async (wo: WorkOrder, direction: 'next' | 'prev') => {
-    const colIdx = COLUMNS.findIndex((c) => c.status === wo.status);
+    const colIdx = COLUMNS.findIndex((c) => c.statuses.includes(wo.status));
     if (colIdx === -1) return;
     const nextIdx = direction === 'next' ? colIdx + 1 : colIdx - 1;
     if (nextIdx < 0 || nextIdx >= COLUMNS.length) return;
-    await handleStatusChange(wo.id, COLUMNS[nextIdx].status);
+    const targetStatus = COLUMNS[nextIdx].statuses[0];
+    await handleStatusChange(wo.id, targetStatus);
   };
 
   // Add Comment / Note
@@ -166,13 +166,13 @@ export function WorkOrders() {
           flexWrap: 'wrap',
           gap: 16,
           background: '#0D0D0D',
-          border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: 12,
-          padding: '14px 20px',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 2,
+          padding: '12px 18px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative', minWidth: 260 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', minWidth: 240 }}>
             <input
               type="text"
               placeholder="Search WO #, NPID, Title, Tech…"
@@ -180,12 +180,12 @@ export function WorkOrders() {
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
-                background: '#161616',
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 8,
-                padding: '8px 14px',
+                background: '#141414',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderRadius: 2,
+                padding: '7px 12px',
                 color: '#fff',
-                fontSize: '0.86rem',
+                fontSize: '0.84rem',
                 outline: 'none',
                 fontFamily: 'inherit',
               }}
@@ -196,12 +196,12 @@ export function WorkOrders() {
             value={selectedPriority}
             onChange={(e) => setSelectedPriority(e.target.value)}
             style={{
-              background: '#161616',
-              border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: 8,
-              padding: '8px 12px',
+              background: '#141414',
+              border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 2,
+              padding: '7px 10px',
               color: '#fff',
-              fontSize: '0.84rem',
+              fontSize: '0.82rem',
               outline: 'none',
               cursor: 'pointer',
             }}
@@ -217,12 +217,12 @@ export function WorkOrders() {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             style={{
-              background: '#161616',
-              border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: 8,
-              padding: '8px 12px',
+              background: '#141414',
+              border: '1px solid rgba(255,255,255,0.12)',
+              borderRadius: 2,
+              padding: '7px 10px',
               color: '#fff',
-              fontSize: '0.84rem',
+              fontSize: '0.82rem',
               outline: 'none',
               cursor: 'pointer',
             }}
@@ -236,7 +236,7 @@ export function WorkOrders() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: '0.82rem', color: '#A3A3A3', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: '0.78rem', color: '#A3A3A3', fontFamily: 'monospace' }}>
             {openCount} ACTIVE FIELD ORDERS
           </span>
           <button
@@ -245,15 +245,14 @@ export function WorkOrders() {
               background: '#FF2A2A',
               color: '#fff',
               border: 'none',
-              borderRadius: 8,
-              padding: '9px 18px',
+              borderRadius: 2,
+              padding: '8px 16px',
               fontWeight: 700,
-              fontSize: '0.86rem',
+              fontSize: '0.84rem',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: 6,
-              boxShadow: '0 2px 10px rgba(255,42,42,0.3)',
             }}
           >
             <span>+</span> Create Work Order
@@ -261,39 +260,40 @@ export function WorkOrders() {
         </div>
       </div>
 
-      {/* Jira / Linear Kanban Swimlanes */}
+      {/* Jira / Linear 4-Lane Dispatch Swimlanes */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, minmax(240px, 1fr))',
+          gridTemplateColumns: 'repeat(4, minmax(280px, 1fr))',
           gap: 16,
           overflowX: 'auto',
           paddingBottom: 24,
         }}
       >
         {COLUMNS.map((col) => {
-          const colItems = filteredWorkOrders.filter((w) => w.status === col.status);
-          const isDragOver = dragOverCol === col.status;
+          const colItems = filteredWorkOrders.filter((w) => col.statuses.includes(w.status));
+          const isDragOver = dragOverCol === col.id;
 
           return (
             <div
-              key={col.status}
+              key={col.id}
               onDragOver={(e) => {
                 e.preventDefault();
-                setDragOverCol(col.status);
+                setDragOverCol(col.id);
               }}
               onDragLeave={() => setDragOverCol(null)}
               onDrop={() => {
                 if (draggedWoId) {
-                  handleStatusChange(draggedWoId, col.status);
+                  const targetStatus = col.statuses[0];
+                  handleStatusChange(draggedWoId, targetStatus);
                 }
                 setDraggedWoId(null);
                 setDragOverCol(null);
               }}
               style={{
                 background: isDragOver ? 'rgba(255,42,42,0.06)' : '#0A0A0A',
-                border: isDragOver ? '1px dashed #FF2A2A' : '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 12,
+                border: isDragOver ? '1px dashed #FF2A2A' : '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 2,
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: 620,
@@ -303,14 +303,12 @@ export function WorkOrders() {
               {/* Column Header */}
               <div
                 style={{
-                  padding: '14px 16px',
-                  borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  padding: '12px 16px',
+                  borderBottom: '1px solid rgba(255,255,255,0.07)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  background: '#0F0F0F',
-                  borderTopLeftRadius: 11,
-                  borderTopRightRadius: 11,
+                  background: '#0e0e0e',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -318,7 +316,7 @@ export function WorkOrders() {
                     style={{
                       width: 8,
                       height: 8,
-                      borderRadius: '50%',
+                      borderRadius: 1,
                       background: col.color,
                       boxShadow: `0 0 6px ${col.color}`,
                     }}
@@ -330,11 +328,11 @@ export function WorkOrders() {
                 <span
                   style={{
                     fontFamily: 'monospace',
-                    fontSize: '0.75rem',
+                    fontSize: '0.74rem',
                     background: 'rgba(255,255,255,0.08)',
-                    padding: '2px 7px',
-                    borderRadius: 4,
-                    color: '#A3A3A3',
+                    padding: '2px 8px',
+                    borderRadius: 2,
+                    color: '#fff',
                     fontWeight: 700,
                   }}
                 >
@@ -354,25 +352,24 @@ export function WorkOrders() {
                       onDragStart={() => setDraggedWoId(wo.id)}
                       onClick={() => setSelectedWo(wo)}
                       style={{
-                        background: '#141414',
-                        border: isUrgent ? '1px solid rgba(255,42,42,0.4)' : '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: 10,
-                        padding: 14,
+                        background: '#121212',
+                        border: isUrgent ? '1px solid rgba(255,42,42,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: 2,
+                        padding: 12,
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: 10,
-                        transition: 'transform 0.15s, border-color 0.15s, box-shadow 0.15s',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+                        gap: 8,
+                        transition: 'transform 0.15s, border-color 0.15s',
                         position: 'relative',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
                         e.currentTarget.style.borderColor = isUrgent ? '#FF2A2A' : '#FFFFFF';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'none';
-                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(255,42,42,0.4)' : 'rgba(255,255,255,0.1)';
+                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(255,42,42,0.4)' : 'rgba(255,255,255,0.08)';
                       }}
                     >
                       {/* Card Topline: ID + Priority Chip + Category */}
@@ -475,7 +472,7 @@ export function WorkOrders() {
                           <button
                             title="Move to Previous Column"
                             onClick={() => handleMoveLane(wo, 'prev')}
-                            disabled={col.status === 'open'}
+                            disabled={col.id === 'intake'}
                             style={{
                               background: '#222',
                               border: '1px solid rgba(255,255,255,0.1)',
@@ -483,8 +480,8 @@ export function WorkOrders() {
                               borderRadius: 4,
                               width: 22,
                               height: 22,
-                              cursor: col.status === 'open' ? 'default' : 'pointer',
-                              opacity: col.status === 'open' ? 0.3 : 1,
+                              cursor: col.id === 'intake' ? 'default' : 'pointer',
+                              opacity: col.id === 'intake' ? 0.3 : 1,
                               fontSize: '0.7rem',
                             }}
                           >
@@ -493,7 +490,7 @@ export function WorkOrders() {
                           <button
                             title="Move to Next Column"
                             onClick={() => handleMoveLane(wo, 'next')}
-                            disabled={col.status === 'completed'}
+                            disabled={col.id === 'completed'}
                             style={{
                               background: '#222',
                               border: '1px solid rgba(255,255,255,0.1)',
@@ -501,8 +498,8 @@ export function WorkOrders() {
                               borderRadius: 4,
                               width: 22,
                               height: 22,
-                              cursor: col.status === 'completed' ? 'default' : 'pointer',
-                              opacity: col.status === 'completed' ? 0.3 : 1,
+                              cursor: col.id === 'completed' ? 'default' : 'pointer',
+                              opacity: col.id === 'completed' ? 0.3 : 1,
                               fontSize: '0.7rem',
                             }}
                           >
@@ -632,17 +629,17 @@ export function WorkOrders() {
                         width: '100%',
                         background: '#181818',
                         border: '1px solid rgba(255,255,255,0.15)',
-                        borderRadius: 6,
+                        borderRadius: 2,
                         padding: '8px 10px',
                         color: '#FFF',
                         fontSize: '0.85rem',
                       }}
                     >
-                      {COLUMNS.map((c) => (
-                        <option key={c.status} value={c.status}>
-                          {c.label}
-                        </option>
-                      ))}
+                      <option value="open">Backlog / Open</option>
+                      <option value="assigned">Assigned</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="awaiting_parts">Awaiting Parts</option>
+                      <option value="completed">Completed</option>
                     </select>
                   </div>
 
@@ -661,7 +658,7 @@ export function WorkOrders() {
                         width: '100%',
                         background: '#181818',
                         border: '1px solid rgba(255,255,255,0.15)',
-                        borderRadius: 6,
+                        borderRadius: 2,
                         padding: '8px 10px',
                         color: '#FFF',
                         fontSize: '0.85rem',
@@ -681,7 +678,7 @@ export function WorkOrders() {
                 style={{
                   background: '#141414',
                   border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 10,
+                  borderRadius: 2,
                   padding: 16,
                   display: 'flex',
                   flexDirection: 'column',
@@ -720,7 +717,7 @@ export function WorkOrders() {
                   style={{
                     background: '#141414',
                     border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 8,
+                    borderRadius: 2,
                     padding: 14,
                     fontSize: '0.88rem',
                     lineHeight: 1.5,
@@ -746,7 +743,7 @@ export function WorkOrders() {
                           border: '1px solid rgba(255,42,42,0.3)',
                           color: '#FF8888',
                           padding: '4px 10px',
-                          borderRadius: 4,
+                          borderRadius: 2,
                           fontSize: '0.78rem',
                           fontFamily: 'monospace',
                         }}
@@ -774,7 +771,7 @@ export function WorkOrders() {
                       style={{
                         background: '#141414',
                         border: '1px solid rgba(255,255,255,0.06)',
-                        borderRadius: 8,
+                        borderRadius: 2,
                         padding: '10px 14px',
                         display: 'flex',
                         flexDirection: 'column',
@@ -801,7 +798,7 @@ export function WorkOrders() {
                       width: '100%',
                       background: '#161616',
                       border: '1px solid rgba(255,255,255,0.15)',
-                      borderRadius: 8,
+                      borderRadius: 2,
                       padding: 12,
                       color: '#FFF',
                       fontSize: '0.86rem',
@@ -819,7 +816,7 @@ export function WorkOrders() {
                       style={{
                         background: 'transparent',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        borderRadius: 4,
+                        borderRadius: 2,
                         padding: '4px 8px',
                         color: '#A3A3A3',
                         fontSize: '0.75rem',
@@ -831,7 +828,7 @@ export function WorkOrders() {
                         background: '#FFF',
                         color: '#000',
                         border: 'none',
-                        borderRadius: 6,
+                        borderRadius: 2,
                         padding: '7px 16px',
                         fontWeight: 700,
                         fontSize: '0.8rem',
@@ -870,7 +867,7 @@ export function WorkOrders() {
               maxWidth: 540,
               background: '#0F0F0F',
               border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: 14,
+              borderRadius: 2,
               padding: 28,
               boxShadow: '0 30px 80px rgba(0,0,0,0.95)',
             }}
@@ -899,7 +896,7 @@ export function WorkOrders() {
                     width: '100%',
                     background: '#1A1A1A',
                     border: '1px solid rgba(255,255,255,0.15)',
-                    borderRadius: 8,
+                    borderRadius: 2,
                     padding: '10px 14px',
                     color: '#FFF',
                     fontSize: '0.9rem',
@@ -914,7 +911,7 @@ export function WorkOrders() {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
                   >
                     <option value="HVAC">HVAC</option>
                     <option value="Appliance">Appliance</option>
@@ -928,7 +925,7 @@ export function WorkOrders() {
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
                   >
                     <option value="urgent">Urgent</option>
                     <option value="high">High</option>
@@ -945,7 +942,7 @@ export function WorkOrders() {
                     type="text"
                     value={newUnit}
                     onChange={(e) => setNewUnit(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
                   />
                 </div>
 
@@ -955,7 +952,7 @@ export function WorkOrders() {
                     type="text"
                     value={newAssetNpid}
                     onChange={(e) => setNewAssetNpid(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
                   />
                 </div>
               </div>
@@ -967,7 +964,7 @@ export function WorkOrders() {
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Field notes, failure symptoms, or required tools…"
-                  style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 8, padding: '10px 14px', color: '#FFF', resize: 'none' }}
+                  style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '10px 14px', color: '#FFF', resize: 'none' }}
                 />
               </div>
 
@@ -975,13 +972,13 @@ export function WorkOrders() {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: '#FFF', borderRadius: 8, padding: '9px 16px', cursor: 'pointer' }}
+                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: '#FFF', borderRadius: 2, padding: '9px 16px', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{ background: '#FF2A2A', border: 'none', color: '#FFF', borderRadius: 8, padding: '9px 20px', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: '#FF2A2A', border: 'none', color: '#FFF', borderRadius: 2, padding: '9px 20px', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Create Work Order
                 </button>

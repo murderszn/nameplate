@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/providers.dart';
 import '../services/sync_status_service.dart';
 import '../theme/app_theme.dart';
+import 'np_brand.dart';
 
 /// Always-visible sync indicator per v0-scope.md §1.1
 /// ("Sync status indicator always visible: synced / N pending / offline").
@@ -13,30 +14,34 @@ class SyncStatusBadge extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final snapshotAsync = ref.watch(syncStatusProvider);
-
-    return snapshotAsync.when(
-      data: (snapshot) => _badge(snapshot),
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => _badge(const SyncStatusSnapshot(state: SyncState.offline)),
-    );
+    final snapshot = ref.watch(syncStatusProvider);
+    return _badge(snapshot);
   }
 
   Widget _badge(SyncStatusSnapshot snapshot) {
-    final (label, icon, color) = switch (snapshot.state) {
-      SyncState.synced => ('Synced', Icons.check_circle, NpColors.verified600),
-      SyncState.pending => ('${snapshot.pendingCount} pending', Icons.cloud_upload, NpColors.offline500),
-      SyncState.offline => ('Offline', Icons.cloud_off, NpColors.steel500),
+    final (label, icon, tone) = switch (snapshot.state) {
+      SyncState.synced => ('Synced', Icons.check_circle, NpPillTone.verified),
+      SyncState.pending => ('${snapshot.pendingCount} pending', Icons.cloud_upload, NpPillTone.caution),
+      SyncState.offline => ('Offline', Icons.cloud_off, NpPillTone.neutral),
     };
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.only(right: 12),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: color),
+          Icon(
+            icon,
+            size: 14,
+            color: switch (tone) {
+              NpPillTone.verified => NpColors.white,
+              NpPillTone.caution => NpColors.red,
+              NpPillTone.fault => NpColors.red,
+              NpPillTone.neutral => NpColors.gray400,
+            },
+          ),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12)),
+          NpStatusPill(label: label, tone: tone),
         ],
       ),
     );

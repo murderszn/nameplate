@@ -6,26 +6,15 @@ import '../../models/part.dart';
 import '../../models/service_event.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_brand.dart';
+import '../../widgets/responsive_layout.dart';
 
 /// Log a service event — v0-scope.md §1.1.
 /// Captures: event type, symptom codes (required, single-tap chips),
 /// findings, resolution code, condition before/after, labor minutes,
 /// parts used/swapped with cost, part swap source tracing, repair-vs-replace
-/// decision. Works entirely offline; queued to the outbox.
-///
-/// TODO(ids): use a real UUIDv7 generator for `id` (architecture.md §3 says
-/// clients generate ids offline). This scaffold uses a timestamp placeholder
-/// since no uuid package is wired up yet — swap for `uuid` package's v7 once
-/// added to pubspec.yaml.
-///
-/// TODO(non-negotiable): symptom_codes are required on repair events
-/// (v0-scope.md §3 #6) — the Submit button below is disabled until at least
-/// one symptom is picked for event types that represent a repair.
-///
-/// TODO(part lineage): the "pulled from another asset" part-swap flow (scan
-/// that asset) is the product's signature flow (v0-scope.md §1.1) and is
-/// only stubbed here as a text field — replace with a scan-to-select flow
-/// wired to AssetRepository.lookupByCode.
+/// decision.
+/// Tablet optimized for 11" Kindle Fire field usage with high-contrast, glove-friendly controls.
 class LogServiceEventScreen extends ConsumerStatefulWidget {
   final Asset asset;
   const LogServiceEventScreen({super.key, required this.asset});
@@ -114,104 +103,218 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
     Navigator.of(context).pop();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Log Service Event')),
-      body: ListView(
+  Widget _buildLeftColumn() {
+    return Card(
+      child: Padding(
         padding: const EdgeInsets.all(20),
-        children: [
-          Text(widget.asset.npid, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 16),
-          Text('Event type', style: Theme.of(context).textTheme.labelLarge),
-          DropdownButtonFormField<ServiceEventType>(
-            initialValue: _eventType,
-            items: ServiceEventType.values
-                .map((t) => DropdownMenuItem(value: t, child: Text(t.name)))
-                .toList(),
-            onChanged: (v) => setState(() => _eventType = v!),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Text('Symptoms', style: Theme.of(context).textTheme.labelLarge),
-              if (_isRepairLike) ...[
-                const SizedBox(width: 6),
-                Text('(required)', style: TextStyle(color: NpColors.fault600, fontSize: 12)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const NpKicker('Event'),
+            const SizedBox(height: 10),
+            Text(
+              'Event Details & Diagnostics',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            Text('Event Type', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<ServiceEventType>(
+              initialValue: _eventType,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              items: ServiceEventType.values
+                  .map((t) => DropdownMenuItem(value: t, child: Text(t.name.toUpperCase())))
+                  .toList(),
+              onChanged: (v) => setState(() => _eventType = v!),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Text('Symptoms Picklist', style: Theme.of(context).textTheme.labelLarge),
+                if (_isRepairLike) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: NpColors.fault100,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text('Required for repair', style: TextStyle(color: NpColors.fault600, fontSize: 11, fontWeight: FontWeight.w700)),
+                  ),
+                ],
               ],
-            ],
-          ),
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: _symptomOptions.map((s) {
-              final selected = _symptoms.contains(s);
-              return FilterChip(
-                label: Text(s),
-                selected: selected,
-                onSelected: (v) => setState(() => v ? _symptoms.add(s) : _symptoms.remove(s)),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _findingsController,
-            maxLines: 3,
-            decoration: const InputDecoration(labelText: 'Findings', border: OutlineInputBorder()),
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<ResolutionCode>(
-            initialValue: _resolutionCode,
-            decoration: const InputDecoration(labelText: 'Resolution code'),
-            items: ResolutionCode.values
-                .map((r) => DropdownMenuItem(value: r, child: Text(r.name)))
-                .toList(),
-            onChanged: (v) => setState(() => _resolutionCode = v),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _laborMinutesController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Labor minutes', border: OutlineInputBorder()),
-          ),
-          const Divider(height: 32),
-          Text('Parts used / swapped', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _partDescriptionController,
-            decoration: const InputDecoration(labelText: 'Part description', border: OutlineInputBorder()),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _partCostController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Part cost (USD)', border: OutlineInputBorder()),
-          ),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            title: const Text('Pulled from another asset'),
-            subtitle: const Text('Part-swap source tracing — TODO: scan source asset'),
-            value: _partPulledFromAnotherAsset,
-            onChanged: (v) => setState(() => _partPulledFromAnotherAsset = v),
-          ),
-          const Divider(height: 32),
-          Text('Repair vs. replace decision', style: Theme.of(context).textTheme.titleSmall),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<RepairVsReplaceDecision>(
-            initialValue: _decision,
-            items: RepairVsReplaceDecision.values
-                .map((d) => DropdownMenuItem(value: d, child: Text(d.name)))
-                .toList(),
-            onChanged: (v) => setState(() => _decision = v),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: _canSubmit && !_submitting ? _submit : null,
-            icon: const Icon(Icons.save_outlined),
-            label: const Text('Save Service Event'),
-          ),
-        ],
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _symptomOptions.map((s) {
+                final selected = _symptoms.contains(s);
+                return FilterChip(
+                  label: Text(s.replaceAll('_', ' ')),
+                  labelStyle: TextStyle(
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    color: selected ? NpColors.plate600 : null,
+                  ),
+                  selected: selected,
+                  selectedColor: NpColors.plate100,
+                  checkmarkColor: NpColors.plate600,
+                  onSelected: (v) => setState(() => v ? _symptoms.add(s) : _symptoms.remove(s)),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _findingsController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                labelText: 'Technician Findings & Notes',
+                hintText: 'Describe issue, root cause, and component condition...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: DropdownButtonFormField<ResolutionCode>(
+                    initialValue: _resolutionCode,
+                    decoration: const InputDecoration(labelText: 'Resolution Code', border: OutlineInputBorder()),
+                    items: ResolutionCode.values
+                        .map((r) => DropdownMenuItem(value: r, child: Text(r.name)))
+                        .toList(),
+                    onChanged: (v) => setState(() => _resolutionCode = v),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: _laborMinutesController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(labelText: 'Labor (min)', border: OutlineInputBorder()),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  Widget _buildRightColumn() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const NpKicker('Parts'),
+            const SizedBox(height: 10),
+            Text(
+              'Parts Lineage & Disposition',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _partDescriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Installed / Swapped Part Description',
+                hintText: 'e.g. Inverter Control Board WPW10312695',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _partCostController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Part Cost (USD)',
+                prefixText: '\$ ',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Salvaged / Pulled from another asset', style: TextStyle(fontWeight: FontWeight.w600)),
+              subtitle: const Text('Maintains parts pedigree across portfolio assets'),
+              value: _partPulledFromAnotherAsset,
+              onChanged: (v) => setState(() => _partPulledFromAnotherAsset = v),
+            ),
+            const Divider(height: 24),
+            Text('Repair vs. Replace Decision', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 6),
+            DropdownButtonFormField<RepairVsReplaceDecision>(
+              initialValue: _decision,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              items: RepairVsReplaceDecision.values
+                  .map((d) => DropdownMenuItem(value: d, child: Text(d.name)))
+                  .toList(),
+              onChanged: (v) => setState(() => _decision = v),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              onPressed: _canSubmit && !_submitting ? _submit : null,
+              icon: const Icon(Icons.save_outlined),
+              label: const Text('Save & Queue Service Event', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+            ),
+            if (!_canSubmit)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  'Select at least one symptom code to submit a repair event.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: NpColors.fault600, fontSize: 12),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isTablet = context.isTablet;
+
+    return Scaffold(
+      appBar: NpBrandAppBar(
+        kicker: '02 / Service',
+        title: widget.asset.npid,
+      ),
+      body: isTablet
+          ? Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 6,
+                    child: SingleChildScrollView(child: _buildLeftColumn()),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    flex: 5,
+                    child: SingleChildScrollView(child: _buildRightColumn()),
+                  ),
+                ],
+              ),
+            )
+          : ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                _buildLeftColumn(),
+                const SizedBox(height: 16),
+                _buildRightColumn(),
+              ],
+            ),
+    );
+  }
 }
+

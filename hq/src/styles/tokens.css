@@ -65,10 +65,12 @@
   --np-viz-4: var(--gray-700);
   --np-viz-5: var(--white-40);
   --np-viz-6: var(--gray-800);
-  --np-radius: 12px;
+  --np-radius: 2px;
+  --np-radius-sm: 1px;
+  --np-radius-none: 0px;
   --np-shadow-sm: none;
-  --np-shadow-md: 0 16px 40px rgba(0, 0, 0, 0.45);
-  --np-sidebar-width: 248px;
+  --np-sidebar-width: 260px;
+  --np-sidebar-collapsed-width: 68px;
   --np-font-sans: var(--font-sans);
   --np-font-mono: var(--font-mono);
 }

@@ -33,18 +33,19 @@ class Asset {
   final String? modelNumber;
   final String? serialNumber;
 
-  final AssetStatus status;
-  final AssetCondition? condition;
+  AssetStatus status;
+  AssetCondition? condition;
 
-  final LocationType currentLocationType;
-  final String? currentLocationLabel; // e.g. "Unit 4B" or "Shop — Copper Ridge"
-  final DateTime? currentLocationConfirmedAt;
+  final String? unitId;
+  LocationType currentLocationType;
+  String? currentLocationLabel; // e.g. "Unit 4B" or "Shop — Copper Ridge"
+  DateTime? currentLocationConfirmedAt;
 
   final DateTime? installDate;
   final DateTime? lastServiceAt;
   final double lifetimeServiceCost;
 
-  const Asset({
+  Asset({
     required this.id,
     required this.npid,
     required this.categoryDisplayName,
@@ -53,6 +54,7 @@ class Asset {
     this.serialNumber,
     this.status = AssetStatus.active,
     this.condition,
+    this.unitId,
     this.currentLocationType = LocationType.unknown,
     this.currentLocationLabel,
     this.currentLocationConfirmedAt,

@@ -144,9 +144,6 @@ export function Dashboard() {
 
   const flaggedCount = assets.filter((a) => FLAGGED_STATUSES.includes(a.status)).length;
   const openWoCount = workOrders.filter((w) => OPEN_STATUSES.includes(w.status)).length;
-  const slaBreached = workOrders.filter(
-    (w) => OPEN_STATUSES.includes(w.status) && w.slaDueAt && new Date(w.slaDueAt).getTime() < Date.now(),
-  ).length;
   const unconfirmed = assets.filter((a) => {
     if (!a.currentLocationConfirmedAt) return true;
     const days = (Date.now() - new Date(a.currentLocationConfirmedAt).getTime()) / 86_400_000;
@@ -161,7 +158,7 @@ export function Dashboard() {
   const kpis = [
     { label: 'Assets under management', value: String(liveAssets.length) },
     { label: 'T12 maintenance spend', value: money(t12Spend) },
-    { label: 'Open work orders', value: `${openWoCount}${slaBreached ? ` / ${slaBreached} SLA` : ''}` },
+    { label: 'Open work orders', value: String(openWoCount) },
     { label: 'Flagged / missing', value: String(flaggedCount) },
     { label: 'Unconfirmed > 180d', value: String(unconfirmed) },
     { label: 'Past expected life', value: String(pastLife) },
@@ -198,18 +195,6 @@ export function Dashboard() {
 
   return (
     <div>
-      <section className="np-command-strip" aria-label="HQ quick actions">
-        <div>
-          <span className="np-kicker">Operations cockpit</span>
-          <h2>Know what needs attention next.</h2>
-          <p className="np-muted">Jump from portfolio signal to the underlying property, asset, or field order.</p>
-        </div>
-        <div className="np-action-grid">
-          <Link className="np-action-card" to="/work-orders"><strong>Dispatch work</strong><span>{openWoCount} active orders →</span></Link>
-          <Link className="np-action-card" to="/assets"><strong>Verify assets</strong><span>{unconfirmed} unconfirmed →</span></Link>
-          <Link className="np-action-card" to="/properties"><strong>Review portfolio</strong><span>{properties.length} properties →</span></Link>
-        </div>
-      </section>
       <div className="np-kpi-grid">
         {kpis.map((k) => (
           <KpiTile key={k.label} label={k.label} value={k.value} />

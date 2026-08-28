@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'screens/app_shell.dart';
 import 'theme/app_theme.dart';
+import 'widgets/np_brand.dart';
 
 void main() {
   runApp(const ProviderScope(child: NameplateFieldApp()));
@@ -20,9 +21,21 @@ class NameplateFieldApp extends StatelessWidget {
     return MaterialApp(
       title: 'Nameplate Field',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
+      theme: AppTheme.dark(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.dark,
+      builder: (context, child) {
+        return ColoredBox(
+          color: NpColors.bg,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              const IgnorePointer(child: NpDotGrid()),
+              ?child,
+            ],
+          ),
+        );
+      },
       home: const AppShell(),
     );
   }

@@ -134,7 +134,15 @@ export function UnitDetail() {
               >
                 <div className="np-unit-plate__img">
                   {key ? (
-                    <img src={`/schematics/${key}.png`} alt="" />
+                    <img
+                      src={`./schematics/${key}.png`}
+                      alt=""
+                      onError={(e) => {
+                        if (!e.currentTarget.src.includes('images/schematics')) {
+                          e.currentTarget.src = `./images/schematics/${key}.png`;
+                        }
+                      }}
+                    />
                   ) : (
                     <span className="np-muted">No schematic</span>
                   )}
