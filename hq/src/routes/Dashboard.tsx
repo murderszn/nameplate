@@ -198,6 +198,18 @@ export function Dashboard() {
 
   return (
     <div>
+      <section className="np-command-strip" aria-label="HQ quick actions">
+        <div>
+          <span className="np-kicker">Operations cockpit</span>
+          <h2>Know what needs attention next.</h2>
+          <p className="np-muted">Jump from portfolio signal to the underlying property, asset, or field order.</p>
+        </div>
+        <div className="np-action-grid">
+          <Link className="np-action-card" to="/work-orders"><strong>Dispatch work</strong><span>{openWoCount} active orders →</span></Link>
+          <Link className="np-action-card" to="/assets"><strong>Verify assets</strong><span>{unconfirmed} unconfirmed →</span></Link>
+          <Link className="np-action-card" to="/properties"><strong>Review portfolio</strong><span>{properties.length} properties →</span></Link>
+        </div>
+      </section>
       <div className="np-kpi-grid">
         {kpis.map((k) => (
           <KpiTile key={k.label} label={k.label} value={k.value} />
@@ -283,7 +295,7 @@ export function Dashboard() {
             {atRiskWorkOrders.map((w) => (
               <tr key={w.id}>
                 <td className="mono">WO-{w.number}</td>
-                <td>{w.title}</td>
+                <td><Link to="/work-orders" className="np-table-link">{w.title} ↗</Link></td>
                 <td>
                   <span className="np-badge">{w.priority.replaceAll('_', ' ')}</span>
                 </td>

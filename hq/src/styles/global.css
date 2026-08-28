@@ -156,6 +156,15 @@ code,
   color: var(--red);
 }
 
+.np-sidebar__section-label {
+  margin: 26px 12px 6px;
+  color: var(--gray-500);
+  font: 700 0.66rem var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.np-nav--secondary a { font-size: 0.82rem; padding-block: 8px; }
+
 .np-sidebar__footer {
   margin-top: auto;
   padding: 12px;
@@ -174,6 +183,11 @@ code,
   flex-direction: column;
   background: var(--bg);
 }
+
+.np-topbar__actions { display: flex; align-items: center; gap: 10px; }
+.np-command-search { display: flex; align-items: center; gap: 8px; min-width: 260px; padding: 7px 10px; border: 1px solid var(--line-strong); border-radius: 9px; background: #0d0d0d; color: var(--gray-500); }
+.np-command-search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--white); font: 0.78rem var(--font-mono); }
+.np-command-search kbd { border: 1px solid var(--line-strong); border-radius: 4px; padding: 2px 5px; color: var(--gray-500); font-size: 0.62rem; white-space: nowrap; }
 
 .np-topbar {
   min-height: 84px;
@@ -222,6 +236,16 @@ code,
   padding: 28px 32px 48px;
   overflow: auto;
 }
+
+.np-command-strip { display: flex; justify-content: space-between; gap: 24px; align-items: center; padding: 20px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(110deg, rgba(255,42,42,.12), rgba(255,255,255,.03)); }
+.np-command-strip h2 { font-size: 1.35rem; margin: 2px 0 4px; }
+.np-action-grid { display: grid; grid-template-columns: repeat(3, minmax(145px, 1fr)); gap: 8px; min-width: 470px; }
+.np-action-card { display: flex; flex-direction: column; gap: 6px; padding: 13px; border: 1px solid var(--line-strong); border-radius: 10px; background: rgba(0,0,0,.3); }
+.np-action-card:hover { border-color: var(--red); transform: translateY(-1px); }
+.np-action-card strong { font-size: .82rem; }
+.np-action-card span { color: var(--gray-500); font: .68rem var(--font-mono); }
+.np-table-link { color: var(--white); }
+.np-table-link:hover { color: var(--red); }
 
 .np-toolbar {
   display: flex;
@@ -545,6 +569,10 @@ code,
   .np-topbar {
     flex-wrap: wrap;
   }
+
+  .np-topbar__actions, .np-command-search { width: 100%; }
+  .np-command-strip { align-items: stretch; flex-direction: column; }
+  .np-action-grid { min-width: 0; }
 
   .np-badge--info {
     display: none;
