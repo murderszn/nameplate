@@ -337,9 +337,14 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                 children: [
                   Expanded(
                     flex: 5,
-                    child: _ScannerViewfinder(
-                      isScanning: _isScanning,
-                      onSimulateScan: _simulateCameraScan,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 400),
+                        child: _ScannerViewfinder(
+                          isScanning: _isScanning,
+                          onSimulateScan: _simulateCameraScan,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 24),
@@ -355,11 +360,16 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                _ScannerViewfinder(
-                  isScanning: _isScanning,
-                  onSimulateScan: _simulateCameraScan,
+                Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    child: _ScannerViewfinder(
+                      isScanning: _isScanning,
+                      onSimulateScan: _simulateCameraScan,
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 14),
                 _buildManualEntryCard(),
               ],
             ),
@@ -399,114 +409,244 @@ class _ScannerViewfinderState extends State<_ScannerViewfinder>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 320, maxHeight: 460),
-      decoration: BoxDecoration(
-        color: NpColors.bg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: NpColors.white, width: 2),
-        boxShadow: const [
-          BoxShadow(color: NpColors.redGlow, blurRadius: 36, spreadRadius: -4),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Opacity(
-              opacity: 0.25,
-              child: Image.asset(
-                NpAssets.schematicFridge,
-                fit: BoxFit.cover,
-                alignment: Alignment.center,
-              ),
-            ),
-            Container(color: NpColors.bg.withValues(alpha: 0.5)),
-            const _Rivet(alignment: Alignment.topLeft),
-            const _Rivet(alignment: Alignment.topRight),
-            const _Rivet(alignment: Alignment.bottomLeft),
-            const _Rivet(alignment: Alignment.bottomRight),
-            AnimatedBuilder(
-              animation: _scan,
-              builder: (context, _) {
-                return Align(
-                  alignment: Alignment(0, -1 + 2 * _scan.value),
-                  child: Container(
-                    height: 2,
-                    margin: const EdgeInsets.symmetric(horizontal: 18),
-                    decoration: const BoxDecoration(
-                      color: NpColors.red,
-                      boxShadow: [BoxShadow(color: NpColors.redGlow, blurRadius: 14, spreadRadius: 2)],
-                    ),
-                  ),
-                );
-              },
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: NpColors.bg.withValues(alpha: 0.8),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: NpColors.red, width: 2),
-                        boxShadow: const [BoxShadow(color: NpColors.redGlow, blurRadius: 18)],
-                      ),
-                      child: widget.isScanning
-                          ? const SizedBox(
-                              width: 52,
-                              height: 52,
-                              child: CircularProgressIndicator(color: NpColors.red, strokeWidth: 3),
-                            )
-                          : const Icon(Icons.qr_code_scanner, color: NpColors.red, size: 52),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Aim camera at Nameplate Tag',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: NpColors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'SUB-3S OFFLINE CRYPTOGRAPHIC LOOKUP',
-                      textAlign: TextAlign.center,
-                      style: NpType.mono.copyWith(
-                        color: NpColors.gray400,
-                        fontSize: 11,
-                        letterSpacing: 1.4,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: NpColors.white,
-                        side: const BorderSide(color: NpColors.red),
-                        backgroundColor: NpColors.bg.withValues(alpha: 0.8),
-                      ),
-                      onPressed: widget.onSimulateScan,
-                      icon: const Icon(Icons.camera_alt, size: 16, color: NpColors.red),
-                      label: const Text('Simulate Live Hardware Scan'),
-                    ),
-                  ],
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Container(
+        decoration: BoxDecoration(
+          color: NpColors.bg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: NpColors.gray800, width: 2),
+          boxShadow: const [
+            BoxShadow(color: NpColors.redGlow, blurRadius: 24, spreadRadius: -6),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Opacity(
+                opacity: 0.16,
+                child: Image.asset(
+                  NpAssets.schematicFridge,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
                 ),
               ),
-            ),
-          ],
+              Container(color: NpColors.bg.withValues(alpha: 0.6)),
+              const _Rivet(alignment: Alignment.topLeft),
+              const _Rivet(alignment: Alignment.topRight),
+              const _Rivet(alignment: Alignment.bottomLeft),
+              const _Rivet(alignment: Alignment.bottomRight),
+
+              // Top sensor HUD
+              Positioned(
+                top: 12,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: NpColors.bgCard.withValues(alpha: 0.85),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: NpColors.gray800),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF22C55E),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '1:1 OPTICAL QR SCANNER',
+                          style: NpType.mono.copyWith(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            color: NpColors.gray300,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Centered 1:1 QR Target Box with laser sweep
+              Center(
+                child: _QrTargetingBox(
+                  scanAnimation: _scan,
+                  isScanning: widget.isScanning,
+                  onSimulateScan: widget.onSimulateScan,
+                ),
+              ),
+
+              // Bottom instruction
+              Positioned(
+                bottom: 10,
+                left: 16,
+                right: 16,
+                child: Text(
+                  'Aim camera at 1:1 Nameplate QR tag',
+                  textAlign: TextAlign.center,
+                  style: NpType.mono.copyWith(
+                    color: NpColors.gray500,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class _QrTargetingBox extends StatelessWidget {
+  final AnimationController scanAnimation;
+  final bool isScanning;
+  final VoidCallback? onSimulateScan;
+
+  const _QrTargetingBox({
+    required this.scanAnimation,
+    required this.isScanning,
+    this.onSimulateScan,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final boxSize = (constraints.biggest.shortestSide * 0.62).clamp(150.0, 210.0);
+        return SizedBox(
+          width: boxSize,
+          height: boxSize,
+          child: Stack(
+            children: [
+              CustomPaint(
+                size: Size(boxSize, boxSize),
+                painter: _CornerBracketPainter(
+                  color: NpColors.red,
+                  strokeWidth: 3,
+                  bracketLength: 20,
+                ),
+              ),
+              // Laser sweep inside 1:1 square
+              AnimatedBuilder(
+                animation: scanAnimation,
+                builder: (context, _) {
+                  return Align(
+                    alignment: Alignment(0, -0.9 + 1.8 * scanAnimation.value),
+                    child: Container(
+                      height: 2,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: const BoxDecoration(
+                        color: NpColors.red,
+                        boxShadow: [
+                          BoxShadow(color: NpColors.redGlow, blurRadius: 8, spreadRadius: 2),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isScanning)
+                      const SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: CircularProgressIndicator(color: NpColors.red, strokeWidth: 3),
+                      )
+                    else
+                      IconButton(
+                        onPressed: onSimulateScan,
+                        iconSize: 36,
+                        icon: const Icon(Icons.qr_code_scanner, color: NpColors.red),
+                        tooltip: 'Scan Tag',
+                      ),
+                    const SizedBox(height: 2),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: NpColors.red.withValues(alpha: 0.85),
+                      ),
+                      onPressed: onSimulateScan,
+                      child: Text(
+                        'Simulate Scan',
+                        style: NpType.mono.copyWith(
+                          color: NpColors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _CornerBracketPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+  final double bracketLength;
+
+  _CornerBracketPainter({
+    required this.color,
+    required this.strokeWidth,
+    required this.bracketLength,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.square;
+
+    final w = size.width;
+    final h = size.height;
+    final l = bracketLength;
+
+    // Top-Left corner
+    canvas.drawLine(const Offset(0, 0), Offset(l, 0), paint);
+    canvas.drawLine(const Offset(0, 0), Offset(0, l), paint);
+
+    // Top-Right corner
+    canvas.drawLine(Offset(w, 0), Offset(w - l, 0), paint);
+    canvas.drawLine(Offset(w, 0), Offset(w, l), paint);
+
+    // Bottom-Left corner
+    canvas.drawLine(Offset(0, h), Offset(l, h), paint);
+    canvas.drawLine(Offset(0, h), Offset(0, h - l), paint);
+
+    // Bottom-Right corner
+    canvas.drawLine(Offset(w, h), Offset(w - l, h), paint);
+    canvas.drawLine(Offset(w, h), Offset(w, h - l), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _Rivet extends StatelessWidget {
@@ -518,13 +658,13 @@ class _Rivet extends StatelessWidget {
     return Align(
       alignment: alignment,
       child: Container(
-        width: 10,
-        height: 10,
-        margin: const EdgeInsets.all(12),
+        width: 8,
+        height: 8,
+        margin: const EdgeInsets.all(10),
         decoration: const BoxDecoration(
           color: NpColors.red,
           shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: NpColors.redGlow, blurRadius: 10)],
+          boxShadow: [BoxShadow(color: NpColors.redGlow, blurRadius: 6)],
         ),
       ),
     );

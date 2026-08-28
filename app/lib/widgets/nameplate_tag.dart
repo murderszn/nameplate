@@ -89,7 +89,7 @@ class NameplateTag extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'CANONICAL NPID',
+                  'NAMEPLATE ID',
                   style: NpType.mono.copyWith(
                     color: NpColors.gray400,
                     fontSize: 10,

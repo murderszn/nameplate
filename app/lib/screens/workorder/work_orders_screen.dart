@@ -7,6 +7,7 @@ import '../../theme/app_theme.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
 import '../../widgets/sync_status_badge.dart';
+import '../service/log_service_event_screen.dart';
 
 class WorkOrdersScreen extends ConsumerStatefulWidget {
   const WorkOrdersScreen({super.key});
@@ -110,84 +111,105 @@ class _WorkOrderCard extends ConsumerWidget {
       _ => NpPillTone.neutral,
     };
     final schematic = NpAssets.schematicFor(wo.title);
+    final session = ref.watch(fieldSessionProvider);
+    final asset = wo.assetNpid != null ? session.lookupAsset(wo.assetNpid!) : null;
+
+    void openServiceLogger() {
+      if (asset != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => LogServiceEventScreen(asset: asset, workOrder: wo),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No asset bound to ${wo.id}')),
+        );
+      }
+    }
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  wo.id,
-                  style: NpType.mono.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                    color: NpColors.red,
-                    letterSpacing: 0.4,
+      child: InkWell(
+        onTap: openServiceLogger,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    wo.id,
+                    style: NpType.mono.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                      color: NpColors.red,
+                      letterSpacing: 0.4,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                NpStatusPill(label: wo.priority.label, tone: tone),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (schematic != null) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: Image.asset(schematic, width: 40, height: 40, fit: BoxFit.cover),
+                  const Spacer(),
+                  NpStatusPill(label: wo.priority.label, tone: tone),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (schematic != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(2),
+                      child: Image.asset(schematic, width: 40, height: 40, fit: BoxFit.cover),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  Expanded(
+                    child: Text(
+                      wo.title,
+                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: NpColors.white),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(Icons.place_outlined, size: 14, color: NpColors.gray500),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(wo.unitLabel, style: const TextStyle(fontSize: 12, color: NpColors.gray400), overflow: TextOverflow.ellipsis),
+                  ),
+                  Text(
+                    wo.status.label,
+                    style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray400),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      wo.status == WorkOrderStatus.assigned
+                          ? 'Tap to start & log'
+                          : (wo.status == WorkOrderStatus.inProgress ? 'Tap to log service' : ''),
+                      style: NpType.mono.copyWith(
+                        fontSize: 11,
+                        color: wo.status == WorkOrderStatus.assigned ? NpColors.red : const Color(0xFF22C55E),
+                        fontWeight: FontWeight.w700,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   const SizedBox(width: 8),
+                  Text(wo.slaLabel, style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray400)),
                 ],
-                Expanded(
-                  child: Text(
-                    wo.title,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: NpColors.white),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                const Icon(Icons.place_outlined, size: 14, color: NpColors.gray500),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(wo.unitLabel, style: const TextStyle(fontSize: 12, color: NpColors.gray400), overflow: TextOverflow.ellipsis),
-                ),
-                Text(
-                  wo.status.label,
-                  style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray400),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                if (wo.status == WorkOrderStatus.assigned)
-                  TextButton(
-                    onPressed: () => ref.read(fieldSessionProvider).updateWorkOrderStatus(wo, WorkOrderStatus.inProgress),
-                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
-                    child: const Text('Start'),
-                  ),
-                if (wo.status == WorkOrderStatus.inProgress)
-                  TextButton(
-                    onPressed: () => ref.read(fieldSessionProvider).updateWorkOrderStatus(wo, WorkOrderStatus.completed),
-                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4)),
-                    child: const Text('Complete'),
-                  ),
-                const Spacer(),
-                Text(wo.slaLabel, style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray400)),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

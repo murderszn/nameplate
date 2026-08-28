@@ -314,10 +314,9 @@ export function Layout() {
           {!collapsed ? (
             <div className="np-sidebar__footer-meta">
               <div className="np-sidebar__org-name">Sonoran Portfolio</div>
-              <div className="np-sidebar__org-sub">Live Cluster</div>
             </div>
           ) : (
-            <div className="np-sidebar__footer-dot" title="Sonoran Portfolio · Online" />
+            <div className="np-sidebar__footer-dot" title="Sonoran Portfolio" />
           )}
         </div>
       </aside>
@@ -393,11 +392,6 @@ export function Layout() {
                 <path d="M7 17L17 7M17 7H7M17 7V17" />
               </svg>
             </a>
-
-            <div className="np-topbar-status" title="Live production cluster connected">
-              <span className="np-status-dot" />
-              <span>Live</span>
-            </div>
           </div>
         </header>
 

@@ -46,7 +46,7 @@ class Npid {
 
   static final _rng = Random.secure();
 
-  /// Normalize raw string to canonical uppercase Crockford (replaces I/L -> 1, O -> 0).
+  /// Normalize raw string to standard uppercase Crockford (replaces I/L -> 1, O -> 0).
   static String normalize(String raw) {
     var s = raw.trim().toUpperCase().replaceAll('-', '').replaceAll(' ', '');
     s = s.replaceAll('I', '1').replaceAll('L', '1').replaceAll('O', '0');
@@ -72,7 +72,7 @@ class Npid {
     return alphabet[val % 32];
   }
 
-  /// Mint a canonical 8-character Crockford Base32 NPID with check digit (NP-XXXXXXXC).
+  /// Mint a standard 8-character Crockford Base32 NPID with check digit (NP-XXXXXXXC).
   static String mint({String prefix = 'NP-', int bodyLen = 7}) {
     final buf = StringBuffer();
     for (var i = 0; i < bodyLen; i++) {

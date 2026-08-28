@@ -148,129 +148,137 @@ export function SyncOperations() {
   })();
 
   return (
-    <div className="space-y-6">
+    <div className="np-sync-page">
       {/* Header */}
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between border-b border-[var(--np-line)] pb-5">
+      <div className="np-sync-header">
         <div>
-          <span className="font-mono text-xs text-[var(--np-red)] tracking-widest uppercase font-bold">05 / FLEET SYNC & HARDWARE OPS</span>
-          <h1 className="text-2xl font-bold tracking-tight text-white mt-1">Sync Engine & Tag Studio</h1>
-          <p className="text-sm text-[var(--np-gray-400)] mt-0.5">
-            Monotonic Sequence Watermark: <span className="font-mono text-white font-semibold">#{logs[0]?.seq || 10483}</span> · Zero-Signal Offline Outbox Router
+          <span className="np-kicker">05 / Fleet Sync & Hardware Ops</span>
+          <h2 style={{ margin: '4px 0 6px', fontSize: '1.4rem' }}>Sync Engine & Tag Studio</h2>
+          <p className="np-muted" style={{ margin: 0, fontSize: '0.88rem' }}>
+            Monotonic Sequence Watermark: <span className="mono" style={{ color: '#fff', fontWeight: 700 }}>#{logs[0]?.seq || 10483}</span> · Zero-Signal Offline Outbox Router
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
+            type="button"
             onClick={handleSimulateSyncPush}
             disabled={isSimulating}
-            className="inline-flex items-center gap-2 bg-[var(--np-red)] hover:bg-[var(--np-red-hover)] text-white px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider rounded transition-colors shadow-[0_0_15px_rgba(255,42,42,0.3)] cursor-pointer"
+            className="np-btn np-btn--primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
             {isSimulating ? (
-              <span className="inline-block animate-spin">⟳</span>
+              <span>⟳ Processing…</span>
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><path d="m16 5 5 5-5 5"/><path d="M21 10H9"/></svg>
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7"/><path d="m16 5 5 5-5 5"/><path d="M21 10H9"/></svg>
+                <span>Simulate Ingestion Push</span>
+              </>
             )}
-            Simulate Ingestion Push
           </button>
         </div>
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] p-4 rounded-lg">
-          <div className="text-xs font-mono text-[var(--np-gray-500)] uppercase tracking-wider">Active Field Tablets</div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">14 <span className="text-xs font-normal text-[var(--np-gray-400)]">Devices</span></div>
-          <div className="text-xs text-[var(--np-gray-400)] mt-2 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" /> Subterranean Sync Ready
+      <div className="np-sync-metrics-grid">
+        <div className="np-sync-metric-card">
+          <div className="np-sync-metric-lbl">Active Field Tablets</div>
+          <div className="np-sync-metric-val">14</div>
+          <div className="np-sync-metric-sub">
+            <span style={{ width: 8, height: 8, borderRadius: 1, background: '#22c55e', display: 'inline-block' }} />
+            Subterranean Sync Ready
           </div>
         </div>
 
-        <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] p-4 rounded-lg">
-          <div className="text-xs font-mono text-[var(--np-gray-500)] uppercase tracking-wider">Today's Outbox Ops</div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">1,492</div>
-          <div className="text-xs text-emerald-400 mt-2 font-mono">0 Drops · 100% Idempotent</div>
+        <div className="np-sync-metric-card">
+          <div className="np-sync-metric-lbl">Today's Outbox Ops</div>
+          <div className="np-sync-metric-val">1,492</div>
+          <div className="np-sync-metric-sub" style={{ color: '#22c55e' }}>
+            0 Drops · 100% Idempotent
+          </div>
         </div>
 
-        <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] p-4 rounded-lg">
-          <div className="text-xs font-mono text-[var(--np-gray-500)] uppercase tracking-wider">Vault Tag Reserve Pool</div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">3,850 <span className="text-xs font-normal text-[var(--np-gray-400)]">/ 4,000</span></div>
-          <div className="text-xs text-[var(--np-gray-400)] mt-2">Pre-allocated 60-day leases</div>
+        <div className="np-sync-metric-card">
+          <div className="np-sync-metric-lbl">Vault Tag Reserve Pool</div>
+          <div className="np-sync-metric-val">3,850</div>
+          <div className="np-sync-metric-sub">
+            Pre-allocated 60-day leases
+          </div>
         </div>
 
-        <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] p-4 rounded-lg">
-          <div className="text-xs font-mono text-[var(--np-gray-500)] uppercase tracking-wider">Verification Match</div>
-          <div className="text-2xl font-bold text-emerald-400 mt-1 font-mono">100.0%</div>
-          <div className="text-xs text-[var(--np-gray-400)] mt-2 font-mono">HMAC-SHA256 Provenance</div>
+        <div className="np-sync-metric-card">
+          <div className="np-sync-metric-lbl">Verification Match</div>
+          <div className="np-sync-metric-val" style={{ color: '#22c55e' }}>100.0%</div>
+          <div className="np-sync-metric-sub">
+            HMAC-SHA256 Provenance
+          </div>
         </div>
       </div>
 
-      {/* Tabs Header */}
-      <div className="flex border-b border-[var(--np-line)] gap-6">
+      {/* Segmented Tabs */}
+      <div className="np-segmented-tabs" style={{ margin: '4px 0 12px' }}>
         <button
+          type="button"
           onClick={() => setActiveTab('sync')}
-          className={`pb-3 text-sm font-mono font-bold tracking-wider cursor-pointer border-b-2 transition-colors ${
-            activeTab === 'sync' ? 'border-[var(--np-red)] text-white' : 'border-transparent text-[var(--np-gray-500)] hover:text-[var(--np-gray-300)]'
-          }`}
+          className={`np-segmented-tab ${activeTab === 'sync' ? 'active' : ''}`}
         >
-          01 / FLEET SYNC LEDGER ({logs.length})
+          01 / Fleet Sync Ledger ({logs.length})
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('studio')}
-          className={`pb-3 text-sm font-mono font-bold tracking-wider cursor-pointer border-b-2 transition-colors ${
-            activeTab === 'studio' ? 'border-[var(--np-red)] text-white' : 'border-transparent text-[var(--np-gray-500)] hover:text-[var(--np-gray-300)]'
-          }`}
+          className={`np-segmented-tab ${activeTab === 'studio' ? 'active' : ''}`}
         >
-          02 / HARDWARE TAG STUDIO & PRINT SHEETS
+          02 / Hardware Tag Studio & Print Sheets
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab('inspector')}
-          className={`pb-3 text-sm font-mono font-bold tracking-wider cursor-pointer border-b-2 transition-colors ${
-            activeTab === 'inspector' ? 'border-[var(--np-red)] text-white' : 'border-transparent text-[var(--np-gray-500)] hover:text-[var(--np-gray-300)]'
-          }`}
+          className={`np-segmented-tab ${activeTab === 'inspector' ? 'active' : ''}`}
         >
-          03 / CRYPTOGRAPHIC TAG INSPECTOR
+          03 / Cryptographic Tag Inspector
         </button>
       </div>
 
       {/* Tab 1: Fleet Sync Ledger */}
       {activeTab === 'sync' && (
-        <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-[var(--np-line)] flex items-center justify-between">
-            <div className="text-xs font-mono font-bold text-[var(--np-gray-400)] uppercase tracking-wider">
+        <div className="np-sync-log-card">
+          <div className="np-sync-log-header">
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', fontWeight: 700, color: 'var(--gray-400)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Real-Time Outbox Push Stream (PostgreSQL Monotonic Change Sequences)
             </div>
-            <span className="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2.5 py-0.5 rounded">
+            <span className="np-badge np-badge--status-active" style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', borderColor: 'rgba(34, 197, 94, 0.3)' }}>
               SYNC ENGINE ACTIVE
             </span>
           </div>
 
-          <div className="divide-y divide-[var(--np-line)]">
+          <div className="np-sync-log-stream">
             {logs.map((log) => (
-              <div key={log.id} className="p-4 hover:bg-[var(--np-bg-elevated)] transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 p-2 bg-black border border-[var(--np-line)] rounded text-[var(--np-red)]">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <div key={log.id} className="np-sync-log-item">
+                <div className="np-sync-log-main">
+                  <div className="np-sync-icon-box">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-white">{log.deviceId}</span>
-                      <span className="text-xs text-[var(--np-gray-500)]">({log.techName})</span>
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-[var(--np-line)] text-[var(--np-gray-300)]">
+                    <div className="np-sync-log-title-row">
+                      <span className="np-sync-device-id">{log.deviceId}</span>
+                      <span className="np-sync-tech">({log.techName})</span>
+                      <span className="np-sync-op-badge">
                         {log.entityType} · {log.opType}
                       </span>
                     </div>
-                    <p className="text-sm text-[var(--np-gray-300)] mt-1">{log.summary}</p>
-                    <div className="text-xs font-mono text-[var(--np-gray-500)] mt-1">
+                    <p className="np-sync-summary">{log.summary}</p>
+                    <div className="np-sync-timestamp">
                       {new Date(log.occurredAt).toLocaleTimeString()} · Op ID: {log.id}
                     </div>
                   </div>
                 </div>
 
-                <div className="text-right flex md:flex-col items-center md:items-end justify-between">
-                  <span className="font-mono text-xs text-emerald-400 font-bold bg-emerald-950/50 border border-emerald-800/40 px-2 py-0.5 rounded">
+                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+                  <span className="np-badge" style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', borderColor: 'rgba(34, 197, 94, 0.3)', minWidth: 140 }}>
                     {log.status}
                   </span>
-                  <span className="font-mono text-[11px] text-[var(--np-gray-500)] mt-1">
+                  <span className="mono" style={{ fontSize: '0.72rem', color: 'var(--gray-500)' }}>
                     Seq #{log.seq}
                   </span>
                 </div>
@@ -282,30 +290,30 @@ export function SyncOperations() {
 
       {/* Tab 2: Hardware Tag Batch Studio */}
       {activeTab === 'studio' && (
-        <div className="space-y-6">
-          <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] p-5 rounded-lg">
-            <h3 className="text-base font-bold text-white">Batch Tag Generation & Sheet Exporter</h3>
-            <p className="text-xs text-[var(--np-gray-400)] mt-1">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2, padding: 22 }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Batch Tag Generation & Sheet Exporter</h3>
+            <p className="np-muted" style={{ fontSize: '0.8rem', margin: '0 0 16px' }}>
               Generate serialized sheets of 30 destructible vinyl tags (1.5"×1") with Crockford-32 check digits and HMAC-SHA256 authentication seals.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <div>
-                <label className="text-xs font-mono text-[var(--np-gray-400)] uppercase block mb-1">Batch Identifier</label>
+            <div className="np-studio-form-grid">
+              <div className="np-form-group" style={{ margin: 0 }}>
+                <label>Batch Identifier</label>
                 <input
                   type="text"
                   value={batchId}
                   onChange={(e) => setBatchId(e.target.value)}
-                  className="w-full bg-black border border-[var(--np-line)] text-white text-xs font-mono px-3 py-2 rounded focus:border-[var(--np-red)] focus:outline-none"
+                  className="np-input mono"
                 />
               </div>
 
-              <div>
-                <label className="text-xs font-mono text-[var(--np-gray-400)] uppercase block mb-1">Tag Count</label>
+              <div className="np-form-group" style={{ margin: 0 }}>
+                <label>Tag Count</label>
                 <select
                   value={tagCount}
                   onChange={(e) => setTagCount(parseInt(e.target.value, 10))}
-                  className="w-full bg-black border border-[var(--np-line)] text-white text-xs font-mono px-3 py-2 rounded focus:border-[var(--np-red)] focus:outline-none"
+                  className="np-input mono"
                 >
                   <option value={30}>30 Tags (1 Standard Printable Sheet)</option>
                   <option value={60}>60 Tags (2 Sheets)</option>
@@ -314,25 +322,26 @@ export function SyncOperations() {
                 </select>
               </div>
 
-              <div className="flex items-end">
-                <button
-                  onClick={handleGenerateBatch}
-                  className="w-full bg-[var(--np-red)] hover:bg-[var(--np-red-hover)] text-white py-2 text-xs font-mono font-bold uppercase tracking-wider rounded transition-colors cursor-pointer"
-                >
-                  Generate Batch
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleGenerateBatch}
+                className="np-btn np-btn--primary"
+                style={{ height: 38 }}
+              >
+                Generate Batch
+              </button>
             </div>
           </div>
 
           {/* Tag Grid Preview */}
-          <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] p-5 rounded-lg">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+          <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2, padding: 22 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: 14 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Print Sheet Preview ({generatedBatch.length} Tags · {batchId})
               </div>
-              <div className="flex gap-2">
+              <div>
                 <button
+                  type="button"
                   onClick={() => {
                     const csv = 'NPID,URL,COMPACT_URI,SIGNATURE,TIMESTAMP,BATCH\n' + generatedBatch.map(b => `${b.npid},"${b.url}","${b.compactUri}",${b.sig},${b.ts},${b.batchId}`).join('\n');
                     const blob = new Blob([csv], { type: 'text/csv' });
@@ -342,22 +351,23 @@ export function SyncOperations() {
                     a.download = `${batchId}-manifest.csv`;
                     a.click();
                   }}
-                  className="px-3 py-1 bg-black border border-[var(--np-line)] text-[var(--np-gray-300)] hover:text-white text-xs font-mono rounded cursor-pointer"
+                  className="np-btn"
+                  style={{ background: '#181818', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.76rem', padding: '6px 12px' }}
                 >
                   Export CSV Manifest
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
+            <div className="np-tag-grid-preview">
               {generatedBatch.slice(0, 30).map((t, idx) => (
-                <div key={idx} className="bg-black border border-[var(--np-line)] p-3 rounded flex flex-col items-center text-center group hover:border-[var(--np-red)] transition-colors">
+                <div key={idx} className="np-tag-preview-tile">
                   <div
-                    className="w-24 h-24 mb-2"
-                    dangerouslySetInnerHTML={{ __html: generateQrSvg(t.url, 96) }}
+                    className="np-tag-qr-svg-wrap"
+                    dangerouslySetInnerHTML={{ __html: generateQrSvg(t.url, 72) }}
                   />
-                  <div className="font-mono text-xs font-bold text-[var(--np-red)]">{t.npid}</div>
-                  <div className="text-[10px] font-mono text-[var(--np-gray-500)] mt-0.5 truncate w-full">
+                  <div className="np-tag-npid-label">{t.npid}</div>
+                  <div className="np-tag-sig-label">
                     {t.sig}
                   </div>
                 </div>
@@ -369,68 +379,68 @@ export function SyncOperations() {
 
       {/* Tab 3: Cryptographic Inspector */}
       {activeTab === 'inspector' && (
-        <div className="bg-[var(--np-bg-card)] border border-[var(--np-line)] p-5 rounded-lg space-y-5">
+        <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2, padding: 22 }}>
           <div>
-            <h3 className="text-base font-bold text-white">Cryptographic NPID & QR Matrix Inspector</h3>
-            <p className="text-xs text-[var(--np-gray-400)] mt-1">
-              Paste any public scan URL (<code className="text-white">https://np.app/a/NP...</code>), compact URI, or bare NPID to verify checksum and HMAC signature.
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Cryptographic NPID & QR Matrix Inspector</h3>
+            <p className="np-muted" style={{ fontSize: '0.8rem', margin: '0 0 16px' }}>
+              Paste any public scan URL (<span className="mono" style={{ color: '#fff' }}>https://np.app/a/NP...</span>), compact URI, or bare NPID to verify checksum and HMAC signature.
             </p>
           </div>
 
-          <div>
-            <label className="text-xs font-mono text-[var(--np-gray-400)] uppercase block mb-1">Payload / NPID Input</label>
+          <div className="np-form-group" style={{ margin: 0 }}>
+            <label>Payload / NPID Input</label>
             <input
               type="text"
               value={inspectInput}
               onChange={(e) => setInspectInput(e.target.value)}
-              className="w-full bg-black border border-[var(--np-line)] text-white text-xs font-mono px-3 py-2.5 rounded focus:border-[var(--np-red)] focus:outline-none"
+              className="np-input mono"
               placeholder="e.g. https://np.app/a/NP7K2M4QX9?s=..."
             />
           </div>
 
           {inspectParsed && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-              <div className="bg-black border border-[var(--np-line)] p-4 rounded space-y-3">
-                <div className="text-xs font-mono text-[var(--np-gray-500)] uppercase">Crockford Base32 Checksum Engine</div>
-                <div className="flex items-center justify-between border-b border-[var(--np-line)] pb-2">
-                  <span className="text-xs text-[var(--np-gray-400)]">Canonical NPID</span>
-                  <span className="font-mono text-sm font-bold text-white">{inspectParsed.rawNpid}</span>
+            <div className="np-crypto-matrix-grid">
+              <div className="np-crypto-spec-box">
+                <div className="np-crypto-spec-title">Crockford Base32 Checksum Engine</div>
+                <div className="np-crypto-spec-row">
+                  <span className="lbl">Nameplate ID (NPID)</span>
+                  <span className="val">{inspectParsed.rawNpid}</span>
                 </div>
-                <div className="flex items-center justify-between border-b border-[var(--np-line)] pb-2">
-                  <span className="text-xs text-[var(--np-gray-400)]">Body Digits (7 chars)</span>
-                  <span className="font-mono text-xs text-[var(--np-gray-300)]">{inspectParsed.body}</span>
+                <div className="np-crypto-spec-row">
+                  <span className="lbl">Body Digits (7 chars)</span>
+                  <span className="val" style={{ color: 'var(--gray-300)' }}>{inspectParsed.body}</span>
                 </div>
-                <div className="flex items-center justify-between border-b border-[var(--np-line)] pb-2">
-                  <span className="text-xs text-[var(--np-gray-400)]">Check Symbol</span>
-                  <span className={`font-mono text-xs font-bold ${inspectParsed.isCheckValid ? 'text-emerald-400' : 'text-[var(--np-red)]'}`}>
+                <div className="np-crypto-spec-row">
+                  <span className="lbl">Check Symbol</span>
+                  <span className="val" style={{ color: inspectParsed.isCheckValid ? '#22c55e' : 'var(--red)' }}>
                     {inspectParsed.checkChar} (Expected: {inspectParsed.expectedCheck})
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-[var(--np-gray-400)]">Checksum Status</span>
-                  <span className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${inspectParsed.isCheckValid ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-red-950 text-red-400 border border-red-800'}`}>
+                <div className="np-crypto-spec-row" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+                  <span className="lbl">Checksum Status</span>
+                  <span className="np-badge" style={{ minWidth: 150, background: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.1)' : 'rgba(255,42,42,0.1)', color: inspectParsed.isCheckValid ? '#22c55e' : 'var(--red)', borderColor: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.3)' : 'rgba(255,42,42,0.3)' }}>
                     {inspectParsed.isCheckValid ? 'VALID CROCKFORD-32' : 'CHECKSUM MISMATCH'}
                   </span>
                 </div>
               </div>
 
-              <div className="bg-black border border-[var(--np-line)] p-4 rounded space-y-3">
-                <div className="text-xs font-mono text-[var(--np-gray-500)] uppercase">HMAC-SHA256 Digital Authorization</div>
-                <div className="flex items-center justify-between border-b border-[var(--np-line)] pb-2">
-                  <span className="text-xs text-[var(--np-gray-400)]">Signature Token</span>
-                  <span className="font-mono text-xs text-white">{inspectParsed.sig || 'None (Unsigned)'}</span>
+              <div className="np-crypto-spec-box">
+                <div className="np-crypto-spec-title">HMAC-SHA256 Digital Authorization</div>
+                <div className="np-crypto-spec-row">
+                  <span className="lbl">Signature Token</span>
+                  <span className="val mono" style={{ fontSize: '0.74rem' }}>{inspectParsed.sig || 'None (Unsigned)'}</span>
                 </div>
-                <div className="flex items-center justify-between border-b border-[var(--np-line)] pb-2">
-                  <span className="text-xs text-[var(--np-gray-400)]">Provenance Batch</span>
-                  <span className="font-mono text-xs text-[var(--np-gray-300)]">{inspectParsed.batch}</span>
+                <div className="np-crypto-spec-row">
+                  <span className="lbl">Provenance Batch</span>
+                  <span className="val">{inspectParsed.batch}</span>
                 </div>
-                <div className="flex items-center justify-between border-b border-[var(--np-line)] pb-2">
-                  <span className="text-xs text-[var(--np-gray-400)]">Cryptographic Proof</span>
-                  <span className="font-mono text-xs font-bold text-emerald-400">100% AUTHENTIC HARDWARE</span>
+                <div className="np-crypto-spec-row">
+                  <span className="lbl">Cryptographic Proof</span>
+                  <span className="val" style={{ color: '#22c55e' }}>100% AUTHENTIC HARDWARE</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-[var(--np-gray-400)]">Offline Verification Time</span>
-                  <span className="font-mono text-xs text-[var(--np-gray-400)]">0.0028 ms</span>
+                <div className="np-crypto-spec-row" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+                  <span className="lbl">Offline Verification Time</span>
+                  <span className="val mono" style={{ color: 'var(--gray-400)' }}>0.0028 ms</span>
                 </div>
               </div>
             </div>

@@ -12,7 +12,7 @@ Do we identify assets by **what the manufacturer already put on them** (serial n
 
 > ### Hybrid, with a hard priority order.
 >
-> **Mint our own identifier — the Nameplate ID (NPID) — as the canonical, scannable primary key for every asset. Capture the manufacturer serial and model as high-value *attributes* of that record, resolved against a self-built, crowd-populated asset-master catalog. Ship printed QR stickers in V0; add NFC as an optional premium tag in V1.**
+> **Mint our own identifier — the Nameplate ID (NPID) — as the primary, scannable key for every asset. Capture the manufacturer serial and model as high-value *attributes* of that record, resolved against a self-built, crowd-populated asset-master catalog. Ship printed QR stickers in V0; add NFC as an optional premium tag in V1.**
 
 Neither pure approach survives contact with an apartment maintenance closet. The serial-only approach fails on data quality; the proprietary-only approach throws away the manufacturer data that makes the analytics valuable. The hybrid is not a compromise — each half does a job the other can't.
 

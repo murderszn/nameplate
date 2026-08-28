@@ -237,7 +237,7 @@ Seeded globally (`org_id NULL` = system row), extensible per org.
 |---|---|---|
 | `id` | `uuid` PK | UUIDv7 |
 | `org_id` | `uuid NOT NULL` | **the owning portfolio** |
-| `npid` | `text NOT NULL` | **Nameplate ID — the canonical scannable key.** Format `NP-XXXXXXXX` (Crockford base32, checksummed). Printed on our tag. Never changes for the life of the asset, across every move, org-visible. |
+| `npid` | `text NOT NULL` | **Nameplate ID — the primary scannable key.** Format `NP-XXXXXXXX` (Crockford base32, checksummed). Printed on our tag. Never changes for the life of the asset, across every move, org-visible. |
 | `category_id` | `uuid NOT NULL` | |
 | `asset_model_id` | `uuid NULL` | resolves manufacturer/model; null while unidentified |
 | `manufacturer_raw` | `text NULL` | exactly as read off the plate, preserved even after model resolution |
@@ -280,7 +280,7 @@ Seeded globally (`org_id NULL` = system row), extensible per org.
 **Constraints & indexes — the important ones:**
 
 ```sql
--- The canonical key. Globally unique; an NPID scanned anywhere resolves to exactly one asset,
+-- The primary key. Globally unique; an NPID scanned anywhere resolves to exactly one asset,
 -- even if the asset was sold between two orgs on our platform.
 UNIQUE (npid)
 

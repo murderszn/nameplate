@@ -26,7 +26,7 @@
           <text x="275" y="62" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="180" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="180" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="180" y="110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-PMG5PZHH</text>
 
           <!-- Spec Tags -->
@@ -63,7 +63,7 @@
           <text x="615" y="62" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="520" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="520" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="520" y="110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-FREPSCAA</text>
 
           <!-- Spec Tags -->
@@ -100,7 +100,7 @@
           <text x="955" y="62" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="860" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="860" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="860" y="110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-7JMWS1RR</text>
 
           <!-- Spec Tags -->
@@ -137,7 +137,7 @@
           <text x="1295" y="62" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1200" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1200" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1200" y="110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-Z84AG6AA</text>
 
           <!-- Spec Tags -->
@@ -174,7 +174,7 @@
           <text x="1635" y="62" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1540" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1540" y="88" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1540" y="110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-0SSZXMSS</text>
 
           <!-- Spec Tags -->
@@ -211,7 +211,7 @@
           <text x="275" y="262" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="180" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="180" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="180" y="310" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-DGW37366</text>
 
           <!-- Spec Tags -->
@@ -248,7 +248,7 @@
           <text x="615" y="262" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="520" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="520" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="520" y="310" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-7M1B7WSS</text>
 
           <!-- Spec Tags -->
@@ -285,7 +285,7 @@
           <text x="955" y="262" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="860" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="860" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="860" y="310" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-JJQTH5ZZ</text>
 
           <!-- Spec Tags -->
@@ -322,7 +322,7 @@
           <text x="1295" y="262" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1200" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1200" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1200" y="310" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-WQB3K0DD</text>
 
           <!-- Spec Tags -->
@@ -359,7 +359,7 @@
           <text x="1635" y="262" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1540" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1540" y="288" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1540" y="310" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-APB7ST88</text>
 
           <!-- Spec Tags -->
@@ -396,7 +396,7 @@
           <text x="275" y="462" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="180" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="180" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="180" y="510" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-FFH2S0FF</text>
 
           <!-- Spec Tags -->
@@ -433,7 +433,7 @@
           <text x="615" y="462" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="520" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="520" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="520" y="510" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-SZA71YAA</text>
 
           <!-- Spec Tags -->
@@ -470,7 +470,7 @@
           <text x="955" y="462" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="860" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="860" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="860" y="510" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-V4CKWAWW</text>
 
           <!-- Spec Tags -->
@@ -507,7 +507,7 @@
           <text x="1295" y="462" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1200" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1200" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1200" y="510" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-7M90KJ00</text>
 
           <!-- Spec Tags -->
@@ -544,7 +544,7 @@
           <text x="1635" y="462" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1540" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1540" y="488" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1540" y="510" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-QM9GJ6PP</text>
 
           <!-- Spec Tags -->
@@ -581,7 +581,7 @@
           <text x="275" y="662" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="180" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="180" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="180" y="710" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-KHRK4MCC</text>
 
           <!-- Spec Tags -->
@@ -618,7 +618,7 @@
           <text x="615" y="662" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="520" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="520" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="520" y="710" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-QWCWN3BB</text>
 
           <!-- Spec Tags -->
@@ -655,7 +655,7 @@
           <text x="955" y="662" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="860" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="860" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="860" y="710" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-Y46JSR22</text>
 
           <!-- Spec Tags -->
@@ -692,7 +692,7 @@
           <text x="1295" y="662" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1200" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1200" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1200" y="710" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-11JMG8TT</text>
 
           <!-- Spec Tags -->
@@ -729,7 +729,7 @@
           <text x="1635" y="662" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1540" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1540" y="688" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1540" y="710" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-2YP29TNN</text>
 
           <!-- Spec Tags -->
@@ -766,7 +766,7 @@
           <text x="275" y="862" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="180" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="180" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="180" y="910" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-3WGJ7KBB</text>
 
           <!-- Spec Tags -->
@@ -803,7 +803,7 @@
           <text x="615" y="862" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="520" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="520" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="520" y="910" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-3C46SW88</text>
 
           <!-- Spec Tags -->
@@ -840,7 +840,7 @@
           <text x="955" y="862" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="860" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="860" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="860" y="910" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-KFYBTB22</text>
 
           <!-- Spec Tags -->
@@ -877,7 +877,7 @@
           <text x="1295" y="862" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1200" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1200" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1200" y="910" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-DF3N28NN</text>
 
           <!-- Spec Tags -->
@@ -914,7 +914,7 @@
           <text x="1635" y="862" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1540" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1540" y="888" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1540" y="910" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-KE9DX366</text>
 
           <!-- Spec Tags -->
@@ -951,7 +951,7 @@
           <text x="275" y="1062" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="180" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="180" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="180" y="1110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-Q8SBV477</text>
 
           <!-- Spec Tags -->
@@ -988,7 +988,7 @@
           <text x="615" y="1062" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="520" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="520" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="520" y="1110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-2NTBGBMM</text>
 
           <!-- Spec Tags -->
@@ -1025,7 +1025,7 @@
           <text x="955" y="1062" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="860" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="860" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="860" y="1110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-E14VEN55</text>
 
           <!-- Spec Tags -->
@@ -1062,7 +1062,7 @@
           <text x="1295" y="1062" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1200" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1200" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1200" y="1110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-83JX6CVV</text>
 
           <!-- Spec Tags -->
@@ -1099,7 +1099,7 @@
           <text x="1635" y="1062" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="1540" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="1540" y="1088" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="1540" y="1110" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">NP-QKC0E2FF</text>
 
           <!-- Spec Tags -->

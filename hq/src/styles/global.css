@@ -625,17 +625,21 @@ code,
 .np-status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.72rem;
+  justify-content: center;
+  min-width: 105px;
+  text-align: center;
+  font-size: 0.7rem;
   font-weight: 700;
   font-family: var(--font-mono);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   padding: 4px 8px;
   border-radius: 2px;
   border: 1px solid var(--line);
   background: var(--white-08);
   color: var(--gray-300);
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .np-badge--info {
@@ -1840,5 +1844,295 @@ code,
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* ================= Sync Engine, Tag Studio & Crypto Inspector ================= */
+.np-sync-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.np-sync-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.np-sync-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.np-sync-metric-card {
+  background: #0e0e0e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.np-sync-metric-lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.np-sync-metric-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: #fff;
+  line-height: 1.2;
+}
+
+.np-sync-metric-sub {
+  font-size: 0.72rem;
+  color: var(--gray-500);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Sync Stream Log */
+.np-sync-log-card {
+  background: #0e0e0e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.np-sync-log-header {
+  padding: 14px 18px;
+  background: #121212;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.np-sync-log-stream {
+  display: flex;
+  flex-direction: column;
+}
+
+.np-sync-log-item {
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  transition: background 0.15s ease;
+}
+
+.np-sync-log-item:last-child {
+  border-bottom: none;
+}
+
+.np-sync-log-item:hover {
+  background: #141414;
+}
+
+.np-sync-log-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.np-sync-icon-box {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  padding: 8px;
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.np-sync-log-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.np-sync-device-id {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.np-sync-tech {
+  font-size: 0.76rem;
+  color: var(--gray-400);
+}
+
+.np-sync-op-badge {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: #ccc;
+}
+
+.np-sync-summary {
+  font-size: 0.84rem;
+  color: #e0e0e0;
+  margin: 4px 0 2px;
+}
+
+.np-sync-timestamp {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--gray-500);
+}
+
+/* Tag Studio Sheet Preview */
+.np-studio-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 14px;
+  margin-top: 16px;
+  align-items: flex-end;
+}
+
+@media (max-width: 768px) {
+  .np-studio-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.np-tag-grid-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.np-tag-preview-tile {
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.np-tag-preview-tile:hover {
+  border-color: var(--red);
+  background: #080404;
+}
+
+.np-tag-qr-svg-wrap {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 6px;
+  background: #fff;
+  padding: 4px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.np-tag-qr-svg-wrap svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.np-tag-npid-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--red);
+  letter-spacing: 0.04em;
+}
+
+.np-tag-sig-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--gray-500);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 2px;
+}
+
+/* Cryptographic Inspector */
+.np-crypto-matrix-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .np-crypto-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.np-crypto-spec-box {
+  background: #080808;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.np-crypto-spec-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-400);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+}
+
+.np-crypto-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.np-crypto-spec-row .lbl {
+  color: var(--gray-400);
+}
+
+.np-crypto-spec-row .val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #fff;
 }
 

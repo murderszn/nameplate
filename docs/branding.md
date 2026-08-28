@@ -82,7 +82,7 @@ Compound of *ledger* (the immutable chain-of-custody record that is our real tec
 | Web console for HQ/managers | **Nameplate HQ** | Reached at `hq.nameplate.app`. Spoken as "HQ." Never call it "the admin panel" in customer-facing copy. |
 | Marketing site | **nameplate.app** | Not a named sub-product. |
 | Our proprietary QR/NFC sticker | **Nameplate Tag** | Physical SKU. The scannable ID it carries is the **Nameplate ID (NPID)**. |
-| The canonical asset record | **The Plate** (informal) / Asset Record (formal) | "Pull up the plate on that fridge." Encourage but don't force. |
+| The primary asset record | **The Plate** (informal) / Asset Record (formal) | "Pull up the plate on that fridge." Encourage but don't force. |
 
 Deliberately: the HQ console is *not* called "Dashboard," "Portal," or "Admin." "HQ" mirrors how the buyer already describes themselves ("I'm running all of this from Arizona") and frames the remote manager as a commander, not a bureaucrat.
 

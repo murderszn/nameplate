@@ -25,7 +25,7 @@ class Asset {
   /// UUIDv7, client-generatable offline (architecture.md §3).
   final String id;
 
-  /// Canonical scannable key: `NP-XXXXXXXX`. See docs/branding.md "Nameplate ID".
+  /// Primary scannable key: `NP-XXXXXXXX`. See docs/branding.md "Nameplate ID".
   final String npid;
 
   final String categoryDisplayName;
@@ -42,8 +42,8 @@ class Asset {
   DateTime? currentLocationConfirmedAt;
 
   final DateTime? installDate;
-  final DateTime? lastServiceAt;
-  final double lifetimeServiceCost;
+  DateTime? lastServiceAt;
+  double lifetimeServiceCost;
 
   Asset({
     required this.id,

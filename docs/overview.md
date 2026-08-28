@@ -46,7 +46,7 @@ There's no universal database of manufacturer serial numbers we can just
 call — GE, Whirlpool, Frigidaire, LG, etc. all keep that data to
 themselves, if they keep it at all. So the plan is a hybrid: mint our own
 **Nameplate ID (NPID)** as a printed QR sticker on every asset — that's the
-canonical, always-scannable key — and store the manufacturer's own
+primary, always-scannable key — and store the manufacturer's own
 serial/model as an attribute underneath it, enriched over time by our own
 crowd-populated model catalog. Full reasoning in
 [`asset-tagging-strategy.md`](asset-tagging-strategy.md).

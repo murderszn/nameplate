@@ -615,7 +615,7 @@ def generate_printable_sheet_svg(
           <text x="{pos_x+245}" y="{pos_y+32}" font-family="'IBM Plex Mono', monospace" font-size="9" font-weight="700" fill="#FF2A2A">TAMPER-PROOF</text>
 
           <!-- NPID & Type -->
-          <text x="{pos_x+150}" y="{pos_y+58}" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">CANONICAL NPID</text>
+          <text x="{pos_x+150}" y="{pos_y+58}" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#888888">NAMEPLATE ID</text>
           <text x="{pos_x+150}" y="{pos_y+80}" font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="700" fill="#FFFFFF">{npid}</text>
 
           <!-- Spec Tags -->
@@ -669,7 +669,7 @@ def cmd_mint(args):
     print("\n" + "=" * 68)
     print("  \033[97;1mNAMEPLATE — CRYPTOGRAPHIC OFFLINE-SYNC HARDWARE TAG\033[0m")
     print("=" * 68)
-    print(f"  \033[90mCanonical NPID :\033[0m \033[92;1m{payload['npid']}\033[0m")
+    print(f"  \033[90mNameplate ID   :\033[0m \033[92;1m{payload['npid']}\033[0m")
     print(f"  \033[90mOrganization   :\033[0m \033[97m{payload['org_id']}\033[0m")
     print(f"  \033[90mBatch Scope    :\033[0m \033[97m{payload['batch_id']}\033[0m")
     print(f"  \033[90mSignature (MAC):\033[0m \033[93m{payload['signature']}\033[0m")

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/asset.dart';
+import '../models/service_event.dart';
 import '../models/turn.dart';
 import '../models/unit.dart';
 import '../models/work_order.dart';
@@ -273,6 +274,15 @@ class FieldSession extends ChangeNotifier {
   }
 
   void saveTurnItem(TurnItem item) {
+    notifyListeners();
+  }
+
+  Future<void> logServiceEvent(ServiceEvent event) async {
+    final asset = lookupAsset(event.assetId);
+    _enqueue(
+      'service_event.create',
+      'Logged ${event.eventType.name} on ${asset?.npid ?? event.assetId} (${event.resolutionCode?.name ?? "resolved"})',
+    );
     notifyListeners();
   }
 

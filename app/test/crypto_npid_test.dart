@@ -4,7 +4,7 @@ import 'package:nameplate_field/services/npid.dart';
 
 void main() {
   group('Cryptographic NPID & Offline Tag Verification Engine', () {
-    test('Mints canonical 8-character Crockford Base32 NPID with valid checksum', () {
+    test('Mints standard 8-character Crockford Base32 NPID with valid checksum', () {
       for (var i = 0; i < 50; i++) {
         final npid = Npid.mint();
         expect(npid.startsWith('NP-'), isTrue);

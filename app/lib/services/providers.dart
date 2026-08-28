@@ -14,8 +14,9 @@ final assetRepositoryProvider = Provider<AssetRepository>((ref) {
   return AssetRepository(ref.watch(fieldSessionProvider));
 });
 
-final serviceEventRepositoryProvider =
-    Provider<ServiceEventRepository>((ref) => ServiceEventRepository());
+final serviceEventRepositoryProvider = Provider<ServiceEventRepository>((ref) {
+  return ServiceEventRepository(ref.watch(fieldSessionProvider));
+});
 
 final turnRepositoryProvider = Provider<TurnRepository>((ref) {
   return TurnRepository(ref.watch(fieldSessionProvider));

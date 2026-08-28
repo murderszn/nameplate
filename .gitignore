@@ -29,3 +29,7 @@ app/android/local.properties
 app/android/.gradle/
 app/ios/Pods/
 app/ios/Flutter/ephemeral/
+
+# Python
+__pycache__/
+*.pyc

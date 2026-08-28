@@ -1,0 +1,28 @@
+{
+  "name": "ims",
+  "version": "1.0.0",
+  "description": "*Every appliance accounted for.*",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/murderszn/nameplate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/murderszn/nameplate/issues"
+  },
+  "homepage": "https://github.com/murderszn/nameplate#readme",
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}
