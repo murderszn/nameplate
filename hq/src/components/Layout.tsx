@@ -382,7 +382,7 @@ export function Layout() {
             </form>
 
             <a
-              href="http://localhost:8080"
+              href={window.location.port === '5173' ? 'http://localhost:8080' : '../field/index.html'}
               target="_blank"
               rel="noreferrer"
               className="np-topbar-btn"
