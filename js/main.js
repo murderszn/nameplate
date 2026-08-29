@@ -622,6 +622,15 @@
     var speeds = [1.0, 1.25, 1.5, 2.0];
     var currentSpeedIndex = 0;
 
+    function ensureAudioSource() {
+      if (audio.getAttribute('src')) return;
+      var source = audio.getAttribute('data-src');
+      if (source) {
+        audio.src = source;
+        audio.load();
+      }
+    }
+
     function formatTime(seconds) {
       if (isNaN(seconds) || seconds < 0) return '00:00';
       var m = Math.floor(seconds / 60);
@@ -636,6 +645,7 @@
 
     playBtn.addEventListener('click', function () {
       if (audio.paused) {
+        ensureAudioSource();
         audio.play().then(function () {
           playIcon.classList.add('hidden');
           pauseIcon.classList.remove('hidden');
@@ -708,7 +718,7 @@
       currentSlide = idx;
 
       var padIdx = (currentSlide < 10 ? '0' : '') + currentSlide;
-      mainSlide.src = 'images/deck/slide_' + padIdx + '.png';
+      mainSlide.src = 'images/deck/web/slide_' + padIdx + '.webp';
       slideCounter.textContent = 'SLIDE ' + padIdx + ' / ' + (totalSlides < 10 ? '0' : '') + totalSlides;
 
       thumbs.forEach(function (thumb) {
