@@ -524,6 +524,34 @@
     onScroll();
   }
 
+  // ================= 8. Canonical App Screens Gallery Filter =================
+  function initScreensFilter() {
+    var pills = document.querySelectorAll('.filter-pill');
+    var cards = document.querySelectorAll('.screen-card');
+
+    if (!pills.length || !cards.length) return;
+
+    pills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        var filter = pill.getAttribute('data-filter');
+
+        pills.forEach(function (p) { p.classList.remove('active'); });
+        pill.classList.add('active');
+
+        cards.forEach(function (card) {
+          var cat = card.getAttribute('data-category');
+          if (filter === 'all' || cat === filter) {
+            card.classList.remove('is-hidden');
+            card.style.display = 'flex';
+          } else {
+            card.classList.add('is-hidden');
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+
   // Initialize
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
@@ -531,6 +559,7 @@
       initOversizedQrStudio();
       initSchematicsViewer();
       initBlueprint();
+      initScreensFilter();
       renderLiveAppRecord('hvac');
     });
   } else {
@@ -538,6 +567,7 @@
     initOversizedQrStudio();
     initSchematicsViewer();
     initBlueprint();
+    initScreensFilter();
     renderLiveAppRecord('hvac');
   }
 
