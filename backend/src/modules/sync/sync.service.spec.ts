@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
 import { SyncService } from './sync.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SyncEntityType, SyncOpType } from './dto/sync-push.dto';
@@ -10,6 +11,11 @@ describe('SyncService', () => {
   const mockPrismaService = {
     asset: {
       findMany: jest.fn().mockResolvedValue([]),
+      findFirst: jest.fn().mockResolvedValue({
+        id: 'asset-fridge',
+        currentPropertyId: 'property-1',
+        currentUnitId: 'unit-1',
+      }),
       create: jest.fn().mockImplementation(({ data }) => Promise.resolve({ id: data.id || 'asset-uuid-1', ...data })),
       update: jest.fn().mockImplementation(({ where, data }) => Promise.resolve({ id: where.id, ...data })),
     },
@@ -31,6 +37,14 @@ describe('SyncService', () => {
       providers: [
         SyncService,
         { provide: PrismaService, useValue: mockPrismaService },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) =>
+              key === 'npidSigningSecret' ? 'unit-test-secret' : undefined,
+            ),
+          },
+        },
       ],
     }).compile();
 
@@ -85,6 +99,22 @@ describe('SyncService', () => {
       expect(res2.duplicateCount).toBe(1);
       expect(res2.results[0].status).toBe('duplicate');
     });
+
+    it('rejects a field write outside the assigned property scope', async () => {
+      const res = await service.push({
+        deviceId: 'fld-dev-1',
+        operations: [{
+          opId: 'out-of-scope-op',
+          entityType: SyncEntityType.SERVICE_EVENT,
+          opType: SyncOpType.CREATE,
+          occurredAt: new Date().toISOString(),
+          payload: { assetId: 'asset-fridge', eventType: 'inspection' },
+        }],
+      }, 'org_test_123', 'user-1', 'membership-1', ['property-2']);
+
+      expect(res.rejectedCount).toBe(1);
+      expect(res.results[0].error).toContain('outside the membership scope');
+    });
   });
 
   describe('pull', () => {
@@ -96,6 +126,16 @@ describe('SyncService', () => {
       const res = await service.pull({ cursor: '10000', limit: 100 }, 'org_test_123');
       expect(res.changes.assets.length).toBe(1);
       expect(res.cursor).toBe('10500');
+    });
+
+    it('keeps an unassigned technician on an empty property scope', async () => {
+      await service.pull({ cursor: '0', limit: 100 }, 'org_test_123', []);
+
+      expect(mockPrismaService.serviceEvent.findMany).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ propertyId: { in: [] } }),
+        }),
+      );
     });
   });
 });

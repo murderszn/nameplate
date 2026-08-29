@@ -25,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
         showLogo: true,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
         children: [
           ResponsiveContainer(
             maxWidth: 720,
@@ -33,144 +33,181 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.person_outline),
-                        title: const Text('Technician'),
-                        subtitle: Text('${session.tech.name} · ${session.tech.role}\n${FieldSession.orgName}'),
-                        isThreeLine: true,
-                        trailing: const Icon(Icons.chevron_right, color: NpColors.gray500),
-                        onTap: () => _pickTech(context, ref, session),
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: const Icon(Icons.apartment_outlined),
-                        title: const Text('Assigned properties'),
-                        subtitle: Text(
-                          session.properties
-                              .where((p) => session.assignedPropertyIds.contains(p.id))
-                              .map((p) => p.name)
-                              .join(', '),
-                        ),
-                        trailing: const Icon(Icons.chevron_right, color: NpColors.gray500),
-                        onTap: () => _pickProperties(context, ref, session),
-                      ),
-                    ],
-                  ),
+                // ── Identity ────────────────────────────────────────
+                NpSectionLabel('Identity'),
+                const SizedBox(height: 10),
+                _SettingsGroup(
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.person_outline,
+                      title: 'Technician',
+                      subtitle:
+                          '${session.tech.name} · ${session.tech.role}\n${FieldSession.orgName}',
+                      isThreeLine: true,
+                      onTap: () => _pickTech(context, ref, session),
+                    ),
+                    _GroupDivider(),
+                    _SettingsTile(
+                      icon: Icons.apartment_outlined,
+                      title: 'Assigned properties',
+                      subtitle: session.properties
+                          .where((p) =>
+                              session.assignedPropertyIds.contains(p.id))
+                          .map((p) => p.name)
+                          .join(', '),
+                      onTap: () => _pickProperties(context, ref, session),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.sync),
-                        title: const Text('Sync engine'),
-                        subtitle: Text(
-                          snapshot.state == SyncState.offline
-                              ? 'Offline · ${snapshot.pendingCount} queued'
-                              : snapshot.pendingCount == 0
-                                  ? 'Current · last push ${_ago(lastSync)}'
-                                  : '${snapshot.pendingCount} pending'
-                                      '${snapshot.oldestUnsyncedAt != null ? ' · oldest ${_ago(snapshot.oldestUnsyncedAt)}' : ''}',
-                        ),
-                        trailing: session.syncing
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : OutlinedButton(
-                                onPressed: session.offlineMode
-                                    ? null
-                                    : () async {
-                                        await ref.read(fieldSessionProvider).forceSync();
-                                        if (!context.mounted) return;
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Outbox drained. Working set current.')),
-                                        );
-                                      },
-                                child: const Text('Force sync'),
-                              ),
-                      ),
-                      const Divider(height: 1),
-                      SwitchListTile(
-                        secondary: const Icon(Icons.cloud_off),
-                        title: const Text('Work offline'),
-                        subtitle: const Text('Queue writes; skip pull until you reconnect'),
-                        value: session.offlineMode,
-                        onChanged: (v) => ref.read(fieldSessionProvider).setOfflineMode(v),
-                      ),
-                      const Divider(height: 1),
-                      SwitchListTile(
-                        secondary: const Icon(Icons.wifi_tethering_outlined),
-                        title: const Text('Photos on unmetered Wi-Fi only'),
-                        subtitle: const Text('Tech-overridable · default on'),
-                        value: session.photoWifiOnly,
-                        onChanged: (v) => ref.read(fieldSessionProvider).setPhotoWifiOnly(v),
-                      ),
-                    ],
-                  ),
-                ),
-                if (session.outbox.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const NpKicker('Outbox'),
-                          const SizedBox(height: 8),
-                          ...session.outbox.take(8).map(
-                            (op) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              dense: true,
-                              leading: Icon(
-                                op.synced ? Icons.check_circle : Icons.cloud_upload,
-                                color: op.synced ? NpColors.white : NpColors.red,
-                                size: 18,
-                              ),
-                              title: Text(op.summary, maxLines: 1, overflow: TextOverflow.ellipsis),
-                              subtitle: Text(
-                                op.type,
-                                style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray500),
+
+                const SizedBox(height: 28),
+
+                // ── Sync ─────────────────────────────────────────────
+                NpSectionLabel('Sync engine'),
+                const SizedBox(height: 10),
+                _SettingsGroup(
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.sync,
+                      title: 'Sync status',
+                      subtitle: snapshot.state == SyncState.offline
+                          ? 'Offline · ${snapshot.pendingCount} queued'
+                          : snapshot.pendingCount == 0
+                              ? 'Current · last push ${_ago(lastSync)}'
+                              : '${snapshot.pendingCount} pending'
+                                  '${snapshot.oldestUnsyncedAt != null ? ' · oldest ${_ago(snapshot.oldestUnsyncedAt)}' : ''}',
+                      trailing: session.syncing
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : GestureDetector(
+                              onTap: session.offlineMode
+                                  ? null
+                                  : () async {
+                                      await ref
+                                          .read(fieldSessionProvider)
+                                          .forceSync();
+                                      if (!context.mounted) return;
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Outbox drained. Working set current.')),
+                                      );
+                                    },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: session.offlineMode
+                                        ? NpColors.lineStrong
+                                        : NpColors.white,
+                                  ),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                                child: Text(
+                                  'FORCE SYNC',
+                                  style: NpType.mono.copyWith(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: session.offlineMode
+                                        ? NpColors.gray500
+                                        : NpColors.white,
+                                    letterSpacing: 0.6,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                    ),
+                    _GroupDivider(),
+                    _SwitchTile(
+                      icon: Icons.cloud_off,
+                      title: 'Work offline',
+                      subtitle: 'Queue writes; skip pull until you reconnect',
+                      value: session.offlineMode,
+                      onChanged: (v) =>
+                          ref.read(fieldSessionProvider).setOfflineMode(v),
+                    ),
+                    _GroupDivider(),
+                    _SwitchTile(
+                      icon: Icons.wifi_tethering_outlined,
+                      title: 'Photos on unmetered Wi-Fi only',
+                      subtitle: 'Tech-overridable · default on',
+                      value: session.photoWifiOnly,
+                      onChanged: (v) =>
+                          ref.read(fieldSessionProvider).setPhotoWifiOnly(v),
+                    ),
+                  ],
+                ),
+
+                if (session.outbox.isNotEmpty) ...[
+                  const SizedBox(height: 28),
+                  NpSectionLabel('Outbox', trailing: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: NpColors.redSubtle,
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(color: NpColors.redBorder),
+                    ),
+                    child: Text(
+                      '${session.outbox.length}',
+                      style: NpType.mono.copyWith(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: NpColors.red,
                       ),
                     ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                Card(
-                  child: Column(
+                  )),
+                  const SizedBox(height: 10),
+                  _SettingsGroup(
                     children: [
-                      ListTile(
-                        leading: const Icon(Icons.qr_code_2),
-                        title: const Text('Nameplate Tag studio'),
-                        subtitle: const Text('Mint NPID + QR payload for a physical plate'),
-                        trailing: const Icon(Icons.chevron_right, color: NpColors.gray500),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const TagStudioScreen()),
-                        ),
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: const Icon(Icons.tablet_android),
-                        title: const Text('Device'),
-                        subtitle: Text('${session.deviceId} · ${MediaQuery.sizeOf(context).shortestSide >= 640 ? 'Tablet' : 'Phone'} layout'),
-                      ),
-                      const Divider(height: 1),
-                      const ListTile(
-                        leading: Icon(Icons.info_outline),
-                        title: Text('About Nameplate Field'),
-                        subtitle: Text('v0.1.0 · Offline-first appliance registry'),
-                      ),
+                      ...session.outbox.take(8).map((op) => _OutboxItem(op: op)),
                     ],
                   ),
+                ],
+
+                const SizedBox(height: 28),
+
+                // ── Tools ────────────────────────────────────────────
+                NpSectionLabel('Tools'),
+                const SizedBox(height: 10),
+                _SettingsGroup(
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.qr_code_2,
+                      title: 'Nameplate Tag studio',
+                      subtitle: 'Mint NPID + QR payload for a physical plate',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const TagStudioScreen()),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 28),
+
+                // ── About ────────────────────────────────────────────
+                NpSectionLabel('Device & app'),
+                const SizedBox(height: 10),
+                _SettingsGroup(
+                  children: [
+                    _SettingsTile(
+                      icon: Icons.tablet_android,
+                      title: 'Device',
+                      subtitle:
+                          '${session.deviceId} · ${MediaQuery.sizeOf(context).shortestSide >= 640 ? 'Tablet' : 'Phone'} layout',
+                    ),
+                    _GroupDivider(),
+                    const _SettingsTile(
+                      icon: Icons.info_outline,
+                      title: 'About Nameplate Field',
+                      subtitle: 'v0.1.0 · Offline-first appliance registry',
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -180,7 +217,8 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _pickTech(BuildContext context, WidgetRef ref, FieldSession session) async {
+  Future<void> _pickTech(
+      BuildContext context, WidgetRef ref, FieldSession session) async {
     final next = await showModalBottomSheet<FieldTech>(
       context: context,
       backgroundColor: NpColors.bgCard,
@@ -190,21 +228,24 @@ class SettingsScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const ListTile(title: Text('Sign in as', style: TextStyle(fontWeight: FontWeight.w800))),
-              ...session.roster.map(
-                (t) {
-                  final selected = session.tech.id == t.id;
-                  return ListTile(
-                    leading: Icon(
-                      selected ? Icons.radio_button_checked : Icons.radio_button_off,
-                      color: selected ? NpColors.plate600 : NpColors.gray500,
-                    ),
-                    title: Text(t.name),
-                    subtitle: Text('${t.role} · ${t.email}'),
-                    onTap: () => Navigator.pop(ctx, t),
-                  );
-                },
+              const ListTile(
+                title: Text('Sign in as',
+                    style: TextStyle(fontWeight: FontWeight.w800)),
               ),
+              ...session.roster.map((t) {
+                final selected = session.tech.id == t.id;
+                return ListTile(
+                  leading: Icon(
+                    selected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_off,
+                    color: selected ? NpColors.red : NpColors.gray500,
+                  ),
+                  title: Text(t.name),
+                  subtitle: Text('${t.role} · ${t.email}'),
+                  onTap: () => Navigator.pop(ctx, t),
+                );
+              }),
               const SizedBox(height: 8),
             ],
           ),
@@ -214,7 +255,8 @@ class SettingsScreen extends ConsumerWidget {
     if (next != null) ref.read(fieldSessionProvider).selectTech(next);
   }
 
-  Future<void> _pickProperties(BuildContext context, WidgetRef ref, FieldSession session) async {
+  Future<void> _pickProperties(
+      BuildContext context, WidgetRef ref, FieldSession session) async {
     final selected = Set<String>.from(session.assignedPropertyIds);
     await showModalBottomSheet<void>(
       context: context,
@@ -230,8 +272,10 @@ class SettingsScreen extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const ListTile(
-                      title: Text('Property scope', style: TextStyle(fontWeight: FontWeight.w800)),
-                      subtitle: Text('Turns and work orders filter to these properties'),
+                      title: Text('Property scope',
+                          style: TextStyle(fontWeight: FontWeight.w800)),
+                      subtitle: Text(
+                          'Turns and work orders filter to these properties'),
                     ),
                     ...session.properties.map(
                       (p) => CheckboxListTile(
@@ -252,8 +296,13 @@ class SettingsScreen extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: NpColors.red,
+                        ),
                         onPressed: () {
-                          ref.read(fieldSessionProvider).setAssignedProperties(selected);
+                          ref
+                              .read(fieldSessionProvider)
+                              .setAssignedProperties(selected);
                           Navigator.pop(ctx);
                         },
                         child: const Text('Save scope'),
@@ -276,5 +325,145 @@ class SettingsScreen extends ConsumerWidget {
     if (d.inMinutes < 60) return '${d.inMinutes}m ago';
     if (d.inHours < 24) return '${d.inHours}h ago';
     return '${d.inDays}d ago';
+  }
+}
+
+// ── Shared setting widgets ─────────────────────────────────────────────────────
+
+class _SettingsGroup extends StatelessWidget {
+  final List<Widget> children;
+  const _SettingsGroup({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: NpColors.bgCard,
+        border: Border.fromBorderSide(BorderSide(color: NpColors.lineStrong)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      ),
+    );
+  }
+}
+
+class _GroupDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) =>
+      const Divider(height: 1, color: NpColors.lineStrong);
+}
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final Widget? trailing;
+  final bool isThreeLine;
+  final VoidCallback? onTap;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.isThreeLine = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: NpColors.red, size: 20),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: NpColors.white,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: const TextStyle(color: NpColors.gray400, fontSize: 12),
+            )
+          : null,
+      trailing: trailing ??
+          (onTap != null
+              ? const Icon(Icons.chevron_right, color: NpColors.gray500, size: 18)
+              : null),
+      isThreeLine: isThreeLine,
+      onTap: onTap,
+    );
+  }
+}
+
+class _SwitchTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _SwitchTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile(
+      secondary: Icon(icon, color: NpColors.red, size: 20),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: NpColors.white,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(color: NpColors.gray400, fontSize: 12),
+      ),
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+}
+
+class _OutboxItem extends StatelessWidget {
+  final dynamic op;
+  const _OutboxItem({required this.op});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      dense: true,
+      leading: Icon(
+        op.synced ? Icons.check_circle : Icons.cloud_upload,
+        color: op.synced ? NpColors.white : NpColors.red,
+        size: 16,
+      ),
+      title: Text(
+        op.summary,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(fontSize: 13, color: NpColors.white),
+      ),
+      subtitle: Text(
+        op.type,
+        style: NpType.mono.copyWith(fontSize: 10, color: NpColors.gray500),
+      ),
+    );
   }
 }

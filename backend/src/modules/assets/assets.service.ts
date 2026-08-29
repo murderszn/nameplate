@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
+import type { MembershipContext } from '../../auth/auth.types';
+import { assignedPropertyIds, assertPropertyAccess } from '../../auth/context-access';
 
 @Injectable()
 export class AssetsService {
@@ -16,15 +18,17 @@ export class AssetsService {
     q?: string;
     cursor?: string;
     limit?: number;
+    propertyIds?: string[];
+    globalScope?: boolean;
   }) {
-    const { orgId, propertyId, status, categoryId, q, cursor, limit = 200 } =
+    const { orgId, propertyId, status, categoryId, q, cursor, limit = 200, propertyIds, globalScope } =
       params;
 
     return this.prisma.asset.findMany({
       where: {
         orgId,
         deletedAt: null,
-        ...(propertyId ? { currentPropertyId: propertyId } : {}),
+        ...(propertyId ? { currentPropertyId: propertyId } : !globalScope ? { currentPropertyId: { in: propertyIds ?? [] } } : {}),
         ...(status ? { status: status as any } : {}),
         ...(categoryId ? { categoryId } : {}),
         ...(q
@@ -50,9 +54,9 @@ export class AssetsService {
     });
   }
 
-  async findOne(id: string, orgId: string) {
+  async findOne(id: string, orgId: string, membership?: MembershipContext) {
     const asset = await this.prisma.asset.findFirst({
-      where: { id, orgId, deletedAt: null },
+      where: { id, orgId, deletedAt: null, ...(!membership || ['owner', 'hq_admin', 'service_account'].includes(membership.role) ? {} : { currentPropertyId: { in: assignedPropertyIds(membership) ?? [] } }) },
       include: {
         category: true,
         assetModel: true,
@@ -79,17 +83,25 @@ export class AssetsService {
    * Resolves NPID, manufacturer serial (normalized), or a legacy
    * alt_identifier to an asset. See asset-tagging-strategy.md §8.3.
    */
-  async lookup(code: string, orgId: string) {
+  async lookup(code: string, orgId: string, membership?: MembershipContext) {
     const normalized = code.trim().toUpperCase();
 
     const byNpid = await this.prisma.asset.findFirst({
-      where: { npid: normalized, deletedAt: null },
+      where: {
+        npid: normalized,
+        orgId,
+        deletedAt: null,
+        ...(!membership || ['owner', 'hq_admin', 'service_account'].includes(membership.role)
+          ? {}
+          : { currentPropertyId: { in: assignedPropertyIds(membership) ?? [] } }),
+      },
     });
     if (byNpid) return byNpid;
 
     const bySerial = await this.prisma.asset.findFirst({
       where: {
         orgId,
+        ...(!membership || ['owner', 'hq_admin', 'service_account'].includes(membership.role) ? {} : { currentPropertyId: { in: assignedPropertyIds(membership) ?? [] } }),
         serialNormalized: normalized.replace(/[^A-Z0-9]/g, ''),
         deletedAt: null,
       },
@@ -101,6 +113,7 @@ export class AssetsService {
     const byAlt = await this.prisma.asset.findFirst({
       where: {
         orgId,
+        ...(!membership || ['owner', 'hq_admin', 'service_account'].includes(membership.role) ? {} : { currentPropertyId: { in: assignedPropertyIds(membership) ?? [] } }),
         deletedAt: null,
         altIdentifiers: {
           array_contains: [{ value: code }],
@@ -114,11 +127,12 @@ export class AssetsService {
     );
   }
 
-  create(dto: CreateAssetDto) {
+  create(dto: CreateAssetDto, orgId: string, membership: MembershipContext) {
+    if (dto.currentPropertyId) assertPropertyAccess(membership, dto.currentPropertyId);
     return this.prisma.asset.create({
       data: {
         id: dto.id,
-        orgId: dto.orgId,
+        orgId,
         npid: dto.npid,
         categoryId: dto.categoryId,
         assetModelId: dto.assetModelId,
@@ -134,8 +148,8 @@ export class AssetsService {
     });
   }
 
-  async update(id: string, orgId: string, dto: UpdateAssetDto) {
-    await this.findOne(id, orgId);
+  async update(id: string, orgId: string, dto: UpdateAssetDto, membership: MembershipContext) {
+    await this.findOne(id, orgId, membership);
     return this.prisma.asset.update({
       where: { id },
       data: {
@@ -164,8 +178,8 @@ export class AssetsService {
     );
   }
 
-  async retire(id: string, orgId: string, reason: string) {
-    await this.findOne(id, orgId);
+  async retire(id: string, orgId: string, reason: string, membership: MembershipContext) {
+    await this.findOne(id, orgId, membership);
     return this.prisma.asset.update({
       where: { id },
       data: {

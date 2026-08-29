@@ -74,7 +74,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
         setState(() => _error = scanRes.message);
       } else {
         setState(() {
-          _error = 'Tag ${scanRes.npid} verified valid but not bound to an asset yet.';
+          _error =
+              'Tag ${scanRes.npid} verified valid but not bound to an asset yet.';
         });
         _showUnassignedTagDialog(scanRes);
       }
@@ -86,11 +87,32 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: NpColors.bgCard,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          side: BorderSide(color: NpColors.lineStrong),
+        ),
         title: Row(
           children: [
-            const Icon(Icons.verified, color: NpColors.red, size: 24),
-            const SizedBox(width: 8),
-            Text('Unassigned Tag ${res.npid}', style: NpType.mono.copyWith(fontSize: 16, fontWeight: FontWeight.w700)),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: NpColors.redSubtle,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: NpColors.redBorder),
+              ),
+              child: const Icon(Icons.verified, color: NpColors.red, size: 18),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Unassigned Tag',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: NpColors.white,
+                ),
+              ),
+            ),
           ],
         ),
         content: Column(
@@ -98,24 +120,44 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'This hardware tag has a valid cryptographic proof and is ready to be bound to a new in-unit asset.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: NpColors.gray400),
+              res.npid,
+              style: NpType.mono.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: NpColors.red,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Valid cryptographic proof. Ready to bind to a new asset record.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: NpColors.gray400),
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: NpColors.bg,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: NpColors.gray800),
+                color: NpColors.bgElevated,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: NpColors.lineStrong),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('STATUS: AUTHENTIC HARDWARE TAG', style: NpType.mono.copyWith(fontSize: 10, color: NpColors.red, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 4),
-                  Text('Batch: ${res.batchId ?? "BATCH-01"}', style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray400)),
-                  Text('Org: ${res.orgId ?? Npid.defaultOrgId}', style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray400)),
+                  Text(
+                    'STATUS: AUTHENTIC HARDWARE TAG',
+                    style: NpType.mono.copyWith(
+                      fontSize: 10,
+                      color: NpColors.red,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _MetaRow('Batch', res.batchId ?? 'BATCH-01'),
+                  _MetaRow('Org', res.orgId ?? Npid.defaultOrgId),
                 ],
               ),
             ),
@@ -131,10 +173,12 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
             onPressed: () {
               Navigator.of(ctx).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Claimed tag ${res.npid} for onboarding.')),
+                SnackBar(
+                  content: Text('Claimed tag ${res.npid} for onboarding.'),
+                ),
               );
             },
-            child: const Text('Claim & Onboard Asset'),
+            child: const Text('Claim & Onboard'),
           ),
         ],
       ),
@@ -161,159 +205,152 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
   Widget _buildManualEntryCard() {
     final session = ref.watch(fieldSessionProvider);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 8,
-              runSpacing: 4,
+    return Container(
+      decoration: const BoxDecoration(
+        color: NpColors.bgCard,
+        border: Border(
+          left: BorderSide(color: NpColors.lineStrong, width: 1),
+          right: BorderSide(color: NpColors.lineStrong, width: 1),
+          bottom: BorderSide(color: NpColors.lineStrong, width: 1),
+          top: BorderSide(color: NpColors.lineStrong, width: 1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Card header bar
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: NpColors.lineStrong)),
+            ),
+            child: Row(
               children: [
                 const NpKicker('01 / Manual lookup'),
+                const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: NpColors.bg,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: NpColors.gray800),
+                    color: NpColors.bgElevated,
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: NpColors.lineStrong),
                   ),
                   child: Text(
-                    'Pool: ${session.remainingOfflinePoolCount} Tags',
-                    style: NpType.mono.copyWith(fontSize: 10, color: NpColors.red, fontWeight: FontWeight.w700),
+                    '${session.remainingOfflinePoolCount} TAGS',
+                    style: NpType.mono.copyWith(
+                      fontSize: 10,
+                      color: NpColors.red,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Manual NPID Lookup',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Enter an 8-character NPID or paste a signed payload URL. Verified locally in 0.003s.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: NpColors.gray400),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              textCapitalization: TextCapitalization.characters,
-              style: NpType.mono.copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2, fontSize: 15),
-              decoration: InputDecoration(
-                hintText: 'e.g. NP-7K2M4QX9 or https://np.app/a/...',
-                errorText: _error,
-                prefixIcon: const Icon(Icons.tag),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _controller.clear();
-                    setState(() {
-                      _error = null;
-                      _liveResult = null;
-                    });
-                  },
-                ),
-              ),
-              onSubmitted: (_) => _lookup(),
-            ),
-            if (_liveResult != null && _liveResult!.isValidFormat) ...[
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: _liveResult!.isSignatureAuthentic
-                      ? const Color(0xFF0D2818)
-                      : (_liveResult!.isChecksumValid ? const Color(0xFF141414) : const Color(0xFF2E0808)),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: _liveResult!.isSignatureAuthentic
-                        ? const Color(0xFF22C55E)
-                        : (_liveResult!.isChecksumValid ? NpColors.gray700 : NpColors.red),
-                    width: 1,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Manual NPID Lookup',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                child: Row(
+                const SizedBox(height: 6),
+                Text(
+                  'Enter an 8-character NPID or paste a signed payload URL. Verified locally in 0.003s.',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: NpColors.gray400),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _controller,
+                  textCapitalization: TextCapitalization.characters,
+                  style: NpType.mono.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                    fontSize: 15,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'e.g. NP-7K2M4QX9 or https://np.app/a/...',
+                    errorText: _error,
+                    prefixIcon: const Icon(Icons.tag),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _controller.clear();
+                        setState(() {
+                          _error = null;
+                          _liveResult = null;
+                        });
+                      },
+                    ),
+                  ),
+                  onSubmitted: (_) => _lookup(),
+                ),
+                if (_liveResult != null && _liveResult!.isValidFormat) ...[
+                  const SizedBox(height: 10),
+                  _VerificationBanner(result: _liveResult!),
+                ],
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: NpColors.red,
+                    foregroundColor: NpColors.white,
+                  ),
+                  onPressed: () => _lookup(),
+                  icon: const Icon(Icons.search, size: 18),
+                  label: const Text('Resolve Asset Record'),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  height: 1,
+                  color: NpColors.lineStrong,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'SAMPLE REPOSITORY TAGS',
+                  style: NpType.mono.copyWith(
+                    color: NpColors.gray500,
+                    fontSize: 10,
+                    letterSpacing: 1.4,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
-                    Icon(
-                      _liveResult!.isSignatureAuthentic
-                          ? Icons.verified
-                          : (_liveResult!.isChecksumValid ? Icons.check_circle_outline : Icons.error_outline),
-                      size: 16,
-                      color: _liveResult!.isSignatureAuthentic
-                          ? const Color(0xFF22C55E)
-                          : (_liveResult!.isChecksumValid ? NpColors.gray400 : NpColors.red),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _liveResult!.message,
-                        style: NpType.mono.copyWith(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: _liveResult!.isSignatureAuthentic
-                              ? const Color(0xFF22C55E)
-                              : (_liveResult!.isChecksumValid ? NpColors.gray300 : NpColors.red),
-                        ),
+                    for (final code in session.assets.take(4).map((a) => a.npid))
+                      _TagChip(
+                        code: code,
+                        onTap: () {
+                          _controller.text = code;
+                          _lookup(code);
+                        },
                       ),
-                    ),
                   ],
                 ),
-              ),
-            ],
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: NpColors.red,
-                foregroundColor: NpColors.white,
-              ),
-              onPressed: () => _lookup(),
-              icon: const Icon(Icons.search),
-              label: const Text('Resolve Asset Record'),
-            ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 8),
-            Text(
-              'SAMPLE ACTIVE REPOSITORY TAGS',
-              style: NpType.mono.copyWith(
-                color: NpColors.gray500,
-                fontSize: 11,
-                letterSpacing: 1.2,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final code in session.assets.take(4).map((a) => a.npid))
-                  ActionChip(
-                    label: Text(code, style: NpType.mono.copyWith(fontSize: 12, fontWeight: FontWeight.w700, color: NpColors.red)),
-                    onPressed: () {
-                      _controller.text = code;
-                      _lookup(code);
-                    },
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const TagStudioScreen()),
+                    ),
+                    icon: const Icon(Icons.qr_code_2, size: 16),
+                    label: const Text('Open Hardware Tag Studio'),
                   ),
+                ),
               ],
             ),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const TagStudioScreen()),
-                ),
-                icon: const Icon(Icons.qr_code_2, size: 18),
-                label: const Text('Open Hardware Tag Studio'),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -329,53 +366,140 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
         showLogo: true,
         actions: [SyncStatusBadge()],
       ),
-      body: isTablet
-          ? Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 400),
-                        child: _ScannerViewfinder(
-                          isScanning: _isScanning,
-                          onSimulateScan: _simulateCameraScan,
-                        ),
-                      ),
-                    ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: ListView(
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 28 : 16,
+              vertical: isTablet ? 24 : 16,
+            ),
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: isTablet ? 560 : 480,
                   ),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    flex: 6,
-                    child: SingleChildScrollView(
-                      child: _buildManualEntryCard(),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 320),
-                    child: _ScannerViewfinder(
-                      isScanning: _isScanning,
-                      onSimulateScan: _simulateCameraScan,
-                    ),
+                  child: _ScannerViewfinder(
+                    isScanning: _isScanning,
+                    onSimulateScan: _simulateCameraScan,
                   ),
                 ),
-                const SizedBox(height: 14),
-                _buildManualEntryCard(),
-              ],
-            ),
+              ),
+              const SizedBox(height: 18),
+              _buildManualEntryCard(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
+
+// ── Sub-widgets ────────────────────────────────────────────────────────────────
+
+class _MetaRow extends StatelessWidget {
+  final String label;
+  final String value;
+  const _MetaRow(this.label, this.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Text(
+            '$label: ',
+            style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray500),
+          ),
+          Text(
+            value,
+            style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray300),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VerificationBanner extends StatelessWidget {
+  final NpidScanResult result;
+  const _VerificationBanner({required this.result});
+
+  @override
+  Widget build(BuildContext context) {
+    final authentic = result.isSignatureAuthentic;
+    final checksumOk = result.isChecksumValid;
+
+    final color = authentic
+        ? const Color(0xFF22C55E)
+        : (checksumOk ? NpColors.gray300 : NpColors.red);
+    final bg = authentic
+        ? const Color(0xFF0A1F0E)
+        : (checksumOk ? NpColors.bgElevated : const Color(0xFF1F0A0A));
+    final icon = authentic
+        ? Icons.verified
+        : (checksumOk ? Icons.check_circle_outline : Icons.error_outline);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(2),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              result.message,
+              style: NpType.mono.copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TagChip extends StatelessWidget {
+  final String code;
+  final VoidCallback onTap;
+  const _TagChip({required this.code, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: NpColors.bgElevated,
+          borderRadius: BorderRadius.circular(2),
+          border: Border.all(color: NpColors.lineStrong),
+        ),
+        child: Text(
+          code,
+          style: NpType.mono.copyWith(
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+            color: NpColors.red,
+            letterSpacing: 0.4,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Scanner viewfinder ─────────────────────────────────────────────────────────
 
 class _ScannerViewfinder extends StatefulWidget {
   final bool isScanning;
@@ -397,8 +521,10 @@ class _ScannerViewfinderState extends State<_ScannerViewfinder>
   @override
   void initState() {
     super.initState();
-    _scan = AnimationController(vsync: this, duration: const Duration(seconds: 2))
-      ..repeat();
+    _scan = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat();
   }
 
   @override
@@ -409,147 +535,159 @@ class _ScannerViewfinderState extends State<_ScannerViewfinder>
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1.0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: NpColors.bg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: NpColors.gray800, width: 2),
-          boxShadow: const [
-            BoxShadow(color: NpColors.redGlow, blurRadius: 24, spreadRadius: -6),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Opacity(
-                opacity: 0.16,
-                child: Image.asset(
-                  NpAssets.schematicFridge,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
-                ),
-              ),
-              Container(color: NpColors.bg.withValues(alpha: 0.6)),
-              const _Rivet(alignment: Alignment.topLeft),
-              const _Rivet(alignment: Alignment.topRight),
-              const _Rivet(alignment: Alignment.bottomLeft),
-              const _Rivet(alignment: Alignment.bottomRight),
+    final content = Container(
+      decoration: const BoxDecoration(color: NpColors.bg),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Corner-bracket overlay
+          const CustomPaint(painter: _CornerBracketPainter()),
 
-              // Animated laser sweep across outer 1:1 box
-              AnimatedBuilder(
-                animation: _scan,
-                builder: (context, _) {
-                  return Align(
-                    alignment: Alignment(0, -0.9 + 1.8 * _scan.value),
+            // Animated laser sweep
+            AnimatedBuilder(
+              animation: _scan,
+              builder: (context, _) {
+                return Align(
+                  alignment: Alignment(0, -0.85 + 1.7 * _scan.value),
+                  child: Container(
+                    height: 1.5,
+                    margin: const EdgeInsets.symmetric(horizontal: 36),
+                    color: NpColors.red,
+                  ),
+                );
+              },
+            ),
+
+            // Center content
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: NpColors.bgCard.withValues(alpha: 0.95),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: NpColors.lineStrong),
+                    ),
+                    child: widget.isScanning
+                        ? const SizedBox(
+                            width: 36,
+                            height: 36,
+                            child: CircularProgressIndicator(
+                              color: NpColors.red,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.qr_code_scanner,
+                            color: NpColors.red,
+                            size: 36,
+                          ),
+                  ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'AIM AT NAMEPLATE TAG',
+                    textAlign: TextAlign.center,
+                    style: NpType.mono.copyWith(
+                      color: NpColors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 11,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'SUB-3S OFFLINE LOOKUP',
+                    textAlign: TextAlign.center,
+                    style: NpType.mono.copyWith(
+                      color: NpColors.gray500,
+                      fontSize: 10,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  GestureDetector(
+                    onTap: widget.onSimulateScan,
                     child: Container(
-                      height: 2,
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: const BoxDecoration(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
                         color: NpColors.red,
-                        boxShadow: [
-                          BoxShadow(color: NpColors.redGlow, blurRadius: 10, spreadRadius: 2),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.camera_alt, size: 13, color: NpColors.white),
+                          const SizedBox(width: 6),
+                          Text(
+                            'SIMULATE SCAN',
+                            style: NpType.mono.copyWith(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: NpColors.white,
+                              letterSpacing: 0.8,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  );
-                },
-              ),
-
-              // Center scanning controls
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: NpColors.bgCard.withValues(alpha: 0.9),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: NpColors.red, width: 1.5),
-                          boxShadow: const [
-                            BoxShadow(color: NpColors.redGlow, blurRadius: 16),
-                          ],
-                        ),
-                        child: widget.isScanning
-                            ? const SizedBox(
-                                width: 38,
-                                height: 38,
-                                child: CircularProgressIndicator(color: NpColors.red, strokeWidth: 3),
-                              )
-                            : const Icon(Icons.qr_code_scanner, color: NpColors.red, size: 38),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Aim camera at Nameplate Tag',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: NpColors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          letterSpacing: -0.2,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'SUB-3S OFFLINE LOOKUP',
-                        textAlign: TextAlign.center,
-                        style: NpType.mono.copyWith(
-                          color: NpColors.gray400,
-                          fontSize: 10,
-                          letterSpacing: 1.2,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      FilledButton.icon(
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                          backgroundColor: NpColors.red.withValues(alpha: 0.9),
-                          foregroundColor: NpColors.white,
-                        ),
-                        onPressed: widget.onSimulateScan,
-                        icon: const Icon(Icons.camera_alt, size: 14),
-                        label: const Text(
-                          'Simulate Scan',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                    ],
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ),
+      );
+
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: content,
     );
   }
 }
 
-class _Rivet extends StatelessWidget {
-  final Alignment alignment;
-  const _Rivet({required this.alignment});
+/// Paints four L-shaped corner brackets in red.
+class _CornerBracketPainter extends CustomPainter {
+  const _CornerBracketPainter();
 
   @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: alignment,
-      child: Container(
-        width: 8,
-        height: 8,
-        margin: const EdgeInsets.all(10),
-        decoration: const BoxDecoration(
-          color: NpColors.red,
-          shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: NpColors.redGlow, blurRadius: 6)],
-        ),
-      ),
-    );
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = NpColors.red
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.square;
+
+    const len = 32.0;
+    const pad = 16.0;
+
+    // Top-left
+    canvas.drawLine(Offset(pad, pad + len), Offset(pad, pad), paint);
+    canvas.drawLine(Offset(pad, pad), Offset(pad + len, pad), paint);
+
+    // Top-right
+    canvas.drawLine(
+        Offset(size.width - pad - len, pad), Offset(size.width - pad, pad), paint);
+    canvas.drawLine(Offset(size.width - pad, pad),
+        Offset(size.width - pad, pad + len), paint);
+
+    // Bottom-left
+    canvas.drawLine(Offset(pad, size.height - pad - len),
+        Offset(pad, size.height - pad), paint);
+    canvas.drawLine(Offset(pad, size.height - pad),
+        Offset(pad + len, size.height - pad), paint);
+
+    // Bottom-right
+    canvas.drawLine(Offset(size.width - pad - len, size.height - pad),
+        Offset(size.width - pad, size.height - pad), paint);
+    canvas.drawLine(Offset(size.width - pad, size.height - pad),
+        Offset(size.width - pad, size.height - pad - len), paint);
   }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

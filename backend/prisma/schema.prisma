@@ -267,6 +267,176 @@ enum WorkOrderResolutionT {
   @@map("work_order_resolution_t")
 }
 
+enum DevicePlatformT {
+  ios
+  android
+
+  @@map("device_platform_t")
+}
+
+enum StorageLocationKindT {
+  shop
+  warehouse
+  vehicle
+  vendor
+  disposal
+  staging
+
+  @@map("storage_location_kind_t")
+}
+
+enum AssetMoveReasonT {
+  initial_install
+  turn_replacement
+  repair_pickup
+  repair_return
+  relocation
+  storage
+  disposal
+  correction
+  discovered
+  vendor_service
+
+  @@map("asset_move_reason_t")
+}
+
+enum MovementKindT {
+  recorded
+  inferred
+  discovered
+
+  @@map("movement_kind_t")
+}
+
+enum ConfirmationMethodT {
+  qr_scan
+  nfc_scan
+  serial_match
+  manual
+  turn_inspection
+  photo
+
+  @@map("confirmation_method_t")
+}
+
+enum ScanCodeTypeT {
+  npid
+  manufacturer_serial
+  legacy
+  unknown
+
+  @@map("scan_code_type_t")
+}
+
+enum ScanResolutionT {
+  resolved
+  not_found
+  out_of_scope
+  ambiguous
+
+  @@map("scan_resolution_t")
+}
+
+enum MediaRoleT {
+  before
+  after
+  nameplate
+  damage
+  signature
+  general
+
+  @@map("media_role_t")
+}
+
+enum VendorKindT {
+  appliance_repair
+  hvac
+  plumbing
+  supplier
+  disposal
+
+  @@map("vendor_kind_t")
+}
+
+enum TurnTypeT {
+  move_out
+  move_in
+  annual_inspection
+  spot_audit
+  onboarding
+
+  @@map("turn_type_t")
+}
+
+enum TurnStatusT {
+  scheduled
+  in_progress
+  completed
+  cancelled
+
+  @@map("turn_status_t")
+}
+
+enum TurnFindingT {
+  present_ok
+  present_damaged
+  present_needs_service
+  missing
+  unexpected_found
+  not_applicable
+  inaccessible
+
+  @@map("turn_finding_t")
+}
+
+enum TurnDecisionT {
+  none
+  repair
+  replace
+  clean
+  monitor
+  investigate
+
+  @@map("turn_decision_t")
+}
+
+enum ReconciliationKindT {
+  closed_wo_late_write
+  stale_field_update
+  duplicate_asset_suspected
+  location_conflict
+  serial_collision
+
+  @@map("reconciliation_kind_t")
+}
+
+enum SyncOpStatusT {
+  applied
+  duplicate
+  rejected
+
+  @@map("sync_op_status_t")
+}
+
+enum MetricScopeTypeT {
+  org
+  property
+  building
+  unit
+  asset_model
+  category
+
+  @@map("metric_scope_type_t")
+}
+
+enum PeriodGrainT {
+  day
+  week
+  month
+
+  @@map("period_grain_t")
+}
+
 // ---------------------------------------------------------------------------
 // 1. Organization & identity
 // ---------------------------------------------------------------------------
@@ -274,37 +444,50 @@ enum WorkOrderResolutionT {
 model Organization {
   id        String    @id @default(uuid()) @db.Uuid
   name      String
-  slug      String    @unique
+  slug      String
   plan      String    @default("trial")
   settings  Json      @default("{}")
   timezone  String    @default("America/Phoenix")
   currency  String    @default("USD") @db.Char(3)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
 
-  memberships       Membership[]
-  properties        Property[]
-  assetCategories   AssetCategory[]
-  assets            Asset[]
-  serviceEvents     ServiceEvent[]
-  parts             Part[]
-  workOrders        WorkOrder[]
+  memberships         Membership[]
+  properties          Property[]
+  assetCategories     AssetCategory[]
+  assets              Asset[]
+  serviceEvents       ServiceEvent[]
+  parts               Part[]
+  workOrders          WorkOrder[]
+  devices             Device[]
+  storageLocations    StorageLocation[]
+  assetLocations      AssetLocation[]
+  identifierScans     AssetIdentifierScan[]
+  media               Media[]
+  mediaAttachments    MediaAttachment[]
+  vendors             Vendor[]
+  turns               Turn[]
+  turnItems           TurnItem[]
+  reconciliationFlags ReconciliationFlag[]
+  syncOps             SyncOp[]
+  auditLogs           AuditLog[]
+  metricSnapshots     MetricSnapshot[]
 
   @@map("organization")
 }
 
 model User {
-  id             String      @id @default(uuid()) @db.Uuid // mirrors Supabase auth.users.id
-  email          String      @unique // data-model.md specifies citext; plain unique text for V0 portability
-  fullName       String      @map("full_name")
-  phone          String?
-  avatarMediaId  String?     @map("avatar_media_id") @db.Uuid
-  status         UserStatusT @default(invited)
-  lastSeenAt     DateTime?   @map("last_seen_at")
-  createdAt      DateTime    @default(now()) @map("created_at")
-  updatedAt      DateTime    @updatedAt @map("updated_at")
-  deletedAt      DateTime?   @map("deleted_at")
+  id            String      @id @default(uuid()) @db.Uuid // mirrors Supabase auth.users.id
+  email         String      @unique @db.Citext
+  fullName      String      @map("full_name")
+  phone         String?
+  avatarMediaId String?     @map("avatar_media_id") @db.Uuid
+  status        UserStatusT @default(invited)
+  lastSeenAt    DateTime?   @map("last_seen_at") @db.Timestamptz(3)
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt     DateTime?   @map("deleted_at") @db.Timestamptz(3)
 
   memberships Membership[]
 
@@ -314,25 +497,24 @@ model User {
 /// A user's role within an org (`data-model.md` §1 `membership`). This is
 /// the "User with roles" join for multi-tenant/multi-org membership.
 model Membership {
-  id               String            @id @default(uuid()) @db.Uuid
-  orgId            String            @map("org_id") @db.Uuid
-  userId           String            @map("user_id") @db.Uuid
-  role             RoleT
-  employmentType   String?           @map("employment_type")
-  hourlyLaborRate  Decimal?          @map("hourly_labor_rate") @db.Decimal(10, 2)
-  status           MembershipStatusT @default(invited)
-  invitedBy        String?           @map("invited_by") @db.Uuid
-  createdAt        DateTime          @default(now()) @map("created_at")
-  updatedAt        DateTime          @updatedAt @map("updated_at")
-  deletedAt        DateTime?         @map("deleted_at")
+  id              String            @id @default(uuid()) @db.Uuid
+  orgId           String            @map("org_id") @db.Uuid
+  userId          String            @map("user_id") @db.Uuid
+  role            RoleT
+  employmentType  String?           @map("employment_type")
+  hourlyLaborRate Decimal?          @map("hourly_labor_rate") @db.Decimal(10, 2)
+  status          MembershipStatusT @default(invited)
+  invitedBy       String?           @map("invited_by") @db.Uuid
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt       DateTime?         @map("deleted_at") @db.Timestamptz(3)
 
-  organization         Organization           @relation(fields: [orgId], references: [id])
-  user                 User                    @relation(fields: [userId], references: [id])
-  propertyAssignments  PropertyAssignment[]
-  serviceEventsAuthored ServiceEvent[]         @relation("service_event_technician")
-  assignedWorkOrders   WorkOrder[]             @relation("work_order_assignee")
+  organization          Organization         @relation(fields: [orgId], references: [id])
+  user                  User                 @relation(fields: [userId], references: [id])
+  propertyAssignments   PropertyAssignment[]
+  serviceEventsAuthored ServiceEvent[]       @relation("service_event_technician")
+  assignedWorkOrders    WorkOrder[]          @relation("work_order_assignee")
 
-  @@unique([orgId, userId])
   @@index([orgId, role])
   @@map("membership")
 }
@@ -344,13 +526,12 @@ model PropertyAssignment {
   orgId        String    @map("org_id") @db.Uuid
   membershipId String    @map("membership_id") @db.Uuid
   propertyId   String    @map("property_id") @db.Uuid
-  createdAt    DateTime  @default(now()) @map("created_at")
-  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(3)
 
   membership Membership @relation(fields: [membershipId], references: [id])
   property   Property   @relation(fields: [propertyId], references: [id])
 
-  @@unique([membershipId, propertyId])
   @@index([orgId, propertyId])
   @@map("property_assignment")
 }
@@ -360,34 +541,34 @@ model PropertyAssignment {
 // ---------------------------------------------------------------------------
 
 model Property {
-  id                  String          @id @default(uuid()) @db.Uuid
-  orgId               String          @map("org_id") @db.Uuid
-  name                String
-  code                String?
-  addressLine1        String?         @map("address_line1")
-  addressLine2        String?         @map("address_line2")
-  city                String?
-  state               String?
-  postalCode          String?         @map("postal_code")
-  country             String          @default("US") @db.Char(2)
-  latitude            Decimal?        @db.Decimal(9, 6)
-  longitude           Decimal?        @db.Decimal(9, 6)
-  timezone            String?
-  unitCountDeclared   Int?            @map("unit_count_declared")
-  yearBuilt           Int?            @map("year_built")
-  status              PropertyStatusT @default(onboarding)
-  createdAt           DateTime        @default(now()) @map("created_at")
-  updatedAt           DateTime        @updatedAt @map("updated_at")
-  deletedAt           DateTime?       @map("deleted_at")
-  changeSeq           BigInt          @default(autoincrement()) @map("change_seq")
+  id                String          @id @default(uuid()) @db.Uuid
+  orgId             String          @map("org_id") @db.Uuid
+  name              String
+  code              String?
+  addressLine1      String?         @map("address_line1")
+  addressLine2      String?         @map("address_line2")
+  city              String?
+  state             String?
+  postalCode        String?         @map("postal_code")
+  country           String          @default("US") @db.Char(2)
+  latitude          Decimal?        @db.Decimal(9, 6)
+  longitude         Decimal?        @db.Decimal(9, 6)
+  timezone          String?
+  unitCountDeclared Int?            @map("unit_count_declared")
+  yearBuilt         Int?            @map("year_built")
+  status            PropertyStatusT @default(onboarding)
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt         DateTime?       @map("deleted_at") @db.Timestamptz(3)
+  changeSeq         BigInt          @default(autoincrement()) @map("change_seq")
 
   organization        Organization         @relation(fields: [orgId], references: [id])
-  buildings            Building[]
-  units                Unit[]
-  propertyAssignments  PropertyAssignment[]
-  assets               Asset[]
-  serviceEvents        ServiceEvent[]
-  workOrders           WorkOrder[]
+  buildings           Building[]
+  units               Unit[]
+  propertyAssignments PropertyAssignment[]
+  assets              Asset[]
+  serviceEvents       ServiceEvent[]
+  workOrders          WorkOrder[]
 
   @@index([orgId, status])
   @@map("property")
@@ -400,9 +581,9 @@ model Building {
   name       String
   code       String?
   floors     Int?
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
-  deletedAt  DateTime? @map("deleted_at")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(3)
   changeSeq  BigInt    @default(autoincrement()) @map("change_seq")
 
   property Property @relation(fields: [propertyId], references: [id])
@@ -413,23 +594,23 @@ model Building {
 }
 
 model Unit {
-  id                    String    @id @default(uuid()) @db.Uuid
-  orgId                 String    @map("org_id") @db.Uuid
-  propertyId            String    @map("property_id") @db.Uuid // denormalized from building, kept consistent by trigger
-  buildingId            String    @map("building_id") @db.Uuid
-  label                 String
-  floor                 Int?
-  bedrooms              Decimal?  @db.Decimal(3, 1)
-  bathrooms             Decimal?  @db.Decimal(3, 1)
-  squareFeet            Int?      @map("square_feet")
-  occupancyStatus       String    @default("vacant") @map("occupancy_status") // enum('occupied','vacant','turning','offline','model')
-  currentTurnId         String?   @map("current_turn_id") @db.Uuid
-  lastTurnCompletedAt   DateTime? @map("last_turn_completed_at")
-  notes                 String?
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
-  deletedAt             DateTime? @map("deleted_at")
-  changeSeq             BigInt    @default(autoincrement()) @map("change_seq")
+  id                  String    @id @default(uuid()) @db.Uuid
+  orgId               String    @map("org_id") @db.Uuid
+  propertyId          String    @map("property_id") @db.Uuid // denormalized from building, kept consistent by trigger
+  buildingId          String    @map("building_id") @db.Uuid
+  label               String
+  floor               Int?
+  bedrooms            Decimal?  @db.Decimal(3, 1)
+  bathrooms           Decimal?  @db.Decimal(3, 1)
+  squareFeet          Int?      @map("square_feet")
+  occupancyStatus     String    @default("vacant") @map("occupancy_status") // enum('occupied','vacant','turning','offline','model')
+  currentTurnId       String?   @map("current_turn_id") @db.Uuid
+  lastTurnCompletedAt DateTime? @map("last_turn_completed_at") @db.Timestamptz(3)
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamptz(3)
+  changeSeq           BigInt    @default(autoincrement()) @map("change_seq")
 
   property      Property       @relation(fields: [propertyId], references: [id])
   building      Building       @relation(fields: [buildingId], references: [id])
@@ -447,15 +628,15 @@ model Unit {
 // ---------------------------------------------------------------------------
 
 model AssetCategory {
-  id                        String  @id @default(uuid()) @db.Uuid
-  orgId                     String? @map("org_id") @db.Uuid // null = system-provided
-  key                       String // washer, dryer, range, refrigerator, ...
-  displayName               String  @map("display_name")
-  defaultUsefulLifeMonths   Int     @map("default_useful_life_months")
-  defaultReplacementCost    Decimal? @map("default_replacement_cost") @db.Decimal(12, 2)
-  isSerialized              Boolean @default(true) @map("is_serialized")
-  iconKey                   String? @map("icon_key")
-  sortOrder                 Int?    @map("sort_order")
+  id                      String   @id @default(uuid()) @db.Uuid
+  orgId                   String?  @map("org_id") @db.Uuid // null = system-provided
+  key                     String // washer, dryer, range, refrigerator, ...
+  displayName             String   @map("display_name")
+  defaultUsefulLifeMonths Int      @map("default_useful_life_months")
+  defaultReplacementCost  Decimal? @map("default_replacement_cost") @db.Decimal(12, 2)
+  isSerialized            Boolean  @default(true) @map("is_serialized")
+  iconKey                 String?  @map("icon_key")
+  sortOrder               Int?     @map("sort_order")
 
   organization Organization? @relation(fields: [orgId], references: [id])
   assets       Asset[]
@@ -469,6 +650,8 @@ model AssetModel {
   id                     String   @id @default(uuid()) @db.Uuid
   manufacturer           String
   modelNumber            String   @map("model_number")
+  manufacturerNormalized String?  @map("manufacturer_normalized")
+  modelNormalized        String?  @map("model_normalized")
   categoryId             String   @map("category_id") @db.Uuid
   displayName            String?  @map("display_name")
   serialFormatRegex      String?  @map("serial_format_regex")
@@ -481,8 +664,8 @@ model AssetModel {
   firstSeenOrgId         String?  @map("first_seen_org_id") @db.Uuid
   observationCount       Int      @default(1) @map("observation_count")
   mergedIntoId           String?  @map("merged_into_id") @db.Uuid
-  createdAt              DateTime @default(now()) @map("created_at")
-  updatedAt              DateTime @updatedAt @map("updated_at")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   assets Asset[]
 
@@ -499,66 +682,66 @@ model Asset {
   categoryId   String  @map("category_id") @db.Uuid
   assetModelId String? @map("asset_model_id") @db.Uuid
 
-  manufacturerRaw   String? @map("manufacturer_raw")
-  modelRaw          String? @map("model_raw")
-  serialNumber      String? @map("serial_number")
+  manufacturerRaw  String?           @map("manufacturer_raw")
+  modelRaw         String?           @map("model_raw")
+  serialNumber     String?           @map("serial_number")
   // GENERATED ALWAYS AS (upper(regexp_replace(serial_number, '[^a-zA-Z0-9]', '', 'g'))) STORED
   // — added by hand in the first migration; kept here as a plain column for Prisma's type-safety.
-  serialNormalized  String? @map("serial_normalized")
-  serialConfidence  SerialConfidenceT @default(absent) @map("serial_confidence")
-  altIdentifiers    Json    @default("[]") @map("alt_identifiers")
+  serialNormalized String?           @map("serial_normalized")
+  serialConfidence SerialConfidenceT @default(absent) @map("serial_confidence")
+  altIdentifiers   Json              @default("[]") @map("alt_identifiers")
 
   // Location (current state — mirror of latest AssetLocation ledger row)
   currentLocationType        CurrentLocationTypeT @default(unknown) @map("current_location_type")
-  currentUnitId               String?   @map("current_unit_id") @db.Uuid
-  currentStorageLocationId    String?   @map("current_storage_location_id") @db.Uuid
-  currentPropertyId           String?   @map("current_property_id") @db.Uuid
-  currentLocationSince         DateTime? @map("current_location_since")
-  currentLocationConfirmedAt   DateTime? @map("current_location_confirmed_at")
-  currentLocationConfirmedBy   String?   @map("current_location_confirmed_by") @db.Uuid
+  currentUnitId              String?              @map("current_unit_id") @db.Uuid
+  currentStorageLocationId   String?              @map("current_storage_location_id") @db.Uuid
+  currentPropertyId          String?              @map("current_property_id") @db.Uuid
+  currentLocationSince       DateTime?            @map("current_location_since") @db.Timestamptz(3)
+  currentLocationConfirmedAt DateTime?            @map("current_location_confirmed_at") @db.Timestamptz(3)
+  currentLocationConfirmedBy String?              @map("current_location_confirmed_by") @db.Uuid
 
   // Lifecycle
-  status                  AssetStatusT      @default(active)
-  condition                AssetConditionT?
-  acquisitionType           String?          @map("acquisition_type")
-  manufactureDate           DateTime?        @map("manufacture_date") @db.Date
-  manufactureDateSource     String?          @map("manufacture_date_source")
-  installDate               DateTime?        @map("install_date") @db.Date
-  installDateConfidence     String?          @map("install_date_confidence")
-  warrantyExpiresOn         DateTime?        @map("warranty_expires_on") @db.Date
-  purchaseCost              Decimal?         @map("purchase_cost") @db.Decimal(12, 2)
-  expectedLifeMonths        Int?             @map("expected_life_months")
-  retiredAt                 DateTime?        @map("retired_at")
-  retiredReason              String?          @map("retired_reason")
-  replacedByAssetId          String?          @map("replaced_by_asset_id") @db.Uuid
-  replacesAssetId             String?          @map("replaces_asset_id") @db.Uuid
+  status                AssetStatusT     @default(active)
+  condition             AssetConditionT?
+  acquisitionType       String?          @map("acquisition_type")
+  manufactureDate       DateTime?        @map("manufacture_date") @db.Date
+  manufactureDateSource String?          @map("manufacture_date_source")
+  installDate           DateTime?        @map("install_date") @db.Date
+  installDateConfidence String?          @map("install_date_confidence")
+  warrantyExpiresOn     DateTime?        @map("warranty_expires_on") @db.Date
+  purchaseCost          Decimal?         @map("purchase_cost") @db.Decimal(12, 2)
+  expectedLifeMonths    Int?             @map("expected_life_months")
+  retiredAt             DateTime?        @map("retired_at") @db.Timestamptz(3)
+  retiredReason         String?          @map("retired_reason")
+  replacedByAssetId     String?          @map("replaced_by_asset_id") @db.Uuid
+  replacesAssetId       String?          @map("replaces_asset_id") @db.Uuid
 
   // Denormalized rollups — maintained by trigger/worker, never source of truth
-  lifetimeServiceCost   Decimal   @default(0) @map("lifetime_service_cost") @db.Decimal(12, 2)
-  serviceEventCount     Int       @default(0) @map("service_event_count")
-  lastServiceAt         DateTime? @map("last_service_at")
-  nextServiceDueAt      DateTime? @map("next_service_due_at")
+  lifetimeServiceCost Decimal   @default(0) @map("lifetime_service_cost") @db.Decimal(12, 2)
+  serviceEventCount   Int       @default(0) @map("service_event_count")
+  lastServiceAt       DateTime? @map("last_service_at") @db.Timestamptz(3)
+  nextServiceDueAt    DateTime? @map("next_service_due_at") @db.Timestamptz(3)
 
   notes        String?
   customFields Json    @default("{}") @map("custom_fields")
 
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
   createdBy String?   @map("created_by") @db.Uuid
   updatedBy String?   @map("updated_by") @db.Uuid
   changeSeq BigInt    @default(autoincrement()) @map("change_seq")
 
-  organization  Organization    @relation(fields: [orgId], references: [id])
-  category      AssetCategory   @relation(fields: [categoryId], references: [id])
-  assetModel    AssetModel?     @relation(fields: [assetModelId], references: [id])
-  currentUnit   Unit?           @relation(fields: [currentUnitId], references: [id])
+  organization    Organization  @relation(fields: [orgId], references: [id])
+  category        AssetCategory @relation(fields: [categoryId], references: [id])
+  assetModel      AssetModel?   @relation(fields: [assetModelId], references: [id])
+  currentUnit     Unit?         @relation(fields: [currentUnitId], references: [id])
   currentProperty Property?     @relation(fields: [currentPropertyId], references: [id])
 
-  serviceEvents ServiceEvent[]
-  workOrders    WorkOrder[]
-  partsSourced  Part[]         @relation("part_source_asset")
-  partsInstalled Part[]        @relation("part_installed_asset")
+  serviceEvents  ServiceEvent[]
+  workOrders     WorkOrder[]
+  partsSourced   Part[]         @relation("part_source_asset")
+  partsInstalled Part[]         @relation("part_installed_asset")
 
   @@index([orgId, currentPropertyId, status])
   @@index([orgId, currentUnitId])
@@ -574,8 +757,8 @@ model Asset {
 // ---------------------------------------------------------------------------
 
 model ServiceEvent {
-  id    String @id @default(uuid()) @db.Uuid // UUIDv7, client-generated offline
-  orgId String @map("org_id") @db.Uuid
+  id      String @id @default(uuid()) @db.Uuid // UUIDv7, client-generated offline
+  orgId   String @map("org_id") @db.Uuid
   assetId String @map("asset_id") @db.Uuid
 
   workOrderId String? @map("work_order_id") @db.Uuid
@@ -585,12 +768,12 @@ model ServiceEvent {
   unitId     String? @map("unit_id") @db.Uuid
   propertyId String? @map("property_id") @db.Uuid
 
-  technicianId String @map("technician_id") @db.Uuid
+  technicianId String  @map("technician_id") @db.Uuid
   vendorId     String? @map("vendor_id") @db.Uuid
 
-  eventType     ServiceEventTypeT @map("event_type")
-  findings      String?
-  symptomCodes  String[]          @default([]) @map("symptom_codes")
+  eventType      ServiceEventTypeT @map("event_type")
+  findings       String?
+  symptomCodes   String[]          @default([]) @map("symptom_codes")
   resolutionCode ResolutionCodeT?  @map("resolution_code")
 
   conditionBefore AssetConditionT? @map("condition_before")
@@ -607,19 +790,19 @@ model ServiceEvent {
   // GENERATED ALWAYS AS (labor_cost + parts_cost + other_cost) STORED — hand-added in migration
   totalCost    Decimal? @map("total_cost") @db.Decimal(12, 2)
 
-  costBorneBy CostBorneByT? @map("cost_borne_by")
-  isWarrantyClaim Boolean   @default(false) @map("is_warranty_claim")
+  costBorneBy     CostBorneByT? @map("cost_borne_by")
+  isWarrantyClaim Boolean       @default(false) @map("is_warranty_claim")
 
-  repairVsReplaceDecision RepairVsReplaceT? @map("repair_vs_replace_decision")
-  replacementAssetId      String?           @map("replacement_asset_id") @db.Uuid
-  estimatedRepairCostIfDeferred Decimal?     @map("estimated_repair_cost_if_deferred") @db.Decimal(12, 2)
+  repairVsReplaceDecision       RepairVsReplaceT? @map("repair_vs_replace_decision")
+  replacementAssetId            String?           @map("replacement_asset_id") @db.Uuid
+  estimatedRepairCostIfDeferred Decimal?          @map("estimated_repair_cost_if_deferred") @db.Decimal(12, 2)
 
-  tenantPresent       Boolean? @map("tenant_present")
-  followUpRequired    Boolean  @default(false) @map("follow_up_required")
-  signatureMediaId    String?  @map("signature_media_id") @db.Uuid
+  tenantPresent    Boolean? @map("tenant_present")
+  followUpRequired Boolean  @default(false) @map("follow_up_required")
+  signatureMediaId String?  @map("signature_media_id") @db.Uuid
 
-  occurredAt DateTime @map("occurred_at")
-  recordedAt DateTime @default(now()) @map("recorded_at")
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
+  recordedAt DateTime @default(now()) @map("recorded_at") @db.Timestamptz(3)
   deviceId   String?  @map("device_id")
   createdBy  String?  @map("created_by") @db.Uuid
   changeSeq  BigInt   @default(autoincrement()) @map("change_seq")
@@ -647,7 +830,7 @@ model WorkOrder {
   id         String @id @default(uuid()) @db.Uuid
   orgId      String @map("org_id") @db.Uuid
   propertyId String @map("property_id") @db.Uuid
-  number     Int    // human-facing per-org sequence: WO-1042
+  number     Int // human-facing per-org sequence: WO-1042
 
   unitId  String? @map("unit_id") @db.Uuid
   assetId String? @map("asset_id") @db.Uuid
@@ -656,16 +839,16 @@ model WorkOrder {
   title       String
   description String?
 
-  source           WorkOrderSourceT
-  priority         WorkOrderPriorityT
-  status           WorkOrderStatusT     @default(open)
-  assignedTo       String?              @map("assigned_to") @db.Uuid
-  requestedAction  RequestedActionT?    @map("requested_action")
-  resolution       WorkOrderResolutionT?
+  source          WorkOrderSourceT
+  priority        WorkOrderPriorityT
+  status          WorkOrderStatusT      @default(open)
+  assignedTo      String?               @map("assigned_to") @db.Uuid
+  requestedAction RequestedActionT?     @map("requested_action")
+  resolution      WorkOrderResolutionT?
 
-  slaDueAt        DateTime? @map("sla_due_at")
-  firstResponseAt DateTime? @map("first_response_at")
-  completedAt     DateTime? @map("completed_at")
+  slaDueAt        DateTime? @map("sla_due_at") @db.Timestamptz(3)
+  firstResponseAt DateTime? @map("first_response_at") @db.Timestamptz(3)
+  completedAt     DateTime? @map("completed_at") @db.Timestamptz(3)
   slaMet          Boolean?  @map("sla_met")
 
   estimatedCost Decimal? @map("estimated_cost") @db.Decimal(12, 2)
@@ -673,16 +856,16 @@ model WorkOrder {
 
   approvalRequired Boolean   @default(false) @map("approval_required")
   approvedBy       String?   @map("approved_by") @db.Uuid
-  approvedAt       DateTime? @map("approved_at")
+  approvedAt       DateTime? @map("approved_at") @db.Timestamptz(3)
 
   tenantPresentRequired Boolean   @default(false) @map("tenant_present_required")
-  scheduledFor          DateTime? @map("scheduled_for")
+  scheduledFor          DateTime? @map("scheduled_for") @db.Timestamptz(3)
 
-  occurredAt DateTime? @map("occurred_at")
-  recordedAt DateTime  @default(now()) @map("recorded_at")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt @map("updated_at")
-  deletedAt  DateTime? @map("deleted_at")
+  occurredAt DateTime? @map("occurred_at") @db.Timestamptz(3)
+  recordedAt DateTime  @default(now()) @map("recorded_at") @db.Timestamptz(3)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz(3)
   createdBy  String?   @map("created_by") @db.Uuid
   changeSeq  BigInt    @default(autoincrement()) @map("change_seq")
 
@@ -706,16 +889,17 @@ model WorkOrder {
 // ---------------------------------------------------------------------------
 
 model PartCatalog {
-  id                    String   @id @default(uuid()) @db.Uuid
-  manufacturer          String
-  partNumber            String   @map("part_number")
-  name                  String
-  componentType         ComponentTypeT @map("component_type")
-  compatibleModelIds    String[] @default([]) @map("compatible_model_ids") @db.Uuid
-  typicalCost           Decimal? @map("typical_cost") @db.Decimal(12, 2)
-  expectedLifeMonths    Int?     @map("expected_life_months")
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                   String         @id @default(uuid()) @db.Uuid
+  manufacturer         String
+  partNumber           String         @map("part_number")
+  partNumberNormalized String?        @map("part_number_normalized")
+  name                 String
+  componentType        ComponentTypeT @map("component_type")
+  compatibleModelIds   String[]       @default([]) @map("compatible_model_ids") @db.Uuid
+  typicalCost          Decimal?       @map("typical_cost") @db.Decimal(12, 2)
+  expectedLifeMonths   Int?           @map("expected_life_months")
+  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   parts      Part[]
   partUsages PartUsage[]
@@ -737,11 +921,11 @@ model Part {
 
   origin PartOriginT @default(unknown)
 
-  sourceAssetId              String?   @map("source_asset_id") @db.Uuid // the lineage link
-  sourceServiceEventId        String?   @map("source_service_event_id") @db.Uuid
-  salvagedAt                  DateTime? @map("salvaged_at")
-  salvagedBy                  String?   @map("salvaged_by") @db.Uuid
-  sourceAssetAgeMonthsAtSalvage Int?    @map("source_asset_age_months_at_salvage")
+  sourceAssetId                 String?   @map("source_asset_id") @db.Uuid // the lineage link
+  sourceServiceEventId          String?   @map("source_service_event_id") @db.Uuid
+  salvagedAt                    DateTime? @map("salvaged_at") @db.Timestamptz(3)
+  salvagedBy                    String?   @map("salvaged_by") @db.Uuid
+  sourceAssetAgeMonthsAtSalvage Int?      @map("source_asset_age_months_at_salvage")
 
   condition PartConditionT @default(untested)
   status    PartStatusT    @default(in_stock)
@@ -749,23 +933,23 @@ model Part {
   currentStorageLocationId String? @map("current_storage_location_id") @db.Uuid
   installedInAssetId       String? @map("installed_in_asset_id") @db.Uuid
 
-  acquisitionCost Decimal  @default(0) @map("acquisition_cost") @db.Decimal(12, 2)
-  imputedValue    Decimal? @map("imputed_value") @db.Decimal(12, 2)
+  acquisitionCost   Decimal   @default(0) @map("acquisition_cost") @db.Decimal(12, 2)
+  imputedValue      Decimal?  @map("imputed_value") @db.Decimal(12, 2)
   warrantyExpiresOn DateTime? @map("warranty_expires_on") @db.Date
 
   notes     String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(3)
   changeSeq BigInt    @default(autoincrement()) @map("change_seq")
 
-  organization    Organization  @relation(fields: [orgId], references: [id])
-  partCatalog     PartCatalog?  @relation(fields: [partCatalogId], references: [id])
-  sourceAsset     Asset?        @relation("part_source_asset", fields: [sourceAssetId], references: [id])
+  organization     Organization @relation(fields: [orgId], references: [id])
+  partCatalog      PartCatalog? @relation(fields: [partCatalogId], references: [id])
+  sourceAsset      Asset?       @relation("part_source_asset", fields: [sourceAssetId], references: [id])
   installedInAsset Asset?       @relation("part_installed_asset", fields: [installedInAssetId], references: [id])
 
-  usages           PartUsage[] @relation("part_usage_part")
-  removedInUsages  PartUsage[] @relation("part_usage_removed_part")
+  usages          PartUsage[] @relation("part_usage_part")
+  removedInUsages PartUsage[] @relation("part_usage_removed_part")
 
   @@index([orgId, status, componentType])
   @@index([sourceAssetId])
@@ -775,28 +959,28 @@ model Part {
 
 /// Append-only installation/removal record.
 model PartUsage {
-  id             String  @id @default(uuid()) @db.Uuid
-  orgId          String  @map("org_id") @db.Uuid
-  serviceEventId String  @map("service_event_id") @db.Uuid
-  assetId        String  @map("asset_id") @db.Uuid
+  id             String @id @default(uuid()) @db.Uuid
+  orgId          String @map("org_id") @db.Uuid
+  serviceEventId String @map("service_event_id") @db.Uuid
+  assetId        String @map("asset_id") @db.Uuid
 
   partId        String? @map("part_id") @db.Uuid
   partCatalogId String? @map("part_catalog_id") @db.Uuid
   description   String?
 
-  action   String // enum('installed','removed','swapped','tested','returned')
-  quantity Decimal @default(1) @db.Decimal(8, 2)
-  unitCost Decimal @default(0) @map("unit_cost") @db.Decimal(12, 2)
+  action     String // enum('installed','removed','swapped','tested','returned')
+  quantity   Decimal  @default(1) @db.Decimal(8, 2)
+  unitCost   Decimal  @default(0) @map("unit_cost") @db.Decimal(12, 2)
   // GENERATED ALWAYS AS (quantity * unit_cost) STORED — hand-added in migration
-  totalCost Decimal? @map("total_cost") @db.Decimal(12, 2)
-  costSource String  @default("actual") @map("cost_source")
+  totalCost  Decimal? @map("total_cost") @db.Decimal(12, 2)
+  costSource String   @default("actual") @map("cost_source")
 
   removedPartId          String? @map("removed_part_id") @db.Uuid
   removedPartDisposition String? @map("removed_part_disposition")
   warrantyCovered        Boolean @default(false) @map("warranty_covered")
 
-  occurredAt DateTime @map("occurred_at")
-  recordedAt DateTime @default(now()) @map("recorded_at")
+  occurredAt DateTime @map("occurred_at") @db.Timestamptz(3)
+  recordedAt DateTime @default(now()) @map("recorded_at") @db.Timestamptz(3)
   createdBy  String?  @map("created_by") @db.Uuid
   changeSeq  BigInt   @default(autoincrement()) @map("change_seq")
 
@@ -813,13 +997,298 @@ model PartUsage {
 }
 
 // ---------------------------------------------------------------------------
-// Deferred (see docs/data-model.md §2, §6, §7 for full shape):
-//   storage_location, asset_location (custody ledger), asset_identifier_scan,
-//   turn / turn_item, vendor, reconciliation_flag, audit_log, sync_op,
-//   metric_snapshot, media / media_attachment, device.
-// These are real V0-scope tables per docs/v0-scope.md, but the brief for
-// this scaffold names Organization, Property, Building, Unit,
-// AssetCategory, Asset, ServiceEvent, Part, WorkOrder, and User as the
-// core set to model now. Add the rest as the corresponding Nest modules
-// are built out.
+// 6. Designed V0 supporting tables
 // ---------------------------------------------------------------------------
+
+model Device {
+  id             String          @id @default(uuid()) @db.Uuid
+  orgId          String          @map("org_id") @db.Uuid
+  userId         String          @map("user_id") @db.Uuid
+  platform       DevicePlatformT
+  model          String?
+  osVersion      String?         @map("os_version")
+  appVersion     String?         @map("app_version")
+  pushToken      String?         @map("push_token")
+  lastSyncCursor BigInt?         @map("last_sync_cursor")
+  lastSyncAt     DateTime?       @map("last_sync_at") @db.Timestamptz(3)
+  revokedAt      DateTime?       @map("revoked_at") @db.Timestamptz(3)
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, userId])
+  @@map("device")
+}
+
+model StorageLocation {
+  id             String               @id @default(uuid()) @db.Uuid
+  orgId          String               @map("org_id") @db.Uuid
+  propertyId     String?              @map("property_id") @db.Uuid
+  name           String
+  kind           StorageLocationKindT
+  assignedUserId String?              @map("assigned_user_id") @db.Uuid
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt      DateTime             @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt      DateTime?            @map("deleted_at") @db.Timestamptz(3)
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, propertyId, kind])
+  @@map("storage_location")
+}
+
+model AssetLocation {
+  id                 String               @id @default(uuid()) @db.Uuid
+  orgId              String               @map("org_id") @db.Uuid
+  assetId            String               @map("asset_id") @db.Uuid
+  locationType       CurrentLocationTypeT @map("location_type")
+  unitId             String?              @map("unit_id") @db.Uuid
+  storageLocationId  String?              @map("storage_location_id") @db.Uuid
+  vendorId           String?              @map("vendor_id") @db.Uuid
+  propertyId         String?              @map("property_id") @db.Uuid
+  fromTs             DateTime             @map("from_ts") @db.Timestamptz(3)
+  toTs               DateTime?            @map("to_ts") @db.Timestamptz(3)
+  moveReason         AssetMoveReasonT     @map("move_reason")
+  movementKind       MovementKindT        @default(recorded) @map("movement_kind")
+  confirmedBy        String?              @map("confirmed_by") @db.Uuid
+  confirmationMethod ConfirmationMethodT? @map("confirmation_method")
+  scanLatitude       Decimal?             @map("scan_latitude") @db.Decimal(9, 6)
+  scanLongitude      Decimal?             @map("scan_longitude") @db.Decimal(9, 6)
+  scanAccuracyM      Decimal?             @map("scan_accuracy_m") @db.Decimal(8, 2)
+  workOrderId        String?              @map("work_order_id") @db.Uuid
+  serviceEventId     String?              @map("service_event_id") @db.Uuid
+  turnId             String?              @map("turn_id") @db.Uuid
+  notes              String?
+  occurredAt         DateTime             @map("occurred_at") @db.Timestamptz(3)
+  recordedAt         DateTime             @default(now()) @map("recorded_at") @db.Timestamptz(3)
+  createdBy          String?              @map("created_by") @db.Uuid
+  deviceId           String?              @map("device_id") @db.Uuid
+  changeSeq          BigInt               @default(autoincrement()) @map("change_seq")
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([assetId, fromTs(sort: Desc)])
+  @@index([orgId, propertyId, fromTs(sort: Desc)])
+  @@map("asset_location")
+}
+
+model AssetIdentifierScan {
+  id                 String          @id @default(uuid()) @db.Uuid
+  orgId              String?         @map("org_id") @db.Uuid
+  rawCode            String          @map("raw_code")
+  codeType           ScanCodeTypeT   @map("code_type")
+  resolvedAssetId    String?         @map("resolved_asset_id") @db.Uuid
+  resolution         ScanResolutionT
+  scannedBy          String?         @map("scanned_by") @db.Uuid
+  deviceId           String?         @map("device_id") @db.Uuid
+  scanLatitude       Decimal?        @map("scan_latitude") @db.Decimal(9, 6)
+  scanLongitude      Decimal?        @map("scan_longitude") @db.Decimal(9, 6)
+  expectedPropertyId String?         @map("expected_property_id") @db.Uuid
+  actualPropertyId   String?         @map("actual_property_id") @db.Uuid
+  occurredAt         DateTime        @map("occurred_at") @db.Timestamptz(3)
+  recordedAt         DateTime        @default(now()) @map("recorded_at") @db.Timestamptz(3)
+
+  organization Organization? @relation(fields: [orgId], references: [id])
+
+  @@index([resolvedAssetId, occurredAt(sort: Desc)])
+  @@index([orgId, resolution, occurredAt(sort: Desc)])
+  @@map("asset_identifier_scan")
+}
+
+model Media {
+  id                String    @id @default(uuid()) @db.Uuid
+  orgId             String    @map("org_id") @db.Uuid
+  storageKey        String    @map("storage_key")
+  mimeType          String    @map("mime_type")
+  bytes             BigInt?
+  width             Int?
+  height            Int?
+  sha256            String?
+  capturedAt        DateTime? @map("captured_at") @db.Timestamptz(3)
+  capturedLatitude  Decimal?  @map("captured_latitude") @db.Decimal(9, 6)
+  capturedLongitude Decimal?  @map("captured_longitude") @db.Decimal(9, 6)
+  uploadedBy        String?   @map("uploaded_by") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([storageKey])
+  @@index([orgId, sha256])
+  @@map("media")
+}
+
+model MediaAttachment {
+  id         String     @id @default(uuid()) @db.Uuid
+  orgId      String     @map("org_id") @db.Uuid
+  mediaId    String     @map("media_id") @db.Uuid
+  entityType String     @map("entity_type")
+  entityId   String     @map("entity_id") @db.Uuid
+  role       MediaRoleT
+  sortOrder  Int        @default(0) @map("sort_order")
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  createdBy  String?    @map("created_by") @db.Uuid
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([mediaId, entityType, entityId, role])
+  @@index([orgId, entityType, entityId])
+  @@map("media_attachment")
+}
+
+model Vendor {
+  id          String      @id @default(uuid()) @db.Uuid
+  orgId       String      @map("org_id") @db.Uuid
+  name        String
+  kind        VendorKindT
+  contactName String?     @map("contact_name")
+  phone       String?
+  email       String?
+  hourlyRate  Decimal?    @map("hourly_rate") @db.Decimal(10, 2)
+  notes       String?
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, active])
+  @@map("vendor")
+}
+
+model Turn {
+  id                String      @id @default(uuid()) @db.Uuid
+  orgId             String      @map("org_id") @db.Uuid
+  propertyId        String      @map("property_id") @db.Uuid
+  unitId            String      @map("unit_id") @db.Uuid
+  type              TurnTypeT
+  status            TurnStatusT @default(scheduled)
+  scheduledFor      DateTime?   @map("scheduled_for") @db.Timestamptz(3)
+  startedAt         DateTime?   @map("started_at") @db.Timestamptz(3)
+  completedAt       DateTime?   @map("completed_at") @db.Timestamptz(3)
+  performedBy       String      @map("performed_by") @db.Uuid
+  previousTenantRef String?     @map("previous_tenant_ref")
+  itemsTotal        Int         @default(0) @map("items_total")
+  itemsPresent      Int         @default(0) @map("items_present")
+  itemsMissing      Int         @default(0) @map("items_missing")
+  itemsDamaged      Int         @default(0) @map("items_damaged")
+  assetsAdded       Int         @default(0) @map("assets_added")
+  assetsRemoved     Int         @default(0) @map("assets_removed")
+  estimatedCost     Decimal?    @map("estimated_cost") @db.Decimal(12, 2)
+  actualCost        Decimal?    @map("actual_cost") @db.Decimal(12, 2)
+  notes             String?
+  occurredAt        DateTime?   @map("occurred_at") @db.Timestamptz(3)
+  recordedAt        DateTime    @default(now()) @map("recorded_at") @db.Timestamptz(3)
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt         DateTime    @updatedAt @map("updated_at") @db.Timestamptz(3)
+  deletedAt         DateTime?   @map("deleted_at") @db.Timestamptz(3)
+  changeSeq         BigInt      @default(autoincrement()) @map("change_seq")
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, propertyId, status])
+  @@index([unitId, completedAt(sort: Desc)])
+  @@map("turn")
+}
+
+model TurnItem {
+  id                   String           @id @default(uuid()) @db.Uuid
+  orgId                String           @map("org_id") @db.Uuid
+  turnId               String           @map("turn_id") @db.Uuid
+  assetId              String?          @map("asset_id") @db.Uuid
+  expectedCategoryId   String?          @map("expected_category_id") @db.Uuid
+  finding              TurnFindingT
+  condition            AssetConditionT?
+  decision             TurnDecisionT?   @default(none)
+  decisionReason       String?          @map("decision_reason")
+  estimatedCost        Decimal?         @map("estimated_cost") @db.Decimal(12, 2)
+  verifiedByScan       Boolean          @default(false) @map("verified_by_scan")
+  generatedWorkOrderId String?          @map("generated_work_order_id") @db.Uuid
+  generatedAssetId     String?          @map("generated_asset_id") @db.Uuid
+  notes                String?
+  occurredAt           DateTime         @map("occurred_at") @db.Timestamptz(3)
+  recordedAt           DateTime         @default(now()) @map("recorded_at") @db.Timestamptz(3)
+  createdBy            String?          @map("created_by") @db.Uuid
+  changeSeq            BigInt           @default(autoincrement()) @map("change_seq")
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([turnId, assetId])
+  @@index([orgId, finding])
+  @@map("turn_item")
+}
+
+model ReconciliationFlag {
+  id             String              @id @default(uuid()) @db.Uuid
+  orgId          String              @map("org_id") @db.Uuid
+  entityType     String              @map("entity_type")
+  entityId       String              @map("entity_id") @db.Uuid
+  kind           ReconciliationKindT
+  detail         Json                @default("{}")
+  raisedAt       DateTime            @default(now()) @map("raised_at") @db.Timestamptz(3)
+  resolvedAt     DateTime?           @map("resolved_at") @db.Timestamptz(3)
+  resolvedBy     String?             @map("resolved_by") @db.Uuid
+  resolutionNote String?             @map("resolution_note")
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, resolvedAt])
+  @@map("reconciliation_flag")
+}
+
+model SyncOp {
+  opId       String        @id @map("op_id") @db.Uuid
+  orgId      String        @map("org_id") @db.Uuid
+  deviceId   String        @map("device_id") @db.Uuid
+  userId     String?       @map("user_id") @db.Uuid
+  entityType String        @map("entity_type")
+  entityId   String?       @map("entity_id") @db.Uuid
+  opType     String        @map("op_type")
+  status     SyncOpStatusT @default(applied)
+  error      Json?
+  receivedAt DateTime      @default(now()) @map("received_at") @db.Timestamptz(3)
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, receivedAt])
+  @@index([deviceId, receivedAt])
+  @@map("sync_op")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  orgId       String   @map("org_id") @db.Uuid
+  actorUserId String?  @map("actor_user_id") @db.Uuid
+  actorRole   RoleT?   @map("actor_role")
+  deviceId    String?  @map("device_id")
+  ip          String?  @db.Inet
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String?  @map("entity_id") @db.Uuid
+  before      Json?
+  after       Json?
+  occurredAt  DateTime @map("occurred_at") @db.Timestamptz(3)
+  recordedAt  DateTime @default(now()) @map("recorded_at") @db.Timestamptz(3)
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, entityType, entityId, recordedAt(sort: Desc)])
+  @@map("audit_log")
+}
+
+model MetricSnapshot {
+  id                String           @id @default(uuid()) @db.Uuid
+  orgId             String           @map("org_id") @db.Uuid
+  scopeType         MetricScopeTypeT @map("scope_type")
+  scopeId           String?          @map("scope_id") @db.Uuid
+  periodStart       DateTime         @map("period_start") @db.Date
+  periodGrain       PeriodGrainT     @map("period_grain")
+  definitionVersion Int              @default(1) @map("definition_version")
+  metrics           Json
+  computedAt        DateTime         @default(now()) @map("computed_at") @db.Timestamptz(3)
+
+  organization Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, scopeType, periodGrain, periodStart])
+  @@map("metric_snapshot")
+}

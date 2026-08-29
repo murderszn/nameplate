@@ -22,7 +22,9 @@ class NpAssets {
     }
     if (key.contains('washer') && !key.contains('dish')) return schematicWasher;
     if (key.contains('dryer')) return schematicDryer;
-    if (key.contains('hvac') || key.contains('air handler') || key.contains('water heater')) {
+    if (key.contains('hvac') ||
+        key.contains('air handler') ||
+        key.contains('water heater')) {
       return schematicHvac;
     }
     if (key.contains('microwave')) return schematicMicrowave;
@@ -38,7 +40,10 @@ class NpDotGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CustomPaint(painter: _DotGridPainter(), child: SizedBox.expand());
+    return const CustomPaint(
+      painter: _DotGridPainter(),
+      child: SizedBox.expand(),
+    );
   }
 }
 
@@ -60,6 +65,7 @@ class _DotGridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
+/// Editorial kicker: red left-bar rule + mono all-caps label.
 class NpKicker extends StatelessWidget {
   final String text;
   const NpKicker(this.text, {super.key});
@@ -70,12 +76,11 @@ class NpKicker extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 6,
-          height: 6,
+          width: 3,
+          height: 14,
           decoration: const BoxDecoration(
             color: NpColors.red,
-            shape: BoxShape.circle,
-            boxShadow: [BoxShadow(color: NpColors.redGlow, blurRadius: 8)],
+            borderRadius: BorderRadius.all(Radius.circular(1)),
           ),
         ),
         const SizedBox(width: 8),
@@ -99,11 +104,10 @@ class NpLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        boxShadow: [BoxShadow(color: NpColors.redGlow, blurRadius: 16, spreadRadius: -2)],
-      ),
-      child: Image.asset(NpAssets.logo, height: height, filterQuality: FilterQuality.high),
+    return Image.asset(
+      NpAssets.logo,
+      height: height,
+      filterQuality: FilterQuality.high,
     );
   }
 }
@@ -124,18 +128,20 @@ class NpBrandAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(77);
+  Size get preferredSize => const Size.fromHeight(72);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      toolbarHeight: 76,
+      toolbarHeight: 71,
       titleSpacing: showLogo ? 8 : 16,
       title: Row(
         children: [
           if (showLogo) ...[
-            const NpLogo(height: 34),
-            const SizedBox(width: 10),
+            const NpLogo(height: 32),
+            const SizedBox(width: 12),
+            Container(width: 1, height: 32, color: NpColors.lineStrong),
+            const SizedBox(width: 12),
           ],
           Expanded(
             child: Column(
@@ -143,16 +149,16 @@ class NpBrandAppBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 NpKicker(kicker),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: NpColors.white,
-                    fontSize: 20,
+                    fontSize: 19,
                     fontWeight: FontWeight.w800,
-                    letterSpacing: -0.6,
+                    letterSpacing: -0.5,
                     height: 1.1,
                   ),
                 ),
@@ -164,8 +170,37 @@ class NpBrandAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions,
       bottom: const PreferredSize(
         preferredSize: Size.fromHeight(1),
-        child: Divider(height: 1, color: NpColors.lineLight),
+        child: Divider(height: 1, color: NpColors.lineStrong),
       ),
+    );
+  }
+}
+
+/// Section label with a red left-bar rule — use inside scrollable content.
+class NpSectionLabel extends StatelessWidget {
+  final String text;
+  final Widget? trailing;
+  const NpSectionLabel(this.text, {super.key, this.trailing});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(width: 3, height: 14, color: NpColors.red),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            text.toUpperCase(),
+            style: NpType.mono.copyWith(
+              color: NpColors.gray400,
+              fontSize: 11,
+              letterSpacing: 1.4,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        ?trailing,
+      ],
     );
   }
 }
@@ -174,22 +209,34 @@ class NpStatusPill extends StatelessWidget {
   final String label;
   final NpPillTone tone;
 
-  const NpStatusPill({super.key, required this.label, this.tone = NpPillTone.neutral});
+  const NpStatusPill({
+    super.key,
+    required this.label,
+    this.tone = NpPillTone.neutral,
+  });
 
   @override
   Widget build(BuildContext context) {
     final (fg, bg, border) = switch (tone) {
       NpPillTone.verified => (NpColors.bg, NpColors.white, Colors.transparent),
-      NpPillTone.caution => (NpColors.red, NpColors.redSubtle, NpColors.redBorder),
+      NpPillTone.caution => (
+        NpColors.red,
+        NpColors.redSubtle,
+        NpColors.redBorder,
+      ),
       NpPillTone.fault => (NpColors.white, NpColors.red, Colors.transparent),
-      NpPillTone.neutral => (NpColors.gray400, Colors.transparent, NpColors.lineStrong),
+      NpPillTone.neutral => (
+        NpColors.gray400,
+        Colors.transparent,
+        NpColors.lineStrong,
+      ),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(2),
         border: Border.all(color: border),
       ),
       child: Text(

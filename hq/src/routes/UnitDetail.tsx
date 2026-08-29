@@ -57,27 +57,30 @@ export function UnitDetail() {
   const openWo = workOrders.filter((w) => OPEN.includes(w.status)).length;
   const capital = assets.reduce((s, a) => s + Number(a.purchaseCost ?? 0), 0);
 
+  const activeWarranties = assets.filter((a) => a.warrantyExpiresOn && new Date(a.warrantyExpiresOn).getTime() > Date.now()).length;
+
   return (
     <div>
       <div className="np-toolbar">
-        <Link to={`/properties/${property.id}`} className="np-back">
-          ← {property.name}
-        </Link>
-        <span className="np-badge np-badge--info">{unit.building?.name ?? 'Unit'}</span>
-      </div>
-
-      <div className="np-loc-hero">
-        <div>
-          <h2 className="np-plate-title">Unit {unit.label}</h2>
-          <p className="np-muted">
-            {property.name}
-            {unit.building ? ` — ${unit.building.name}` : ''}
-            {unit.floor != null ? ` · Floor ${unit.floor}` : ''}
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Link to={`/properties/${property.id}`} className="np-back">
+            ← Back
+          </Link>
+          <div className="np-breadcrumbs">
+            <span>{property.name}</span>
+            <span className="np-breadcrumbs__sep">/</span>
+            <span>{unit.building?.name ?? 'Building'}</span>
+          </div>
         </div>
         <span className={`np-badge np-badge--status-${unit.occupancyStatus ?? 'active'}`}>
           {(unit.occupancyStatus ?? 'unknown').replaceAll('_', ' ')}
         </span>
+      </div>
+
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontFamily: 'var(--font-mono)', fontSize: '2.5rem', margin: 0, lineHeight: 1 }}>
+          Unit {unit.label}
+        </h1>
       </div>
 
       <dl className="np-meta-inline">
@@ -104,18 +107,25 @@ export function UnitDetail() {
         </div>
       </dl>
 
-      <div className="np-stat-chips">
-        <div className="np-stat-box">
-          <span className="np-stat-val">{assets.length}</span>
-          <span className="np-stat-lbl">Assets in unit</span>
+      <div className="np-info-strip">
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{assets.length}</span>
+          <span className="np-info-strip__lbl">Assets in unit</span>
         </div>
-        <div className="np-stat-box">
-          <span className="np-stat-val">{openWo}</span>
-          <span className="np-stat-lbl">Open work orders</span>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{openWo}</span>
+          <span className="np-info-strip__lbl">Open work orders</span>
         </div>
-        <div className="np-stat-box">
-          <span className="np-stat-val">{money(capital)}</span>
-          <span className="np-stat-lbl">Capital in unit</span>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{money(capital)}</span>
+          <span className="np-info-strip__lbl">Capital in unit</span>
+        </div>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{activeWarranties}</span>
+          <span className="np-info-strip__lbl">Warranty Active</span>
         </div>
       </div>
 
@@ -123,45 +133,50 @@ export function UnitDetail() {
       {assets.length === 0 ? (
         <div className="np-empty-state">No tagged assets in this unit.</div>
       ) : (
-        <div className="np-unit-plates">
+        <div className="np-unit-plate-v2-grid">
           {assets.map((a) => {
-            const key = a.customFields?.schematicKey || (a.category?.key ? CATEGORY_SCHEMATIC[a.category.key] : undefined);
+            const expectedLifeMonths = a.expectedLifeMonths ?? a.assetModel?.expectedLifeMonths ?? a.category?.defaultUsefulLifeMonths ?? 0;
+            const ageMonths = (a.installDate ? ((Date.now() - new Date(a.installDate).getTime()) / (365.25 * 86400000)) * 12 : 0);
+            let ratio = expectedLifeMonths > 0 ? ageMonths / expectedLifeMonths : 0;
+            ratio = Math.max(0, Math.min(ratio, 1));
+            
+            const lifeColor = ratio > 0.8 ? 'var(--red)' : ratio > 0.6 ? '#f5a623' : '#22c55e';
+            
             return (
               <button
                 key={a.id}
-                className="np-unit-plate"
+                className="np-unit-plate-v2"
                 onClick={() => navigate(`/assets/${a.id}`)}
               >
-                <div className="np-unit-plate__img">
-                  {key ? (
-                    <img
-                      src={`./schematics/${key}.png`}
-                      alt=""
-                      onError={(e) => {
-                        if (!e.currentTarget.src.includes('images/schematics')) {
-                          e.currentTarget.src = `./images/schematics/${key}.png`;
-                        }
-                      }}
-                    />
-                  ) : (
-                    <span className="np-muted">No schematic</span>
-                  )}
+                <div className="np-unit-plate-v2__head">
+                  <span className="np-unit-plate-v2__npid">{a.npid}</span>
+                  <span className="np-badge">{a.category?.displayName ?? 'Asset'}</span>
                 </div>
-                <div className="np-unit-plate__body">
-                  <div className="mono" style={{ color: 'var(--red)' }}>
-                    {a.npid}
-                  </div>
-                  <strong>
+                <div>
+                  <div className="np-unit-plate-v2__title">
                     {[a.manufacturerRaw, a.modelRaw].filter(Boolean).join(' ') || a.notes || 'Asset'}
-                  </strong>
-                  <p className="np-muted">{a.customFields?.room ?? a.category?.displayName}</p>
-                  <div className="np-unit-plate__meta">
-                    <span className={`np-badge np-badge--status-${a.status}`}>
-                      {a.status.replaceAll('_', ' ')}
-                    </span>
-                    <span className="np-muted">{yearsLabel(a.installDate)}</span>
+                  </div>
+                  <div className="np-unit-plate-v2__sub">
+                    {a.customFields?.room ?? a.category?.displayName ?? '—'}
                   </div>
                 </div>
+                <div className="np-unit-plate-v2__stats">
+                  <span className="np-unit-plate-v2__age">{yearsLabel(a.installDate)}</span>
+                  <span className={`np-badge np-badge--status-${a.status}`}>
+                    {a.status.replaceAll('_', ' ')}
+                  </span>
+                  <span className="np-unit-plate-v2__cost">{money(a.purchaseCost)}</span>
+                </div>
+                {expectedLifeMonths > 0 && (
+                  <div className="np-unit-plate-v2__lifebar">
+                    <div className="np-unit-plate-v2__lifebar-fill" style={{ width: `${ratio * 100}%`, background: lifeColor }} />
+                  </div>
+                )}
+                {a.serviceEvents && a.serviceEvents.length > 0 && (
+                  <div className="np-unit-plate-v2__last-svc">
+                    Last service: {new Date(a.serviceEvents[0].occurredAt).toLocaleDateString()}
+                  </div>
+                )}
               </button>
             );
           })}

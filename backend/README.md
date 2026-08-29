@@ -5,28 +5,30 @@ described as a REST/JSON service. See **`../docs/architecture.md`** for the
 full stack decision (§2), API conventions and endpoint map (§3), and the
 offline sync design (§4). Entity shapes come from **`../docs/data-model.md`**.
 
-This started as a **V0 scaffold** and is now a **runnable local demo**:
-migrated Postgres schema, a realistic seeded portfolio (org, properties,
-buildings, units, assets, service events with parts lineage, work orders),
-and GET endpoints wired to Prisma across every module so the HQ console
-renders real data end to end. Auth/RBAC, sync, media, reports, the custody
-ledger, and turns are still either a thin stub controller or explicitly
-deferred — see the bottom of `prisma/schema.prisma` and inline comments in
-each module.
+The backend now has the complete designed V0 database foundation: 28 Prisma
+models, forward-only PostgreSQL/Supabase migrations, deterministic pilot-scale
+seed data, Supabase JWT verification, active membership context, permission
+and property-scope guards, tenant RLS, Auth user synchronization, and a private
+media bucket policy. Business workflows beyond the existing asset/service/sync
+slice remain roadmap work; a modeled table is not the same as a completed API.
+
+Deployment and recovery steps live in
+[`../docs/supabase-backend-runbook.md`](../docs/supabase-backend-runbook.md).
 
 ## What's here
 
 ```
 backend/
 ├── prisma/
-│   └── schema.prisma       Organization, User, Membership, PropertyAssignment,
-│                            Property, Building, Unit, AssetCategory, AssetModel,
-│                            Asset, ServiceEvent, WorkOrder, PartCatalog, Part,
-│                            PartUsage — see file header for what's deferred.
+│   ├── schema.prisma       28 V0 models across identity, registry, custody,
+│   │                        work, parts, turns, sync, audit, media, and metrics
+│   └── migrations/         Core + forward-only foundation migration
 ├── src/
 │   ├── main.ts              Nest bootstrap, global ValidationPipe, CORS
 │   ├── app.module.ts        Wires every module below
 │   ├── prisma/              PrismaService/PrismaModule (global provider)
+│   ├── auth/                Supabase JWT, membership, RBAC, scope, tenant tx
+│   ├── config/              Validated runtime environment contract
 │   └── modules/
 │       ├── org/             GET /v1/org (no orgId = the demo org), GET /v1/org/all
 │       ├── properties/      GET list/:id + buildings sub-resource, POST/PATCH (stub CRUD)
@@ -47,27 +49,18 @@ a working Prisma-backed controller, but without DTOs/validation, auth
 guards, or business-rule enforcement — treat those as the next slice of
 work, not as done.
 
-## What's deliberately NOT modeled yet
+## What's deliberately deferred
 
-Per `docs/data-model.md` §2, §6, §7, the following V0-scope tables are
-**not** in `schema.prisma` yet: `storage_location`, `asset_location` (the
-append-only custody ledger — the anti-shrinkage feature), `asset_identifier_scan`,
-`turn`/`turn_item`, `vendor`, `reconciliation_flag`, `audit_log`, `sync_op`,
-`metric_snapshot`, `media`/`media_attachment`, `device`. The scaffold brief
-named a specific core set to model (Organization, Property, Building, Unit,
-AssetCategory, Asset, ServiceEvent, Part, WorkOrder, User-with-roles); add
-the rest as their corresponding modules get built.
+The V1 `part_movement` ledger and future `notification`, `job_outbox`,
+`api_key`, `webhook_delivery`, and `export_job` tables are not modeled.
+Several modeled V0 areas still need domain services/endpoints—notably custody
+moves, turns, reconciliation, media upload intents, metrics, and device
+revocation. See the blueprint roadmap rather than inferring completion from
+the Prisma catalog.
 
-Also note: Postgres `GENERATED ALWAYS AS ... STORED` columns (`serial_normalized`,
-`labor_cost`, `total_cost` on `service_event` and `part_usage`) are declared
-as ordinary nullable columns in `schema.prisma` because Prisma has no native
-support for generated columns (`data-model.md` §10). **Before running the
-first migration for real, hand-edit the generated SQL migration file** to
-add the `GENERATED ALWAYS AS (...) STORED` clauses, the partial unique
-indexes (e.g. `asset.serial_normalized` uniqueness scoped to
-`serial_confidence IN ('scanned','typed')`), and any `EXCLUDE`/`CHECK`
-constraints called out in `data-model.md`. Prisma migrations can express
-plain columns/indexes but not these Postgres-specific constructs.
+Postgres-only generated columns, partial indexes, checks, extensions, and the
+custody exclusion constraint are versioned in the forward migration. Do not
+regenerate or replace that SQL with a plain Prisma diff.
 
 ## Setup — running the demo locally
 
@@ -90,23 +83,16 @@ npm install
 # (Note: no password needed for a default local Homebrew Postgres install
 # with peer/trust auth — adjust if yours differs.)
 
-npx prisma migrate dev --name init     # creates the schema
-npx prisma db seed                     # loads the demo portfolio (see prisma/seed.ts)
+npx prisma migrate deploy              # applies the versioned migration chain
+npm run prisma:seed                    # disposable DB only; loads synthetic portfolio
 npm run start:dev                      # http://localhost:3000
 ```
 
-The seed script (`prisma/seed.ts`, wired via the `prisma.seed` entry in
-`package.json`) creates one demo org — **Sonoran Portfolio Management** —
-with 4 properties, ~6 buildings, ~22 units, ~22 assets across realistic
-categories (washers, dryers, ranges, refrigerators, dishwashers, water
-heaters, HVAC air handlers, microwaves) in a mix of statuses (active,
-needs_repair, in_repair, unaccounted_for, retired), several service events
-including a cross-asset **parts lineage** example (a control board
-salvaged from one failed refrigerator and installed in another), and 4
-work orders in different states (open, in_progress, awaiting_parts,
-completed). Re-running the seed against a non-empty DB will fail on
-unique constraints — reset with `npx prisma migrate reset` first if you
-need a clean slate.
+The deterministic seed creates **Sonoran Portfolio Management** with 3
+properties, 220 units, 900 assets, 540 service events, 120 work orders, 60
+physical parts, 30 turns, and supporting custody, scan, media, sync, audit,
+reconciliation, and metric rows. Re-running against a non-empty database is
+expected to fail on stable identifiers; use only an empty disposable database.
 
 Other useful scripts (see `package.json`):
 

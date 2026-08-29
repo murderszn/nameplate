@@ -14,11 +14,19 @@ import { PartsModule } from './modules/parts/parts.module';
 import { WorkOrdersModule } from './modules/work-orders/work-orders.module';
 import { UsersModule } from './modules/users/users.module';
 import { SyncModule } from './modules/sync/sync.module';
+import { AuthModule } from './auth/auth.module';
+import configuration from './config/configuration';
+import { validateEnvironment } from './config/env.validation';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      validate: validateEnvironment,
+    }),
     PrismaModule,
+    AuthModule,
     OrgModule,
     PropertiesModule,
     BuildingsModule,

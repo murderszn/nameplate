@@ -158,6 +158,43 @@ export function AssetDetail() {
             </div>
           </div>
 
+          {(() => {
+            const expectedLifeMonths = asset.expectedLifeMonths ?? asset.assetModel?.expectedLifeMonths ?? asset.category?.defaultUsefulLifeMonths;
+            const ageMonths = (yearsOld(asset.installDate) ?? 0) * 12;
+            const lifeRatio = expectedLifeMonths ? Math.min(ageMonths / expectedLifeMonths, 1.2) : null;
+            if (lifeRatio == null) return null;
+            const fill = lifeRatio > 1 ? '#ff2a2a' : lifeRatio > 0.8 ? '#ff2a2a' : lifeRatio > 0.6 ? '#f5a623' : '#22c55e';
+            return (
+              <div className="np-life-bar">
+                <div className="np-life-bar__label">
+                  USEFUL LIFE — {(ageMonths/12).toFixed(1)} yrs of {(expectedLifeMonths!/12).toFixed(0)} yrs expected ({Math.round(lifeRatio*100)}%)
+                </div>
+                <div className="np-life-bar__track">
+                  <div className="np-life-bar__fill" style={{ width: `${Math.min(lifeRatio * 100, 100)}%`, background: fill }} />
+                </div>
+              </div>
+            );
+          })()}
+
+          <div className="np-asset-card" style={{ marginTop: 16 }}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+              <span className="np-muted">OEM Base</span>
+              <span className="np-badge">{warrantyActive ? 'Active' : 'Expired'} {warrantyYear ? `(${warrantyYear})` : ''}</span>
+            </div>
+            {cf.warrantyExtra && (
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <span className="np-muted">Extended Warranty</span>
+                <span className="np-badge">{cf.warrantyExtra}</span>
+              </div>
+            )}
+            {(cf as any).compressorWarranty && (
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+                <span className="np-muted">Compressor Warranty</span>
+                <span className="np-badge">{(cf as any).compressorWarranty}</span>
+              </div>
+            )}
+          </div>
+
           {/* Spatial & Physical Tags */}
           <div className="np-asset-spatial-tags">
             {asset.currentProperty && (
@@ -226,19 +263,21 @@ export function AssetDetail() {
                 <tr>
                   <th>Service Date</th>
                   <th>Component / Findings</th>
+                  <th>Part / OEM #</th>
                   <th>Technician / Work Order</th>
                   <th>Ledger Total</th>
                 </tr>
               </thead>
               <tbody>
                 {lineage.map((e: ServiceEvent) => (
-                  <tr key={e.id}>
+                  <tr key={e.id} style={e.isWarrantyClaim ? { background: 'rgba(255,42,42,0.06)' } : undefined}>
                     <td className="mono">{isoDate(e.occurredAt)}</td>
                     <td>
                       <div className="np-lineage-findings">
                         <strong>{e.findings ?? e.eventType.replaceAll('_', ' ')}</strong>
                       </div>
                     </td>
+                    <td className="mono">{(e as any).partNumber ?? (e as any).customFields?.partNumber ?? '—'}</td>
                     <td>
                       <span className="np-lineage-tech">
                         {e.technician?.user?.fullName ?? 'Field Tech'}

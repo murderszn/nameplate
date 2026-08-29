@@ -1,4 +1,6 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { CurrentOrg } from '../../auth/current-context.decorator';
+import { RequirePermissions } from '../../auth/permissions.decorator';
 import { PrismaService } from '../../prisma/prisma.service';
 
 /**
@@ -12,18 +14,14 @@ export class OrgController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
-  findOne(@Query('orgId') orgId?: string) {
-    if (orgId) {
-      return this.prisma.organization.findUnique({ where: { id: orgId } });
-    }
-    return this.prisma.organization.findFirst({
-      where: { deletedAt: null },
-      orderBy: { createdAt: 'asc' },
-    });
+  @RequirePermissions('org:read')
+  findOne(@CurrentOrg() orgId: string) {
+    return this.prisma.organization.findFirst({ where: { id: orgId, deletedAt: null } });
   }
 
   @Get('all')
-  findAll() {
-    return this.prisma.organization.findMany({ where: { deletedAt: null } });
+  @RequirePermissions('org:read')
+  findAll(@CurrentOrg() orgId: string) {
+    return this.prisma.organization.findMany({ where: { id: orgId, deletedAt: null } });
   }
 }

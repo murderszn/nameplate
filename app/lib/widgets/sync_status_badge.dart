@@ -19,10 +19,53 @@ class SyncStatusBadge extends ConsumerWidget {
   }
 
   Widget _badge(SyncStatusSnapshot snapshot) {
+    if (snapshot.state == SyncState.pending) {
+      return Padding(
+        padding: const EdgeInsets.only(right: 16),
+        child: Semantics(
+          label: '${snapshot.pendingCount} pending uploads',
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Icon(
+                Icons.cloud_upload_outlined,
+                size: 20,
+                color: NpColors.red,
+              ),
+              Positioned(
+                right: -10,
+                top: -9,
+                child: Container(
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: NpColors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    '${snapshot.pendingCount}',
+                    style: const TextStyle(
+                      color: NpColors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final (label, icon, tone) = switch (snapshot.state) {
       SyncState.synced => ('Synced', Icons.check_circle, NpPillTone.verified),
-      SyncState.pending => ('${snapshot.pendingCount} pending', Icons.cloud_upload, NpPillTone.caution),
       SyncState.offline => ('Offline', Icons.cloud_off, NpPillTone.neutral),
+      SyncState.pending => throw StateError('Pending handled above'),
     };
 
     return Padding(
@@ -33,12 +76,9 @@ class SyncStatusBadge extends ConsumerWidget {
           Icon(
             icon,
             size: 14,
-            color: switch (tone) {
-              NpPillTone.verified => NpColors.white,
-              NpPillTone.caution => NpColors.red,
-              NpPillTone.fault => NpColors.red,
-              NpPillTone.neutral => NpColors.gray400,
-            },
+            color: tone == NpPillTone.verified
+                ? NpColors.white
+                : NpColors.gray400,
           ),
           const SizedBox(width: 6),
           NpStatusPill(label: label, tone: tone),

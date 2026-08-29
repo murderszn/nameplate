@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RequirePermissions } from '../../auth/permissions.decorator';
+import { CurrentOrg } from '../../auth/current-context.decorator';
 
 /**
  * Stub — GET/POST /v1/asset-models, the crowd-populated catalog
@@ -12,11 +14,13 @@ export class AssetModelsController {
 
   /** GET /v1/asset-models/categories — the category lookup (system + org-extended). */
   @Get('categories')
-  categories() {
-    return this.prisma.assetCategory.findMany({ orderBy: { sortOrder: 'asc' } });
+  @RequirePermissions('assets:read')
+  categories(@CurrentOrg() orgId: string) {
+    return this.prisma.assetCategory.findMany({ where: { OR: [{ orgId: null }, { orgId }] }, orderBy: { sortOrder: 'asc' } });
   }
 
   @Get()
+  @RequirePermissions('assets:read')
   findAll(@Query('manufacturer') manufacturer?: string, @Query('q') q?: string) {
     return this.prisma.assetModel.findMany({
       where: {
@@ -34,6 +38,7 @@ export class AssetModelsController {
   }
 
   @Post()
+  @RequirePermissions('assets:write')
   create(@Body() body: any) {
     return this.prisma.assetModel.create({ data: body });
   }

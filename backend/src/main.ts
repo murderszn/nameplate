@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import type { NameplateConfig } from './config/configuration';
 
 // Prisma BigInt columns (change_seq) aren't JSON-serializable by default —
 // this lets Nest's JSON responses render them as strings instead of 500ing.
@@ -16,8 +18,8 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, transform: true }),
   );
 
-  app.enableCors();
-
-  await app.listen(process.env.PORT ?? 3000);
+  const config = app.get(ConfigService<NameplateConfig, true>);
+  app.enableCors({ origin: config.get('corsOrigins', { infer: true }) });
+  await app.listen(config.get('port', { infer: true }));
 }
 bootstrap();

@@ -1,4 +1,8 @@
-import { Body, Controller, Headers, Post, Request } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { CurrentMembership, CurrentOrg, CurrentUser } from '../../auth/current-context.decorator';
+import type { AuthenticatedUser, MembershipContext } from '../../auth/auth.types';
+import { assignedPropertyIds } from '../../auth/context-access';
+import { RequirePermissions } from '../../auth/permissions.decorator';
 import { SyncService } from './sync.service';
 import { SyncPullDto } from './dto/sync-pull.dto';
 import { SyncPushDto } from './dto/sync-push.dto';
@@ -13,13 +17,17 @@ export class SyncController {
    * Returns delta changes and tombstones above the specified sequence cursor.
    */
   @Post('pull')
+  @RequirePermissions('sync:read')
   async pull(
     @Body() dto: SyncPullDto,
-    @Headers('x-org-id') headerOrgId?: string,
-    @Request() req?: any,
+    @CurrentOrg() orgId: string,
+    @CurrentMembership() membership: MembershipContext,
   ) {
-    const orgId = req?.user?.orgId || headerOrgId || 'org_sonoran_fund4';
-    return this.syncService.pull(dto, orgId);
+    const propertyIds = assignedPropertyIds(membership);
+    const scopes = propertyIds
+      ? (dto.scopes?.length ? dto.scopes.filter((scope) => propertyIds.includes(scope)) : propertyIds)
+      : dto.scopes;
+    return this.syncService.pull({ ...dto, scopes }, orgId, propertyIds);
   }
 
   /**
@@ -27,14 +35,20 @@ export class SyncController {
    * Ingests and processes a batch of offline outbox mutations idempotently.
    */
   @Post('push')
+  @RequirePermissions('sync:write')
   async push(
     @Body() dto: SyncPushDto,
-    @Headers('x-org-id') headerOrgId?: string,
-    @Request() req?: any,
+    @CurrentOrg() orgId: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @CurrentMembership() membership: MembershipContext,
   ) {
-    const orgId = req?.user?.orgId || headerOrgId || 'org_sonoran_fund4';
-    const userId = req?.user?.id;
-    return this.syncService.push(dto, orgId, userId);
+    return this.syncService.push(
+      dto,
+      orgId,
+      user.id,
+      membership.id,
+      assignedPropertyIds(membership),
+    );
   }
 
   /**
@@ -42,12 +56,11 @@ export class SyncController {
    * Pre-allocates cryptographic tags for offline field minting.
    */
   @Post('allocate-block')
+  @RequirePermissions('assets:write')
   async allocateBlock(
     @Body() dto: AllocateBlockDto,
-    @Headers('x-org-id') headerOrgId?: string,
-    @Request() req?: any,
+    @CurrentOrg() orgId: string,
   ) {
-    const orgId = req?.user?.orgId || headerOrgId || 'org_sonoran_fund4';
     return this.syncService.allocateBlock(dto, orgId);
   }
 }

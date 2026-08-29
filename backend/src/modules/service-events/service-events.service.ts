@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateServiceEventDto } from './dto/create-service-event.dto';
 import { UpdateServiceEventDto } from './dto/update-service-event.dto';
+import type { MembershipContext } from '../../auth/auth.types';
+import { assignedPropertyIds, assertPropertyAccess } from '../../auth/context-access';
 
 @Injectable()
 export class ServiceEventsService {
@@ -14,11 +16,14 @@ export class ServiceEventsService {
     technicianId?: string;
     from?: string;
     to?: string;
+    propertyIds?: string[];
+    globalScope?: boolean;
   }) {
-    const { orgId, assetId, technicianId, from, to } = params;
+    const { orgId, assetId, technicianId, from, to, propertyIds, globalScope } = params;
     return this.prisma.serviceEvent.findMany({
       where: {
         orgId,
+        ...(!globalScope ? { propertyId: { in: propertyIds ?? [] } } : {}),
         ...(assetId ? { assetId } : {}),
         ...(technicianId ? { technicianId } : {}),
         ...(from || to
@@ -34,12 +39,13 @@ export class ServiceEventsService {
     });
   }
 
-  async findOne(id: string, orgId: string) {
+  async findOne(id: string, orgId: string, membership?: MembershipContext) {
     const event = await this.prisma.serviceEvent.findFirst({
       where: { id, orgId },
       include: { partUsages: true },
     });
     if (!event) throw new NotFoundException(`ServiceEvent ${id} not found`);
+    if (membership && event.propertyId) assertPropertyAccess(membership, event.propertyId);
     return event;
   }
 
@@ -51,15 +57,18 @@ export class ServiceEventsService {
    * respective domain services once they exist; this covers the
    * event + part-usages half of that invariant.
    */
-  create(dto: CreateServiceEventDto) {
+  async create(dto: CreateServiceEventDto, orgId: string, membership: MembershipContext) {
+    const asset = await this.prisma.asset.findFirst({ where: { id: dto.assetId, orgId, deletedAt: null }, select: { currentPropertyId: true } });
+    if (!asset) throw new NotFoundException(`Asset ${dto.assetId} not found`);
+    if (asset.currentPropertyId) assertPropertyAccess(membership, asset.currentPropertyId);
     return this.prisma.$transaction(async (tx) => {
       const event = await tx.serviceEvent.create({
         data: {
           id: dto.id,
-          orgId: dto.orgId,
+          orgId,
           assetId: dto.assetId,
           workOrderId: dto.workOrderId,
-          technicianId: dto.technicianId,
+          technicianId: membership.id,
           eventType: dto.eventType as any,
           findings: dto.findings,
           symptomCodes: dto.symptomCodes ?? [],
@@ -73,7 +82,7 @@ export class ServiceEventsService {
         await tx.partUsage.createMany({
           data: dto.partUsages.map((pu) => ({
             id: crypto.randomUUID(),
-            orgId: dto.orgId,
+            orgId,
             serviceEventId: event.id,
             assetId: dto.assetId,
             partId: pu.partId,
@@ -93,8 +102,8 @@ export class ServiceEventsService {
     });
   }
 
-  async update(id: string, orgId: string, dto: UpdateServiceEventDto) {
-    await this.findOne(id, orgId);
+  async update(id: string, orgId: string, dto: UpdateServiceEventDto, membership: MembershipContext) {
+    await this.findOne(id, orgId, membership);
     return this.prisma.serviceEvent.update({
       where: { id },
       data: {

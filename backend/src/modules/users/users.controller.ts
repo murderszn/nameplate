@@ -1,4 +1,7 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { CurrentOrg, CurrentUser } from '../../auth/current-context.decorator';
+import { RequirePermissions } from '../../auth/permissions.decorator';
+import type { AuthenticatedUser } from '../../auth/auth.types';
 import { PrismaService } from '../../prisma/prisma.service';
 
 /**
@@ -11,11 +14,13 @@ export class UsersController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get('me')
-  async me(@Query('userId') userId: string) {
+  @RequirePermissions('org:read')
+  async me(@CurrentUser() authUser: AuthenticatedUser, @CurrentOrg() orgId: string) {
     const user = await this.prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: authUser.id },
       include: {
         memberships: {
+          where: { orgId, status: 'active', deletedAt: null },
           include: { propertyAssignments: true },
         },
       },

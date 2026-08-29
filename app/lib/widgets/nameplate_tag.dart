@@ -18,9 +18,7 @@ class NameplateTag extends StatelessWidget {
         color: NpColors.bg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: NpColors.white, width: 2),
-        boxShadow: const [
-          BoxShadow(color: NpColors.redGlow, blurRadius: 28, spreadRadius: -4),
-        ],
+
       ),
       child: Stack(
         children: [
@@ -141,7 +139,7 @@ class _Rivet extends StatelessWidget {
         decoration: const BoxDecoration(
           color: NpColors.red,
           shape: BoxShape.circle,
-          boxShadow: [BoxShadow(color: NpColors.redGlow, blurRadius: 10)],
+
         ),
       ),
     );

@@ -158,10 +158,10 @@ export function Dashboard() {
   const kpis = [
     { label: 'Assets under management', value: String(liveAssets.length) },
     { label: 'T12 maintenance spend', value: money(t12Spend) },
-    { label: 'Open work orders', value: String(openWoCount) },
-    { label: 'Flagged / missing', value: String(flaggedCount) },
+    { label: 'Open work orders', value: String(openWoCount), accent: openWoCount > 0 ? 'amber' : undefined },
+    { label: 'Flagged / missing', value: String(flaggedCount), accent: flaggedCount > 0 ? 'red' : undefined },
     { label: 'Unconfirmed > 180d', value: String(unconfirmed) },
-    { label: 'Past expected life', value: String(pastLife) },
+    { label: 'Past expected life', value: String(pastLife), accent: pastLife > 0 ? 'red' : undefined },
   ];
 
   const woByProperty = new Map<string, number>();
@@ -171,9 +171,18 @@ export function Dashboard() {
     }
   }
   const assetsByProperty = new Map<string, number>();
+  const flaggedByProperty = new Map<string, number>();
+  const ageSumByProperty = new Map<string, number>();
   for (const a of assets) {
     if (a.currentPropertyId) {
       assetsByProperty.set(a.currentPropertyId, (assetsByProperty.get(a.currentPropertyId) ?? 0) + 1);
+      if (FLAGGED_STATUSES.includes(a.status)) {
+        flaggedByProperty.set(a.currentPropertyId, (flaggedByProperty.get(a.currentPropertyId) ?? 0) + 1);
+      }
+      const age = yearsOld(a.installDate);
+      if (age != null) {
+        ageSumByProperty.set(a.currentPropertyId, (ageSumByProperty.get(a.currentPropertyId) ?? 0) + age);
+      }
     }
   }
 
@@ -181,6 +190,14 @@ export function Dashboard() {
     .filter((w) => OPEN_STATUSES.includes(w.status))
     .sort((a, b) => (a.slaDueAt ?? '').localeCompare(b.slaDueAt ?? ''))
     .slice(0, 5);
+
+  const activeWarranties = assets.filter((a) => a.warrantyExpiresOn && new Date(a.warrantyExpiresOn).getTime() > Date.now());
+  const warrantyRemainingMonthsSum = activeWarranties.reduce((sum, a) => {
+    if (!a.warrantyExpiresOn) return sum;
+    const months = (new Date(a.warrantyExpiresOn).getTime() - Date.now()) / (1000 * 60 * 60 * 24 * 30);
+    return sum + months;
+  }, 0);
+  const avgRemainingMonths = activeWarranties.length > 0 ? (warrantyRemainingMonthsSum / activeWarranties.length).toFixed(1) : '0';
 
   if (loading) return <div className="np-empty-state">Loading portfolio…</div>;
   if (error) {
@@ -197,8 +214,25 @@ export function Dashboard() {
     <div>
       <div className="np-kpi-grid">
         {kpis.map((k) => (
-          <KpiTile key={k.label} label={k.label} value={k.value} />
+          <KpiTile key={k.label} label={k.label} value={k.value} accent={k.accent as any} />
         ))}
+      </div>
+
+      <div className="np-info-strip">
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{liveAssets.length}</span>
+          <span className="np-info-strip__lbl">Tracked Assets</span>
+        </div>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{activeWarranties.length}</span>
+          <span className="np-info-strip__lbl">Warranty Active</span>
+        </div>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{avgRemainingMonths}</span>
+          <span className="np-info-strip__lbl">Avg Remaining Mo</span>
+        </div>
       </div>
 
       <div className="np-dash-grid">
@@ -239,25 +273,33 @@ export function Dashboard() {
               <th>Property</th>
               <th>City / State</th>
               <th>Assets tracked</th>
+              <th>Flagged</th>
+              <th>Avg age</th>
               <th>Open work orders</th>
             </tr>
           </thead>
           <tbody>
-            {properties.map((p) => (
-              <tr
-                key={p.id}
-                className="np-row-link"
-                onClick={() => navigate(`/properties/${p.id}`)}
-              >
-                <td>{p.name}</td>
-                <td>
-                  {p.city ?? '—'}
-                  {p.state ? `, ${p.state}` : ''}
-                </td>
-                <td>{assetsByProperty.get(p.id) ?? 0}</td>
-                <td>{woByProperty.get(p.id) ?? 0}</td>
-              </tr>
-            ))}
+            {properties.map((p) => {
+              const count = assetsByProperty.get(p.id) ?? 0;
+              const avgAge = count > 0 && ageSumByProperty.has(p.id) ? (ageSumByProperty.get(p.id)! / count).toFixed(1) + ' yrs' : '—';
+              return (
+                <tr
+                  key={p.id}
+                  className="np-row-link"
+                  onClick={() => navigate(`/properties/${p.id}`)}
+                >
+                  <td>{p.name}</td>
+                  <td>
+                    {p.city ?? '—'}
+                    {p.state ? `, ${p.state}` : ''}
+                  </td>
+                  <td>{count}</td>
+                  <td>{flaggedByProperty.get(p.id) ?? 0}</td>
+                  <td>{avgAge}</td>
+                  <td>{woByProperty.get(p.id) ?? 0}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
@@ -274,24 +316,30 @@ export function Dashboard() {
               <th>Priority</th>
               <th>Status</th>
               <th>SLA due</th>
+              <th>Days overdue</th>
             </tr>
           </thead>
           <tbody>
-            {atRiskWorkOrders.map((w) => (
-              <tr key={w.id}>
-                <td className="mono">WO-{w.number}</td>
-                <td><Link to="/work-orders" className="np-table-link">{w.title} ↗</Link></td>
-                <td>
-                  <span className="np-badge">{w.priority.replaceAll('_', ' ')}</span>
-                </td>
-                <td>
-                  <span className={`np-badge np-badge--status-${w.status}`}>
-                    {w.status.replaceAll('_', ' ')}
-                  </span>
-                </td>
-                <td>{w.slaDueAt ? new Date(w.slaDueAt).toLocaleDateString() : '—'}</td>
-              </tr>
-            ))}
+            {atRiskWorkOrders.map((w) => {
+              const isPastDue = w.slaDueAt && new Date(w.slaDueAt).getTime() < Date.now();
+              const daysOverdue = isPastDue ? Math.floor((Date.now() - new Date(w.slaDueAt!).getTime()) / 86400000) : null;
+              return (
+                <tr key={w.id} style={isPastDue ? { background: 'rgba(255,42,42,0.06)' } : undefined}>
+                  <td className="mono">WO-{w.number}</td>
+                  <td><Link to="/work-orders" className="np-table-link">{w.title} ↗</Link></td>
+                  <td>
+                    <span className="np-badge">{w.priority.replaceAll('_', ' ')}</span>
+                  </td>
+                  <td>
+                    <span className={`np-badge np-badge--status-${w.status}`}>
+                      {w.status.replaceAll('_', ' ')}
+                    </span>
+                  </td>
+                  <td>{w.slaDueAt ? new Date(w.slaDueAt).toLocaleDateString() : '—'}</td>
+                  <td>{isPastDue && daysOverdue ? daysOverdue : '—'}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

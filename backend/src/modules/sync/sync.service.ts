@@ -1,12 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
+import type { NameplateConfig } from '../../config/configuration';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SyncPullDto } from './dto/sync-pull.dto';
 import { SyncOperationDto, SyncPushDto, SyncEntityType, SyncOpType } from './dto/sync-push.dto';
 import { AllocateBlockDto } from './dto/allocate-block.dto';
 
 const CROCKFORD_CHARS = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-const DEFAULT_ORG_SECRET = 'nameplate_master_org_secret_v0_prod_2026';
 const BASE_URL = 'https://np.app/a';
 
 @Injectable()
@@ -15,16 +16,25 @@ export class SyncService {
   // In-memory idempotency cache for fast deduping (in production backed by Redis / DB table)
   private readonly processedOperations = new Map<string, { status: string; appliedAt: number }>();
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: ConfigService<NameplateConfig, true>,
+  ) {}
 
   /**
    * POST /v1/sync/pull
    * Monotonic sequence-based delta pull (architecture.md §4.4)
    */
-  async pull(dto: SyncPullDto, orgId: string) {
+  async pull(dto: SyncPullDto, orgId: string, allowedPropertyIds?: string[]) {
     const cursorBigInt = BigInt(dto.cursor || '0');
     const limit = dto.limit || 500;
-    const propertyFilter = dto.scopes && dto.scopes.length > 0 ? { in: dto.scopes } : undefined;
+    const requestedPropertyIds = dto.scopes?.length ? dto.scopes : undefined;
+    const scopedPropertyIds = allowedPropertyIds === undefined
+      ? requestedPropertyIds
+      : requestedPropertyIds
+        ? requestedPropertyIds.filter((id) => allowedPropertyIds.includes(id))
+        : allowedPropertyIds;
+    const propertyFilter = scopedPropertyIds === undefined ? undefined : { in: scopedPropertyIds };
 
     // 1. Fetch changed assets
     const assets = await this.prisma.asset.findMany({
@@ -59,6 +69,7 @@ export class SyncService {
       where: {
         orgId,
         changeSeq: { gt: cursorBigInt },
+        ...(propertyFilter ? { propertyId: propertyFilter } : {}),
       },
       take: limit,
       orderBy: { changeSeq: 'asc' },
@@ -86,6 +97,7 @@ export class SyncService {
         orgId,
         changeSeq: { gt: cursorBigInt },
         deletedAt: { not: null },
+        ...(propertyFilter ? { currentPropertyId: propertyFilter } : {}),
       },
       select: { id: true, deletedAt: true },
       take: 100,
@@ -121,7 +133,13 @@ export class SyncService {
    * POST /v1/sync/push
    * Append-only outbox batch push processor (architecture.md §4.2)
    */
-  async push(dto: SyncPushDto, orgId: string, userId?: string) {
+  async push(
+    dto: SyncPushDto,
+    orgId: string,
+    userId?: string,
+    membershipId?: string,
+    allowedPropertyIds?: string[],
+  ) {
     const results: Array<{
       opId: string;
       status: 'applied' | 'duplicate' | 'rejected';
@@ -142,7 +160,13 @@ export class SyncService {
       }
 
       try {
-        const entityId = await this.processOperation(op, orgId, userId);
+        const entityId = await this.processOperation(
+          op,
+          orgId,
+          userId,
+          membershipId,
+          allowedPropertyIds,
+        );
         this.processedOperations.set(op.opId, { status: 'applied', appliedAt: Date.now() });
 
         results.push({
@@ -214,19 +238,28 @@ export class SyncService {
   // Internal Helpers
   // ---------------------------------------------------------------------------
 
-  private async processOperation(op: SyncOperationDto, orgId: string, userId?: string): Promise<string> {
+  private async processOperation(
+    op: SyncOperationDto,
+    orgId: string,
+    userId?: string,
+    membershipId?: string,
+    allowedPropertyIds?: string[],
+  ): Promise<string> {
     const p = op.payload;
     const occurredAt = new Date(op.occurredAt || Date.now());
 
     switch (op.entityType) {
       case SyncEntityType.SERVICE_EVENT: {
+        const asset = await this.findScopedAsset(p.assetId, orgId, allowedPropertyIds);
         const created = await this.prisma.serviceEvent.create({
           data: {
             id: p.id || undefined,
             orgId,
             assetId: p.assetId,
-            technicianId: p.technicianId || p.technicianMembershipId || userId || p.createdBy,
+            technicianId: membershipId || p.technicianMembershipId || p.technicianId || p.createdBy,
             workOrderId: p.workOrderId || null,
+            propertyId: asset.currentPropertyId,
+            unitId: asset.currentUnitId,
             eventType: p.eventType || 'inspection',
             findings: p.findings || null,
             resolutionCode: p.resolutionCode || 'fixed',
@@ -238,6 +271,10 @@ export class SyncService {
 
       case SyncEntityType.ASSET: {
         if (op.opType === SyncOpType.CREATE) {
+          this.assertAllowedProperty(
+            p.currentPropertyId || p.propertyId || null,
+            allowedPropertyIds,
+          );
           const created = await this.prisma.asset.create({
             data: {
               id: p.id || undefined,
@@ -254,8 +291,9 @@ export class SyncService {
           });
           return created.id;
         } else if (op.opType === SyncOpType.UPDATE) {
+          await this.findScopedAsset(p.id, orgId, allowedPropertyIds);
           const updated = await this.prisma.asset.update({
-            where: { id: p.id },
+            where: { id: p.id, orgId },
             data: {
               status: p.status || undefined,
               condition: p.condition || undefined,
@@ -269,8 +307,14 @@ export class SyncService {
 
       case SyncEntityType.WORK_ORDER: {
         if (op.opType === SyncOpType.UPDATE) {
+          const workOrder = await this.prisma.workOrder.findFirst({
+            where: { id: p.id, orgId, deletedAt: null },
+            select: { id: true, propertyId: true },
+          });
+          if (!workOrder) throw new NotFoundException('Work order not found');
+          this.assertAllowedProperty(workOrder.propertyId, allowedPropertyIds);
           const updated = await this.prisma.workOrder.update({
-            where: { id: p.id },
+            where: { id: p.id, orgId },
             data: {
               status: p.status || undefined,
             },
@@ -305,8 +349,35 @@ export class SyncService {
   private generateHmacSignature(npid: string, orgId: string, batchId: string, issuedAt: number): string {
     const clean = npid.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     const payload = `NPID:${clean}|ORG:${orgId}|BATCH:${batchId}|TS:${issuedAt}`;
-    const hmac = crypto.createHmac('sha256', DEFAULT_ORG_SECRET);
+    const hmac = crypto.createHmac(
+      'sha256',
+      this.config.get('npidSigningSecret', { infer: true }),
+    );
     hmac.update(payload);
     return hmac.digest('base64url').slice(0, 12);
+  }
+
+  private assertAllowedProperty(
+    propertyId: string | null | undefined,
+    allowedPropertyIds?: string[],
+  ): void {
+    if (allowedPropertyIds === undefined) return;
+    if (!propertyId || !allowedPropertyIds.includes(propertyId)) {
+      throw new ForbiddenException('Property is outside the membership scope');
+    }
+  }
+
+  private async findScopedAsset(
+    assetId: string,
+    orgId: string,
+    allowedPropertyIds?: string[],
+  ) {
+    const asset = await this.prisma.asset.findFirst({
+      where: { id: assetId, orgId, deletedAt: null },
+      select: { id: true, currentPropertyId: true, currentUnitId: true },
+    });
+    if (!asset) throw new NotFoundException('Asset not found');
+    this.assertAllowedProperty(asset.currentPropertyId, allowedPropertyIds);
+    return asset;
   }
 }

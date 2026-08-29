@@ -109,6 +109,30 @@ export function PropertyDetail() {
     return <div className="np-empty-state">Couldn't load location: {error ?? 'not found'}</div>;
   }
 
+  const flaggedByUnit = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const a of assets) {
+      if (a.currentUnitId && FLAGGED.includes(a.status)) {
+        m.set(a.currentUnitId, (m.get(a.currentUnitId) ?? 0) + 1);
+      }
+    }
+    return m;
+  }, [assets]);
+
+  const activeWarranties = assets.filter((a) => a.warrantyExpiresOn && new Date(a.warrantyExpiresOn).getTime() > Date.now());
+  const expiredWarranties = assets.filter((a) => a.warrantyExpiresOn && new Date(a.warrantyExpiresOn).getTime() <= Date.now());
+  
+  const totalAgeMonths = assets.reduce((s, a) => {
+    const y = num(yearsOld(a.installDate));
+    return s + (y * 12);
+  }, 0);
+  const avgAgeYears = assets.length > 0 ? (totalAgeMonths / 12 / assets.length).toFixed(1) + ' yrs' : '—';
+
+  if (loading) return <div className="np-empty-state">Loading location…</div>;
+  if (error || !property) {
+    return <div className="np-empty-state">Couldn't load location: {error ?? 'not found'}</div>;
+  }
+
   const flagged = assets.filter((a) => FLAGGED.includes(a.status)).length;
   const openWo = workOrders.filter((w) => OPEN.includes(w.status)).length;
   const capital = assets.reduce((s, a) => s + num(a.purchaseCost), 0);
@@ -224,30 +248,30 @@ export function PropertyDetail() {
         </div>
       </dl>
 
-      <div className="np-stat-chips">
-        <div className="np-stat-box">
-          <span className="np-stat-val">{units.length}</span>
-          <span className="np-stat-lbl">Units in roster</span>
+      <div className="np-info-strip">
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{activeWarranties.length}</span>
+          <span className="np-info-strip__lbl">Warranty Active</span>
         </div>
-        <div className="np-stat-box">
-          <span className="np-stat-val">{assets.length}</span>
-          <span className="np-stat-lbl">Assets tagged</span>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{expiredWarranties.length}</span>
+          <span className="np-info-strip__lbl">Warranty Expired</span>
         </div>
-        <div className="np-stat-box">
-          <span className="np-stat-val">{openWo}</span>
-          <span className="np-stat-lbl">Open work orders</span>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{avgAgeYears}</span>
+          <span className="np-info-strip__lbl">Avg Asset Age</span>
         </div>
-        <div className={`np-stat-box${flagged ? ' np-stat-box--red' : ''}`}>
-          <span className={`np-stat-val${flagged ? ' red-text' : ''}`}>{flagged}</span>
-          <span className="np-stat-lbl">Flagged / unaccounted</span>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{money(capital)}</span>
+          <span className="np-info-strip__lbl">Capital Deployed</span>
         </div>
-        <div className="np-stat-box">
-          <span className="np-stat-val">{money(capital)}</span>
-          <span className="np-stat-lbl">Capital on plates</span>
-        </div>
-        <div className="np-stat-box">
-          <span className="np-stat-val">{money(spend)}</span>
-          <span className="np-stat-lbl">Lifetime service spend</span>
+        <div className="np-info-strip__div" />
+        <div className="np-info-strip__item">
+          <span className="np-info-strip__val">{money(spend)}</span>
+          <span className="np-info-strip__lbl">Lifetime Spend</span>
         </div>
       </div>
 
@@ -262,7 +286,7 @@ export function PropertyDetail() {
         </div>
       ) : null}
 
-      <h2 className="np-section-heading">Buildings & units</h2>
+      <h2 className="np-section-heading" style={{ borderLeft: '2px solid var(--red)', paddingLeft: 10 }}>Buildings & units</h2>
       <div className="np-bldg-stack">
         {buildings.map((b) => {
           const bUnits = units.filter((u) => u.buildingId === b.id);
@@ -286,6 +310,8 @@ export function PropertyDetail() {
                     <th>Beds / baths</th>
                     <th>Sq ft</th>
                     <th>Occupancy</th>
+                    <th>Health</th>
+                    <th>Capital</th>
                     <th>Assets</th>
                     <th>Open WO</th>
                   </tr>
@@ -293,32 +319,41 @@ export function PropertyDetail() {
                 <tbody>
                   {bUnits.length === 0 ? (
                     <tr>
-                      <td colSpan={7}>
+                      <td colSpan={9}>
                         <div className="np-empty-state">No units in this building.</div>
                       </td>
                     </tr>
                   ) : (
-                    bUnits.map((u) => (
-                      <tr
-                        key={u.id}
-                        className="np-row-link"
-                        onClick={() => navigate(`/properties/${property.id}/units/${u.id}`)}
-                      >
-                        <td className="mono">{u.label}</td>
-                        <td>{u.floor ?? '—'}</td>
-                        <td>
-                          {u.bedrooms ?? '—'} / {u.bathrooms ?? '—'}
-                        </td>
-                        <td>{u.squareFeet ?? '—'}</td>
-                        <td>
-                          <span className={`np-badge np-badge--status-${u.occupancyStatus ?? 'active'}`}>
-                            {(u.occupancyStatus ?? '—').replaceAll('_', ' ')}
-                          </span>
-                        </td>
-                        <td>{assetsByUnit.get(u.id)?.length ?? 0}</td>
-                        <td>{woByUnit.get(u.id) ?? 0}</td>
-                      </tr>
-                    ))
+                    bUnits.map((u) => {
+                      const uAssets = assetsByUnit.get(u.id) ?? [];
+                      const uFlagged = flaggedByUnit.get(u.id) ?? 0;
+                      const uWo = woByUnit.get(u.id) ?? 0;
+                      const uCapital = uAssets.reduce((s, a) => s + num(a.purchaseCost), 0);
+                      const healthColor = uFlagged > 0 ? 'red' : uWo > 0 ? 'amber' : 'green';
+                      return (
+                        <tr
+                          key={u.id}
+                          className="np-row-link"
+                          onClick={() => navigate(`/properties/${property.id}/units/${u.id}`)}
+                        >
+                          <td className="mono">{u.label}</td>
+                          <td>{u.floor ?? '—'}</td>
+                          <td>
+                            {u.bedrooms ?? '—'} / {u.bathrooms ?? '—'}
+                          </td>
+                          <td>{u.squareFeet ?? '—'}</td>
+                          <td>
+                            <span className={`np-badge np-badge--status-${u.occupancyStatus ?? 'active'}`}>
+                              {(u.occupancyStatus ?? '—').replaceAll('_', ' ')}
+                            </span>
+                          </td>
+                          <td><span className={`np-health-dot np-health-dot--${healthColor}`} /></td>
+                          <td>{money(uCapital)}</td>
+                          <td>{uAssets.length}</td>
+                          <td>{uWo}</td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -327,7 +362,7 @@ export function PropertyDetail() {
         })}
       </div>
 
-      <h2 className="np-section-heading">Asset roster</h2>
+      <h2 className="np-section-heading" style={{ borderLeft: '2px solid var(--red)', paddingLeft: 10 }}>Asset roster</h2>
       {assets.length === 0 ? (
         <div className="np-empty-state">No plates tagged at this property yet.</div>
       ) : (
@@ -340,30 +375,38 @@ export function PropertyDetail() {
               <th>Unit</th>
               <th>Age</th>
               <th>Status</th>
+              <th>Warranty</th>
               <th>Cost</th>
             </tr>
           </thead>
           <tbody>
-            {assets.map((a) => (
-              <tr key={a.id} className="np-row-link" onClick={() => navigate(`/assets/${a.id}`)}>
-                <td className="mono">{a.npid}</td>
-                <td>{a.category?.displayName ?? '—'}</td>
-                <td>{[a.manufacturerRaw, a.modelRaw].filter(Boolean).join(' ') || '—'}</td>
-                <td className="mono">{a.currentUnit?.label ?? '—'}</td>
-                <td>{yearsLabel(a.installDate)}</td>
-                <td>
-                  <span className={`np-badge np-badge--status-${a.status}`}>
-                    {a.status.replaceAll('_', ' ')}
-                  </span>
-                </td>
-                <td>{money(a.purchaseCost)}</td>
-              </tr>
-            ))}
+            {assets.map((a) => {
+              const expectedLifeMonths = a.expectedLifeMonths ?? a.assetModel?.expectedLifeMonths ?? a.category?.defaultUsefulLifeMonths;
+              const ageMonths = num(yearsOld(a.installDate)) * 12;
+              const pastLife = expectedLifeMonths && ageMonths > expectedLifeMonths;
+              const activeWarranty = a.warrantyExpiresOn && new Date(a.warrantyExpiresOn).getTime() > Date.now();
+              return (
+                <tr key={a.id} className="np-row-link" onClick={() => navigate(`/assets/${a.id}`)}>
+                  <td className="mono">{a.npid}</td>
+                  <td>{a.category?.displayName ?? '—'}</td>
+                  <td>{[a.manufacturerRaw, a.modelRaw].filter(Boolean).join(' ') || '—'}</td>
+                  <td className="mono">{a.currentUnit?.label ?? '—'}</td>
+                  <td style={pastLife ? { color: 'var(--red)' } : {}}>{yearsLabel(a.installDate)}</td>
+                  <td>
+                    <span className={`np-badge np-badge--status-${a.status}`}>
+                      {a.status.replaceAll('_', ' ')}
+                    </span>
+                  </td>
+                  <td>{a.warrantyExpiresOn ? (activeWarranty ? 'Active' : 'Exp.') : '—'}</td>
+                  <td>{money(a.purchaseCost)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
 
-      <h2 className="np-section-heading">Work orders</h2>
+      <h2 className="np-section-heading" style={{ borderLeft: '2px solid var(--red)', paddingLeft: 10 }}>Work orders</h2>
       {workOrders.length === 0 ? (
         <div className="np-empty-state">No work orders at this location.</div>
       ) : (
