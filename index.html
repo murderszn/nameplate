@@ -16,18 +16,26 @@
   <div class="wrap header-row">
     <a class="brand" href="#top" aria-label="Nameplate">
       <img src="images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="brand-logo-img">
+      <span class="brand-name">NAMEPLATE</span>
     </a>
 
-    <nav class="site-nav" aria-label="Primary">
+    <nav class="site-nav" id="primaryNavigation" aria-label="Primary">
       <a href="#qr-studio">Hardware</a>
       <a href="#schematics">Platform</a>
       <a href="#architecture">Architecture</a>
+      <a href="field/index.html" class="mobile-nav-app-link">Field Tablet App <span aria-hidden="true">↗</span></a>
+      <a href="hq/index.html" class="mobile-nav-app-link mobile-nav-primary">Launch HQ Console <span aria-hidden="true">→</span></a>
     </nav>
 
-    <div style="display: flex; align-items: center; gap: 14px;">
-      <a href="field/index.html" class="nav-ghost" style="color: #888; font-size: 0.82rem; font-weight: 600; text-decoration: none;">Field Tablet App ↗</a>
+    <div class="nav-actions">
+      <a href="field/index.html" class="nav-ghost">Field App <span aria-hidden="true">↗</span></a>
       <a href="hq/index.html" class="nav-cta">Launch HQ Console →</a>
     </div>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primaryNavigation" aria-label="Open navigation">
+      <span></span>
+      <span></span>
+    </button>
   </div>
 </header>
 

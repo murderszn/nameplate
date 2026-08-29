@@ -512,6 +512,40 @@
   // ================= 7. Header Scroll =================
   function initHeader() {
     var header = document.querySelector('.site-header');
+    var nav = document.querySelector('.site-nav');
+    var toggle = document.querySelector('.nav-toggle');
+
+    function closeNavigation() {
+      if (!nav || !toggle) return;
+      nav.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Open navigation');
+    }
+
+    if (nav && toggle) {
+      toggle.addEventListener('click', function () {
+        var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        nav.classList.toggle('is-open', !isOpen);
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'Open navigation' : 'Close navigation');
+      });
+
+      nav.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeNavigation);
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          closeNavigation();
+          toggle.focus();
+        }
+      });
+
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 820) closeNavigation();
+      });
+    }
+
     function onScroll() {
       if (!header) return;
       if (window.scrollY > 10) {
