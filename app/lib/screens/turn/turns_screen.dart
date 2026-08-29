@@ -5,6 +5,7 @@ import '../../models/turn.dart';
 import '../../models/unit.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/sync_status_badge.dart';
 import 'turn_walkthrough_screen.dart';
@@ -170,11 +171,11 @@ class TurnsScreen extends ConsumerWidget {
                       'First-time asset tagging & baseline portfolio inventory',
                   };
                   final icon = switch (t) {
-                    TurnType.moveOut => Icons.logout,
-                    TurnType.moveIn => Icons.login,
-                    TurnType.annualInspection => Icons.calendar_month_outlined,
-                    TurnType.spotAudit => Icons.search,
-                    TurnType.onboarding => Icons.add_business_outlined,
+                    TurnType.moveOut => Icons.logout_rounded,
+                    TurnType.moveIn => Icons.login_rounded,
+                    TurnType.annualInspection => Icons.calendar_month_rounded,
+                    TurnType.spotAudit => Icons.search_rounded,
+                    TurnType.onboarding => Icons.add_business_rounded,
                   };
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 8),
@@ -184,9 +185,16 @@ class TurnsScreen extends ConsumerWidget {
                         borderRadius: BorderRadius.zero,
                         side: BorderSide(color: NpColors.lineStrong),
                       ),
-                      clipBehavior: Clip.antiAlias,
                       child: ListTile(
-                        leading: Icon(icon, color: NpColors.red, size: 20),
+                        leading: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: NpColors.bgCard,
+                            borderRadius: BorderRadius.circular(2),
+                            border: Border.all(color: NpColors.lineStrong),
+                          ),
+                          child: Icon(icon, color: NpColors.red, size: 20),
+                        ),
                         title: Text(
                           t.label,
                           style: const TextStyle(
@@ -295,38 +303,11 @@ class _UnitCard extends StatelessWidget {
                     letterSpacing: 0.8,
                   ),
                 ),
-                GestureDetector(
-                  onTap: onStart,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: NpColors.red,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.play_arrow,
-                          size: 16,
-                          color: NpColors.white,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'START TURN',
-                          style: NpType.mono.copyWith(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            color: NpColors.white,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                NpButton.primary(
+                  icon: Icons.play_arrow_rounded,
+                  label: 'START TURN',
+                  size: NpButtonSize.sm,
+                  onPressed: onStart,
                 ),
               ],
             ),

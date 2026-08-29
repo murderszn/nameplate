@@ -5,9 +5,11 @@ import '../../models/asset.dart';
 import '../../models/service_event.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
 import '../service/log_service_event_screen.dart';
+import '../settings/tag_studio_screen.dart';
 import 'flag_missing_broken_screen.dart';
 
 /// Asset detail: header (category/model/age/status/location/last serviced),
@@ -348,44 +350,80 @@ class _ActionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        FilledButton.icon(
-          style: FilledButton.styleFrom(
-            backgroundColor: NpColors.red,
-            foregroundColor: NpColors.white,
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: const BoxDecoration(
+        color: NpColors.bgCard,
+        border: Border.fromBorderSide(BorderSide(color: NpColors.lineStrong)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              const NpKicker('02 / Quick Actions'),
+              const Spacer(),
+              Text(
+                'FIELD DISPATCH',
+                style: NpType.mono.copyWith(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: NpColors.gray500,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
           ),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (_) => LogServiceEventScreen(asset: asset)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              NpButton.primary(
+                icon: Icons.build_rounded,
+                label: 'Log Service',
+                size: NpButtonSize.md,
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => LogServiceEventScreen(asset: asset),
+                  ),
+                ),
+              ),
+              NpButton.danger(
+                icon: Icons.flag_rounded,
+                label: 'Flag Issue',
+                size: NpButtonSize.md,
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => FlagMissingBrokenScreen(asset: asset),
+                  ),
+                ),
+              ),
+              NpButton.secondary(
+                icon: Icons.swap_horiz_rounded,
+                label: 'Relocate',
+                size: NpButtonSize.md,
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Relocation tool queued.')),
+                  );
+                },
+              ),
+              NpIconButton(
+                icon: Icons.qr_code_2_rounded,
+                tooltip: 'Hardware Tag Studio',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const TagStudioScreen(),
+                  ),
+                ),
+                size: 44,
+              ),
+            ],
           ),
-          icon: const Icon(Icons.build, size: 16),
-          label: const Text('Log Service'),
-        ),
-        OutlinedButton.icon(
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Move asset — TODO')),
-            );
-          },
-          icon: const Icon(Icons.move_up, size: 16),
-          label: const Text('Move'),
-        ),
-        OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: NpColors.red,
-            side: const BorderSide(color: NpColors.redBorder),
-          ),
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (_) => FlagMissingBrokenScreen(asset: asset)),
-          ),
-          icon: const Icon(Icons.flag_outlined, size: 16),
-          label: const Text('Flag Issue'),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

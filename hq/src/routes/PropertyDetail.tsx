@@ -9,7 +9,7 @@ import {
   type Unit,
   type WorkOrder,
 } from '../api/client';
-import { money, num, yearsLabel } from '../lib/format';
+import { money, num, yearsLabel, yearsOld } from '../lib/format';
 
 const OPEN = ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_approval'];
 const FLAGGED = ['unaccounted_for', 'needs_repair', 'in_repair'];
@@ -133,7 +133,6 @@ export function PropertyDetail() {
     return <div className="np-empty-state">Couldn't load location: {error ?? 'not found'}</div>;
   }
 
-  const flagged = assets.filter((a) => FLAGGED.includes(a.status)).length;
   const openWo = workOrders.filter((w) => OPEN.includes(w.status)).length;
   const capital = assets.reduce((s, a) => s + num(a.purchaseCost), 0);
   const spend = assets.reduce((s, a) => s + num(a.lifetimeServiceCost), 0);

@@ -7,7 +7,7 @@ import {
   type Unit,
   type WorkOrder,
 } from '../api/client';
-import { CATEGORY_SCHEMATIC, money, yearsLabel } from '../lib/format';
+import { money, yearsLabel } from '../lib/format';
 
 const OPEN = ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_approval'];
 

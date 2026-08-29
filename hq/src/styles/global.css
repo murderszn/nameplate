@@ -118,7 +118,6 @@ code,
   width: 28px;
   height: 28px;
   object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(255, 42, 42, 0.35));
   flex-shrink: 0;
 }
 
@@ -503,7 +502,7 @@ code,
   flex: 1;
 }
 
-.np-command-strip { display: flex; justify-content: space-between; gap: 24px; align-items: center; padding: 20px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: 2px; background: linear-gradient(110deg, rgba(255,42,42,.12), rgba(255,255,255,.03)); }
+.np-command-strip { display: flex; justify-content: space-between; gap: 24px; align-items: center; padding: 20px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: 2px; background: linear-gradient(110deg, rgba(255,255,255,.05), rgba(255,255,255,.01)); }
 .np-command-strip h2 { font-size: 1.35rem; margin: 2px 0 4px; }
 .np-action-grid { display: grid; grid-template-columns: repeat(3, minmax(145px, 1fr)); gap: 8px; min-width: 470px; }
 .np-action-card { display: flex; flex-direction: column; gap: 6px; padding: 13px; border: 1px solid var(--line-strong); border-radius: 2px; background: rgba(0,0,0,.3); }
@@ -711,7 +710,6 @@ code,
   background: var(--red);
   color: var(--white);
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px var(--red-glow);
 }
 
 .np-input {
@@ -735,7 +733,6 @@ code,
 
 .np-input:focus {
   border-color: var(--red);
-  box-shadow: 0 0 0 2px rgba(255, 42, 42, 0.25);
   background: #111111;
 }
 
@@ -1224,7 +1221,6 @@ code,
   height: 6px;
   border-radius: 50%;
   background: var(--red);
-  box-shadow: 0 0 6px rgba(255, 42, 42, 0.6);
 }
 
 .np-schematic-card__canvas {
@@ -1468,7 +1464,6 @@ code,
 
 .np-part-dot--red {
   background: var(--red);
-  box-shadow: 0 0 8px var(--red);
 }
 
 .np-part-dot--white {
@@ -1707,7 +1702,6 @@ code,
 
 .np-btn--primary:hover:not(:disabled) {
   background: #e02424;
-  box-shadow: 0 4px 12px rgba(255, 42, 42, 0.4);
 }
 
 .np-btn--primary:disabled {

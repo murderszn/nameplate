@@ -471,64 +471,7 @@
     renderOversizedQr('NP-7K2M4QX9');
   }
 
-  // ================= 6. Blueprint Telemetry HUD =================
-  function initBlueprint() {
-    var pins = document.querySelectorAll('.asset-pin');
-    var hudLoc = document.getElementById('hudLocation');
-    var hudName = document.getElementById('hudName');
-    var hudNpid = document.getElementById('hudNpid');
-    var hudStatus = document.getElementById('hudStatus');
-    var hudAge = document.getElementById('hudAge');
-    var hudCost = document.getElementById('hudCost');
-    var hudTimeline = document.getElementById('hudTimeline');
-    var hudImg = document.getElementById('hudSchematicImg');
-    var hudTag = document.getElementById('hudSchematicTag');
-
-    function selectPin(key) {
-      var data = ASSET_RECORDS[key];
-      if (!data) return;
-
-      pins.forEach(function (p) {
-        if (p.getAttribute('data-key') === key) {
-          p.classList.add('is-active');
-        } else {
-          p.classList.remove('is-active');
-        }
-      });
-
-      if (hudLoc) hudLoc.textContent = '📍 ' + (data.room || 'UNIT 402');
-      if (hudName) hudName.textContent = data.title;
-      if (hudNpid) hudNpid.textContent = data.npid;
-      if (hudStatus) hudStatus.textContent = '● Verified Present';
-      if (hudAge) hudAge.textContent = data.age + ' · Active';
-      if (hudCost) hudCost.textContent = data.warranty;
-      if (hudImg) hudImg.src = data.img;
-      if (hudTag) hudTag.textContent = (data.shortTitle || 'APPLIANCE').toUpperCase() + ' // CAD BLUEPRINT';
-
-      if (hudTimeline) {
-        var html = '<div class="hud-cell-label" style="margin-bottom: 8px;">Audit & Service Trail</div>';
-        data.lineage.forEach(function (t) {
-          html += '<div class="hud-timeline-item">' +
-            '<span class="hud-dot">●</span>' +
-            '<div>' +
-              '<strong>' + esc(t.part) + '</strong>' +
-              '<div class="hud-timeline-sub">' + esc(t.tech || 'Audit Team') + ' · ' + esc(t.date) + '</div>' +
-            '</div>' +
-          '</div>';
-        });
-        hudTimeline.innerHTML = html;
-      }
-    }
-
-    pins.forEach(function (pin) {
-      pin.addEventListener('click', function () {
-        var key = pin.getAttribute('data-key');
-        selectPin(key);
-      });
-    });
-  }
-
-  // ================= 7. Header Scroll =================
+  // ================= Header Navigation =================
   function initHeader() {
     var header = document.querySelector('.site-header');
     var nav = document.querySelector('.site-nav');
@@ -616,6 +559,7 @@
     var totalDurationEl = document.getElementById('audioTotalDuration');
     var speedToggle = document.getElementById('audioSpeedToggle');
     var waveform = document.getElementById('waveformContainer');
+    var chapters = document.querySelectorAll('.chapter-item');
 
     if (!audio || !playBtn) return;
 
@@ -643,6 +587,23 @@
       return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
     }
 
+    function highlightActiveChapter(currTime) {
+      var activeIdx = -1;
+      chapters.forEach(function (chap, i) {
+        var s = parseFloat(chap.getAttribute('data-seek')) || 0;
+        if (currTime >= s) {
+          activeIdx = i;
+        }
+      });
+      chapters.forEach(function (chap, i) {
+        if (i === activeIdx) {
+          chap.classList.add('is-active-chapter');
+        } else {
+          chap.classList.remove('is-active-chapter');
+        }
+      });
+    }
+
     playBtn.addEventListener('click', function () {
       if (audio.paused) {
         ensureAudioSource();
@@ -666,6 +627,7 @@
       var progress = (audio.currentTime / audio.duration) * 100;
       if (scrubber) scrubber.value = progress;
       if (currentTimeEl) currentTimeEl.textContent = formatTime(audio.currentTime);
+      highlightActiveChapter(audio.currentTime);
     });
 
     audio.addEventListener('loadedmetadata', function () {
@@ -686,8 +648,27 @@
         if (!audio.duration) return;
         var seekTo = (scrubber.value / 100) * audio.duration;
         audio.currentTime = seekTo;
+        highlightActiveChapter(seekTo);
       });
     }
+
+    // Clickable Chapter List Items
+    chapters.forEach(function (chap) {
+      chap.addEventListener('click', function () {
+        var seek = parseFloat(chap.getAttribute('data-seek'));
+        if (isNaN(seek)) return;
+        ensureAudioSource();
+        audio.currentTime = seek;
+        audio.play().then(function () {
+          playIcon.classList.add('hidden');
+          pauseIcon.classList.remove('hidden');
+          if (waveform) waveform.classList.add('is-playing');
+        }).catch(function (err) {
+          console.warn('Playback error:', err);
+        });
+        highlightActiveChapter(seek);
+      });
+    });
 
     if (speedToggle) {
       speedToggle.addEventListener('click', function () {
@@ -749,6 +730,17 @@
         updateSlide(s);
       });
     });
+
+    // Keyboard Arrow Navigation
+    document.addEventListener('keydown', function (e) {
+      var tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (e.key === 'ArrowLeft') {
+        updateSlide(currentSlide - 1);
+      } else if (e.key === 'ArrowRight') {
+        updateSlide(currentSlide + 1);
+      }
+    });
   }
 
   // Initialize
@@ -757,7 +749,6 @@
       initHeader();
       initOversizedQrStudio();
       initSchematicsViewer();
-      initBlueprint();
       initScreensFilter();
       initInvestorAudioPlayer();
       initSlideDeckViewer();
@@ -767,7 +758,6 @@
     initHeader();
     initOversizedQrStudio();
     initSchematicsViewer();
-    initBlueprint();
     initScreensFilter();
     initInvestorAudioPlayer();
     initSlideDeckViewer();

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:flutter/services.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../services/npid.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
@@ -165,12 +167,15 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           ],
         ),
         actions: [
-          TextButton(
+          NpButton.outline(
+            size: NpButtonSize.sm,
+            label: 'Dismiss',
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Dismiss'),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: NpColors.red),
+          NpButton.primary(
+            size: NpButtonSize.sm,
+            icon: Icons.verified_rounded,
+            label: 'Claim & Onboard',
             onPressed: () {
               Navigator.of(ctx).pop();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -179,7 +184,6 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                 ),
               );
             },
-            child: const Text('Claim & Onboard'),
           ),
         ],
       ),
@@ -200,6 +204,15 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     if (code == null || code.trim().isEmpty) return;
     _controller.text = code;
     await _lookup(code);
+  }
+
+  Future<void> _pasteFromClipboard() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text?.trim();
+    if (text != null && text.isNotEmpty) {
+      _controller.text = text;
+      await _lookup(text);
+    }
   }
 
   Widget _buildManualEntryCard() {
@@ -282,15 +295,28 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                     hintText: 'e.g. NP-7K2M4QX9 or https://np.app/a/...',
                     errorText: _error,
                     prefixIcon: const Icon(Icons.tag),
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _controller.clear();
-                        setState(() {
-                          _error = null;
-                          _liveResult = null;
-                        });
-                      },
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (_controller.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            tooltip: 'Clear',
+                            onPressed: () {
+                              _controller.clear();
+                              setState(() {
+                                _error = null;
+                                _liveResult = null;
+                              });
+                            },
+                          ),
+                        IconButton(
+                          icon: const Icon(Icons.content_paste_go_rounded, size: 18),
+                          tooltip: 'Paste from clipboard',
+                          onPressed: _pasteFromClipboard,
+                        ),
+                        const SizedBox(width: 4),
+                      ],
                     ),
                   ),
                   onSubmitted: (_) => _lookup(),
@@ -300,14 +326,25 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                   _VerificationBanner(result: _liveResult!),
                 ],
                 const SizedBox(height: 16),
-                FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: NpColors.red,
-                    foregroundColor: NpColors.white,
-                  ),
-                  onPressed: () => _lookup(),
-                  icon: const Icon(Icons.search, size: 18),
-                  label: const Text('Resolve Asset Record'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: NpButton.primary(
+                        icon: Icons.search_rounded,
+                        label: 'Resolve Asset',
+                        size: NpButtonSize.md,
+                        isExpanded: true,
+                        onPressed: () => _lookup(),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    NpIconButton(
+                      icon: Icons.content_paste_rounded,
+                      tooltip: 'Paste & Resolve',
+                      onPressed: _pasteFromClipboard,
+                      size: 44,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 Container(height: 1, color: NpColors.lineStrong),
@@ -337,17 +374,16 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const TagStudioScreen(),
-                      ),
+                const SizedBox(height: 14),
+                NpActionTile(
+                  icon: Icons.qr_code_2_rounded,
+                  title: 'Hardware Tag Studio',
+                  subtitle: 'Mint cryptographic hardware tags and print QR plates',
+                  kicker: 'Field Tool',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const TagStudioScreen(),
                     ),
-                    icon: const Icon(Icons.qr_code_2, size: 16),
-                    label: const Text('Open Hardware Tag Studio'),
                   ),
                 ),
               ],
@@ -477,25 +513,11 @@ class _TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return NpIconChip(
+      icon: Icons.qr_code_2,
+      label: code,
+      isSelected: false,
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: NpColors.bgElevated,
-          borderRadius: BorderRadius.circular(2),
-          border: Border.all(color: NpColors.lineStrong),
-        ),
-        child: Text(
-          code,
-          style: NpType.mono.copyWith(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: NpColors.red,
-            letterSpacing: 0.4,
-          ),
-        ),
-      ),
     );
   }
 }
@@ -549,7 +571,7 @@ class _ScannerViewfinderState extends State<_ScannerViewfinder>
                 alignment: Alignment(0, -0.85 + 1.7 * _scan.value),
                 child: Container(
                   height: 1.5,
-                  margin: const EdgeInsets.symmetric(horizontal: 36),
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
                   color: NpColors.red,
                 ),
               );
@@ -578,7 +600,7 @@ class _ScannerViewfinderState extends State<_ScannerViewfinder>
                           ),
                         )
                       : const Icon(
-                          Icons.qr_code_scanner,
+                          Icons.qr_code_scanner_rounded,
                           color: NpColors.red,
                           size: 36,
                         ),
@@ -605,40 +627,14 @@ class _ScannerViewfinderState extends State<_ScannerViewfinder>
                   ),
                 ),
                 const SizedBox(height: 14),
-                GestureDetector(
-                  onTap: widget.isScanning ? null : widget.onOpenScanner,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: NpColors.red,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.camera_alt,
-                          size: 13,
-                          color: NpColors.white,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          widget.isScanning
-                              ? 'OPENING CAMERA'
-                              : 'SCAN WITH CAMERA',
-                          style: NpType.mono.copyWith(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: NpColors.white,
-                            letterSpacing: 0.8,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                NpButton.primary(
+                  icon: Icons.camera_alt_rounded,
+                  label: widget.isScanning
+                      ? 'OPENING CAMERA...'
+                      : 'SCAN WITH CAMERA',
+                  isLoading: widget.isScanning,
+                  size: NpButtonSize.md,
+                  onPressed: widget.isScanning ? null : widget.onOpenScanner,
                 ),
               ],
             ),
@@ -663,8 +659,8 @@ class _CornerBracketPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.square;
 
-    const len = 32.0;
-    const pad = 16.0;
+    const len = 36.0;
+    const pad = 8.0;
 
     // Top-left
     canvas.drawLine(Offset(pad, pad + len), Offset(pad, pad), paint);

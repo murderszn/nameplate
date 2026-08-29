@@ -119,7 +119,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen>
               child: AspectRatio(
                 aspectRatio: 1,
                 child: Padding(
-                  padding: const EdgeInsets.all(42),
+                  padding: const EdgeInsets.all(16),
                   child: CustomPaint(painter: const _ScannerFramePainter()),
                 ),
               ),
@@ -222,7 +222,7 @@ class _ScannerFramePainter extends CustomPainter {
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.square;
-    const length = 42.0;
+    const length = 48.0;
 
     final paths = <Path>[
       Path()

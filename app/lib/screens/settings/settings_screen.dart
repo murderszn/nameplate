@@ -5,6 +5,7 @@ import '../../services/field_session.dart';
 import '../../services/providers.dart';
 import '../../services/sync_status_service.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
 import 'tag_studio_screen.dart';
@@ -76,51 +77,26 @@ class SettingsScreen extends ConsumerWidget {
                               ? 'Current · last push ${_ago(lastSync)}'
                               : '${snapshot.pendingCount} pending'
                                   '${snapshot.oldestUnsyncedAt != null ? ' · oldest ${_ago(snapshot.oldestUnsyncedAt)}' : ''}',
-                      trailing: session.syncing
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : GestureDetector(
-                              onTap: session.offlineMode
-                                  ? null
-                                  : () async {
-                                      await ref
-                                          .read(fieldSessionProvider)
-                                          .forceSync();
-                                      if (!context.mounted) return;
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Outbox drained. Working set current.')),
-                                      );
-                                    },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 5),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: session.offlineMode
-                                        ? NpColors.lineStrong
-                                        : NpColors.white,
-                                  ),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                                child: Text(
-                                  'FORCE SYNC',
-                                  style: NpType.mono.copyWith(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
-                                    color: session.offlineMode
-                                        ? NpColors.gray500
-                                        : NpColors.white,
-                                    letterSpacing: 0.6,
-                                  ),
-                                ),
-                              ),
-                            ),
+                      trailing: NpButton.outline(
+                        icon: Icons.sync_rounded,
+                        label: 'SYNC',
+                        size: NpButtonSize.sm,
+                        isLoading: session.syncing,
+                        onPressed: session.offlineMode
+                            ? null
+                            : () async {
+                                await ref
+                                    .read(fieldSessionProvider)
+                                    .forceSync();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Outbox drained. Working set current.')),
+                                );
+                              },
+                      ),
                     ),
                     _GroupDivider(),
                     _SwitchTile(
@@ -295,17 +271,17 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: NpColors.red,
-                        ),
+                      child: NpButton.primary(
+                        icon: Icons.check_rounded,
+                        label: 'Save Scope',
+                        size: NpButtonSize.md,
+                        isExpanded: true,
                         onPressed: () {
                           ref
                               .read(fieldSessionProvider)
                               .setAssignedProperties(selected);
                           Navigator.pop(ctx);
                         },
-                        child: const Text('Save scope'),
                       ),
                     ),
                   ],

@@ -78,9 +78,12 @@ export interface AssetCustomFields {
   gps?: string;
   owner?: string;
   warrantySub?: string;
+  warrantyExtra?: string;
+  compressorWarranty?: string;
   description?: string;
   serialLabel?: string;
   criticalParts?: CriticalPart[];
+  [key: string]: any;
 }
 
 export interface PartRecord {

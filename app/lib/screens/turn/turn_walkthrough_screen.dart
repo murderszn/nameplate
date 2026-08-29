@@ -5,6 +5,7 @@ import '../../models/asset.dart';
 import '../../models/turn.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
 
@@ -139,14 +140,16 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
           ],
         ),
         actions: [
-          TextButton(
+          NpButton.outline(
+            label: 'Review Again',
+            size: NpButtonSize.sm,
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Review Again'),
           ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: NpColors.red, foregroundColor: NpColors.white),
+          NpButton.primary(
+            icon: Icons.send_rounded,
+            label: 'Confirm & Emit Outbox',
+            size: NpButtonSize.sm,
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Confirm & Emit Outbox'),
           ),
         ],
       ),
@@ -197,10 +200,12 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                     decoration: const InputDecoration(labelText: 'Notes (optional)'),
                   ),
                   const SizedBox(height: 16),
-                  FilledButton(
-                    style: FilledButton.styleFrom(backgroundColor: NpColors.red, foregroundColor: NpColors.white),
+                  NpButton.primary(
+                    icon: Icons.qr_code_2_rounded,
+                    label: 'Mint NPID & Add To Checklist',
+                    size: NpButtonSize.md,
+                    isExpanded: true,
                     onPressed: () => Navigator.pop(ctx, true),
-                    child: const Text('Mint NPID & add to checklist'),
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -247,10 +252,12 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: NpColors.red, foregroundColor: NpColors.white),
+              NpButton.primary(
+                icon: Icons.verified_rounded,
+                label: 'Verify Scan',
+                size: NpButtonSize.md,
+                isExpanded: true,
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Verify scan'),
               ),
               const SizedBox(height: 12),
             ],
@@ -302,10 +309,11 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                   ),
                 ),
                 if (!readOnly)
-                  TextButton.icon(
+                  NpButton.secondary(
+                    icon: Icons.add_rounded,
+                    label: 'Untagged',
+                    size: NpButtonSize.sm,
                     onPressed: _addUnexpected,
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Found untagged'),
                   ),
               ],
             ),
@@ -340,17 +348,18 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
       bottomNavigationBar: readOnly
           ? null
           : SafeArea(
-              child: ResponsiveContainer(
+              child: Container(
                 padding: const EdgeInsets.all(16),
-                child: FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: NpColors.red,
-                    foregroundColor: NpColors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
+                decoration: const BoxDecoration(
+                  color: NpColors.bg,
+                  border: Border(top: BorderSide(color: NpColors.lineStrong)),
+                ),
+                child: NpButton.primary(
+                  icon: Icons.task_alt_rounded,
+                  label: 'Complete turn (${turn.inspectedCount}/${items.length})',
+                  size: NpButtonSize.lg,
+                  isExpanded: true,
                   onPressed: _complete,
-                  icon: const Icon(Icons.check_circle_outline),
-                  label: Text('Complete turn (${turn.inspectedCount}/${items.length})'),
                 ),
               ),
             ),
@@ -384,6 +393,26 @@ class _TurnItemCard extends StatelessWidget {
     TurnItemFinding.notApplicable,
   ];
 
+  static IconData _findingIcon(TurnItemFinding f) => switch (f) {
+        TurnItemFinding.presentOk => Icons.check_circle_outline_rounded,
+        TurnItemFinding.presentDamaged => Icons.error_outline_rounded,
+        TurnItemFinding.presentNeedsService => Icons.build_circle_outlined,
+        TurnItemFinding.missing => Icons.search_off_rounded,
+        TurnItemFinding.inaccessible => Icons.block_rounded,
+        TurnItemFinding.notApplicable => Icons.remove_circle_outline_rounded,
+        TurnItemFinding.unexpectedFound => Icons.add_circle_outline_rounded,
+      };
+
+  static Color _findingColor(TurnItemFinding f) => switch (f) {
+        TurnItemFinding.presentOk => const Color(0xFF22C55E),
+        TurnItemFinding.presentDamaged => NpColors.red,
+        TurnItemFinding.presentNeedsService => const Color(0xFFF59E0B),
+        TurnItemFinding.missing => NpColors.red,
+        TurnItemFinding.inaccessible => NpColors.gray400,
+        TurnItemFinding.notApplicable => NpColors.gray500,
+        TurnItemFinding.unexpectedFound => NpColors.red,
+      };
+
   @override
   Widget build(BuildContext context) {
     final schematic = item.category == null ? null : NpAssets.schematicFor(item.category!);
@@ -398,7 +427,7 @@ class _TurnItemCard extends StatelessWidget {
               children: [
                 if (schematic != null) ...[
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
                     child: Image.asset(schematic, width: 44, height: 44, fit: BoxFit.cover),
                   ),
                   const SizedBox(width: 10),
@@ -416,14 +445,24 @@ class _TurnItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  item.verifiedByScan ? Icons.qr_code : Icons.qr_code_outlined,
-                  size: 18,
-                  color: item.verifiedByScan ? NpColors.red : NpColors.gray500,
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: item.verifiedByScan ? NpColors.redSubtle : NpColors.bgElevated,
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(
+                      color: item.verifiedByScan ? NpColors.redBorder : NpColors.lineStrong,
+                    ),
+                  ),
+                  child: Icon(
+                    item.verifiedByScan ? Icons.qr_code_scanner_rounded : Icons.qr_code_outlined,
+                    size: 18,
+                    color: item.verifiedByScan ? NpColors.red : NpColors.gray500,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Wrap(
               spacing: 6,
               runSpacing: 6,
@@ -432,12 +471,15 @@ class _TurnItemCard extends StatelessWidget {
                   ..._findings,
                   if (item.finding == TurnItemFinding.unexpectedFound) TurnItemFinding.unexpectedFound,
                 ])
-                  ChoiceChip(
-                    label: Text(f.label),
-                    selected: item.finding == f,
-                    onSelected: readOnly
+                  NpIconChip(
+                    icon: _findingIcon(f),
+                    label: f.label,
+                    isSelected: item.finding == f,
+                    activeColor: _findingColor(f),
+                    activeBg: _findingColor(f).withValues(alpha: 0.15),
+                    onTap: readOnly
                         ? null
-                        : (_) {
+                        : () {
                             item.finding = f;
                             if (f == TurnItemFinding.missing) {
                               item.decision = TurnItemDecision.investigate;
@@ -449,7 +491,7 @@ class _TurnItemCard extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -509,7 +551,7 @@ class _TurnItemCard extends StatelessWidget {
                     return Stack(
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(2),
                           child: Container(
                             width: 58,
                             height: 58,
@@ -541,19 +583,28 @@ class _TurnItemCard extends StatelessWidget {
             ],
 
             if (!readOnly) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextButton.icon(
-                    onPressed: onVerify,
-                    icon: const Icon(Icons.qr_code_scanner, size: 16),
-                    label: Text(item.verifiedByScan ? 'Rescan plate' : 'Verify by scan'),
+                  Expanded(
+                    child: NpButton.secondary(
+                      icon: item.verifiedByScan
+                          ? Icons.verified_rounded
+                          : Icons.qr_code_scanner_rounded,
+                      label: item.verifiedByScan ? 'Rescan Plate' : 'Verify Scan',
+                      size: NpButtonSize.sm,
+                      onPressed: onVerify,
+                    ),
                   ),
-                  TextButton.icon(
-                    onPressed: onAddPhoto,
-                    icon: const Icon(Icons.camera_alt, size: 16, color: NpColors.red),
-                    label: const Text('Add Photo', style: TextStyle(color: NpColors.red)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: NpButton.primary(
+                      icon: Icons.camera_alt_rounded,
+                      label: 'Photo Evidence',
+                      badge: item.photos.isNotEmpty ? '${item.photos.length}' : null,
+                      size: NpButtonSize.sm,
+                      onPressed: onAddPhoto,
+                    ),
                   ),
                 ],
               ),

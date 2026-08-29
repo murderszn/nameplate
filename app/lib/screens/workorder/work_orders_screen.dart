@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/work_order.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
 import '../../widgets/sync_status_badge.dart';
+import '../asset/asset_detail_screen.dart';
 import '../service/log_service_event_screen.dart';
 
 class WorkOrdersScreen extends ConsumerStatefulWidget {
@@ -56,20 +59,23 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
               child: Row(
                 children: [
                   _FilterTab(
+                    icon: Icons.pending_actions_rounded,
                     label: 'Open',
                     count: orders.where((w) => w.status != WorkOrderStatus.completed).length,
                     selected: _filter == 'all',
                     onTap: () => setState(() => _filter = 'all'),
                   ),
-                  const SizedBox(width: 2),
+                  const SizedBox(width: 6),
                   _FilterTab(
+                    icon: Icons.warning_amber_rounded,
                     label: 'Urgent',
                     selected: _filter == 'urgent',
                     onTap: () => setState(() => _filter = 'urgent'),
                     accentRed: true,
                   ),
-                  const SizedBox(width: 2),
+                  const SizedBox(width: 6),
                   _FilterTab(
+                    icon: Icons.engineering_rounded,
                     label: 'In Progress',
                     selected: _filter == 'in_progress',
                     onTap: () => setState(() => _filter = 'in_progress'),
@@ -106,7 +112,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                           crossAxisCount: 2,
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
-                          mainAxisExtent: 192,
+                          mainAxisExtent: 216,
                         ),
                         itemCount: filtered.length,
                         itemBuilder: (context, i) =>
@@ -127,6 +133,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
 }
 
 class _FilterTab extends StatelessWidget {
+  final IconData icon;
   final String label;
   final int? count;
   final bool selected;
@@ -134,6 +141,7 @@ class _FilterTab extends StatelessWidget {
   final VoidCallback onTap;
 
   const _FilterTab({
+    required this.icon,
     required this.label,
     required this.selected,
     required this.onTap,
@@ -143,55 +151,65 @@ class _FilterTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? NpColors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(2),
-          border: Border.all(
-            color: selected
-                ? NpColors.white
-                : (accentRed ? NpColors.redBorder : NpColors.lineStrong),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (accentRed && !selected)
-              Container(
-                width: 6,
-                height: 6,
-                margin: const EdgeInsets.only(right: 6),
-                decoration: const BoxDecoration(
-                  color: NpColors.red,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            Text(
-              label.toUpperCase(),
-              style: NpType.mono.copyWith(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-                color: selected
-                    ? NpColors.bg
-                    : (accentRed ? NpColors.red : NpColors.gray400),
-              ),
+    final fg = selected
+        ? NpColors.bg
+        : (accentRed ? NpColors.red : NpColors.gray400);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(2),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          decoration: BoxDecoration(
+            color: selected ? NpColors.white : NpColors.bgElevated,
+            borderRadius: BorderRadius.circular(2),
+            border: Border.all(
+              color: selected
+                  ? NpColors.white
+                  : (accentRed ? NpColors.redBorder : NpColors.lineStrong),
             ),
-            if (count != null) ...[
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 14, color: fg),
               const SizedBox(width: 6),
               Text(
-                '$count',
+                label.toUpperCase(),
                 style: NpType.mono.copyWith(
                   fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  color: selected ? NpColors.bg : NpColors.gray500,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: fg,
                 ),
               ),
+              if (count != null) ...[
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? NpColors.bg.withValues(alpha: 0.12)
+                        : NpColors.bgCard,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: Text(
+                    '$count',
+                    style: NpType.mono.copyWith(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: selected ? NpColors.bg : NpColors.gray400,
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -229,110 +247,114 @@ class _WorkOrderCard extends ConsumerWidget {
       }
     }
 
-    return GestureDetector(
-      onTap: openServiceLogger,
-      child: Container(
-        decoration: BoxDecoration(
-          color: NpColors.bgCard,
-          border: Border(
-            left: BorderSide(
-              color: isUrgent ? NpColors.red : NpColors.lineStrong,
-              width: isUrgent ? 3 : 1,
-            ),
-            top: const BorderSide(color: NpColors.lineStrong),
-            right: const BorderSide(color: NpColors.lineStrong),
-            bottom: const BorderSide(color: NpColors.lineStrong),
+    return Container(
+      decoration: BoxDecoration(
+        color: NpColors.bgCard,
+        border: Border(
+          left: BorderSide(
+            color: isUrgent ? NpColors.red : NpColors.lineStrong,
+            width: isUrgent ? 3 : 1,
           ),
+          top: const BorderSide(color: NpColors.lineStrong),
+          right: const BorderSide(color: NpColors.lineStrong),
+          bottom: const BorderSide(color: NpColors.lineStrong),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    wo.id,
-                    style: NpType.mono.copyWith(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 12,
-                      color: NpColors.red,
-                      letterSpacing: 0.4,
-                    ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  wo.id,
+                  style: NpType.mono.copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                    color: NpColors.red,
+                    letterSpacing: 0.4,
                   ),
-                  const Spacer(),
-                  NpStatusPill(label: wo.priority.label, tone: tone),
+                ),
+                const Spacer(),
+                NpStatusPill(label: wo.priority.label, tone: tone),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (schematic != null) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(2),
+                    child: Image.asset(schematic, width: 38, height: 38, fit: BoxFit.cover),
+                  ),
+                  const SizedBox(width: 10),
                 ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (schematic != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(2),
-                      child: Image.asset(schematic, width: 38, height: 38, fit: BoxFit.cover),
+                Expanded(
+                  child: Text(
+                    wo.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: NpColors.white,
+                      height: 1.3,
                     ),
-                    const SizedBox(width: 10),
-                  ],
-                  Expanded(
-                    child: Text(
-                      wo.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                        color: NpColors.white,
-                        height: 1.3,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(Icons.place_outlined, size: 13, color: NpColors.gray500),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      wo.unitLabel,
-                      style: const TextStyle(fontSize: 12, color: NpColors.gray400),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.place_outlined, size: 13, color: NpColors.gray500),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    wo.unitLabel,
+                    style: const TextStyle(fontSize: 12, color: NpColors.gray400),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      wo.status == WorkOrderStatus.assigned
-                          ? '↗ TAP TO START & LOG'
-                          : (wo.status == WorkOrderStatus.inProgress
-                              ? '↗ TAP TO LOG SERVICE'
-                              : ''),
-                      style: NpType.mono.copyWith(
-                        fontSize: 10,
-                        color: NpColors.red,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.6,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                ),
+                Text(
+                  wo.slaLabel,
+                  style: NpType.mono.copyWith(fontSize: 10, color: NpColors.gray500),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: NpButton.primary(
+                    icon: Icons.build_rounded,
+                    label: wo.status == WorkOrderStatus.inProgress
+                        ? 'LOG SERVICE'
+                        : 'START WORK',
+                    size: NpButtonSize.sm,
+                    onPressed: openServiceLogger,
                   ),
+                ),
+                if (asset != null) ...[
                   const SizedBox(width: 8),
-                  Text(
-                    wo.slaLabel,
-                    style: NpType.mono.copyWith(fontSize: 10, color: NpColors.gray500),
+                  NpIconButton(
+                    icon: Icons.inventory_2_outlined,
+                    tooltip: 'Asset Details',
+                    size: 34,
+                    iconSize: 15,
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => AssetDetailScreen(assetId: asset.id),
+                      ),
+                    ),
                   ),
                 ],
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );

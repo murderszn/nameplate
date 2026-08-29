@@ -63,18 +63,22 @@
 
       <div class="hero-metrics-strip">
         <div class="metric-item">
+          <span class="metric-index mono">[01/04]</span>
           <span class="metric-number">Instant</span>
           <span class="metric-label">Scan a tag, get its full history in under a second</span>
         </div>
         <div class="metric-item">
+          <span class="metric-index mono">[02/04]</span>
           <span class="metric-number">Locked</span>
           <span class="metric-label">Every scan, repair, and move stays on the record</span>
         </div>
         <div class="metric-item">
+          <span class="metric-index mono">[03/04]</span>
           <span class="metric-number">Offline</span>
           <span class="metric-label">Works in basements and closets with no signal</span>
         </div>
         <div class="metric-item">
+          <span class="metric-index mono">[04/04]</span>
           <span class="metric-number">Unified</span>
           <span class="metric-label">One view across every property, nothing to reconcile</span>
         </div>
@@ -97,12 +101,23 @@
       <div class="qr-hero-studio">
         <!-- Massive Hardware Nameplate Tag Preview -->
         <div>
-          <div class="oversized-tag-card" id="oversizedTagCard">
-            <!-- 4 Glowing Hex Rivets -->
+          <div class="tag-spec-kicker mono">
+            <span>TAG SPEC: 3M-7881 TAMPER-DESTRUCTIBLE VINYL</span>
+            <span>BASE32 CROCKFORD · IP67</span>
+          </div>
+
+          <div class="oversized-tag-card has-corner-ticks" id="oversizedTagCard">
+            <!-- 4 Hex Rivets -->
             <span class="hex-rivet tl"></span>
             <span class="hex-rivet tr"></span>
             <span class="hex-rivet bl"></span>
             <span class="hex-rivet br"></span>
+
+            <!-- 4 Tamper-Evident Diagonal Security Incisions -->
+            <span class="tamper-slit tl"></span>
+            <span class="tamper-slit tr"></span>
+            <span class="tamper-slit bl"></span>
+            <span class="tamper-slit br"></span>
 
             <!-- Giant QR Container with Laser Scanline -->
             <div class="tag-qr-large-box" id="giantQrBox">
@@ -432,186 +447,10 @@
     </div>
   </section>
 
-  <!-- ================= Architectural Unit Blueprint ================= -->
-  <section class="section" id="blueprint">
-    <div class="wrap">
-      <div class="section-tag">05 / SPATIAL ASSET TELEMETRY</div>
-      
-      <div class="section-header">
-        <h2 class="section-title">Physical location pinned to the room.</h2>
-        <p class="section-sub">Every asset is pinned to a room on the floor plan, so when equipment moves, the trail moves with it.</p>
-      </div>
-
-      <div class="blueprint-container">
-        <!-- Blueprint CAD Wireframe Stage -->
-        <div class="blueprint-stage-box">
-          <div class="blueprint-header">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span class="blueprint-title-tag">CAD BLUEPRINT · UNIT 402 (BLDG 4)</span>
-              <span class="mono" style="color: #666; font-size: 0.7rem;">LEVEL 4 · PLAN B2</span>
-            </div>
-            <span class="sim-status-verified">● TELEMETRY ACTIVE (6 PINS LINKED)</span>
-          </div>
-
-          <svg viewBox="0 0 760 480" id="cadSvg" class="cad-floorplan-svg" role="img" aria-label="Floorplan of Unit 402 with interactive tracked appliances">
-            <defs>
-              <pattern id="cadGrid" width="24" height="24" patternUnits="userSpaceOnUse">
-                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
-              </pattern>
-            </defs>
-
-            <!-- Background Grid -->
-            <rect width="760" height="480" fill="#040406" />
-            <rect width="760" height="480" fill="url(#cadGrid)" />
-
-            <!-- Room Zones (Subtle Fills) -->
-            <rect x="35" y="35" width="310" height="225" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.04)" />
-            <rect x="345" y="35" width="280" height="175" fill="rgba(255,42,42,0.02)" stroke="rgba(255,42,42,0.08)" />
-            <rect x="625" y="35" width="100" height="175" fill="rgba(34,197,94,0.02)" stroke="rgba(34,197,94,0.08)" />
-            <rect x="35" y="260" width="470" height="185" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.04)" />
-            <rect x="505" y="210" width="120" height="120" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" />
-            <rect x="505" y="330" width="220" height="115" fill="rgba(255,255,255,0.015)" stroke="rgba(255,255,255,0.04)" />
-
-            <!-- Exterior Perimeter Walls (Heavy double line) -->
-            <rect x="30" y="30" width="700" height="420" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
-            <rect x="26" y="26" width="708" height="428" fill="none" stroke="#333333" stroke-width="1"/>
-
-            <!-- Interior Partitions (CAD architectural walls) -->
-            <path d="M 345 30 L 345 260 L 30 260" fill="none" stroke="#888888" stroke-width="2"/>
-            <path d="M 625 30 L 625 210 L 505 210 L 505 450" fill="none" stroke="#888888" stroke-width="2"/>
-            <path d="M 505 330 L 730 330" fill="none" stroke="#888888" stroke-width="2"/>
-
-            <!-- Architectural Door Swings -->
-            <path d="M 345 190 A 45 45 0 0 0 390 235" fill="none" stroke="#444444" stroke-dasharray="3,3"/>
-            <line x1="345" y1="190" x2="345" y2="235" stroke="#666666" stroke-width="1.5"/>
-
-            <path d="M 505 240 A 35 35 0 0 1 540 210" fill="none" stroke="#444444" stroke-dasharray="3,3"/>
-            <line x1="505" y1="240" x2="505" y2="210" stroke="#666666" stroke-width="1.5"/>
-
-            <!-- Kitchen Counter & Island Layout -->
-            <rect x="355" y="40" width="260" height="40" fill="#0A0A0E" stroke="#444444" stroke-width="1.5"/>
-            <rect x="390" y="125" width="140" height="50" fill="#0A0A0E" stroke="#333333" stroke-width="1"/>
-
-            <!-- Room Annotations -->
-            <text x="190" y="145" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#777777" text-anchor="middle" letter-spacing="0.1em">LIVING / DINING</text>
-            <text x="475" y="95" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#AAAAAA" text-anchor="middle" letter-spacing="0.1em">KITCHEN</text>
-            <text x="675" y="95" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="700" fill="#22c55e" text-anchor="middle" letter-spacing="0.08em">MECH / HVAC</text>
-            <text x="270" y="360" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#777777" text-anchor="middle" letter-spacing="0.1em">PRIMARY SUITE</text>
-            <text x="565" y="255" font-family="'IBM Plex Mono', monospace" font-size="10" font-weight="700" fill="#888888" text-anchor="middle" letter-spacing="0.08em">LAUNDRY</text>
-            <text x="615" y="395" font-family="'IBM Plex Mono', monospace" font-size="11" font-weight="700" fill="#777777" text-anchor="middle" letter-spacing="0.1em">BATH</text>
-
-            <!-- Interactive Asset Pins (Clean, Symmetrical, Static CAD Tags) -->
-            <!-- 1. Refrigerator -->
-            <g class="asset-pin is-active" id="pin-fridge" data-key="fridge" transform="translate(565, 75)">
-              <rect class="pin-box" x="-28" y="-14" width="56" height="28" rx="2"/>
-              <circle class="pin-dot" cx="-16" cy="0" r="3.5"/>
-              <text class="pin-text" x="4" y="3.5">FRIDGE</text>
-            </g>
-
-            <!-- 2. Dishwasher -->
-            <g class="asset-pin" id="pin-dw" data-key="dishwasher" transform="translate(425, 75)">
-              <rect class="pin-box" x="-38" y="-14" width="76" height="28" rx="2"/>
-              <circle class="pin-dot" cx="-24" cy="0" r="3.5"/>
-              <text class="pin-text" x="6" y="3.5">DISHWASHER</text>
-            </g>
-
-            <!-- 3. Washer -->
-            <g class="asset-pin" id="pin-washer" data-key="washer" transform="translate(535, 275)">
-              <rect class="pin-box" x="-28" y="-14" width="56" height="28" rx="2"/>
-              <circle class="pin-dot" cx="-16" cy="0" r="3.5"/>
-              <text class="pin-text" x="4" y="3.5">WASHER</text>
-            </g>
-
-            <!-- 4. Dryer -->
-            <g class="asset-pin" id="pin-dryer" data-key="dryer" transform="translate(595, 275)">
-              <rect class="pin-box" x="-26" y="-14" width="52" height="28" rx="2"/>
-              <circle class="pin-dot" cx="-14" cy="0" r="3.5"/>
-              <text class="pin-text" x="4" y="3.5">DRYER</text>
-            </g>
-
-            <!-- 5. HVAC -->
-            <g class="asset-pin" id="pin-hvac" data-key="hvac" transform="translate(675, 75)">
-              <rect class="pin-box" x="-24" y="-14" width="48" height="28" rx="2"/>
-              <circle class="pin-dot" cx="-12" cy="0" r="3.5"/>
-              <text class="pin-text" x="4" y="3.5">HVAC</text>
-            </g>
-
-            <!-- 6. Water Heater -->
-            <g class="asset-pin" id="pin-wh" data-key="wh" transform="translate(675, 145)">
-              <rect class="pin-box" x="-36" y="-14" width="72" height="28" rx="2"/>
-              <circle class="pin-dot" cx="-24" cy="0" r="3.5"/>
-              <text class="pin-text" x="6" y="3.5">WATER HTR</text>
-            </g>
-          </svg>
-        </div>
-
-        <!-- Telemetry HUD -->
-        <div class="asset-telemetry-hud" id="telemetryHud">
-          <div class="hud-schematic-wrap">
-            <div class="hud-schematic-header">
-              <span id="hudSchematicTag">SCHEMATIC // CAD BLUEPRINT</span>
-              <span class="mono" style="font-size: 0.65rem; color: #22c55e;">● IN-ROOM ±1.2m</span>
-            </div>
-            <img src="images/schematics/fridge.png" id="hudSchematicImg" class="hud-schematic-thumb" alt="Asset Schematic Thumbnail">
-          </div>
-
-          <div style="margin-top: 14px;">
-            <div class="hud-tag" id="hudLocation">📍 KITCHEN · UNIT 402 · BLDG 4</div>
-            <h3 class="hud-title" id="hudName">French Door Refrigerator</h3>
-          </div>
-
-          <div class="hud-grid">
-            <div class="hud-cell">
-              <div class="hud-cell-label">NPID Tag Identifier</div>
-              <div class="hud-cell-val mono" id="hudNpid">NP-7K2M4QX9</div>
-            </div>
-            <div class="hud-cell">
-              <div class="hud-cell-label">Spatial Telemetry</div>
-              <div class="hud-cell-val" style="color: #22c55e;" id="hudStatus">● Verified Present</div>
-            </div>
-            <div class="hud-cell">
-              <div class="hud-cell-label">Operating Lifecycle</div>
-              <div class="hud-cell-val" id="hudAge">4.2 Yrs · Active</div>
-            </div>
-            <div class="hud-cell">
-              <div class="hud-cell-label">Warranty / CapEx</div>
-              <div class="hud-cell-val" id="hudCost">OEM Active (2029)</div>
-            </div>
-          </div>
-
-          <div class="hud-timeline-box" id="hudTimeline">
-            <div class="hud-cell-label" style="margin-bottom: 8px;">Audit & Service Trail</div>
-            <div class="hud-timeline-item">
-              <span class="hud-dot">●</span>
-              <div>
-                <strong>Defrost Thermostat Replaced</strong>
-                <div class="hud-timeline-sub">WO-0891 · Part Warranty Logged (Tech J. Morales)</div>
-              </div>
-            </div>
-            <div class="hud-timeline-item">
-              <span class="hud-dot">●</span>
-              <div>
-                <strong>Move-In Audit Confirmed</strong>
-                <div class="hud-timeline-sub">RFID Scan Verified · Physically bound to Unit 402</div>
-              </div>
-            </div>
-            <div class="hud-timeline-item">
-              <span class="hud-dot">●</span>
-              <div>
-                <strong>NPID Hardware Affixed</strong>
-                <div class="hud-timeline-sub">Initial Property Commissioning & Tag Registration</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ================= High-Level Platform Architecture ================= -->
   <section class="section" id="architecture">
     <div class="wrap">
-      <div class="section-tag">06 / PLATFORM ARCHITECTURE</div>
+      <div class="section-tag">05 / PLATFORM ARCHITECTURE</div>
       
       <div class="section-header">
         <h2 class="section-title">End-to-end execution. Built for scale.</h2>
@@ -619,48 +458,63 @@
       </div>
 
       <div class="architecture-track">
-        <div class="arch-node">
-          <span class="arch-step-badge">NODE 01 / EDGE</span>
+        <div class="arch-node has-corner-ticks">
+          <div class="arch-header-row">
+            <span class="arch-step-badge">NODE 01 / EDGE</span>
+            <span class="arch-spec-tag mono">3M-7881 VINYL</span>
+          </div>
           <h4>Physical Hardware</h4>
           <p>Pre-printed unassigned Nameplate Tags with globally unique Base32 NPIDs affixed to in-unit assets.</p>
         </div>
 
-        <div class="arch-node">
-          <span class="arch-step-badge">NODE 02 / CLIENT</span>
+        <div class="arch-node has-corner-ticks">
+          <div class="arch-header-row">
+            <span class="arch-step-badge">NODE 02 / CLIENT</span>
+            <span class="arch-spec-tag mono">AIR-GAPPED 0.3s</span>
+          </div>
           <h4>Offline Field App</h4>
           <p>Technicians scan tags instantly without cell coverage. OCR serial extraction and instant parts resolution.</p>
         </div>
 
-        <div class="arch-node">
-          <span class="arch-step-badge">NODE 03 / PROTOCOL</span>
+        <div class="arch-node has-corner-ticks">
+          <div class="arch-header-row">
+            <span class="arch-step-badge">NODE 03 / PROTOCOL</span>
+            <span class="arch-spec-tag mono">HMAC-SHA256 WAL</span>
+          </div>
           <h4>Cryptographic Sync</h4>
           <p>Append-only event log with automatic reconciliation queues when cellular connection re-establishes.</p>
         </div>
 
-        <div class="arch-node">
-          <span class="arch-step-badge">NODE 04 / CONSOLE</span>
+        <div class="arch-node has-corner-ticks">
+          <div class="arch-header-row">
+            <span class="arch-step-badge">NODE 04 / CONSOLE</span>
+            <span class="arch-spec-tag mono">POSTGRES REPLICA</span>
+          </div>
           <h4>Portfolio HQ</h4>
           <p>Multi-property executive dashboard showing real-time shrinkage alerts, CapEx forecasts, and warranty claims.</p>
         </div>
       </div>
 
       <!-- App Screens & Device Gallery -->
-      <div class="screens-header-wrap" style="margin-top: 64px;" id="screens-gallery">
+      <div class="screens-header-wrap" style="margin-top: 72px;" id="screens-gallery">
         <div class="screens-heading-row">
           <div>
-            <h2 class="section-title" style="margin-bottom: 8px;">Scan it. Trace it. Account for it.</h2>
-            <p class="screens-subheading">Real screens from the iOS app, the 11" field tablet, and the HQ console. No typing serial numbers by hand, sync that works with no signal, and CapEx that books itself.</p>
+            <div class="section-tag" style="margin-bottom: 12px;">05.B / LIVE INTERFACE SHOWCASE</div>
+            <h2 class="section-title" style="margin-bottom: 12px;">Scan it. Trace it. Account for it.</h2>
+            <p class="screens-subheading">
+              Direct screen captures from the offline iOS scanner, make-ready turnover inspections, and the HQ portfolio console.
+            </p>
           </div>
         </div>
 
         <!-- Filter category pills -->
         <div class="screens-filter-bar" role="tablist" aria-label="Filter App Screens">
-          <button class="filter-pill active" type="button" data-filter="all">All Screens (6)</button>
-          <button class="filter-pill" type="button" data-filter="field">Field Scanner</button>
-          <button class="filter-pill" type="button" data-filter="turns">Turnover Audits</button>
-          <button class="filter-pill" type="button" data-filter="registry">HQ Asset Registry</button>
-          <button class="filter-pill" type="button" data-filter="dispatch">Operations Dispatch</button>
-          <button class="filter-pill" type="button" data-filter="analytics">CapEx Analytics</button>
+          <button class="filter-pill active" type="button" data-filter="all">All Interfaces (6)</button>
+          <button class="filter-pill" type="button" data-filter="field">Field Scanner (2)</button>
+          <button class="filter-pill" type="button" data-filter="turns">Turnover Audits (1)</button>
+          <button class="filter-pill" type="button" data-filter="registry">HQ Registry (1)</button>
+          <button class="filter-pill" type="button" data-filter="dispatch">Operations Dispatch (1)</button>
+          <button class="filter-pill" type="button" data-filter="analytics">CapEx Analytics (1)</button>
         </div>
 
         <!-- 6 Canonical Device Mockup Cards Grid -->
@@ -676,14 +530,14 @@
             </div>
             <figcaption class="screen-card-caption">
               <div class="caption-header">
-                <span class="caption-num">01</span>
-                <span class="caption-tag">Field App · iOS</span>
+                <span class="caption-num mono">01</span>
+                <span class="caption-tag mono">FIELD APP · iOS</span>
               </div>
-              <strong class="caption-title">Scan a Tag, Get the Whole History</strong>
-              <p class="caption-desc">Scans a tag in a mechanical closet and verifies it right on the device, with no signal.</p>
-              <div class="caption-bullets">
-                <span>✓ Reads the serial number in 0.3s, offline</span>
-                <span>✓ Queues on the device until it reconnects</span>
+              <strong class="caption-title">Instant Field Tag Scanner</strong>
+              <p class="caption-desc">Scans vinyl plates in unlit mechanical closets and decrypts hardware telemetry directly on the device with zero signal.</p>
+              <div class="caption-feature-tags mono">
+                <span class="feat-tag">0.3s Offline OCR</span>
+                <span class="feat-tag">Local Queue</span>
               </div>
             </figcaption>
           </figure>
@@ -695,18 +549,18 @@
                 <div class="phone-island"></div>
                 <img src="images/gallery/field_ios_turns.png" alt="Nameplate iOS Make-Ready Turnover Checklist" class="app-screenshot-img" loading="lazy">
               </div>
-              <div class="screen-badge-pill">MAKE-READY ROOM AUDIT</div>
+              <div class="screen-badge-pill">MAKE-READY AUDIT</div>
             </div>
             <figcaption class="screen-card-caption">
               <div class="caption-header">
-                <span class="caption-num">02</span>
-                <span class="caption-tag">Turnover & Custody</span>
+                <span class="caption-num mono">02</span>
+                <span class="caption-tag mono">TURNOVER · iOS</span>
               </div>
-              <strong class="caption-title">Room-by-Room Turnover Verification</strong>
-              <p class="caption-desc">Make-ready checklists that confirm every appliance is actually there before a new resident moves in.</p>
-              <div class="caption-bullets">
-                <span>✓ Confirms every appliance is still there</span>
-                <span>✓ Sign-off and flags for damaged parts</span>
+              <strong class="caption-title">Make-Ready Unit Walkthrough</strong>
+              <p class="caption-desc">Step-by-step room checklists that physically verify every appliance is present before releasing keys to incoming residents.</p>
+              <div class="caption-feature-tags mono">
+                <span class="feat-tag">Anti-Theft Check</span>
+                <span class="feat-tag">Photo Sign-Off</span>
               </div>
             </figcaption>
           </figure>
@@ -718,18 +572,18 @@
                 <div class="phone-island"></div>
                 <img src="images/gallery/field_ios_workorders.png" alt="Nameplate iOS Field Work Orders & Diagnostics" class="app-screenshot-img" loading="lazy">
               </div>
-              <div class="screen-badge-pill">FIELD WORK ORDERS</div>
+              <div class="screen-badge-pill">DIAGNOSTICS & PARTS</div>
             </div>
             <figcaption class="screen-card-caption">
               <div class="caption-header">
-                <span class="caption-num">03</span>
-                <span class="caption-tag">Field Operations</span>
+                <span class="caption-num mono">03</span>
+                <span class="caption-tag mono">FIELD OPS · iOS</span>
               </div>
-              <strong class="caption-title">In-Unit Diagnostics & Part Records</strong>
-              <p class="caption-desc">Techs work the diagnostic checklist, check whether the OEM warranty is still good, and attach part invoices on site.</p>
-              <div class="caption-bullets">
-                <span>✓ Attach part invoices without leaving the unit</span>
-                <span>✓ Status updates land in HQ immediately</span>
+              <strong class="caption-title">Diagnostics & Warranty Lookup</strong>
+              <p class="caption-desc">Technicians troubleshoot faults, check live OEM warranty coverage in the unit, and attach part invoices on the spot.</p>
+              <div class="caption-feature-tags mono">
+                <span class="feat-tag">OEM Warranty Flags</span>
+                <span class="feat-tag">Donor Parts</span>
               </div>
             </figcaption>
           </figure>
@@ -748,18 +602,18 @@
                 </div>
                 <img src="images/gallery/hq_asset_registry.png" alt="Nameplate HQ Asset Registry & Lineage" class="app-screenshot-img" loading="lazy">
               </div>
-              <div class="screen-badge-pill">EVERY PROPERTY, ONE LIST</div>
+              <div class="screen-badge-pill">PORTFOLIO REGISTRY</div>
             </div>
             <figcaption class="screen-card-caption">
               <div class="caption-header">
-                <span class="caption-num">04</span>
-                <span class="caption-tag">HQ Registry</span>
+                <span class="caption-num mono">04</span>
+                <span class="caption-tag mono">HQ CONSOLE · WEB</span>
               </div>
-              <strong class="caption-title">Every Asset and Its Warranty Status</strong>
-              <p class="caption-desc">Every HVAC unit, washer, and refrigerator across the portfolio in one list you can search and sort.</p>
-              <div class="caption-bullets">
-                <span>✓ Model and serial read straight off the plate</span>
-                <span>✓ Flags claims still covered by the OEM</span>
+              <strong class="caption-title">Unified Portfolio Asset Registry</strong>
+              <p class="caption-desc">Search and sort every appliance across every property with verifiable installation dates, serial records, and active warranty statuses.</p>
+              <div class="caption-feature-tags mono">
+                <span class="feat-tag">Global Fleet Search</span>
+                <span class="feat-tag">OCR Verified</span>
               </div>
             </figcaption>
           </figure>
@@ -778,18 +632,18 @@
                 </div>
                 <img src="images/gallery/hq_work_orders.png" alt="Nameplate HQ Work Orders Dispatch Kanban" class="app-screenshot-img" loading="lazy">
               </div>
-              <div class="screen-badge-pill">FOUR LANES · SLA TIMERS</div>
+              <div class="screen-badge-pill">DISPATCH KANBAN</div>
             </div>
             <figcaption class="screen-card-caption">
               <div class="caption-header">
-                <span class="caption-num">05</span>
-                <span class="caption-tag">Operations Dispatch</span>
+                <span class="caption-num mono">05</span>
+                <span class="caption-tag mono">HQ CONSOLE · WEB</span>
               </div>
-              <strong class="caption-title">Work Order Dispatch Board</strong>
-              <p class="caption-desc">A board for open, assigned, in-progress, and finished work orders, with SLA timers running on each one.</p>
-              <div class="caption-bullets">
-                <span>✓ Escalates jobs that miss their SLA</span>
-                <span>✓ Tracks which parts are assigned and in stock</span>
+              <strong class="caption-title">Work Order Operations Dispatch</strong>
+              <p class="caption-desc">Multi-lane dispatch board tracking open, assigned, and in-progress repairs with automated SLA timers and parts staging.</p>
+              <div class="caption-feature-tags mono">
+                <span class="feat-tag">SLA Breach Alerts</span>
+                <span class="feat-tag">Parts Inventory</span>
               </div>
             </figcaption>
           </figure>
@@ -808,18 +662,18 @@
                 </div>
                 <img src="images/gallery/hq_analytics.png" alt="Nameplate HQ Fleet Analytics & CapEx" class="app-screenshot-img" loading="lazy">
               </div>
-              <div class="screen-badge-pill">36-MONTH CAPEX FORECAST</div>
+              <div class="screen-badge-pill">CAPEX FORECASTER</div>
             </div>
             <figcaption class="screen-card-caption">
               <div class="caption-header">
-                <span class="caption-num">06</span>
-                <span class="caption-tag">Portfolio Analytics</span>
+                <span class="caption-num mono">06</span>
+                <span class="caption-tag mono">HQ CONSOLE · WEB</span>
               </div>
-              <strong class="caption-title">What Needs Replacing, and When</strong>
-              <p class="caption-desc">Forecasts of what needs replacing and when, based on failure rates and what each unit has cost so far.</p>
-              <div class="caption-bullets">
-                <span>✓ Shows what you will spend and when</span>
-                <span>✓ Built on how long each model actually lasts</span>
+              <strong class="caption-title">36-Month Useful Life Forecaster</strong>
+              <p class="caption-desc">Forecast replacement timelines and budgeting liabilities based on historical failure rates and cumulative maintenance spend.</p>
+              <div class="caption-feature-tags mono">
+                <span class="feat-tag">CapEx Projections</span>
+                <span class="feat-tag">True TCO Model</span>
               </div>
             </figcaption>
           </figure>
@@ -831,12 +685,12 @@
   <!-- ================= INVESTOR BRIEFING & PODCAST ================= -->
   <section class="section" id="investors">
     <div class="wrap">
-      <div class="section-tag">07 / INVESTOR BRIEFING & MEMO</div>
+      <div class="section-tag">06 / INVESTOR BRIEFING & MEMO</div>
 
       <div class="section-header">
-        <h2 class="section-title">The infrastructure layer for $4.8T in residential assets.</h2>
+        <h2 class="section-title">The infrastructure layer for $240B in residential appliance assets.</h2>
         <p class="section-sub">
-          Multifamily operators lose billions a year to appliances that walk off during turns, repairs nobody wrote down, and warranties that expire unclaimed. Nameplate gives every unit a record that matches what is physically in it.
+          Across 22M+ professionally managed multifamily units, operators oversee more than 140M in-unit appliance assets ($10k–$14k of equipment per door) — losing billions annually to unrecorded turnover swaps, unclaimed OEM warranties ($380–$1,200 each), and missing service histories. Nameplate gives every appliance an immutable ground truth.
         </p>
       </div>
 
@@ -874,16 +728,16 @@
 
           <div class="thesis-metrics-row">
             <div class="thesis-metric">
-              <span class="t-val">$48M+</span>
-              <span class="t-lbl">Appliances lost per year in target markets</span>
+              <span class="t-val">$240B+</span>
+              <span class="t-lbl">In-unit appliance assets across multifamily portfolios</span>
             </div>
             <div class="thesis-metric">
-              <span class="t-val">3.4x</span>
-              <span class="t-lbl">Faster unit turn inspections</span>
+              <span class="t-val">140M+</span>
+              <span class="t-lbl">Active in-unit appliances deployed nationwide</span>
             </div>
             <div class="thesis-metric">
-              <span class="t-val">100%</span>
-              <span class="t-lbl">Of field scans work without a connection</span>
+              <span class="t-val">$380–$1.2k</span>
+              <span class="t-lbl">OEM warranty recovery captured per failure</span>
             </div>
           </div>
         </div>
@@ -949,12 +803,15 @@
 
             <!-- Key Takeaways for LPs / Angels -->
             <div class="podcast-takeaways">
-              <span class="takeaway-head mono">KEY CHAPTER HIGHLIGHTS</span>
-              <ul class="takeaway-list">
-                <li><span class="mono red-accent">04:12</span> <strong>The missing refrigerator:</strong> how 2.8% of appliances disappear during turns without anyone noticing.</li>
-                <li><span class="mono red-accent">12:45</span> <strong>Verifying a tag offline:</strong> HMAC-SHA256 checks that run in a basement with no signal.</li>
-                <li><span class="mono red-accent">22:30</span> <strong>Where used parts come from:</strong> tracking donor parts pulled from one unit into another.</li>
-                <li><span class="mono red-accent">29:10</span> <strong>Scaling up:</strong> going from one property to operators with 10,000+ doors.</li>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                <span class="takeaway-head mono">KEY CHAPTER HIGHLIGHTS</span>
+                <span class="mono" style="font-size: 0.65rem; color: var(--gray-500);">CLICK TO JUMP</span>
+              </div>
+              <ul class="takeaway-list" id="podcastChapterList">
+                <li class="chapter-item" data-seek="252"><span class="mono red-accent chapter-time">04:12</span> <strong>The missing refrigerator:</strong> how 2.8% of appliances disappear during turns without anyone noticing.</li>
+                <li class="chapter-item" data-seek="765"><span class="mono red-accent chapter-time">12:45</span> <strong>Verifying a tag offline:</strong> HMAC-SHA256 checks that run in a basement with no signal.</li>
+                <li class="chapter-item" data-seek="1350"><span class="mono red-accent chapter-time">22:30</span> <strong>Where used parts come from:</strong> tracking donor parts pulled from one unit into another.</li>
+                <li class="chapter-item" data-seek="1750"><span class="mono red-accent chapter-time">29:10</span> <strong>Scaling up:</strong> going from one property to operators with 10,000+ doors.</li>
               </ul>
             </div>
 
@@ -972,7 +829,7 @@
             <div class="thesis-kicker">TECHNICAL MEMO & PITCH DECK</div>
             <h3 style="font-size: 1.5rem; font-weight: 800; margin: 4px 0 6px;">Nameplate Asset Infrastructure Deck</h3>
             <p style="color: var(--gray-400); font-size: 0.9rem; max-width: 680px;">
-              The full 15-slide presentation and written thesis memo.
+              The full 15-slide presentation and written thesis memo. <span class="mono" style="font-size: 0.75rem; color: var(--white-70); margin-left: 6px;">[ ← / → Keys to Navigate ]</span>
             </p>
           </div>
           <div class="deck-download-buttons">
@@ -988,7 +845,7 @@
         </div>
 
         <!-- Interactive Slide Viewer -->
-        <div class="deck-viewer-container">
+        <div class="deck-viewer-container has-corner-ticks">
           <div class="deck-main-viewport">
             <img id="deckMainSlide" src="images/deck/web/slide_01.webp" alt="Nameplate Presentation Slide Preview" class="deck-main-img" width="1600" height="893" loading="lazy" decoding="async" fetchpriority="low">
             <div class="deck-nav-overlay">
@@ -1025,7 +882,7 @@
   <section class="section splash-cta" id="hq-console">
     <div class="wrap">
       <div class="cta-box-inner">
-        <div class="section-tag" style="justify-content: center;">08 / OPERATIONAL CONSOLE</div>
+        <div class="section-tag" style="justify-content: center;">07 / OPERATIONAL CONSOLE</div>
         <h2>Experience Nameplate HQ.</h2>
         <p>Explore the portfolio dashboard, the asset registry, the warranty ledger, and the work order board.</p>
         <a class="btn btn-red" href="hq/index.html">Launch Live HQ CMMS Console →</a>

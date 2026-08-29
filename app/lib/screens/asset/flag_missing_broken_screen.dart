@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/asset.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
 
@@ -57,117 +58,101 @@ class _FlagMissingBrokenScreenState extends ConsumerState<FlagMissingBrokenScree
       ),
       body: ResponsiveContainer(
         maxWidth: 640,
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
+        child: Container(
+          decoration: const BoxDecoration(
+            color: NpColors.bgCard,
+            border: Border.fromBorderSide(BorderSide(color: NpColors.lineStrong)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: NpColors.lineStrong)),
+                ),
+                child: Row(
                   children: [
-                    const Icon(Icons.flag_outlined, color: NpColors.fault600, size: 24),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Flag Asset — ${widget.asset.npid}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    const NpKicker('01 / Exception Report'),
+                    const Spacer(),
+                    Text(
+                      widget.asset.npid,
+                      style: NpType.mono.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: NpColors.red,
+                        letterSpacing: 0.8,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                InkWell(
-                  onTap: () => setState(() => _reason = _FlagReason.unaccountedFor),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: _reason == _FlagReason.unaccountedFor ? NpColors.fault600 : NpColors.mist200,
-                        width: _reason == _FlagReason.unaccountedFor ? 2 : 1,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Flag Asset Condition',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
                       ),
-                      borderRadius: BorderRadius.circular(8),
-                      color: _reason == _FlagReason.unaccountedFor ? NpColors.fault100.withValues(alpha: 0.3) : null,
                     ),
-                    child: Row(
+                    const SizedBox(height: 4),
+                    Text(
+                      'This updates the asset registry ledger and schedules an immediate triage ticket.',
+                      style: const TextStyle(color: NpColors.gray400, fontSize: 13),
+                    ),
+                    const SizedBox(height: 16),
+                    NpActionTile(
+                      icon: Icons.search_off_rounded,
+                      kicker: 'Location Unconfirmed',
+                      title: 'Unaccounted For',
+                      subtitle: 'Cannot locate asset where records indicate it should be.',
+                      isSelected: _reason == _FlagReason.unaccountedFor,
+                      isDestructive: true,
+                      onTap: () => setState(() => _reason = _FlagReason.unaccountedFor),
+                    ),
+                    const SizedBox(height: 10),
+                    NpActionTile(
+                      icon: Icons.hardware_rounded,
+                      kicker: 'Physical / Operational Damage',
+                      title: 'Broken / Inoperable',
+                      subtitle: 'Asset is present, but critical functions have failed.',
+                      isSelected: _reason == _FlagReason.broken,
+                      isDestructive: true,
+                      onTap: () => setState(() => _reason = _FlagReason.broken),
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: _notesController,
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Field Notes & Context (optional)',
+                        hintText: 'Provide details for the investigation work order...',
+                        prefixIcon: Icon(Icons.edit_note_rounded),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
                       children: [
-                        Icon(
-                          _reason == _FlagReason.unaccountedFor ? Icons.radio_button_checked : Icons.radio_button_off,
-                          color: _reason == _FlagReason.unaccountedFor ? NpColors.fault600 : NpColors.steel500,
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Unaccounted For', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                              SizedBox(height: 4),
-                              Text("Cannot locate asset where records indicate it should be.", style: TextStyle(color: NpColors.steel500, fontSize: 13)),
-                            ],
+                        Expanded(
+                          child: NpButton.danger(
+                            icon: Icons.flag_rounded,
+                            label: _submitting ? 'RECORDING...' : 'SUBMIT STATUS FLAG',
+                            size: NpButtonSize.lg,
+                            isExpanded: true,
+                            isLoading: _submitting,
+                            onPressed: _submitting ? null : _submit,
                           ),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                InkWell(
-                  onTap: () => setState(() => _reason = _FlagReason.broken),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: _reason == _FlagReason.broken ? NpColors.fault600 : NpColors.mist200,
-                        width: _reason == _FlagReason.broken ? 2 : 1,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                      color: _reason == _FlagReason.broken ? NpColors.fault100.withValues(alpha: 0.3) : null,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _reason == _FlagReason.broken ? Icons.radio_button_checked : Icons.radio_button_off,
-                          color: _reason == _FlagReason.broken ? NpColors.fault600 : NpColors.steel500,
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Broken / Inoperable', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                              SizedBox(height: 4),
-                              Text('Asset is present, but critical functions have failed.', style: TextStyle(color: NpColors.steel500, fontSize: 13)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _notesController,
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    labelText: 'Field Notes & Context (optional)',
-                    hintText: 'Provide details for the investigation work order...',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                FilledButton.icon(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: NpColors.fault600,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  onPressed: _submitting ? null : _submit,
-                  icon: const Icon(Icons.flag),
-                  label: const Text('Submit Status Flag', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

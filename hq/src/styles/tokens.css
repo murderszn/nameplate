@@ -20,7 +20,7 @@
   --red: #ff2a2a;
   --red-hover: #ff4d4d;
   --red-deep: #d91d1d;
-  --red-glow: rgba(255, 42, 42, 0.35);
+  --red-glow: none;
   --red-subtle: rgba(255, 42, 42, 0.08);
   --red-border: rgba(255, 42, 42, 0.4);
 

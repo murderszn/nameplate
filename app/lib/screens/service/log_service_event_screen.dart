@@ -7,6 +7,7 @@ import '../../models/service_event.dart';
 import '../../models/work_order.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 
 /// Log a service event — v0-scope.md §1.1.
@@ -36,6 +37,17 @@ const _symptomMap = {
   'no_heat': 'No heat / Burner out',
   'no_power': 'No power / Tripping',
   'control_failure': 'Control board error',
+};
+
+const _symptomIconMap = {
+  'not_cooling': Icons.ac_unit_rounded,
+  'leaking': Icons.water_drop_rounded,
+  'noisy': Icons.volume_up_rounded,
+  'door_seal': Icons.sensor_door_rounded,
+  'wont_drain': Icons.plumbing_rounded,
+  'no_heat': Icons.local_fire_department_rounded,
+  'no_power': Icons.electric_bolt_rounded,
+  'control_failure': Icons.developer_board_rounded,
 };
 
 enum _PartSource { newInventory, salvagedFromDonor }
@@ -215,15 +227,16 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
               runSpacing: 6,
               children: [
                 for (final entry in _symptomMap.entries)
-                  FilterChip(
-                    label: Text(entry.value),
-                    selected: _symptoms.contains(entry.key),
-                    onSelected: (selected) {
+                  NpIconChip(
+                    icon: _symptomIconMap[entry.key],
+                    label: entry.value,
+                    isSelected: _symptoms.contains(entry.key),
+                    onTap: () {
                       setState(() {
-                        if (selected) {
-                          _symptoms.add(entry.key);
-                        } else {
+                        if (_symptoms.contains(entry.key)) {
                           _symptoms.remove(entry.key);
+                        } else {
+                          _symptoms.add(entry.key);
                         }
                       });
                     },
@@ -297,18 +310,20 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             Row(
               children: [
                 Expanded(
-                  child: ChoiceChip(
-                    label: const Text('Van Stock (New)'),
-                    selected: _partSource == _PartSource.newInventory,
-                    onSelected: (_) => setState(() => _partSource = _PartSource.newInventory),
+                  child: NpIconChip(
+                    icon: Icons.inventory_2_outlined,
+                    label: 'Van Stock (New)',
+                    isSelected: _partSource == _PartSource.newInventory,
+                    onTap: () => setState(() => _partSource = _PartSource.newInventory),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: ChoiceChip(
-                    label: const Text('Harvest from Donor'),
-                    selected: _partSource == _PartSource.salvagedFromDonor,
-                    onSelected: (_) => setState(() => _partSource = _PartSource.salvagedFromDonor),
+                  child: NpIconChip(
+                    icon: Icons.recycling_rounded,
+                    label: 'Harvest from Donor',
+                    isSelected: _partSource == _PartSource.salvagedFromDonor,
+                    onTap: () => setState(() => _partSource = _PartSource.salvagedFromDonor),
                   ),
                 ),
               ],
@@ -396,20 +411,15 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             const SizedBox(height: 16),
             _buildRepairVsReplaceEstimator(),
             const SizedBox(height: 20),
-            FilledButton.icon(
-              style: FilledButton.styleFrom(
-                backgroundColor: NpColors.red,
-                foregroundColor: NpColors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
+            NpButton.primary(
+              icon: Icons.check_circle_outline_rounded,
+              label: _submitting
+                  ? 'RECORDING...'
+                  : (widget.workOrder != null ? 'Record Service & Close Work Order' : 'Save & Queue Service Event'),
+              size: NpButtonSize.lg,
+              isExpanded: true,
+              isLoading: _submitting,
               onPressed: _canSubmit && !_submitting ? _submit : null,
-              icon: const Icon(Icons.check_circle_outline),
-              label: Text(
-                _submitting
-                    ? 'Recording...'
-                    : (widget.workOrder != null ? 'Record Service & Close Work Order' : 'Save & Queue Service Event'),
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-              ),
             ),
             if (!_canSubmit)
               const Padding(

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api, type Asset, type CriticalPart, type ServiceEvent } from '../api/client';
-import { CATEGORY_SCHEMATIC, isoDate, money, num, yearsLabel } from '../lib/format';
+import { CATEGORY_SCHEMATIC, isoDate, money, num, yearsLabel, yearsOld } from '../lib/format';
 
 export function AssetDetail() {
   const { id } = useParams<{ id: string }>();
