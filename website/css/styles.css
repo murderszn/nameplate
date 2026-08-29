@@ -2166,3 +2166,397 @@ a {
   .sim-stat-chips { grid-template-columns: 1fr; }
   .sim-lineage-table-wrap { overflow-x: auto; }
 }
+
+/* ===========================================================
+   07 / INVESTOR BRIEFING & CUSTOM AUDIO PLAYER
+   Minimalist brutalist styling matching black/white/red system
+   =========================================================== */
+.investor-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 32px;
+  margin-top: 40px;
+  align-items: stretch;
+}
+
+.investor-thesis-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.thesis-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+
+.thesis-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.12em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.thesis-header h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+
+.thesis-card {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-light);
+  padding: 18px;
+  border-left: 3px solid var(--red);
+}
+
+.thesis-num {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--red);
+}
+
+.thesis-body strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.thesis-body p {
+  font-size: 0.84rem;
+  color: var(--white-70);
+  line-height: 1.45;
+}
+
+.thesis-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: auto;
+}
+
+.thesis-metric {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 14px 12px;
+}
+
+.thesis-metric .t-val {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--red);
+  letter-spacing: -0.02em;
+}
+
+.thesis-metric .t-lbl {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--white-70);
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+/* Audio Player Panel */
+.investor-audio-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.audio-panel-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 20px;
+}
+
+.podcast-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+
+.podcast-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.08em;
+}
+
+.podcast-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: audioPulse 1.8s infinite;
+}
+
+@keyframes audioPulse {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+.podcast-time-badge {
+  font-size: 0.72rem;
+  color: var(--gray-400);
+  letter-spacing: 0.06em;
+}
+
+.podcast-series {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.podcast-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.podcast-desc {
+  font-size: 0.84rem;
+  color: var(--white-70);
+  line-height: 1.45;
+}
+
+/* Custom Audio Card */
+.custom-audio-card {
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+
+.audio-controls-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.audio-play-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--red);
+  border: none;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.audio-play-btn:hover {
+  background: var(--red-hover);
+  transform: scale(1.05);
+}
+
+.audio-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.audio-icon.hidden {
+  display: none;
+}
+
+.audio-track-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.audio-now-playing {
+  font-size: 0.68rem;
+  color: var(--red);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.audio-track-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-speed-toggle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gray-300);
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.audio-speed-toggle:hover {
+  border-color: var(--red);
+  color: var(--white);
+}
+
+/* Audio Scrubber */
+.audio-scrubber-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.audio-scrubber {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--gray-800);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.audio-scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--red);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.audio-scrubber::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+.audio-time-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--gray-400);
+}
+
+/* Audio Waveform Bars */
+.audio-waveform-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 28px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line-light);
+}
+
+.audio-waveform-bars span {
+  flex: 1;
+  background: var(--gray-700);
+  border-radius: 1px;
+  transition: height 0.15s ease, background 0.15s ease;
+}
+
+.audio-waveform-bars.is-playing span {
+  background: var(--red);
+  animation: barBounce 1.2s infinite ease-in-out alternate;
+}
+
+.audio-waveform-bars.is-playing span:nth-child(2n) {
+  animation-delay: 0.2s;
+}
+.audio-waveform-bars.is-playing span:nth-child(3n) {
+  animation-delay: 0.4s;
+}
+.audio-waveform-bars.is-playing span:nth-child(4n) {
+  animation-delay: 0.1s;
+}
+
+@keyframes barBounce {
+  0% { transform: scaleY(0.4); }
+  100% { transform: scaleY(1); }
+}
+
+/* Takeaways */
+.podcast-takeaways {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line-light);
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.takeaway-head {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gray-400);
+  letter-spacing: 0.08em;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.takeaway-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.takeaway-list li {
+  font-size: 0.8rem;
+  color: var(--white-70);
+  line-height: 1.35;
+}
+
+.takeaway-list strong {
+  color: var(--white);
+}
+
+.investor-direct-cta {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+@media (max-width: 980px) {
+  .investor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
