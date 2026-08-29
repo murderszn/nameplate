@@ -315,6 +315,16 @@
   <footer class="footer"><div class="shell"><strong>Nameplate backend blueprint.</strong> Source contract: <code>docs/data-model.md</code>, <code>docs/architecture.md</code>, <code>docs/metrics.md</code>, <code>docs/v0-scope.md</code>, and the current Prisma schema. The schema and this blueprint should change together.</div></footer>
 
   <script>
+    // Escape a value before interpolating it into an innerHTML template below.
+    // The blueprint data is static today; this keeps the render path safe if it
+    // ever becomes dynamic.
+    const esc = (value) => String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
     const domains = [
       { id: 'identity', name: 'Identity & tenancy' },
       { id: 'portfolio', name: 'Portfolio & locations' },
@@ -497,22 +507,22 @@
     function renderDomainMap() {
       domainMap.innerHTML = domains.map(domain => {
         const group = tables.filter(t => t.domain === domain.id);
-        return `<article class="domain-card"><header><h3>${domain.name}</h3><span class="count">${group.length} tables</span></header><div>${group.map(t => `<code>${t.name}</code>`).join('')}</div></article>`;
+        return `<article class="domain-card"><header><h3>${esc(domain.name)}</h3><span class="count">${group.length} tables</span></header><div>${group.map(t => `<code>${esc(t.name)}</code>`).join('')}</div></article>`;
       }).join('');
     }
 
     function renderCatalog() {
       catalog.innerHTML = domains.map(domain => {
         const group = tables.filter(t => t.domain === domain.id);
-        return `<section class="catalog-domain" data-domain="${domain.id}"><div class="domain-heading">${domain.name} · ${group.length}</div><div class="table-grid">${group.map(t => `
-          <article class="table-card" data-status="${t.status}" data-search="${[t.name,t.purpose,t.relations,t.integrity,...t.columns.flatMap(x=>[x.name,x.type,x.note])].join(' ').toLowerCase()}">
+        return `<section class="catalog-domain" data-domain="${esc(domain.id)}"><div class="domain-heading">${esc(domain.name)} · ${group.length}</div><div class="table-grid">${group.map(t => `
+          <article class="table-card" data-status="${esc(t.status)}" data-search="${esc([t.name,t.purpose,t.relations,t.integrity,...t.columns.flatMap(x=>[x.name,x.type,x.note])].join(' ').toLowerCase())}">
             <button class="table-summary" type="button" aria-expanded="false">
-              <div><h3>${t.name}</h3><p>${t.purpose}</p></div>
-              <div class="badges"><span class="badge ${t.status}">${statusLabel[t.status]}</span><span class="chev">+</span></div>
+              <div><h3>${esc(t.name)}</h3><p>${esc(t.purpose)}</p></div>
+              <div class="badges"><span class="badge ${esc(t.status)}">${esc(statusLabel[t.status])}</span><span class="chev">+</span></div>
             </button>
             <div class="table-detail">
-              <table class="column-table"><thead><tr><th>Column</th><th>Type</th><th>Responsibility</th></tr></thead><tbody>${t.columns.map(x=>`<tr><td>${x.name}</td><td>${x.type}</td><td>${x.note}</td></tr>`).join('')}</tbody></table>
-              <div class="table-notes"><div><h4>Relationships</h4><p>${t.relations}</p></div><div><h4>Integrity</h4><p>${t.integrity}</p></div></div>
+              <table class="column-table"><thead><tr><th>Column</th><th>Type</th><th>Responsibility</th></tr></thead><tbody>${t.columns.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.type)}</td><td>${esc(x.note)}</td></tr>`).join('')}</tbody></table>
+              <div class="table-notes"><div><h4>Relationships</h4><p>${esc(t.relations)}</p></div><div><h4>Integrity</h4><p>${esc(t.integrity)}</p></div></div>
             </div>
           </article>`).join('')}</div></section>`;
       }).join('');
@@ -539,7 +549,7 @@
     }
 
     function renderActions() {
-      document.getElementById('actionTable').innerHTML = `<thead><tr><th>Field / HQ action</th><th>Rows written</th><th>Atomic rule</th><th>What it powers</th></tr></thead><tbody>${writeActions.map(row=>`<tr>${row.map((cell,i)=>`<td>${i===1?`<code>${cell}</code>`:cell}</td>`).join('')}</tr>`).join('')}</tbody>`;
+      document.getElementById('actionTable').innerHTML = `<thead><tr><th>Field / HQ action</th><th>Rows written</th><th>Atomic rule</th><th>What it powers</th></tr></thead><tbody>${writeActions.map(row=>`<tr>${row.map((cell,i)=>`<td>${i===1?`<code>${esc(cell)}</code>`:esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody>`;
     }
 
     const storageKey = 'nameplate-backend-blueprint-progress-v1';
@@ -548,9 +558,9 @@
 
     function renderRoadmap() {
       const root = document.getElementById('roadmapList');
-      root.innerHTML = phases.map(phase => `<section class="phase" data-phase="${phase.n}">
-        <header class="phase-header"><span class="phase-num">${phase.n}</span><div><h3>${phase.title}</h3><p>${phase.copy}</p></div><span class="phase-progress"></span></header>
-        <div>${phase.tasks.map(t=>`<label class="task ${t.gate?'gate':''} ${checked[t.id]?'done':''}"><input type="checkbox" data-task="${t.id}" ${checked[t.id]?'checked':''}><div class="task-copy"><div class="task-title">${t.title}</div><div class="task-detail">${t.detail}</div><div class="verify">VERIFY · ${t.verify}</div></div><span class="task-tag">${t.gate?'phase gate':t.tag}</span></label>`).join('')}</div>
+      root.innerHTML = phases.map(phase => `<section class="phase" data-phase="${esc(phase.n)}">
+        <header class="phase-header"><span class="phase-num">${esc(phase.n)}</span><div><h3>${esc(phase.title)}</h3><p>${esc(phase.copy)}</p></div><span class="phase-progress"></span></header>
+        <div>${phase.tasks.map(t=>`<label class="task ${t.gate?'gate':''} ${checked[t.id]?'done':''}"><input type="checkbox" data-task="${esc(t.id)}" ${checked[t.id]?'checked':''}><div class="task-copy"><div class="task-title">${esc(t.title)}</div><div class="task-detail">${esc(t.detail)}</div><div class="verify">VERIFY · ${esc(t.verify)}</div></div><span class="task-tag">${t.gate?'phase gate':esc(t.tag)}</span></label>`).join('')}</div>
       </section>`).join('');
       root.querySelectorAll('input[type=checkbox]').forEach(box => box.addEventListener('change', () => {
         checked[box.dataset.task] = box.checked;

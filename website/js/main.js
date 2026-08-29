@@ -5,6 +5,18 @@
 (function () {
   'use strict';
 
+  // Escape a value before it is interpolated into an innerHTML template.
+  // Record data is static today, but the templates below are the only place
+  // untrusted content could reach the DOM if that ever changes.
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   // ================= 1. Master Schematics & Live Asset Data =================
   var ASSET_RECORDS = {
     hvac: {
@@ -282,6 +294,8 @@
       var pHtml = '';
       data.parts.forEach(function (p) {
         var dotClass = p.type === 'red' ? 'part-dot-red' : 'part-dot-white';
+        // `p.text` is authored copy that carries intentional <strong> emphasis,
+        // so it is inserted as markup. Keep it authored in this file only.
         pHtml += '<div class="part-row">' +
           '<span class="' + dotClass + '"></span>' +
           '<div>' + p.text + '</div>' +
@@ -332,11 +346,11 @@
       var tHtml = '';
       data.lineage.forEach(function (row) {
         tHtml += '<tr>' +
-          '<td class="mono">' + row.date + '</td>' +
-          '<td><strong>' + row.part + '</strong></td>' +
-          '<td class="mono" style="color: var(--gray-400);">' + row.oem + '</td>' +
-          '<td>' + row.tech + '</td>' +
-          '<td><span class="sim-part-badge ' + row.statusClass + '">' + row.status + '</span></td>' +
+          '<td class="mono">' + esc(row.date) + '</td>' +
+          '<td><strong>' + esc(row.part) + '</strong></td>' +
+          '<td class="mono" style="color: var(--gray-400);">' + esc(row.oem) + '</td>' +
+          '<td>' + esc(row.tech) + '</td>' +
+          '<td><span class="sim-part-badge ' + esc(row.statusClass) + '">' + esc(row.status) + '</span></td>' +
           '</tr>';
       });
       tableBody.innerHTML = tHtml;
@@ -398,6 +412,9 @@
         light: '#FFFFFF',
         ecLevel: 'H'
       });
+      // Intentional markup sink: `svg` is generated locally by NameplateQR from
+      // `cleanNpid`, which is stripped to [A-Za-z0-9] above. Not escapable — the
+      // value *is* the SVG document.
       container.innerHTML = svg;
     }
 
@@ -430,17 +447,19 @@
         if (laser) {
           laser.classList.add('is-active');
         }
-        var origText = btnScan.innerHTML;
-        btnScan.innerHTML = 'Scanning Tag...';
+        // Detach the original label + icon nodes so they can be restored
+        // verbatim, without round-tripping the button through innerHTML.
+        var origNodes = Array.prototype.slice.call(btnScan.childNodes);
+        btnScan.textContent = 'Scanning Tag...';
 
         setTimeout(function () {
           if (laser) laser.classList.remove('is-active');
-          btnScan.innerHTML = '✓ Physical Asset Resolved (0.4s)';
+          btnScan.textContent = '✓ Physical Asset Resolved (0.4s)';
           btnScan.style.background = '#FFFFFF';
           btnScan.style.color = '#000000';
 
           setTimeout(function () {
-            btnScan.innerHTML = origText;
+            btnScan.replaceChildren.apply(btnScan, origNodes);
             btnScan.style.background = '';
             btnScan.style.color = '';
           }, 2400);
@@ -492,8 +511,8 @@
           html += '<div class="hud-timeline-item">' +
             '<span class="hud-dot">●</span>' +
             '<div>' +
-              '<strong>' + t.part + '</strong>' +
-              '<div class="hud-timeline-sub">' + (t.tech || 'Audit Team') + ' · ' + t.date + '</div>' +
+              '<strong>' + esc(t.part) + '</strong>' +
+              '<div class="hud-timeline-sub">' + esc(t.tech || 'Audit Team') + ' · ' + esc(t.date) + '</div>' +
             '</div>' +
           '</div>';
         });
@@ -670,6 +689,58 @@
     }
   }
 
+  // ================= 7. Interactive Slide Deck Viewer =================
+  function initSlideDeckViewer() {
+    var mainSlide = document.getElementById('deckMainSlide');
+    var slideCounter = document.getElementById('deckSlideCounter');
+    var prevBtn = document.getElementById('deckPrevBtn');
+    var nextBtn = document.getElementById('deckNextBtn');
+    var thumbsTrack = document.getElementById('deckThumbsTrack');
+    if (!mainSlide || !slideCounter) return;
+
+    var currentSlide = 1;
+    var totalSlides = 15;
+    var thumbs = document.querySelectorAll('.deck-thumb');
+
+    function updateSlide(idx) {
+      if (idx < 1) idx = totalSlides;
+      if (idx > totalSlides) idx = 1;
+      currentSlide = idx;
+
+      var padIdx = (currentSlide < 10 ? '0' : '') + currentSlide;
+      mainSlide.src = 'images/deck/slide_' + padIdx + '.png';
+      slideCounter.textContent = 'SLIDE ' + padIdx + ' / ' + (totalSlides < 10 ? '0' : '') + totalSlides;
+
+      thumbs.forEach(function (thumb) {
+        if (parseInt(thumb.getAttribute('data-slide'), 10) === currentSlide) {
+          thumb.classList.add('is-active');
+          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          thumb.classList.remove('is-active');
+        }
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        updateSlide(currentSlide - 1);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        updateSlide(currentSlide + 1);
+      });
+    }
+
+    thumbs.forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        var s = parseInt(this.getAttribute('data-slide'), 10);
+        updateSlide(s);
+      });
+    });
+  }
+
   // Initialize
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
@@ -679,6 +750,7 @@
       initBlueprint();
       initScreensFilter();
       initInvestorAudioPlayer();
+      initSlideDeckViewer();
       renderLiveAppRecord('hvac');
     });
   } else {
@@ -688,6 +760,7 @@
     initBlueprint();
     initScreensFilter();
     initInvestorAudioPlayer();
+    initSlideDeckViewer();
     renderLiveAppRecord('hvac');
   }
 

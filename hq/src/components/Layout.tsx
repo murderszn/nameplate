@@ -383,7 +383,7 @@ export function Layout() {
             <a
               href={window.location.port === '5173' ? 'http://localhost:8080' : '../field/index.html'}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="np-topbar-btn"
               title="Open Nameplate Field App (Tablet View)"
             >

@@ -11,6 +11,25 @@ build/
 .env.*
 !.env.example
 
+# Keys / certificates / credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+*.crt
+credentials.json
+service-account*.json
+secrets.json
+secrets.y*ml
+.netrc
+.npmrc
+
 # Playwright MCP scratch output
 .playwright-mcp/
 
