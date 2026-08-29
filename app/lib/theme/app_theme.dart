@@ -25,7 +25,7 @@ class NpColors {
   static const red = Color(0xFFFF2A2A);
   static const redHover = Color(0xFFFF4D4D);
   static const redDeep = Color(0xFFD91D1D);
-  static const redGlow = Color(0x59FF2A2A);
+  static const redGlow = Colors.transparent;
   static const redSubtle = Color(0x14FF2A2A);
   static const redBorder = Color(0x66FF2A2A);
 
