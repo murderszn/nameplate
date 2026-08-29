@@ -665,12 +665,12 @@
 
         <!-- 6 Canonical Device Mockup Cards Grid -->
         <div class="screens-showcase-grid">
-          <!-- Card 01: Subterranean Tag Telemetry (iOS) -->
+          <!-- Card 01: Offline Tag Scan (iOS) -->
           <figure class="screen-card" data-category="field">
             <div class="device-mockup-wrap">
               <div class="phone-device-bezel">
                 <div class="phone-island"></div>
-                <img src="images/gallery/field_ios_scan.png" alt="Nameplate iOS Subterranean Field Scanner" class="app-screenshot-img" loading="lazy">
+                <img src="images/gallery/field_ios_scan.png" alt="Nameplate iOS field scanner reading an appliance tag" class="app-screenshot-img" loading="lazy">
               </div>
               <div class="screen-badge-pill">OFFLINE SCAN · 0.3s</div>
             </div>
@@ -906,7 +906,7 @@
 
             <!-- Custom Styled Audio Player Card -->
             <div class="custom-audio-card" id="nameplateAudioCard">
-              <audio id="nameplatePodcastAudio" preload="metadata" src="audio/how_nameplate_tracks_apartment_appliances.m4a"></audio>
+              <audio id="nameplatePodcastAudio" preload="none" data-src="audio/how_nameplate_tracks_apartment_appliances.m4a"></audio>
 
               <div class="audio-controls-top">
                 <button type="button" class="audio-play-btn" id="audioPlayBtn" aria-label="Play podcast episode">
@@ -990,7 +990,7 @@
         <!-- Interactive Slide Viewer -->
         <div class="deck-viewer-container">
           <div class="deck-main-viewport">
-            <img id="deckMainSlide" src="images/deck/slide_01.png" alt="Nameplate Presentation Slide Preview" class="deck-main-img">
+            <img id="deckMainSlide" src="images/deck/web/slide_01.webp" alt="Nameplate Presentation Slide Preview" class="deck-main-img" width="1600" height="893" loading="lazy" decoding="async" fetchpriority="low">
             <div class="deck-nav-overlay">
               <button type="button" class="deck-nav-arrow deck-prev" id="deckPrevBtn" aria-label="Previous Slide">‹</button>
               <div class="deck-slide-counter mono" id="deckSlideCounter">SLIDE 01 / 15</div>
@@ -1000,21 +1000,21 @@
 
           <!-- Thumbnails Strip -->
           <div class="deck-thumbs-track" id="deckThumbsTrack">
-            <div class="deck-thumb is-active" data-slide="1"><img src="images/deck/slide_01.png" alt="Slide 1"><span class="thumb-idx mono">01</span></div>
-            <div class="deck-thumb" data-slide="2"><img src="images/deck/slide_02.png" alt="Slide 2"><span class="thumb-idx mono">02</span></div>
-            <div class="deck-thumb" data-slide="3"><img src="images/deck/slide_03.png" alt="Slide 3"><span class="thumb-idx mono">03</span></div>
-            <div class="deck-thumb" data-slide="4"><img src="images/deck/slide_04.png" alt="Slide 4"><span class="thumb-idx mono">04</span></div>
-            <div class="deck-thumb" data-slide="5"><img src="images/deck/slide_05.png" alt="Slide 5"><span class="thumb-idx mono">05</span></div>
-            <div class="deck-thumb" data-slide="6"><img src="images/deck/slide_06.png" alt="Slide 6"><span class="thumb-idx mono">06</span></div>
-            <div class="deck-thumb" data-slide="7"><img src="images/deck/slide_07.png" alt="Slide 7"><span class="thumb-idx mono">07</span></div>
-            <div class="deck-thumb" data-slide="8"><img src="images/deck/slide_08.png" alt="Slide 8"><span class="thumb-idx mono">08</span></div>
-            <div class="deck-thumb" data-slide="9"><img src="images/deck/slide_09.png" alt="Slide 9"><span class="thumb-idx mono">09</span></div>
-            <div class="deck-thumb" data-slide="10"><img src="images/deck/slide_10.png" alt="Slide 10"><span class="thumb-idx mono">10</span></div>
-            <div class="deck-thumb" data-slide="11"><img src="images/deck/slide_11.png" alt="Slide 11"><span class="thumb-idx mono">11</span></div>
-            <div class="deck-thumb" data-slide="12"><img src="images/deck/slide_12.png" alt="Slide 12"><span class="thumb-idx mono">12</span></div>
-            <div class="deck-thumb" data-slide="13"><img src="images/deck/slide_13.png" alt="Slide 13"><span class="thumb-idx mono">13</span></div>
-            <div class="deck-thumb" data-slide="14"><img src="images/deck/slide_14.png" alt="Slide 14"><span class="thumb-idx mono">14</span></div>
-            <div class="deck-thumb" data-slide="15"><img src="images/deck/slide_15.png" alt="Slide 15"><span class="thumb-idx mono">15</span></div>
+            <div class="deck-thumb is-active" data-slide="1"><img src="images/deck/thumbs/slide_01.webp" alt="Slide 1" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">01</span></div>
+            <div class="deck-thumb" data-slide="2"><img src="images/deck/thumbs/slide_02.webp" alt="Slide 2" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">02</span></div>
+            <div class="deck-thumb" data-slide="3"><img src="images/deck/thumbs/slide_03.webp" alt="Slide 3" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">03</span></div>
+            <div class="deck-thumb" data-slide="4"><img src="images/deck/thumbs/slide_04.webp" alt="Slide 4" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">04</span></div>
+            <div class="deck-thumb" data-slide="5"><img src="images/deck/thumbs/slide_05.webp" alt="Slide 5" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">05</span></div>
+            <div class="deck-thumb" data-slide="6"><img src="images/deck/thumbs/slide_06.webp" alt="Slide 6" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">06</span></div>
+            <div class="deck-thumb" data-slide="7"><img src="images/deck/thumbs/slide_07.webp" alt="Slide 7" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">07</span></div>
+            <div class="deck-thumb" data-slide="8"><img src="images/deck/thumbs/slide_08.webp" alt="Slide 8" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">08</span></div>
+            <div class="deck-thumb" data-slide="9"><img src="images/deck/thumbs/slide_09.webp" alt="Slide 9" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">09</span></div>
+            <div class="deck-thumb" data-slide="10"><img src="images/deck/thumbs/slide_10.webp" alt="Slide 10" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">10</span></div>
+            <div class="deck-thumb" data-slide="11"><img src="images/deck/thumbs/slide_11.webp" alt="Slide 11" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">11</span></div>
+            <div class="deck-thumb" data-slide="12"><img src="images/deck/thumbs/slide_12.webp" alt="Slide 12" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">12</span></div>
+            <div class="deck-thumb" data-slide="13"><img src="images/deck/thumbs/slide_13.webp" alt="Slide 13" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">13</span></div>
+            <div class="deck-thumb" data-slide="14"><img src="images/deck/thumbs/slide_14.webp" alt="Slide 14" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">14</span></div>
+            <div class="deck-thumb" data-slide="15"><img src="images/deck/thumbs/slide_15.webp" alt="Slide 15" width="240" height="134" loading="lazy" decoding="async"><span class="thumb-idx mono">15</span></div>
           </div>
         </div>
       </div>
