@@ -22,9 +22,11 @@ class TurnsScreen extends ConsumerWidget {
         .where((t) => t.status == TurnStatus.completed)
         .toList();
     final ready = session.visibleUnits
-        .where((u) =>
-            u.occupancyStatus == OccupancyStatus.turning ||
-            u.occupancyStatus == OccupancyStatus.vacant)
+        .where(
+          (u) =>
+              u.occupancyStatus == OccupancyStatus.turning ||
+              u.occupancyStatus == OccupancyStatus.vacant,
+        )
         .where((u) => session.inProgressTurnForUnit(u.id) == null)
         .toList();
     final occupied = session.visibleUnits
@@ -43,23 +45,24 @@ class TurnsScreen extends ConsumerWidget {
         children: [
           Text(
             'Checklist is the unit\'s asset roster. Flag damage or gaps; completing emits work orders.',
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: NpColors.gray400),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: NpColors.gray400),
           ),
           if (inProgress.isNotEmpty) ...[
             const SizedBox(height: 28),
             NpSectionLabel('In progress (${inProgress.length})'),
             const SizedBox(height: 10),
-            ...inProgress.map((t) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _TurnCard(
-                    turn: t,
-                    onOpen: () => _openWalkthrough(context, t),
-                    isActive: true,
-                  ),
-                )),
+            ...inProgress.map(
+              (t) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _TurnCard(
+                  turn: t,
+                  onOpen: () => _openWalkthrough(context, t),
+                  isActive: true,
+                ),
+              ),
+            ),
           ],
           const SizedBox(height: 28),
           NpSectionLabel('Ready for turn (${ready.length})'),
@@ -76,37 +79,43 @@ class TurnsScreen extends ConsumerWidget {
               ),
             )
           else
-            ...ready.map((u) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _UnitCard(
-                    unit: u,
-                    assetCount: session.rosterForUnit(u.id).length,
-                    onStart: () => _start(context, ref, u),
-                  ),
-                )),
-          const SizedBox(height: 28),
-          NpSectionLabel('Occupied — spot audit'),
-          const SizedBox(height: 10),
-          ...occupied.map((u) => Padding(
+            ...ready.map(
+              (u) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: _UnitCard(
                   unit: u,
                   assetCount: session.rosterForUnit(u.id).length,
                   onStart: () => _start(context, ref, u),
                 ),
-              )),
+              ),
+            ),
+          const SizedBox(height: 28),
+          NpSectionLabel('Occupied — spot audit'),
+          const SizedBox(height: 10),
+          ...occupied.map(
+            (u) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _UnitCard(
+                unit: u,
+                assetCount: session.rosterForUnit(u.id).length,
+                onStart: () => _start(context, ref, u),
+              ),
+            ),
+          ),
           if (completed.isNotEmpty) ...[
             const SizedBox(height: 28),
             NpSectionLabel('Completed this shift (${completed.length})'),
             const SizedBox(height: 10),
-            ...completed.map((t) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _TurnCard(
-                    turn: t,
-                    onOpen: () => _openWalkthrough(context, t),
-                    isActive: false,
-                  ),
-                )),
+            ...completed.map(
+              (t) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _TurnCard(
+                  turn: t,
+                  onOpen: () => _openWalkthrough(context, t),
+                  isActive: false,
+                ),
+              ),
+            ),
           ],
         ],
       ),
@@ -167,40 +176,39 @@ class TurnsScreen extends ConsumerWidget {
                     TurnType.spotAudit => Icons.search,
                     TurnType.onboarding => Icons.add_business_outlined,
                   };
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: const BoxDecoration(
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Material(
                       color: NpColors.bgElevated,
-                      border: Border(
-                        left: BorderSide(color: NpColors.lineStrong),
-                        top: BorderSide(color: NpColors.lineStrong),
-                        right: BorderSide(color: NpColors.lineStrong),
-                        bottom: BorderSide(color: NpColors.lineStrong),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                        side: BorderSide(color: NpColors.lineStrong),
                       ),
-                    ),
-                    child: ListTile(
-                      leading: Icon(icon, color: NpColors.red, size: 20),
-                      title: Text(
-                        t.label,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                          color: NpColors.white,
+                      clipBehavior: Clip.antiAlias,
+                      child: ListTile(
+                        leading: Icon(icon, color: NpColors.red, size: 20),
+                        title: Text(
+                          t.label,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: NpColors.white,
+                          ),
                         ),
-                      ),
-                      subtitle: Text(
-                        subtitle,
-                        style: const TextStyle(
-                          color: NpColors.gray400,
-                          fontSize: 11,
+                        subtitle: Text(
+                          subtitle,
+                          style: const TextStyle(
+                            color: NpColors.gray400,
+                            fontSize: 11,
+                          ),
                         ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 12,
+                          color: NpColors.gray500,
+                        ),
+                        onTap: () => Navigator.pop(ctx, t),
                       ),
-                      trailing: const Icon(
-                        Icons.arrow_forward_ios,
-                        size: 12,
-                        color: NpColors.gray500,
-                      ),
-                      onTap: () => Navigator.pop(ctx, t),
                     ),
                   );
                 }),
@@ -211,8 +219,9 @@ class TurnsScreen extends ConsumerWidget {
       },
     );
     if (type == null || !context.mounted) return;
-    final turn =
-        ref.read(fieldSessionProvider).startTurn(unit: unit, type: type);
+    final turn = ref
+        .read(fieldSessionProvider)
+        .startTurn(unit: unit, type: type);
     if (!context.mounted) return;
     await _openWalkthrough(context, turn);
   }
@@ -228,8 +237,11 @@ class _UnitCard extends StatelessWidget {
   final Unit unit;
   final int assetCount;
   final VoidCallback onStart;
-  const _UnitCard(
-      {required this.unit, required this.assetCount, required this.onStart});
+  const _UnitCard({
+    required this.unit,
+    required this.assetCount,
+    required this.onStart,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -260,8 +272,8 @@ class _UnitCard extends StatelessWidget {
                   tone: unit.occupancyStatus == OccupancyStatus.turning
                       ? NpPillTone.caution
                       : unit.occupancyStatus == OccupancyStatus.vacant
-                          ? NpPillTone.neutral
-                          : NpPillTone.verified,
+                      ? NpPillTone.neutral
+                      : NpPillTone.verified,
                 ),
               ],
             ),
@@ -287,7 +299,9 @@ class _UnitCard extends StatelessWidget {
                   onTap: onStart,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: NpColors.red,
                       borderRadius: BorderRadius.circular(2),
@@ -295,8 +309,11 @@ class _UnitCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.play_arrow,
-                            size: 16, color: NpColors.white),
+                        const Icon(
+                          Icons.play_arrow,
+                          size: 16,
+                          color: NpColors.white,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'START TURN',
@@ -324,13 +341,17 @@ class _TurnCard extends StatelessWidget {
   final Turn turn;
   final VoidCallback onOpen;
   final bool isActive;
-  const _TurnCard(
-      {required this.turn, required this.onOpen, required this.isActive});
+  const _TurnCard({
+    required this.turn,
+    required this.onOpen,
+    required this.isActive,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final progress =
-        turn.items.isEmpty ? 0.0 : turn.inspectedCount / turn.items.length;
+    final progress = turn.items.isEmpty
+        ? 0.0
+        : turn.inspectedCount / turn.items.length;
 
     return GestureDetector(
       onTap: onOpen,
@@ -413,5 +434,3 @@ class _TurnCard extends StatelessWidget {
     );
   }
 }
-
-

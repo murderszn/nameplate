@@ -15,12 +15,12 @@ void main() {
   testWidgets('Turns lists units and starts a walkthrough', (tester) async {
     await pumpApp(tester);
 
-    await tester.tap(find.text('Turns'));
+    await tester.tap(find.text('TURNS'));
     await tester.pump();
     expect(find.text('Unit turns'), findsOneWidget);
-    expect(find.text('Start turn'), findsWidgets);
+    expect(find.text('START TURN'), findsWidgets);
 
-    await tester.tap(find.text('Start turn').first);
+    await tester.tap(find.text('START TURN').first);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Move-out'), findsOneWidget);
@@ -33,10 +33,12 @@ void main() {
     expect(find.text('Building C — Unit 4B'), findsWidgets);
   });
 
-  testWidgets('Settings identity, offline toggle, and tag studio open', (tester) async {
+  testWidgets('Settings identity, offline toggle, and tag studio open', (
+    tester,
+  ) async {
     await pumpApp(tester);
 
-    await tester.tap(find.text('Settings'));
+    await tester.tap(find.text('SETTINGS'));
     await tester.pump();
     expect(find.text('Field console'), findsOneWidget);
     expect(find.textContaining('J. Morales'), findsOneWidget);
@@ -48,6 +50,7 @@ void main() {
 
     final studio = find.text('Nameplate Tag studio');
     await tester.ensureVisible(studio);
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(studio);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
@@ -61,23 +64,26 @@ void main() {
     expect(Npid.payloadUrl(id), startsWith('https://np.app/a/NP'));
   });
 
-  test('startTurn builds the unit roster and completeTurn emits work orders', () {
-    final session = FieldSession.demo();
-    final unit = session.units.firstWhere((u) => u.id == 'unit-4b');
-    final turn = session.startTurn(unit: unit, type: TurnType.moveOut);
-    expect(turn.items.length, 6);
-    expect(turn.items.map((i) => i.category), contains('Refrigerator'));
+  test(
+    'startTurn builds the unit roster and completeTurn emits work orders',
+    () {
+      final session = FieldSession.demo();
+      final unit = session.units.firstWhere((u) => u.id == 'unit-4b');
+      final turn = session.startTurn(unit: unit, type: TurnType.moveOut);
+      expect(turn.items.length, 6);
+      expect(turn.items.map((i) => i.category), contains('Refrigerator'));
 
-    for (final item in turn.items) {
-      item.finding = TurnItemFinding.presentOk;
-    }
-    turn.items.first.finding = TurnItemFinding.presentDamaged;
-    turn.items.first.decision = TurnItemDecision.repair;
+      for (final item in turn.items) {
+        item.finding = TurnItemFinding.presentOk;
+      }
+      turn.items.first.finding = TurnItemFinding.presentDamaged;
+      turn.items.first.decision = TurnItemDecision.repair;
 
-    final result = session.completeTurn(turn);
-    expect(result.workOrdersCreated, 1);
-    expect(session.workOrders.any((w) => w.sourceTurnId == turn.id), isTrue);
-    expect(unit.occupancyStatus.name, 'vacant');
-    expect(session.pendingCount, greaterThan(0));
-  });
+      final result = session.completeTurn(turn);
+      expect(result.workOrdersCreated, 1);
+      expect(session.workOrders.any((w) => w.sourceTurnId == turn.id), isTrue);
+      expect(unit.occupancyStatus.name, 'vacant');
+      expect(session.pendingCount, greaterThan(0));
+    },
+  );
 }

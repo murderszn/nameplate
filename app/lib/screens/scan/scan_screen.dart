@@ -9,6 +9,7 @@ import '../../widgets/responsive_layout.dart';
 import '../../widgets/sync_status_badge.dart';
 import '../asset/asset_detail_screen.dart';
 import '../settings/tag_studio_screen.dart';
+import 'camera_scanner_screen.dart';
 
 /// Scan & identify — the core loop, must be sub-3-seconds (v0-scope.md §1.1).
 /// Features cryptographic offline MAC verification and Crockford-32 checksum checks.
@@ -185,21 +186,20 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     );
   }
 
-  void _simulateCameraScan() {
+  Future<void> _openCameraScanner() async {
+    if (_isScanning) return;
     setState(() => _isScanning = true);
-    final assets = ref.read(fieldSessionProvider).assets;
-    final sampleAsset = assets.isNotEmpty ? assets.first : null;
-    final npidToScan = sampleAsset?.npid ?? 'NP-7K2M4QX9';
-    final signedUrl = Npid.payloadUrl(npidToScan);
 
-    Future.delayed(const Duration(milliseconds: 600), () {
-      if (!mounted) return;
-      setState(() {
-        _isScanning = false;
-        _controller.text = signedUrl;
-      });
-      _lookup(signedUrl);
-    });
+    final code = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const CameraScannerScreen()),
+    );
+
+    if (!mounted) return;
+    setState(() => _isScanning = false);
+
+    if (code == null || code.trim().isEmpty) return;
+    _controller.text = code;
+    await _lookup(code);
   }
 
   Widget _buildManualEntryCard() {
@@ -229,7 +229,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                 const NpKicker('01 / Manual lookup'),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: NpColors.bgElevated,
                     borderRadius: BorderRadius.circular(2),
@@ -307,10 +310,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                   label: const Text('Resolve Asset Record'),
                 ),
                 const SizedBox(height: 20),
-                Container(
-                  height: 1,
-                  color: NpColors.lineStrong,
-                ),
+                Container(height: 1, color: NpColors.lineStrong),
                 const SizedBox(height: 16),
                 Text(
                   'SAMPLE REPOSITORY TAGS',
@@ -326,7 +326,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    for (final code in session.assets.take(4).map((a) => a.npid))
+                    for (final code
+                        in session.assets.take(4).map((a) => a.npid))
                       _TagChip(
                         code: code,
                         onTap: () {
@@ -341,7 +342,9 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                   alignment: Alignment.centerLeft,
                   child: TextButton.icon(
                     onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const TagStudioScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const TagStudioScreen(),
+                      ),
                     ),
                     icon: const Icon(Icons.qr_code_2, size: 16),
                     label: const Text('Open Hardware Tag Studio'),
@@ -377,12 +380,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
             children: [
               Center(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth: isTablet ? 560 : 480,
-                  ),
+                  constraints: BoxConstraints(maxWidth: isTablet ? 560 : 480),
                   child: _ScannerViewfinder(
                     isScanning: _isScanning,
-                    onSimulateScan: _simulateCameraScan,
+                    onOpenScanner: _openCameraScanner,
                   ),
                 ),
               ),
@@ -503,12 +504,9 @@ class _TagChip extends StatelessWidget {
 
 class _ScannerViewfinder extends StatefulWidget {
   final bool isScanning;
-  final VoidCallback? onSimulateScan;
+  final VoidCallback? onOpenScanner;
 
-  const _ScannerViewfinder({
-    this.isScanning = false,
-    this.onSimulateScan,
-  });
+  const _ScannerViewfinder({this.isScanning = false, this.onOpenScanner});
 
   @override
   State<_ScannerViewfinder> createState() => _ScannerViewfinderState();
@@ -543,110 +541,113 @@ class _ScannerViewfinderState extends State<_ScannerViewfinder>
           // Corner-bracket overlay
           const CustomPaint(painter: _CornerBracketPainter()),
 
-            // Animated laser sweep
-            AnimatedBuilder(
-              animation: _scan,
-              builder: (context, _) {
-                return Align(
-                  alignment: Alignment(0, -0.85 + 1.7 * _scan.value),
-                  child: Container(
-                    height: 1.5,
-                    margin: const EdgeInsets.symmetric(horizontal: 36),
-                    color: NpColors.red,
-                  ),
-                );
-              },
-            ),
+          // Animated laser sweep
+          AnimatedBuilder(
+            animation: _scan,
+            builder: (context, _) {
+              return Align(
+                alignment: Alignment(0, -0.85 + 1.7 * _scan.value),
+                child: Container(
+                  height: 1.5,
+                  margin: const EdgeInsets.symmetric(horizontal: 36),
+                  color: NpColors.red,
+                ),
+              );
+            },
+          ),
 
-            // Center content
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: NpColors.bgCard.withValues(alpha: 0.95),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: NpColors.lineStrong),
-                    ),
-                    child: widget.isScanning
-                        ? const SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: CircularProgressIndicator(
-                              color: NpColors.red,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Icon(
-                            Icons.qr_code_scanner,
+          // Center content
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: NpColors.bgCard.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: NpColors.lineStrong),
+                  ),
+                  child: widget.isScanning
+                      ? const SizedBox(
+                          width: 36,
+                          height: 36,
+                          child: CircularProgressIndicator(
                             color: NpColors.red,
-                            size: 36,
+                            strokeWidth: 2,
                           ),
+                        )
+                      : const Icon(
+                          Icons.qr_code_scanner,
+                          color: NpColors.red,
+                          size: 36,
+                        ),
+                ),
+                const SizedBox(height: 14),
+                Text(
+                  'AIM AT NAMEPLATE TAG',
+                  textAlign: TextAlign.center,
+                  style: NpType.mono.copyWith(
+                    color: NpColors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
+                    letterSpacing: 1.4,
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'AIM AT NAMEPLATE TAG',
-                    textAlign: TextAlign.center,
-                    style: NpType.mono.copyWith(
-                      color: NpColors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 11,
-                      letterSpacing: 1.4,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'SUB-3S OFFLINE LOOKUP',
+                  textAlign: TextAlign.center,
+                  style: NpType.mono.copyWith(
+                    color: NpColors.gray500,
+                    fontSize: 10,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                GestureDetector(
+                  onTap: widget.isScanning ? null : widget.onOpenScanner,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'SUB-3S OFFLINE LOOKUP',
-                    textAlign: TextAlign.center,
-                    style: NpType.mono.copyWith(
-                      color: NpColors.gray500,
-                      fontSize: 10,
-                      letterSpacing: 1.2,
+                    decoration: BoxDecoration(
+                      color: NpColors.red,
+                      borderRadius: BorderRadius.circular(2),
                     ),
-                  ),
-                  const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: widget.onSimulateScan,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: NpColors.red,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.camera_alt, size: 13, color: NpColors.white),
-                          const SizedBox(width: 6),
-                          Text(
-                            'SIMULATE SCAN',
-                            style: NpType.mono.copyWith(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: NpColors.white,
-                              letterSpacing: 0.8,
-                            ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.camera_alt,
+                          size: 13,
+                          color: NpColors.white,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          widget.isScanning
+                              ? 'OPENING CAMERA'
+                              : 'SCAN WITH CAMERA',
+                          style: NpType.mono.copyWith(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: NpColors.white,
+                            letterSpacing: 0.8,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-
-    return AspectRatio(
-      aspectRatio: 1.0,
-      child: content,
+          ),
+        ],
+      ),
     );
+
+    return AspectRatio(aspectRatio: 1.0, child: content);
   }
 }
 
@@ -671,21 +672,39 @@ class _CornerBracketPainter extends CustomPainter {
 
     // Top-right
     canvas.drawLine(
-        Offset(size.width - pad - len, pad), Offset(size.width - pad, pad), paint);
-    canvas.drawLine(Offset(size.width - pad, pad),
-        Offset(size.width - pad, pad + len), paint);
+      Offset(size.width - pad - len, pad),
+      Offset(size.width - pad, pad),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - pad, pad),
+      Offset(size.width - pad, pad + len),
+      paint,
+    );
 
     // Bottom-left
-    canvas.drawLine(Offset(pad, size.height - pad - len),
-        Offset(pad, size.height - pad), paint);
-    canvas.drawLine(Offset(pad, size.height - pad),
-        Offset(pad + len, size.height - pad), paint);
+    canvas.drawLine(
+      Offset(pad, size.height - pad - len),
+      Offset(pad, size.height - pad),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(pad, size.height - pad),
+      Offset(pad + len, size.height - pad),
+      paint,
+    );
 
     // Bottom-right
-    canvas.drawLine(Offset(size.width - pad - len, size.height - pad),
-        Offset(size.width - pad, size.height - pad), paint);
-    canvas.drawLine(Offset(size.width - pad, size.height - pad),
-        Offset(size.width - pad, size.height - pad - len), paint);
+    canvas.drawLine(
+      Offset(size.width - pad - len, size.height - pad),
+      Offset(size.width - pad, size.height - pad),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(size.width - pad, size.height - pad),
+      Offset(size.width - pad, size.height - pad - len),
+      paint,
+    );
   }
 
   @override
