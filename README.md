@@ -5,10 +5,6 @@
 <h1 align="center">Nameplate</h1>
 <p align="center"><em>Every appliance accounted for.</em></p>
 
-<p align="center">
-  <img src="website/images/schematics/all_schematics.png" alt="Nameplate Equipment Schematics" width="100%" />
-</p>
-
 Nameplate is asset-registry and maintenance-tracking software for apartment portfolios. Every major in-unit appliance (washer, dryer, range, HVAC, fridge, water heater) gets a scannable **Nameplate Tag**. Technicians use **Nameplate Field** to scan, inspect, and log service in the field; portfolio managers use **Nameplate HQ** to track every asset, work order, and cost across every property from one console — without visiting a single unit.
 
 <p align="center">
