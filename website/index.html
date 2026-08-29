@@ -632,114 +632,193 @@
           <span class="arch-step-badge">NODE 04 / CONSOLE</span>
           <h4>Portfolio HQ</h4>
           <p>Multi-property executive dashboard showing real-time shrinkage alerts, CapEx forecasts, and warranty claims.</p>
+        </div>
       </div>
 
-      <!-- Device-Framed Cross-Platform Workflow Gallery -->
-      <div class="workflow-gallery-block">
-        <div class="workflow-gallery-header">
-          <span class="workflow-kicker">06.1 / CROSS-PLATFORM WORKFLOWS</span>
-          <h3 class="workflow-title">Synchronized operation across field tablets and HQ cockpits.</h3>
+      <!-- Canonical App Screens & Device Gallery (notsquat style) -->
+      <div class="screens-header-wrap" style="margin-top: 64px;" id="screens-gallery">
+        <div class="screens-eyebrow">
+          <span class="pulse-dot"></span>
+          <span>CANONICAL APP CAPTURES • iOS 18.4 & RETINA DESKTOP HQ</span>
         </div>
 
-        <div class="workflow-cards-grid">
-          <!-- Card 1: HQ Desktop Browser Workflow -->
-          <div class="workflow-card">
-            <div class="workflow-meta">
-              <span class="workflow-pill">DESKTOP HQ COCKPIT</span>
-              <h4>Portfolio Asset Registry & Interactive Field Dispatch</h4>
-              <p>Asset custody verification, real-time monotonic sync sequencing, warranty expiration forecasting, and multi-lane Kanban dispatch.</p>
-            </div>
-            
-            <div class="device-browser-frame">
-              <div class="browser-topbar">
-                <div class="browser-dots">
-                  <span class="b-dot red"></span>
-                  <span class="b-dot yellow"></span>
-                  <span class="b-dot green"></span>
-                </div>
-                <div class="browser-url-bar">
-                  <span class="b-lock">🔒</span>
-                  <span class="b-url">nameplate.app/hq/#/assets</span>
-                </div>
-              </div>
-              <div class="browser-viewport">
-                <img src="images/gallery/hq_asset_registry.png" alt="Nameplate HQ Asset Registry" class="browser-screen-img" loading="lazy">
-              </div>
-            </div>
+        <div class="screens-heading-row">
+          <div>
+            <h2 class="section-title" style="margin-bottom: 8px;">Scan it. Trace it. Account for it.</h2>
+            <p class="screens-subheading">High-DPI Retina captures from the live Nameplate iOS mobile app, rugged 11" field tablets, and enterprise HQ console. Zero manual serial entry, subterranean offline SQLite sync, and automatic CapEx accounting.</p>
           </div>
+        </div>
 
-          <!-- Card 2: iOS / Tablet Field App Workflow -->
-          <div class="workflow-card">
-            <div class="workflow-meta">
-              <span class="workflow-pill">OFFLINE FIELD APP // TABLET & iOS</span>
-              <h4>Subterranean Scanning & Turn Walkthroughs</h4>
-              <p>Zero-signal offline outbox caching on 11" tablets and iOS devices. Instant QR tag scan resolution, make-ready room audits, and field part logging.</p>
-            </div>
+        <!-- Filter category pills -->
+        <div class="screens-filter-bar" role="tablist" aria-label="Filter App Screens">
+          <button class="filter-pill active" type="button" data-filter="all">All Screens (6)</button>
+          <button class="filter-pill" type="button" data-filter="field">Field Scanner</button>
+          <button class="filter-pill" type="button" data-filter="turns">Turnover Audits</button>
+          <button class="filter-pill" type="button" data-filter="registry">HQ Asset Registry</button>
+          <button class="filter-pill" type="button" data-filter="dispatch">Operations Dispatch</button>
+          <button class="filter-pill" type="button" data-filter="analytics">CapEx Analytics</button>
+        </div>
 
-            <div class="device-mobile-split">
-              <!-- Tablet Frame -->
-              <div class="device-tablet-frame">
-                <div class="tablet-viewport">
-                  <img src="images/gallery/field_tablet_overview.png" alt="Nameplate Field Tablet View" class="tablet-screen-img" loading="lazy">
-                </div>
-              </div>
-
-              <!-- iPhone Frame -->
-              <div class="device-phone-frame">
+        <!-- 6 Canonical Device Mockup Cards Grid -->
+        <div class="screens-showcase-grid">
+          <!-- Card 01: Subterranean Tag Telemetry (iOS) -->
+          <figure class="screen-card" data-category="field">
+            <div class="device-mockup-wrap">
+              <div class="phone-device-bezel">
                 <div class="phone-island"></div>
-                <div class="phone-viewport">
-                  <img src="images/gallery/field_ios_turns.png" alt="Nameplate iOS Make-Ready Turns" class="phone-screen-img" loading="lazy">
-                </div>
+                <img src="images/gallery/field_ios_scan.png" alt="Nameplate iOS Subterranean Field Scanner" class="app-screenshot-img" loading="lazy">
               </div>
+              <div class="screen-badge-pill">SUBTERRANEAN SCAN · 0.3s</div>
             </div>
-          </div>
-        </div>
+            <figcaption class="screen-card-caption">
+              <div class="caption-header">
+                <span class="caption-num">01</span>
+                <span class="caption-tag">Field App · iOS</span>
+              </div>
+              <strong class="caption-title">Instant Subterranean Tag Telemetry</strong>
+              <p class="caption-desc">Zero-signal field resolution: scans physical Nameplate tags in mechanical closets with instantaneous offline HMAC verification.</p>
+              <div class="caption-bullets">
+                <span>✓ 0.3s Offline OCR & NPID Resolution</span>
+                <span>✓ SQLite Local Outbox Caching</span>
+              </div>
+            </figcaption>
+          </figure>
 
-        <!-- Workflow 3: Dual-View Drilldown -->
-        <div class="workflow-dual-grid">
-          <div class="dual-workflow-item">
-            <div class="device-browser-frame mini">
-              <div class="browser-topbar">
-                <div class="browser-dots">
-                  <span class="b-dot red"></span>
-                  <span class="b-dot yellow"></span>
-                  <span class="b-dot green"></span>
-                </div>
-                <div class="browser-url-bar">
-                  <span class="b-url">nameplate.app/hq/#/work-orders</span>
-                </div>
+          <!-- Card 02: Room-by-Room Turnover Verification (iOS) -->
+          <figure class="screen-card" data-category="turns">
+            <div class="device-mockup-wrap">
+              <div class="phone-device-bezel">
+                <div class="phone-island"></div>
+                <img src="images/gallery/field_ios_turns.png" alt="Nameplate iOS Make-Ready Turnover Checklist" class="app-screenshot-img" loading="lazy">
               </div>
-              <div class="browser-viewport">
-                <img src="images/gallery/hq_work_orders.png" alt="Nameplate HQ Work Orders" class="browser-screen-img" loading="lazy">
+              <div class="screen-badge-pill">MAKE-READY ROOM AUDIT</div>
+            </div>
+            <figcaption class="screen-card-caption">
+              <div class="caption-header">
+                <span class="caption-num">02</span>
+                <span class="caption-tag">Turnover & Custody</span>
               </div>
-            </div>
-            <div class="dual-workflow-caption">
-              <h5>Combined Dispatch & SLA Escalation</h5>
-              <p>Jira-style work order swimlanes bound directly to asset NPIDs and warranty coverage.</p>
-            </div>
-          </div>
+              <strong class="caption-title">Room-by-Room Turnover Verification</strong>
+              <p class="caption-desc">Digital make-ready inspection checklists ensuring all major appliances and subcomponents are physically verified before resident turnover.</p>
+              <div class="caption-bullets">
+                <span>✓ Zero-Shrinkage Appliance Ledger</span>
+                <span>✓ Digital Sign-off & Component Flags</span>
+              </div>
+            </figcaption>
+          </figure>
 
-          <div class="dual-workflow-item">
-            <div class="device-browser-frame mini">
-              <div class="browser-topbar">
-                <div class="browser-dots">
-                  <span class="b-dot red"></span>
-                  <span class="b-dot yellow"></span>
-                  <span class="b-dot green"></span>
-                </div>
-                <div class="browser-url-bar">
-                  <span class="b-url">nameplate.app/hq/#/analytics</span>
-                </div>
+          <!-- Card 03: Field Work Orders & Diagnostics (iOS) -->
+          <figure class="screen-card" data-category="field">
+            <div class="device-mockup-wrap">
+              <div class="phone-device-bezel">
+                <div class="phone-island"></div>
+                <img src="images/gallery/field_ios_workorders.png" alt="Nameplate iOS Field Work Orders & Diagnostics" class="app-screenshot-img" loading="lazy">
               </div>
-              <div class="browser-viewport">
-                <img src="images/gallery/hq_analytics.png" alt="Nameplate HQ Fleet Analytics" class="browser-screen-img" loading="lazy">
+              <div class="screen-badge-pill">FIELD WORK ORDERS</div>
+            </div>
+            <figcaption class="screen-card-caption">
+              <div class="caption-header">
+                <span class="caption-num">03</span>
+                <span class="caption-tag">Field Operations</span>
               </div>
+              <strong class="caption-title">In-Unit Diagnostics & Part Records</strong>
+              <p class="caption-desc">Field technicians review diagnostic checklists, verify active OEM warranty coverage, and attach replacement part invoices on-site.</p>
+              <div class="caption-bullets">
+                <span>✓ On-Site Part Invoicing & Lineage</span>
+                <span>✓ Instant Repair Status Pushes</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <!-- Card 04: Portfolio Asset Ledger (HQ Desktop) -->
+          <figure class="screen-card" data-category="registry">
+            <div class="device-mockup-wrap">
+              <div class="browser-device-bezel">
+                <div class="browser-bezel-topbar">
+                  <div class="browser-bezel-dots">
+                    <span class="red"></span>
+                    <span class="yellow"></span>
+                    <span class="green"></span>
+                  </div>
+                  <div class="browser-bezel-url">🔒 nameplate.app/hq/#/assets</div>
+                </div>
+                <img src="images/gallery/hq_asset_registry.png" alt="Nameplate HQ Asset Registry & Lineage" class="app-screenshot-img" loading="lazy">
+              </div>
+              <div class="screen-badge-pill">MULTI-PROPERTY ASSET TRUTH</div>
             </div>
-            <div class="dual-workflow-caption">
-              <h5>Portfolio CapEx & Replacement Forecaster</h5>
-              <p>Fleet age distributions, impending useful-life cliffs, and unbudgeted emergency prevention.</p>
+            <figcaption class="screen-card-caption">
+              <div class="caption-header">
+                <span class="caption-num">04</span>
+                <span class="caption-tag">HQ Asset Command</span>
+              </div>
+              <strong class="caption-title">Portfolio Asset Ledger & Warranty Matrix</strong>
+              <p class="caption-desc">Centralized control deck indexing every HVAC unit, commercial washer, and refrigerator across properties with multi-field search and sorting.</p>
+              <div class="caption-bullets">
+                <span>✓ OCR-Matched Model & Serial Numbers</span>
+                <span>✓ Active OEM Warranty Recovery Engine</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <!-- Card 05: Combined Work Order Dispatch (HQ Desktop) -->
+          <figure class="screen-card" data-category="dispatch">
+            <div class="device-mockup-wrap">
+              <div class="browser-device-bezel">
+                <div class="browser-bezel-topbar">
+                  <div class="browser-bezel-dots">
+                    <span class="red"></span>
+                    <span class="yellow"></span>
+                    <span class="green"></span>
+                  </div>
+                  <div class="browser-bezel-url">🔒 nameplate.app/hq/#/work-orders</div>
+                </div>
+                <img src="images/gallery/hq_work_orders.png" alt="Nameplate HQ Work Orders Dispatch Kanban" class="app-screenshot-img" loading="lazy">
+              </div>
+              <div class="screen-badge-pill">4-LANE KANBAN & SLA</div>
             </div>
-          </div>
+            <figcaption class="screen-card-caption">
+              <div class="caption-header">
+                <span class="caption-num">05</span>
+                <span class="caption-tag">Operations Dispatch</span>
+              </div>
+              <strong class="caption-title">Combined Work Order Dispatch Kanban</strong>
+              <p class="caption-desc">Linear/Jira-style operations board organizing open, assigned, in-progress, and completed tickets with real-time SLA escalation timers.</p>
+              <div class="caption-bullets">
+                <span>✓ Automated SLA Target Escalation</span>
+                <span>✓ Part Allocation & Stock Tracking</span>
+              </div>
+            </figcaption>
+          </figure>
+
+          <!-- Card 06: Useful Life Forecaster (HQ Desktop) -->
+          <figure class="screen-card" data-category="analytics">
+            <div class="device-mockup-wrap">
+              <div class="browser-device-bezel">
+                <div class="browser-bezel-topbar">
+                  <div class="browser-bezel-dots">
+                    <span class="red"></span>
+                    <span class="yellow"></span>
+                    <span class="green"></span>
+                  </div>
+                  <div class="browser-bezel-url">🔒 nameplate.app/hq/#/analytics</div>
+                </div>
+                <img src="images/gallery/hq_analytics.png" alt="Nameplate HQ Fleet Analytics & CapEx" class="app-screenshot-img" loading="lazy">
+              </div>
+              <div class="screen-badge-pill">36-MONTH CAPEX FORECAST</div>
+            </div>
+            <figcaption class="screen-card-caption">
+              <div class="caption-header">
+                <span class="caption-num">06</span>
+                <span class="caption-tag">Portfolio Analytics</span>
+              </div>
+              <strong class="caption-title">Useful Life Degradation & CapEx Forecaster</strong>
+              <p class="caption-desc">Predictive intelligence forecasting equipment replacement cliffs, manufacturer MTBF curves, and lifetime maintenance spend.</p>
+              <div class="caption-bullets">
+                <span>✓ CapEx Outlay Predictability</span>
+                <span>✓ Manufacturer Reliability Curves</span>
+              </div>
+            </figcaption>
+          </figure>
         </div>
       </div>
     </div>
