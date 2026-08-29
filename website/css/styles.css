@@ -1172,6 +1172,254 @@ a {
   line-height: 1.55;
 }
 
+/* ================= Cross-Platform Device-Framed Workflow Gallery ================= */
+.workflow-gallery-block {
+  margin-top: 64px;
+}
+
+.workflow-gallery-header {
+  margin-bottom: 32px;
+}
+
+.workflow-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--red);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.workflow-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.25;
+}
+
+.workflow-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+}
+
+.workflow-card {
+  background: #09090b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.workflow-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.workflow-pill {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: rgba(255, 42, 42, 0.12);
+  border: 1px solid rgba(255, 42, 42, 0.3);
+  padding: 3px 8px;
+  border-radius: 2px;
+  width: fit-content;
+}
+
+.workflow-meta h4 {
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-top: 4px;
+}
+
+.workflow-meta p {
+  font-size: 0.88rem;
+  color: var(--gray-400);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Chrome / Safari Browser Frame */
+.device-browser-frame {
+  background: #111114;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+}
+
+.browser-topbar {
+  background: #18181c;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.browser-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.b-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.b-dot.red { background: #ff5f56; }
+.b-dot.yellow { background: #ffbd2e; }
+.b-dot.green { background: #27c93f; }
+
+.browser-url-bar {
+  background: #09090c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #888;
+  flex: 1;
+  max-width: 380px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.b-lock {
+  font-size: 0.65rem;
+}
+
+.b-url {
+  color: #ccc;
+}
+
+.browser-viewport {
+  width: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+.browser-screen-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Tablet & Mobile Split Frame */
+.device-mobile-split {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: radial-gradient(circle at center, rgba(255, 42, 42, 0.04) 0%, transparent 70%), #050507;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  padding: 36px 24px;
+}
+
+.device-tablet-frame {
+  width: 540px;
+  max-width: 100%;
+  background: #141417;
+  border: 2px solid #2e2e34;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+.tablet-viewport {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.tablet-screen-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.device-phone-frame {
+  width: 250px;
+  max-width: 100%;
+  background: #141417;
+  border: 2px solid #2e2e34;
+  border-radius: 28px;
+  padding: 8px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+  position: relative;
+}
+
+.phone-island {
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68px;
+  height: 14px;
+  background: #000;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.phone-viewport {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.phone-screen-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Dual Grid */
+.workflow-dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 36px;
+}
+
+@media (max-width: 900px) {
+  .workflow-dual-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dual-workflow-item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dual-workflow-caption h5 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--white);
+  margin: 0 0 4px;
+}
+
+.dual-workflow-caption p {
+  font-size: 0.84rem;
+  color: var(--gray-400);
+  line-height: 1.45;
+  margin: 0;
+}
+
 /* ================= Early Access ================= */
 .splash-cta {
   padding: 140px 0;
