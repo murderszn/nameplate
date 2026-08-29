@@ -1278,37 +1278,6 @@ a {
   margin-bottom: 3rem;
 }
 
-.screens-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: var(--red-subtle);
-  border: 1px solid var(--red-border);
-  border-radius: var(--radius);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--red);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-bottom: 22px;
-}
-
-.pulse-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--red);
-  border-radius: 50%;
-  box-shadow: 0 0 8px var(--red);
-  animation: pulse-dot-anim 2s infinite ease-in-out;
-}
-
-@keyframes pulse-dot-anim {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.4); opacity: 0.6; }
-}
-
 .screens-heading-row {
   display: flex;
   align-items: flex-end;
@@ -2684,7 +2653,7 @@ a {
   background: rgba(10, 10, 10, 0.85);
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 30px;
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -2730,14 +2699,14 @@ a {
 
 .deck-thumbs-track::-webkit-scrollbar-thumb {
   background: var(--line);
-  border-radius: 2px;
+  border-radius: var(--radius);
 }
 
 .deck-thumb {
   position: relative;
   flex: 0 0 120px;
   aspect-ratio: 16 / 9;
-  border-radius: 4px;
+  border-radius: var(--radius);
   overflow: hidden;
   border: 2px solid transparent;
   cursor: pointer;
@@ -2760,7 +2729,7 @@ a {
   font-size: 0.6rem;
   font-weight: 700;
   padding: 1px 4px;
-  border-radius: 2px;
+  border-radius: var(--radius);
   color: #fff;
 }
 
