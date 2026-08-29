@@ -586,6 +586,90 @@
     });
   }
 
+  // ================= 6. Investor Podcast Audio Player =================
+  function initInvestorAudioPlayer() {
+    var audio = document.getElementById('nameplatePodcastAudio');
+    var playBtn = document.getElementById('audioPlayBtn');
+    var playIcon = document.getElementById('playIcon');
+    var pauseIcon = document.getElementById('pauseIcon');
+    var scrubber = document.getElementById('audioScrubber');
+    var currentTimeEl = document.getElementById('audioCurrentTime');
+    var totalDurationEl = document.getElementById('audioTotalDuration');
+    var speedToggle = document.getElementById('audioSpeedToggle');
+    var waveform = document.getElementById('waveformContainer');
+
+    if (!audio || !playBtn) return;
+
+    var speeds = [1.0, 1.25, 1.5, 2.0];
+    var currentSpeedIndex = 0;
+
+    function formatTime(seconds) {
+      if (isNaN(seconds) || seconds < 0) return '00:00';
+      var m = Math.floor(seconds / 60);
+      var s = Math.floor(seconds % 60);
+      var hrs = Math.floor(m / 60);
+      m = m % 60;
+      if (hrs > 0) {
+        return (hrs < 10 ? '0' + hrs : hrs) + ':' + (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      }
+      return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    playBtn.addEventListener('click', function () {
+      if (audio.paused) {
+        audio.play().then(function () {
+          playIcon.classList.add('hidden');
+          pauseIcon.classList.remove('hidden');
+          if (waveform) waveform.classList.add('is-playing');
+        }).catch(function (err) {
+          console.warn('Audio playback error:', err);
+        });
+      } else {
+        audio.pause();
+        playIcon.classList.remove('hidden');
+        pauseIcon.classList.add('hidden');
+        if (waveform) waveform.classList.remove('is-playing');
+      }
+    });
+
+    audio.addEventListener('timeupdate', function () {
+      if (!audio.duration) return;
+      var progress = (audio.currentTime / audio.duration) * 100;
+      if (scrubber) scrubber.value = progress;
+      if (currentTimeEl) currentTimeEl.textContent = formatTime(audio.currentTime);
+    });
+
+    audio.addEventListener('loadedmetadata', function () {
+      if (totalDurationEl && audio.duration) {
+        totalDurationEl.textContent = formatTime(audio.duration);
+      }
+    });
+
+    audio.addEventListener('ended', function () {
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      if (waveform) waveform.classList.remove('is-playing');
+      if (scrubber) scrubber.value = 0;
+    });
+
+    if (scrubber) {
+      scrubber.addEventListener('input', function () {
+        if (!audio.duration) return;
+        var seekTo = (scrubber.value / 100) * audio.duration;
+        audio.currentTime = seekTo;
+      });
+    }
+
+    if (speedToggle) {
+      speedToggle.addEventListener('click', function () {
+        currentSpeedIndex = (currentSpeedIndex + 1) % speeds.length;
+        var newSpeed = speeds[currentSpeedIndex];
+        audio.playbackRate = newSpeed;
+        speedToggle.textContent = newSpeed.toFixed(1) + 'x';
+      });
+    }
+  }
+
   // Initialize
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
@@ -594,6 +678,7 @@
       initSchematicsViewer();
       initBlueprint();
       initScreensFilter();
+      initInvestorAudioPlayer();
       renderLiveAppRecord('hvac');
     });
   } else {
@@ -602,6 +687,7 @@
     initSchematicsViewer();
     initBlueprint();
     initScreensFilter();
+    initInvestorAudioPlayer();
     renderLiveAppRecord('hvac');
   }
 

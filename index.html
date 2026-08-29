@@ -23,6 +23,7 @@
       <a href="#qr-studio">Hardware</a>
       <a href="#schematics">Platform</a>
       <a href="#architecture">Architecture</a>
+      <a href="#investors">Investors</a>
       <a href="field/index.html" class="mobile-nav-app-link">Field Tablet App <span aria-hidden="true">↗</span></a>
       <a href="hq/index.html" class="mobile-nav-app-link mobile-nav-primary">Launch HQ Console <span aria-hidden="true">→</span></a>
     </nav>
@@ -832,11 +833,150 @@
     </div>
   </section>
 
+  <!-- ================= INVESTOR BRIEFING & PODCAST ================= -->
+  <section class="section" id="investors">
+    <div class="wrap">
+      <div class="section-tag">07 / INVESTOR BRIEFING & MEMO</div>
+
+      <div class="section-header">
+        <h2 class="section-title">The infrastructure layer for $4.8T in residential assets.</h2>
+        <p class="section-sub">
+          Multifamily operators lose billions each year to invisible appliance turnover, undocumented cannibalized repairs, and unclaimed warranty expirations. Nameplate creates the authoritative physical-to-cloud ledger.
+        </p>
+      </div>
+
+      <div class="investor-grid">
+        <!-- Column 1: Thesis & Pillars -->
+        <div class="investor-thesis-panel">
+          <div class="thesis-header">
+            <span class="thesis-kicker">INVESTMENT THESIS</span>
+            <h3>Why Nameplate Wins</h3>
+          </div>
+
+          <div class="thesis-card">
+            <div class="thesis-num">01</div>
+            <div class="thesis-body">
+              <strong>High-Frequency Physical Moat</strong>
+              <p>Every maintenance walkthrough, appliance turn, and service dispatch writes tamper-proof cryptographic proofs directly into our ledger. Once tagged, we own the physical custody graph.</p>
+            </div>
+          </div>
+
+          <div class="thesis-card">
+            <div class="thesis-num">02</div>
+            <div class="thesis-body">
+              <strong>Immediate NOI Expansion</strong>
+              <p>Eliminates phantom appliance replacement CapEx, captures forgotten OEM warranty claims ($380–$1,200/incident), and slashes unit turnover inspection times from 45 minutes to sub-3 minutes.</p>
+            </div>
+          </div>
+
+          <div class="thesis-card">
+            <div class="thesis-num">03</div>
+            <div class="thesis-body">
+              <strong>Offline-First Distributed Architecture</strong>
+              <p>Built for the harsh subterranean reality of apartment utility rooms. Zero network dependencies on-site with monotonic sequence reconciliation when back online.</p>
+            </div>
+          </div>
+
+          <div class="thesis-metrics-row">
+            <div class="thesis-metric">
+              <span class="t-val">$48M+</span>
+              <span class="t-lbl">Annual Shrinkage in Target MSAs</span>
+            </div>
+            <div class="thesis-metric">
+              <span class="t-val">3.4x</span>
+              <span class="t-lbl">Turnover Audit Velocity</span>
+            </div>
+            <div class="thesis-metric">
+              <span class="t-val">100%</span>
+              <span class="t-lbl">Offline Cryptographic Proofs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Audio Player & Deep-Dive Podcast -->
+        <div class="investor-audio-panel">
+          <div class="audio-panel-inner">
+            <div class="podcast-badge-row">
+              <span class="podcast-live-pill"><span class="podcast-live-dot"></span> EPISODE BRIEFING</span>
+              <span class="podcast-time-badge mono">AUDIO MEMO · 35 MIN</span>
+            </div>
+
+            <div class="podcast-header">
+              <span class="podcast-series mono">NAMEPLATE DEEP DIVE</span>
+              <h3 class="podcast-title">How Nameplate Tracks Apartment Appliances & Locks Capital Control</h3>
+              <p class="podcast-desc">
+                An executive breakdown detailing the physical-to-digital bridge, why existing CMMS systems fail in the field, and how Nameplate turns unmanaged mechanical equipment into an audited asset class.
+              </p>
+            </div>
+
+            <!-- Custom Styled Audio Player Card -->
+            <div class="custom-audio-card" id="nameplateAudioCard">
+              <audio id="nameplatePodcastAudio" preload="metadata" src="audio/how_nameplate_tracks_apartment_appliances.m4a"></audio>
+
+              <div class="audio-controls-top">
+                <button type="button" class="audio-play-btn" id="audioPlayBtn" aria-label="Play podcast episode">
+                  <svg id="playIcon" class="audio-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <svg id="pauseIcon" class="audio-icon hidden" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="4" width="4" height="16"></rect>
+                    <rect x="14" y="4" width="4" height="16"></rect>
+                  </svg>
+                </button>
+
+                <div class="audio-track-info">
+                  <span class="audio-now-playing mono">NOW STREAMING · EPISODE 01</span>
+                  <span class="audio-track-name">How Nameplate Tracks Apartment Appliances</span>
+                </div>
+
+                <div class="audio-speed-toggle mono" id="audioSpeedToggle" title="Playback Speed">1.0x</div>
+              </div>
+
+              <!-- Scrubber Bar -->
+              <div class="audio-scrubber-wrap">
+                <input type="range" id="audioScrubber" class="audio-scrubber" min="0" max="100" value="0" step="0.1" aria-label="Audio progress">
+                <div class="audio-time-row mono">
+                  <span id="audioCurrentTime">00:00</span>
+                  <span id="audioTotalDuration">--:--</span>
+                </div>
+              </div>
+
+              <!-- Waveform visualization graphic -->
+              <div class="audio-waveform-bars" id="waveformContainer" aria-hidden="true">
+                <span style="height: 35%"></span><span style="height: 60%"></span><span style="height: 45%"></span><span style="height: 80%"></span>
+                <span style="height: 95%"></span><span style="height: 50%"></span><span style="height: 70%"></span><span style="height: 30%"></span>
+                <span style="height: 85%"></span><span style="height: 65%"></span><span style="height: 40%"></span><span style="height: 90%"></span>
+                <span style="height: 75%"></span><span style="height: 55%"></span><span style="height: 35%"></span><span style="height: 100%"></span>
+                <span style="height: 80%"></span><span style="height: 60%"></span><span style="height: 45%"></span><span style="height: 70%"></span>
+                <span style="height: 90%"></span><span style="height: 50%"></span><span style="height: 65%"></span><span style="height: 40%"></span>
+              </div>
+            </div>
+
+            <!-- Key Takeaways for LPs / Angels -->
+            <div class="podcast-takeaways">
+              <span class="takeaway-head mono">KEY CHAPTER HIGHLIGHTS</span>
+              <ul class="takeaway-list">
+                <li><span class="mono red-accent">04:12</span> <strong>The Vanishing Refrigerator Problem:</strong> Why unit turns lose 2.8% of assets silently.</li>
+                <li><span class="mono red-accent">12:45</span> <strong>Hardware Cryptography:</strong> HMAC-SHA256 offline checks in zero-connectivity basements.</li>
+                <li><span class="mono red-accent">22:30</span> <strong>Cannibalization Pedigree:</strong> Tracking donor parts from salvage units to salvage CapEx.</li>
+                <li><span class="mono red-accent">29:10</span> <strong>Portfolio Scaling:</strong> Expanding from single properties to 10,000+ door operators.</li>
+              </ul>
+            </div>
+
+            <div class="investor-direct-cta">
+              <a href="mailto:invest@nameplate.app?subject=Nameplate%20Investor%20Inquiry" class="btn btn-red" style="width:100%; text-align:center;">Request Data Room & Term Sheet →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= Nameplate HQ CMMS Console Launchpad ================= -->
   <section class="section splash-cta" id="hq-console">
     <div class="wrap">
       <div class="cta-box-inner">
-        <div class="section-tag" style="justify-content: center;">07 / OPERATIONAL CONSOLE</div>
+        <div class="section-tag" style="justify-content: center;">08 / OPERATIONAL CONSOLE</div>
         <h2>Experience Nameplate HQ.</h2>
         <p>Explore the live portfolio dashboard, asset registry, warranty recovery ledger, and interactive Linear/Jira work order swimlanes.</p>
         <a class="btn btn-red" href="hq/index.html">Launch Live HQ CMMS Console →</a>
