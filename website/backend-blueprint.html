@@ -96,9 +96,10 @@
     .table-summary p { color: var(--muted); margin-top: 7px; font-size: 12.5px; }
     .badges { display: flex; gap: 6px; align-items: center; }
     .badge { display: inline-flex; padding: 4px 6px; border-radius: 2px; font: 700 9px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-    .badge.live { color: var(--green); background: rgba(55,214,122,.1); }
-    .badge.designed { color: var(--amber); background: rgba(240,180,77,.1); }
-    .badge.future { color: var(--purple); background: rgba(180,140,255,.1); }
+    .badge.built { color: var(--green); background: rgba(55,214,122,.1); }
+    .badge.partial { color: var(--blue); background: rgba(92,170,255,.1); }
+    .badge.foundation { color: var(--amber); background: rgba(240,180,77,.1); }
+    .badge.deferred { color: var(--purple); background: rgba(180,140,255,.1); }
     .chev { color: var(--faint); transition: transform .2s; }
     .table-card.open .chev { transform: rotate(45deg); color: var(--red); }
     .table-detail { display: none; border-top: 1px solid var(--line); }
@@ -152,6 +153,11 @@
     .verify { margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--red); color: var(--faint); font: 10px/1.5 var(--mono); }
     .task-tag { color: var(--faint); border: 1px solid var(--line); padding: 4px 6px; font: 700 8px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
     .gate .task-tag { color: var(--amber); border-color: rgba(240,180,77,.25); }
+    .task-meta { display: flex; align-items: flex-end; gap: 6px; flex-direction: column; }
+    .repo-state { padding: 4px 6px; font: 700 8px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+    .repo-state.complete { color: var(--green); background: rgba(55,214,122,.1); }
+    .repo-state.partial { color: var(--amber); background: rgba(240,180,77,.1); }
+    .repo-state.planned { color: var(--purple); background: rgba(180,140,255,.1); }
     .footer { padding: 56px 0 80px; color: var(--muted); font-size: 12px; }
     .footer strong { color: var(--white); }
     .empty { display: none; padding: 40px; border: 1px solid var(--line); color: var(--muted); text-align: center; }
@@ -205,15 +211,15 @@
   <main>
     <section class="hero">
       <div class="shell">
-        <div class="eyebrow">Backend architecture · design contract · v1.0</div>
+        <div class="eyebrow">Backend architecture · repository status · updated 2026-08-29</div>
         <h1>Design the truth.<br><span>Then build it.</span></h1>
-        <p class="hero-copy">A complete relational blueprint for the physical asset record: tenancy, locations, custody, service, parts lineage, offline sync, auditability, and portfolio analytics—followed by the implementation checklist that turns the model into a production backend.</p>
+        <p class="hero-copy">A repository-grounded blueprint for the physical asset record. Statuses distinguish database foundation from usable API workflows so a modeled table is never mistaken for a production-ready feature.</p>
         <div class="hero-stats">
-          <div class="stat"><strong id="tableCount">34</strong><span>Application tables</span></div>
-          <div class="stat"><strong>8</strong><span>Data domains</span></div>
-          <div class="stat"><strong id="liveCount">15</strong><span>Prisma scaffolded</span></div>
-          <div class="stat"><strong id="roadmapCount">—</strong><span>Roadmap checks</span></div>
-          <div class="stat"><strong>1</strong><span>Authoritative ledger</span></div>
+          <div class="stat"><strong id="tableCount">34</strong><span>Catalog tables</span></div>
+          <div class="stat"><strong id="modelCount">28</strong><span>DB models + migrations</span></div>
+          <div class="stat"><strong id="builtCount">2</strong><span>Built-out API slices</span></div>
+          <div class="stat"><strong id="partialCount">14</strong><span>Partial API surfaces</span></div>
+          <div class="stat"><strong id="deferredCount">6</strong><span>Deferred tables</span></div>
         </div>
       </div>
     </section>
@@ -253,14 +259,15 @@
       <div class="shell">
         <div class="section-head"><span class="section-num">03</span><div class="rule"></div><span class="section-label">Complete table catalog</span></div>
         <h2>The shelves.</h2>
-        <p class="lede">Each card states ownership, essential columns, integrity rules, and the relationships that must be encoded in Prisma and reinforced in SQL migrations.</p>
+        <p class="lede">Each card states ownership, essential columns, integrity rules, and current repository maturity. <strong>API built</strong> means the principal guarded workflow exists; <strong>API partial</strong> means a wired endpoint or transaction exists but domain rules remain; <strong>DB foundation</strong> means the table is modeled, migrated, secured, and seeded without a complete API; <strong>Deferred</strong> means it is not modeled in the current 28-table V0 schema.</p>
         <div class="controls">
           <input class="control" id="tableSearch" type="search" placeholder="Search tables, columns, or responsibilities…" aria-label="Search table catalog">
           <select class="control" id="statusFilter" aria-label="Filter by implementation status">
             <option value="all">All statuses</option>
-            <option value="live">Scaffolded</option>
-            <option value="designed">Designed</option>
-            <option value="future">Future</option>
+            <option value="built">API built</option>
+            <option value="partial">API partial</option>
+            <option value="foundation">DB foundation</option>
+            <option value="deferred">Deferred</option>
           </select>
           <button class="btn" id="expandTables" type="button">Expand all</button>
         </div>
@@ -301,11 +308,11 @@
       <div class="shell">
         <div class="section-head"><span class="section-num">06</span><div class="rule"></div><span class="section-label">Implementation checklist</span></div>
         <h2>Build it in verified loops.</h2>
-        <p class="lede">Progress is saved in this browser. Each phase ends with a gate that proves the new layer works before the next dependency is added.</p>
+        <p class="lede">Repository badges show what exists in this checkout; they are maintained from code, migrations, and tests. Checkboxes are a separate, browser-local verification record and do not change implementation status. Each phase ends with an evidence gate.</p>
         <div class="roadmap-toolbar">
-          <div><div class="progress-copy"><strong id="overallPercent">0%</strong><span id="overallCopy">0 of 0 complete</span></div><div class="progress-track"><div class="progress-fill" id="overallFill"></div></div></div>
+          <div><div class="progress-copy"><strong id="overallPercent">0%</strong><span id="overallCopy">0 of 0 manually verified</span></div><div class="progress-track"><div class="progress-fill" id="overallFill"></div></div></div>
           <button class="btn" id="printRoadmap" type="button">Print / PDF</button>
-          <button class="btn danger" id="resetRoadmap" type="button">Reset checks</button>
+          <button class="btn danger" id="resetRoadmap" type="button">Reset verification</button>
         </div>
         <div id="roadmapList"></div>
       </div>
@@ -381,6 +388,28 @@
       { domain:'analytics', name:'export_job', status:'future', purpose:'Asynchronous CSV/report request, status, authorization scope, and signed-result lifecycle.', columns:[c('id / org_id / requested_by','uuid PK/FK','Export ownership'),c('dataset / filters','text / jsonb','Reproducible request'),c('status / progress_pct','text / int','Queue state'),c('storage_key','text','Completed file'),c('requested_at / completed_at / expires_at','timestamptz','Lifecycle'),c('error','jsonb','Stable failure detail')], relations:'Belongs to requester/org; output points to Supabase Storage.', integrity:'Request scope frozen at creation; signed download expires; export itself is audited.' }
     ];
 
+    // Repository maturity is intentionally separate from the original design
+    // classification above. Update these sets when API behavior changes; all
+    // remaining modeled V0 tables are database foundation only.
+    const maturity = {
+      built: new Set(['asset', 'service_event']),
+      partial: new Set([
+        'organization', 'user_account', 'membership', 'property_assignment',
+        'property', 'building', 'unit', 'asset_category', 'asset_model', 'asset_location', 'work_order',
+        'part_catalog', 'part', 'part_usage'
+      ]),
+      deferred: new Set([
+        'part_movement', 'notification', 'job_outbox', 'api_key',
+        'webhook_delivery', 'export_job'
+      ])
+    };
+    tables.forEach(table => {
+      table.status = maturity.built.has(table.name) ? 'built'
+        : maturity.partial.has(table.name) ? 'partial'
+        : maturity.deferred.has(table.name) ? 'deferred'
+        : 'foundation';
+    });
+
     const writeActions = [
       ['Mint an asset','asset, asset_location, asset_identifier_scan, audit_log','NPID mint + initial custody + evidence','Asset detail, registry coverage'],
       ['Scan a tag','asset_identifier_scan; optionally asset current confirmation','Resolve locally/online; append every outcome','Scan reliability, mismatch and shrinkage signals'],
@@ -426,7 +455,8 @@
         task('c05','Implement property-scope guard','Load resource scope and compare with assignments.','Technician at A cannot read or mutate property B.'),
         task('c06','Set transaction-local org for RLS','Set app.current_org_id inside every tenant transaction.','A missing application WHERE clause still returns no foreign rows.'),
         task('c07','Add device registration and revocation','Bind refresh access and field writes to device records.','Revoked device cannot refresh or push sync operations.'),
-        task('c08','Security gate','Run role × endpoint × property-scope integration matrix.','All expected allows and denies pass with audit entries.','gate',true)
+        task('c08','Implement maintenance-user administration','HQ roster, Supabase invitation, role/rate configuration, property assignment, and access suspension.','An invited technician can accept, sign in, and see only assigned properties.'),
+        task('c09','Security gate','Run role × endpoint × property-scope integration matrix.','All expected allows and denies pass with audit entries.','gate',true)
       ]},
       { n:'03', title:'Registry, lookup, and custody', copy:'Build the permanent physical asset record before service workflows.', tasks:[
         task('d01','Implement property, building, and unit APIs','Typed CRUD with tenancy, soft delete, pagination, and roster import hooks.','Hierarchy CRUD preserves org/property consistency.'),
@@ -500,7 +530,12 @@
       ]}
     ];
 
-    const statusLabel = { live:'Scaffolded', designed:'Designed', future:'Future' };
+    const statusLabel = {
+      built: 'API built',
+      partial: 'API partial',
+      foundation: 'DB foundation',
+      deferred: 'Deferred'
+    };
     const catalog = document.getElementById('tableCatalog');
     const domainMap = document.getElementById('domainMap');
 
@@ -552,6 +587,22 @@
       document.getElementById('actionTable').innerHTML = `<thead><tr><th>Field / HQ action</th><th>Rows written</th><th>Atomic rule</th><th>What it powers</th></tr></thead><tbody>${writeActions.map(row=>`<tr>${row.map((cell,i)=>`<td>${i===1?`<code>${esc(cell)}</code>`:esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody>`;
     }
 
+    const repositoryTaskStatus = {};
+    [
+      'b02', 'b03', 'b04', 'b05', 'b07', 'c02', 'd03', 'd06'
+    ].forEach(id => { repositoryTaskStatus[id] = 'complete'; });
+    [
+      'a01', 'a02', 'a03', 'a04', 'a05', 'a06', 'a07', 'a08',
+      'b08', 'b09', 'b10',
+      'c01', 'c03', 'c04', 'c05', 'c06', 'c08',
+      'd01', 'd02', 'd04', 'd05', 'd08', 'd09',
+      'e01', 'e02', 'e03', 'e04', 'e05', 'e06', 'e07', 'e09',
+      'f01', 'f02', 'f03', 'f04', 'f08',
+      'h01', 'h06', 'h09',
+      'i02', 'i03', 'i04'
+    ].forEach(id => { repositoryTaskStatus[id] = 'partial'; });
+    const repoStateLabel = { complete: 'Repo complete', partial: 'Repo partial', planned: 'Planned' };
+
     const storageKey = 'nameplate-backend-blueprint-progress-v1';
     let checked = {};
     try { checked = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (_) { checked = {}; }
@@ -560,7 +611,7 @@
       const root = document.getElementById('roadmapList');
       root.innerHTML = phases.map(phase => `<section class="phase" data-phase="${esc(phase.n)}">
         <header class="phase-header"><span class="phase-num">${esc(phase.n)}</span><div><h3>${esc(phase.title)}</h3><p>${esc(phase.copy)}</p></div><span class="phase-progress"></span></header>
-        <div>${phase.tasks.map(t=>`<label class="task ${t.gate?'gate':''} ${checked[t.id]?'done':''}"><input type="checkbox" data-task="${esc(t.id)}" ${checked[t.id]?'checked':''}><div class="task-copy"><div class="task-title">${esc(t.title)}</div><div class="task-detail">${esc(t.detail)}</div><div class="verify">VERIFY · ${esc(t.verify)}</div></div><span class="task-tag">${t.gate?'phase gate':esc(t.tag)}</span></label>`).join('')}</div>
+        <div>${phase.tasks.map(t=>{ const repoState = repositoryTaskStatus[t.id] || 'planned'; return `<label class="task ${t.gate?'gate':''} ${checked[t.id]?'done':''}"><input type="checkbox" data-task="${esc(t.id)}" ${checked[t.id]?'checked':''} aria-label="Mark ${esc(t.title)} as manually verified"><div class="task-copy"><div class="task-title">${esc(t.title)}</div><div class="task-detail">${esc(t.detail)}</div><div class="verify">VERIFY · ${esc(t.verify)}</div></div><div class="task-meta"><span class="repo-state ${esc(repoState)}">${esc(repoStateLabel[repoState])}</span><span class="task-tag">${t.gate?'phase gate':esc(t.tag)}</span></div></label>`; }).join('')}</div>
       </section>`).join('');
       root.querySelectorAll('input[type=checkbox]').forEach(box => box.addEventListener('change', () => {
         checked[box.dataset.task] = box.checked;
@@ -577,9 +628,8 @@
       const done = all.filter(t => checked[t.id]).length;
       const percent = all.length ? Math.round(done / all.length * 100) : 0;
       document.getElementById('overallPercent').textContent = `${percent}%`;
-      document.getElementById('overallCopy').textContent = `${done} of ${all.length} complete`;
+      document.getElementById('overallCopy').textContent = `${done} of ${all.length} manually verified`;
       document.getElementById('overallFill').style.width = `${percent}%`;
-      document.getElementById('roadmapCount').textContent = all.length;
       document.querySelectorAll('.phase').forEach((node, i) => {
         const tasks = phases[i].tasks;
         const phaseDone = tasks.filter(t => checked[t.id]).length;
@@ -592,7 +642,10 @@
     renderActions();
     renderRoadmap();
     document.getElementById('tableCount').textContent = tables.length;
-    document.getElementById('liveCount').textContent = tables.filter(t => t.status === 'live').length;
+    document.getElementById('modelCount').textContent = tables.filter(t => t.status !== 'deferred').length;
+    document.getElementById('builtCount').textContent = tables.filter(t => t.status === 'built').length;
+    document.getElementById('partialCount').textContent = tables.filter(t => t.status === 'partial').length;
+    document.getElementById('deferredCount').textContent = tables.filter(t => t.status === 'deferred').length;
     document.getElementById('tableSearch').addEventListener('input', filterTables);
     document.getElementById('statusFilter').addEventListener('change', filterTables);
     document.getElementById('expandTables').addEventListener('click', function () {
@@ -603,7 +656,7 @@
     });
     document.getElementById('printRoadmap').addEventListener('click', () => window.print());
     document.getElementById('resetRoadmap').addEventListener('click', () => {
-      if (!confirm('Reset every backend roadmap checkbox?')) return;
+      if (!confirm('Reset every manual roadmap verification checkbox?')) return;
       checked = {};
       localStorage.removeItem(storageKey);
       renderRoadmap();

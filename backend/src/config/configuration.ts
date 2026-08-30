@@ -6,6 +6,8 @@ export interface NameplateConfig {
   supabaseJwtAudience: string;
   supabaseJwtIssuer: string;
   supabaseJwksUrl: string;
+  supabaseSecretKey: string;
+  inviteRedirectUrl: string;
   authRequired: boolean;
   mediaBucket: string;
   npidSigningSecret: string;
@@ -29,6 +31,8 @@ export default (): NameplateConfig => {
     ),
     supabaseJwtIssuer: issuer,
     supabaseJwksUrl: `${issuer}/.well-known/jwks.json`,
+    supabaseSecretKey: String(process.env.SUPABASE_SECRET_KEY ?? ''),
+    inviteRedirectUrl: String(process.env.INVITE_REDIRECT_URL ?? ''),
     authRequired: process.env.AUTH_REQUIRED !== 'false',
     mediaBucket: String(process.env.MEDIA_BUCKET ?? 'media'),
     npidSigningSecret: String(

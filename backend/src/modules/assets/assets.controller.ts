@@ -14,15 +14,13 @@ import { assertPropertyAccess } from '../../auth/context-access';
 import { AssetsService } from './assets.service';
 import { CreateAssetDto } from './dto/create-asset.dto';
 import { UpdateAssetDto } from './dto/update-asset.dto';
+import { MoveAssetDto } from './dto/move-asset.dto';
 
 /**
  * Endpoint map per architecture.md §3 "Assets — the core".
  *
- * V0 scaffold note: org scoping should come from the authenticated
- * request context (`req.orgId`), never a client-supplied header — auth
- * guards are not wired up yet in this scaffold, so `orgId` is accepted
- * as a query param for now to keep the endpoints runnable/testable.
- * Replace with `@CurrentOrg()` once the auth module lands.
+ * Organization and membership scope come from the authenticated request
+ * context. Clients never supply tenant identity for authorization.
  */
 @Controller('v1/assets')
 export class AssetsController {
@@ -84,8 +82,13 @@ export class AssetsController {
 
   @Post(':id/move')
   @RequirePermissions('assets:write')
-  move() {
-    return this.assetsService.move();
+  move(
+    @Param('id') id: string,
+    @CurrentOrg() orgId: string,
+    @CurrentMembership() membership: MembershipContext,
+    @Body() dto: MoveAssetDto,
+  ) {
+    return this.assetsService.move(id, orgId, dto, membership);
   }
 
   @Post(':id/retire')

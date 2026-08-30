@@ -34,27 +34,27 @@ backend/
 │       ├── properties/      GET list/:id + buildings sub-resource, POST/PATCH (stub CRUD)
 │       ├── buildings/       GET list/:id + units sub-resource, POST (stub CRUD)
 │       ├── units/           GET list/:id (assets + open WOs), POST (stub CRUD)
-│       ├── assets/          FULL: CRUD + GET /v1/assets/lookup (the scan endpoint)
+│       ├── assets/          FULL CRUD + lookup; atomic custody move API is wired
 │       ├── asset-models/    GET list + /categories, POST (stub CRUD + simple search)
 │       ├── service-events/  FULL: CRUD, POST creates event + part usages atomically
 │       ├── parts/           /v1/parts + /v1/parts/:id/lineage (stub, single-hop)
 │       ├── work-orders/     GET list/:id, POST/PATCH, assign/close (stub CRUD)
-│       └── users/           GET /v1/me (stub)
+│       └── users/           Me + maintenance roster, Supabase invite, access configuration
 └── .env                     DATABASE_URL — not committed in a real repo; here for scaffold convenience
 ```
 
-The `assets` and `service-events` modules are the two built out per the
-scaffolding brief. Everything else is a real, wired-up NestJS module with
-a working Prisma-backed controller, but without DTOs/validation, auth
-guards, or business-rule enforcement — treat those as the next slice of
-work, not as done.
+The assets and service-events modules are the original built-out slices. The
+users module now adds organization roster reads, server-side Supabase Auth
+invitations, role/rate configuration, property assignments, and access
+suspension. Other controllers remain partial scaffolds; a wired endpoint is
+not evidence that its complete business workflow is finished.
 
 ## What's deliberately deferred
 
 The V1 `part_movement` ledger and future `notification`, `job_outbox`,
 `api_key`, `webhook_delivery`, and `export_job` tables are not modeled.
 Several modeled V0 areas still need domain services/endpoints—notably custody
-moves, turns, reconciliation, media upload intents, metrics, and device
+history, turns, reconciliation, media upload intents, metrics, and device
 revocation. See the blueprint roadmap rather than inferring completion from
 the Prisma catalog.
 
@@ -131,8 +131,8 @@ dev server (`localhost:5173`) can call this API directly.
 
 ## Next steps toward the real V0 (see `docs/v0-scope.md` §1.3, §4)
 
-1. Supabase Auth (JWT) integration + RBAC guards + property-scope checks (`architecture.md` §5).
-2. `asset_location` custody ledger + the `POST /v1/assets/:id/move` endpoint (currently stubbed to throw).
-3. `/v1/sync/pull` + `/v1/sync/push` engine with idempotency (`architecture.md` §4).
-4. Turns, media presigned uploads, reports (hand-written SQL on the read replica), audit log.
+1. Harden the existing Supabase JWT, RBAC, property-scope, and tenant-RLS layer with the full role × endpoint integration matrix (`architecture.md` §5).
+2. Harden the implemented `asset_location` custody transaction with database-backed concurrency and end-to-end tests.
+3. Persist sync idempotency receipts and expand the existing pull/push slice to the complete working-set and tombstone contract (`architecture.md` §4).
+4. Turns, media presigned uploads, reports (hand-written SQL on the read replica), and broader audit coverage.
 5. OpenAPI 3.1 spec (`backend/packages/contracts` in the target repo layout) generated from/verified against these DTOs, per `architecture.md` §6.

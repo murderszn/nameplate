@@ -188,6 +188,40 @@ export interface WorkOrder {
   notesList?: WorkOrderNote[];
 }
 
+export interface MaintenanceUser {
+  id: string;
+  userId: string;
+  email: string;
+  fullName: string;
+  phone: string | null;
+  userStatus: string;
+  role: string;
+  employmentType: string | null;
+  hourlyLaborRate: string | number | null;
+  status: 'invited' | 'active' | 'revoked';
+  lastSeenAt: string | null;
+  invitedAt: string;
+  properties: Array<Pick<Property, 'id' | 'name' | 'code'>>;
+}
+
+export interface InviteMaintenanceUserInput {
+  email: string;
+  fullName: string;
+  phone?: string;
+  role: string;
+  employmentType?: string;
+  hourlyLaborRate?: number;
+  propertyIds: string[];
+}
+
+export interface UpdateMaintenanceUserInput {
+  role?: string;
+  employmentType?: string;
+  hourlyLaborRate?: number;
+  status?: 'invited' | 'active' | 'revoked';
+  propertyIds?: string[];
+}
+
 // ================= Mock Seed Data =================
 const DEMO_ORG: Organization = {
   id: 'org_sonoran',
@@ -1078,11 +1112,147 @@ function saveStoredWorkOrders(rows: WorkOrder[]): void {
 
 let inMemoryWorkOrders = getStoredWorkOrders();
 
+const USER_STORAGE_KEY = 'nameplate_hq_users_v1';
+const INITIAL_USERS: MaintenanceUser[] = [
+  {
+    id: 'mem_morales', userId: 'user_morales', email: 'j.morales@sonoran.example',
+    fullName: 'Javier Morales', phone: '(602) 555-0148', userStatus: 'active',
+    role: 'lead_tech', employmentType: 'employee', hourlyLaborRate: 68,
+    status: 'active', lastSeenAt: '2026-08-29T21:42:00Z', invitedAt: '2026-05-08T14:00:00Z',
+    properties: DEMO_PROPERTIES.slice(0, 3).map(({ id, name, code }) => ({ id, name, code })),
+  },
+  {
+    id: 'mem_vance', userId: 'user_vance', email: 'd.vance@sonoran.example',
+    fullName: 'Danielle Vance', phone: '(480) 555-0196', userStatus: 'active',
+    role: 'technician', employmentType: 'employee', hourlyLaborRate: 58,
+    status: 'active', lastSeenAt: '2026-08-29T19:18:00Z', invitedAt: '2026-05-12T15:20:00Z',
+    properties: DEMO_PROPERTIES.slice(0, 2).map(({ id, name, code }) => ({ id, name, code })),
+  },
+  {
+    id: 'mem_nguyen', userId: 'user_nguyen', email: 'm.nguyen@sonoran.example',
+    fullName: 'Minh Nguyen', phone: '(602) 555-0171', userStatus: 'active',
+    role: 'technician', employmentType: 'contractor', hourlyLaborRate: 72,
+    status: 'active', lastSeenAt: '2026-08-28T23:06:00Z', invitedAt: '2026-06-03T16:10:00Z',
+    properties: DEMO_PROPERTIES.slice(2, 5).map(({ id, name, code }) => ({ id, name, code })),
+  },
+  {
+    id: 'mem_patel', userId: 'user_patel', email: 'r.patel@sonoran.example',
+    fullName: 'Rina Patel', phone: null, userStatus: 'invited',
+    role: 'technician', employmentType: 'employee', hourlyLaborRate: 56,
+    status: 'invited', lastSeenAt: null, invitedAt: '2026-08-29T17:30:00Z',
+    properties: DEMO_PROPERTIES.slice(4, 6).map(({ id, name, code }) => ({ id, name, code })),
+  },
+  {
+    id: 'mem_ortiz', userId: 'user_ortiz', email: 'l.ortiz@sonoran.example',
+    fullName: 'Luis Ortiz', phone: '(480) 555-0114', userStatus: 'active',
+    role: 'viewer', employmentType: 'vendor', hourlyLaborRate: null,
+    status: 'revoked', lastSeenAt: '2026-08-12T15:02:00Z', invitedAt: '2026-04-18T13:00:00Z',
+    properties: DEMO_PROPERTIES.slice(0, 1).map(({ id, name, code }) => ({ id, name, code })),
+  },
+];
+
+function getStoredUsers(): MaintenanceUser[] {
+  try {
+    const stored = localStorage.getItem(USER_STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {
+    /* use deterministic demo users */
+  }
+  return [...INITIAL_USERS];
+}
+
+let inMemoryUsers = getStoredUsers();
+
+function saveStoredUsers(rows: MaintenanceUser[]) {
+  try {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(rows));
+  } catch {
+    /* demo persistence is best effort */
+  }
+}
+
+const USER_API_BASE = String(import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+
+async function userApiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  const token = localStorage.getItem('nameplate_access_token');
+  const response = await fetch(`${USER_API_BASE}${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(init?.headers ?? {}),
+    },
+  });
+  if (!response.ok) {
+    const problem = await response.json().catch(() => null);
+    throw new Error(problem?.detail ?? `User API request failed (${response.status})`);
+  }
+  return response.json();
+}
+
 // ================= API Interface =================
 export const api = {
   getOrg: async (): Promise<Organization> => DEMO_ORG,
 
   listProperties: async (_orgId?: string): Promise<Property[]> => DEMO_PROPERTIES,
+
+  listUsers: async (): Promise<MaintenanceUser[]> => {
+    if (USER_API_BASE) return userApiRequest<MaintenanceUser[]>('/v1/users');
+    return [...inMemoryUsers];
+  },
+
+  inviteUser: async (input: InviteMaintenanceUserInput): Promise<MaintenanceUser> => {
+    if (USER_API_BASE) {
+      return userApiRequest<MaintenanceUser>('/v1/users/invite', {
+        method: 'POST',
+        body: JSON.stringify(input),
+      });
+    }
+    if (inMemoryUsers.some((row) => row.email.toLowerCase() === input.email.toLowerCase())) {
+      throw new Error('A user with that email already exists.');
+    }
+    const properties = DEMO_PROPERTIES
+      .filter((property) => input.propertyIds.includes(property.id))
+      .map(({ id, name, code }) => ({ id, name, code }));
+    const created: MaintenanceUser = {
+      id: `mem_${Date.now()}`,
+      userId: `user_${Date.now()}`,
+      email: input.email.trim().toLowerCase(),
+      fullName: input.fullName.trim(),
+      phone: input.phone?.trim() || null,
+      userStatus: 'invited',
+      role: input.role,
+      employmentType: input.employmentType ?? null,
+      hourlyLaborRate: input.hourlyLaborRate ?? null,
+      status: 'invited',
+      lastSeenAt: null,
+      invitedAt: new Date().toISOString(),
+      properties,
+    };
+    inMemoryUsers = [created, ...inMemoryUsers];
+    saveStoredUsers(inMemoryUsers);
+    return created;
+  },
+
+  updateUser: async (id: string, input: UpdateMaintenanceUserInput): Promise<MaintenanceUser> => {
+    if (USER_API_BASE) {
+      return userApiRequest<MaintenanceUser>(`/v1/users/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(input),
+      });
+    }
+    const index = inMemoryUsers.findIndex((row) => row.id === id);
+    if (index < 0) throw new Error('Maintenance user not found.');
+    const properties = input.propertyIds
+      ? DEMO_PROPERTIES
+          .filter((property) => input.propertyIds?.includes(property.id))
+          .map(({ id, name, code }) => ({ id, name, code }))
+      : inMemoryUsers[index].properties;
+    const updated = { ...inMemoryUsers[index], ...input, properties };
+    inMemoryUsers[index] = updated;
+    saveStoredUsers(inMemoryUsers);
+    return updated;
+  },
 
   getProperty: async (id: string): Promise<Property> => {
     const found = DEMO_PROPERTIES.find((p) => p.id === id);

@@ -52,6 +52,14 @@ export class Environment {
 
   @IsOptional()
   @IsString()
+  SUPABASE_SECRET_KEY?: string;
+
+  @IsOptional()
+  @IsUrl({ require_tld: false, protocols: ['http', 'https'] })
+  INVITE_REDIRECT_URL?: string;
+
+  @IsOptional()
+  @IsString()
   NODE_ENV = 'development';
 
   @IsOptional()

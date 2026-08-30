@@ -18,6 +18,8 @@ developer workflows.
    non-bypass application role, and idempotent `auth.users` synchronization.
 4. `20260829140000_media_storage.sql` — private media bucket and property-
    scoped object policies.
+5. `20260830010000_user_invite_activation.sql` — projects Auth invitation
+   state and activates pending memberships when an invited user confirms.
 
 Never edit a migration that has reached a shared Supabase environment. Add a
 new forward migration instead.
@@ -26,8 +28,10 @@ new forward migration instead.
 
 Copy `backend/.env.example` to a local, ignored `.env`. Runtime uses
 `DATABASE_URL`; migrations and Studio use `DIRECT_URL`. Production also
-requires `SUPABASE_URL` and explicit `CORS_ORIGINS`. No password, JWT, service
-key, or database URL belongs in source control.
+requires `SUPABASE_URL` and explicit `CORS_ORIGINS`. Maintenance-user
+invitations additionally require the server-only `SUPABASE_SECRET_KEY` and an
+allowlisted `INVITE_REDIRECT_URL`. No password, JWT, secret key, or database
+URL belongs in source control or browser code.
 
 Use a session-pooled or direct connection for the persistent NestJS service.
 The tenant transaction helper uses an interactive transaction, `SET LOCAL

@@ -10,6 +10,7 @@ import { WorkOrders } from './routes/WorkOrders';
 import { Analytics } from './routes/Analytics';
 import { SyncOperations } from './routes/SyncOperations';
 import { Settings } from './routes/Settings';
+import { Users } from './routes/Users';
 
 /**
  * Nameplate HQ — route tree with HashRouter for universal static hosting.
@@ -28,6 +29,7 @@ function App() {
           <Route path="/work-orders" element={<WorkOrders />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/sync" element={<SyncOperations />} />
+          <Route path="/users" element={<Users />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
