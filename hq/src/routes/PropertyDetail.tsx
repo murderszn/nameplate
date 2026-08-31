@@ -104,11 +104,6 @@ export function PropertyDetail() {
       .sort((a, b) => b.value - a.value);
   }, [assets]);
 
-  if (loading) return <div className="np-empty-state">Loading location…</div>;
-  if (error || !property) {
-    return <div className="np-empty-state">Couldn't load location: {error ?? 'not found'}</div>;
-  }
-
   const flaggedByUnit = useMemo(() => {
     const m = new Map<string, number>();
     for (const a of assets) {
@@ -118,6 +113,11 @@ export function PropertyDetail() {
     }
     return m;
   }, [assets]);
+
+  if (loading) return <div className="np-empty-state">Loading location…</div>;
+  if (error || !property) {
+    return <div className="np-empty-state">Couldn't load location: {error ?? 'not found'}</div>;
+  }
 
   const activeWarranties = assets.filter((a) => a.warrantyExpiresOn && new Date(a.warrantyExpiresOn).getTime() > Date.now());
   const expiredWarranties = assets.filter((a) => a.warrantyExpiresOn && new Date(a.warrantyExpiresOn).getTime() <= Date.now());
