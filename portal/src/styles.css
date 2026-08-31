@@ -127,7 +127,9 @@ input,select,textarea{background:var(--bg);border-color:var(--lineStrong)}
 .np-modal{background:rgba(0,0,0,.82)}
 .np-scanner{box-shadow:0 24px 80px rgba(0,0,0,.35)}
 .np-toast{border-radius:2px}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+/* Resident controls and safe scanner feedback. */
+.np-notification{position:relative}.np-notification__count{position:absolute;right:-3px;top:-4px;min-width:15px;height:15px;padding:0 4px;border-radius:999px;background:var(--red);color:#fff;font:700 9px var(--mono);display:grid;place-items:center}.np-order__controls{display:grid;grid-template-columns:180px 1fr;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}.np-order__controls label{display:grid;gap:6px;color:var(--gray);font-size:.68rem;font-weight:700}.np-order__controls select,.np-order__controls textarea{width:100%;min-height:38px;padding:8px;border:1px solid var(--lineStrong);background:var(--bg);color:var(--white);font-size:.78rem}.np-field-help{display:block;margin-top:7px;color:var(--gray);font-size:.7rem}.np-scan-error{margin-top:12px;color:#ff7777;font-size:.78rem}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--red);outline-offset:2px}@media(max-width:600px){.np-order__controls{grid-template-columns:1fr}}
+
 @media(max-width:900px){
   .np-topbar{height:56px;min-height:56px;padding:0 16px}
   .np-topbar h1{font-size:.9rem}

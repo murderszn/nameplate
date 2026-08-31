@@ -320,7 +320,7 @@ export class AssetsService {
         },
       );
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
         throw new ConflictException(
           'The move conflicts with an existing custody interval or operation id',
         );
