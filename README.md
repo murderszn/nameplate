@@ -21,19 +21,22 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 ## 🏛️ System Architecture
 
 ```
-                          ┌───────────────────────────────┐
-                          │      Nameplate HQ (React)     │
-                          │   hq.nameplate.app  (CDN/SPA) │
-                          └───────────────┬───────────────┘
-                                          │  REST/JSON (online, per-request)
-                                          │
-┌──────────────────────────┐              ▼
-│  Nameplate Field         │   ┌──────────────────────────────────────┐
-│  (Flutter, iOS/Android)  │   │        Nameplate API (NestJS)        │
-│                          │   │  ┌────────────────────────────────┐  │
-│  ┌────────────────────┐  │   │  │ auth guard / RBAC / org scope  │  │
-│  │ Drift (SQLite)     │  │   │  ├────────────────────────────────┤  │
-│  │  local mirror      │◄─┼───┼──┤ /v1/*  resource endpoints      │  │
+┌───────────────────────────┐                      ┌───────────────────────────┐
+│   Nameplate HQ (React)    │                      │  Nameplate Portal (React) │
+│  hq.nameplate.app (Vite)  │                      │ portal.nameplate.app(Vite)│
+└─────────────┬─────────────┘                      └─────────────┬─────────────┘
+              │  REST / JSON (online, per-request)               │  REST / JSON (resident auth,
+              │  Portfolio admin, work orders, telemetry         │  tag scan, maintenance tickets)
+              │                                                  │
+              └─────────────────────┐      ┌─────────────────────┘
+                                    ▼      ▼
+┌──────────────────────────┐   ┌──────────────────────────────────────┐
+│  Nameplate Field         │   │        Nameplate API (NestJS)        │
+│  (Flutter, iOS/Android)  │   │  ┌────────────────────────────────┐  │
+│                          │   │  │ auth guard / RBAC / org scope  │  │
+│  ┌────────────────────┐  │   │  ├────────────────────────────────┤  │
+│  │ Drift (SQLite)     │  │   │  │ /v1/*  management endpoints    │  │
+│  │  local mirror      │◄─┼───┼──┤ /v1/portal/* resident routes   │  │
 │  ├────────────────────┤  │   │  │ /v1/sync/pull  /v1/sync/push   │  │
 │  │ outbox (mutations) │──┼──►│  ├────────────────────────────────┤  │
 │  │ (UUIDv7, append)   │  │   │  │ domain services (ledger,       │  │
