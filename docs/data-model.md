@@ -108,6 +108,23 @@ Needed for offline attribution, sync health, and revoking a lost phone.
 | `last_sync_at` | `timestamptz NULL` | |
 | `revoked_at` | `timestamptz NULL` | |
 
+### Resident identity and occupancy
+
+Residents authenticate through `user_account` but are not staff `membership`
+rows. Add `resident_profile`, `resident_occupancy`, and
+`resident_invitation` as defined in `resident-portal-backend-plan.md`.
+Authorization is always derived from a current, verified occupancy grant; the
+portal never supplies a trusted `unit_id`, `property_id`, or `org_id`.
+
+Resident-created work orders carry
+`requested_by_resident_occupancy_id`, `source='tenant_request'`, and an explicit
+resident-visibility flag. Add the append-only `work_order_activity` timeline to
+separate resident-visible updates from internal technician and financial notes.
+Resident media reuses `media_attachment` with resident-specific roles and a
+resident uploader stamp. Notification preference/delivery rows support async
+email/SMS updates. The detailed columns, indexes, privacy rules, and acceptance
+tests are the source of truth in `resident-portal-backend-plan.md`.
+
 ---
 
 ## 2. Location hierarchy

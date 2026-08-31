@@ -7,7 +7,6 @@ import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
-import '../../widgets/responsive_layout.dart';
 
 class TurnWalkthroughScreen extends ConsumerStatefulWidget {
   final Turn turn;

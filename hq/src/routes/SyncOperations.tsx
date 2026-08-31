@@ -155,7 +155,7 @@ export function SyncOperations() {
           <span className="np-kicker">05 / Fleet Sync & Hardware Ops</span>
           <h2 style={{ margin: '4px 0 6px', fontSize: '1.4rem' }}>Sync Engine & Tag Studio</h2>
           <p className="np-muted" style={{ margin: 0, fontSize: '0.88rem' }}>
-            Monotonic Sequence Watermark: <span className="mono" style={{ color: '#fff', fontWeight: 700 }}>#{logs[0]?.seq || 10483}</span> · Zero-Signal Offline Outbox Router
+            Monotonic Sequence Watermark: <span className="mono" style={{ color: 'var(--white)', fontWeight: 700 }}>#{logs[0]?.seq || 10483}</span> · Zero-Signal Offline Outbox Router
           </p>
         </div>
 
@@ -291,8 +291,8 @@ export function SyncOperations() {
       {/* Tab 2: Hardware Tag Batch Studio */}
       {activeTab === 'studio' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2, padding: 22 }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Batch Tag Generation & Sheet Exporter</h3>
+          <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 22 }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>Batch Tag Generation & Sheet Exporter</h3>
             <p className="np-muted" style={{ fontSize: '0.8rem', margin: '0 0 16px' }}>
               Generate serialized sheets of 30 destructible vinyl tags (1.5"×1") with Crockford-32 check digits and HMAC-SHA256 authentication seals.
             </p>
@@ -334,9 +334,9 @@ export function SyncOperations() {
           </div>
 
           {/* Tag Grid Preview */}
-          <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2, padding: 22 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.06)', paddingBottom: 14 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 22 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, borderBottom: '1px solid rgba(var(--overlay-rgb), 0.06)', paddingBottom: 14 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 800, color: 'var(--white)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Print Sheet Preview ({generatedBatch.length} Tags · {batchId})
               </div>
               <div>
@@ -352,7 +352,7 @@ export function SyncOperations() {
                     a.click();
                   }}
                   className="np-btn"
-                  style={{ background: '#181818', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.76rem', padding: '6px 12px' }}
+                  style={{ background: 'var(--bg-elevated)', color: 'var(--white)', border: '1px solid rgba(var(--overlay-rgb), 0.12)', fontSize: '0.76rem', padding: '6px 12px' }}
                 >
                   Export CSV Manifest
                 </button>
@@ -379,11 +379,11 @@ export function SyncOperations() {
 
       {/* Tab 3: Cryptographic Inspector */}
       {activeTab === 'inspector' && (
-        <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: 2, padding: 22 }}>
+        <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 22 }}>
           <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Cryptographic NPID & QR Matrix Inspector</h3>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>Cryptographic NPID & QR Matrix Inspector</h3>
             <p className="np-muted" style={{ fontSize: '0.8rem', margin: '0 0 16px' }}>
-              Paste any public scan URL (<span className="mono" style={{ color: '#fff' }}>https://np.app/a/NP...</span>), compact URI, or bare NPID to verify checksum and HMAC signature.
+              Paste any public scan URL (<span className="mono" style={{ color: 'var(--white)' }}>https://np.app/a/NP...</span>), compact URI, or bare NPID to verify checksum and HMAC signature.
             </p>
           </div>
 
@@ -416,9 +416,9 @@ export function SyncOperations() {
                     {inspectParsed.checkChar} (Expected: {inspectParsed.expectedCheck})
                   </span>
                 </div>
-                <div className="np-crypto-spec-row" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+                <div className="np-crypto-spec-row" style={{ borderTop: '1px solid rgba(var(--overlay-rgb), 0.06)', paddingTop: 10 }}>
                   <span className="lbl">Checksum Status</span>
-                  <span className="np-badge" style={{ minWidth: 150, background: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.1)' : 'rgba(255,42,42,0.1)', color: inspectParsed.isCheckValid ? '#22c55e' : 'var(--red)', borderColor: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.3)' : 'rgba(255,42,42,0.3)' }}>
+                  <span className="np-badge" style={{ minWidth: 150, background: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.1)' : 'rgba(235, 43, 43,0.1)', color: inspectParsed.isCheckValid ? '#22c55e' : 'var(--red)', borderColor: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.3)' : 'rgba(235, 43, 43,0.3)' }}>
                     {inspectParsed.isCheckValid ? 'VALID CROCKFORD-32' : 'CHECKSUM MISMATCH'}
                   </span>
                 </div>
@@ -438,7 +438,7 @@ export function SyncOperations() {
                   <span className="lbl">Cryptographic Proof</span>
                   <span className="val" style={{ color: '#22c55e' }}>100% AUTHENTIC HARDWARE</span>
                 </div>
-                <div className="np-crypto-spec-row" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+                <div className="np-crypto-spec-row" style={{ borderTop: '1px solid rgba(var(--overlay-rgb), 0.06)', paddingTop: 10 }}>
                   <span className="lbl">Offline Verification Time</span>
                   <span className="val mono" style={{ color: 'var(--gray-400)' }}>0.0028 ms</span>
                 </div>

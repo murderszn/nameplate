@@ -1,6 +1,6 @@
 /* ===========================================================
    NAMEPLATE — Minimalist Luxury Editorial
-   Color Schema: Black (#000000), White (#FFFFFF), Red (#FF2A2A).
+   Color Schema: Black (#000000), White (#FFFFFF), Red (#EB2B2B).
    Aesthetic: Bold oversized typography & hardware artifacts,
    architectural schematics, and responsive industrial design.
    =========================================================== */
@@ -18,12 +18,12 @@
   --white-15: rgba(255, 255, 255, 0.15);
   --white-08: rgba(255, 255, 255, 0.08);
 
-  --red: #FF2A2A;
-  --red-hover: #FF4D4D;
-  --red-deep: #D91D1D;
+  --red: #EB2B2B;
+  --red-hover: #F44343;
+  --red-deep: #C91F1F;
   --red-glow: none;
-  --red-subtle: rgba(255, 42, 42, 0.08);
-  --red-border: rgba(255, 42, 42, 0.4);
+  --red-subtle: rgba(235, 43, 43, 0.08);
+  --red-border: rgba(235, 43, 43, 0.4);
 
   --gray-900: #121212;
   --gray-800: #1F1F1F;
@@ -47,6 +47,31 @@
   --radius: 2px;
 }
 
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-subtle: #f7f7f7;
+  --bg-elevated: #eeeeee;
+  --bg-card: #fafafa;
+
+  --white: #111111;
+  --white-90: rgba(17, 17, 17, 0.90);
+  --white-70: rgba(17, 17, 17, 0.70);
+  --white-40: rgba(17, 17, 17, 0.40);
+  --white-15: rgba(17, 17, 17, 0.15);
+  --white-08: rgba(17, 17, 17, 0.08);
+
+  --gray-900: #f3f3f3;
+  --gray-800: #e9e9e9;
+  --gray-700: #d4d4d4;
+  --gray-500: #6b6b6b;
+  --gray-400: #555555;
+  --gray-300: #333333;
+
+  --line: rgba(0, 0, 0, 0.12);
+  --line-light: rgba(0, 0, 0, 0.06);
+  --line-strong: rgba(0, 0, 0, 0.24);
+}
+
 /* Reset */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -60,6 +85,8 @@ html {
   color: var(--white);
   color-scheme: dark;
 }
+
+html[data-theme="light"] { color-scheme: light; }
 
 body {
   font-family: var(--font-sans);
@@ -81,6 +108,10 @@ body::after {
   background-size: 28px 28px;
   pointer-events: none;
   z-index: 1;
+}
+
+html[data-theme="light"] body::after {
+  background-image: radial-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 0);
 }
 
 a {
@@ -125,6 +156,14 @@ a {
   background: rgba(0, 0, 0, 0.96);
 }
 
+html[data-theme="light"] .site-header {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+html[data-theme="light"] .site-header.is-scrolled {
+  background: rgba(255, 255, 255, 0.96);
+}
+
 .header-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -149,6 +188,10 @@ a {
   object-fit: contain;
   transition: transform 0.2s var(--ease);
 }
+
+.theme-logo--light { display: none; }
+:root[data-theme="light"] .theme-logo--dark { display: none; }
+:root[data-theme="light"] .theme-logo--light { display: block; }
 
 .brand:hover .brand-logo-img {
   transform: scale(1.05);
@@ -231,6 +274,70 @@ a {
   justify-self: end;
   gap: 16px;
 }
+
+.theme-toggle {
+  position: relative;
+  width: 58px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 8px;
+  padding: 0 7px;
+  margin-left: 2px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.theme-toggle::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
+  transition: transform 0.28s var(--ease), background 0.2s var(--ease);
+}
+
+:root[data-theme="light"] .theme-toggle::before {
+  background: #111;
+  transform: translateX(28px);
+}
+
+.theme-toggle:hover {
+  border-color: var(--white-40);
+  background: var(--white-08);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 3px;
+}
+
+.theme-icon {
+  position: relative;
+  z-index: 1;
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-icon--moon { color: #111; }
+.theme-icon--sun { color: var(--gray-500); }
+:root[data-theme="light"] .theme-icon--moon { color: var(--gray-500); }
+:root[data-theme="light"] .theme-icon--sun { color: #fff; }
 
 .nav-ghost {
   color: var(--gray-400);
@@ -324,6 +431,17 @@ a {
   background: var(--red);
   color: var(--white);
 }
+
+.btn-red,
+.btn-red-deck,
+.mobile-nav-primary {
+  color: #fff;
+}
+
+:root[data-theme="light"] .btn-primary:hover,
+:root[data-theme="light"] .schematic-tab-btn.is-active {
+  color: #fff;
+}
 .btn-red:hover {
   background: var(--red-hover);
   transform: translateY(-2px);
@@ -338,6 +456,148 @@ a {
   border-color: var(--white);
   background: rgba(255, 255, 255, 0.06);
   transform: translateY(-2px);
+}
+
+html[data-theme="light"] .btn-ghost:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* The physical tag and embedded product views remain dark in either mode. */
+:root[data-theme="light"] :is(
+  .oversized-tag-card,
+  .screen-browser-frame,
+  .browser-frame,
+  .blueprint-container,
+  .deck-main-viewport
+) {
+  --bg: #000000;
+  --bg-subtle: #080808;
+  --bg-elevated: #111111;
+  --bg-card: #141414;
+  --white: #ffffff;
+  --white-90: rgba(255, 255, 255, 0.90);
+  --white-70: rgba(255, 255, 255, 0.70);
+  --white-40: rgba(255, 255, 255, 0.40);
+  --white-15: rgba(255, 255, 255, 0.15);
+  --white-08: rgba(255, 255, 255, 0.08);
+  --gray-900: #121212;
+  --gray-800: #1f1f1f;
+  --gray-700: #2e2e2e;
+  --gray-500: #6b6b6b;
+  --gray-400: #a3a3a3;
+  --gray-300: #d4d4d4;
+  --line: rgba(255, 255, 255, 0.10);
+  --line-light: rgba(255, 255, 255, 0.05);
+  --line-strong: rgba(255, 255, 255, 0.20);
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] .studio-large-input {
+  background: var(--bg-subtle);
+  border-color: var(--line-strong);
+  color: var(--white);
+}
+
+:root[data-theme="light"] .studio-large-input:focus {
+  background: var(--bg-card);
+}
+
+/* Light-mode surfaces: keep only the actual device/schematic canvases dark. */
+:root[data-theme="light"] .screen-card {
+  background: var(--bg-card);
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .screen-card:hover {
+  border-color: var(--line-strong);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .screen-card-caption {
+  margin: 16px -20px -20px;
+  padding: 16px 20px 20px;
+  background: #ffffff;
+  border-top: 1px solid var(--line);
+  color: #111111;
+}
+
+:root[data-theme="light"] .caption-title {
+  color: #111111;
+}
+
+:root[data-theme="light"] .caption-desc {
+  color: #4f4f4f;
+}
+
+:root[data-theme="light"] .caption-tag,
+:root[data-theme="light"] .feat-tag {
+  color: #3f3f3f;
+  background: #f4f4f4;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .caption-feature-tags {
+  border-top-color: rgba(0, 0, 0, 0.10);
+}
+
+:root[data-theme="light"] .device-mockup-wrap {
+  background: #f4f4f4;
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .app-simulator-container,
+:root[data-theme="light"] .sim-chrome-header,
+:root[data-theme="light"] .sim-sidebar,
+:root[data-theme="light"] .sim-content-area,
+:root[data-theme="light"] .sim-stat-box,
+:root[data-theme="light"] .sim-critical-points-wrap,
+:root[data-theme="light"] .sim-lineage-table-wrap,
+:root[data-theme="light"] .sim-lineage-table th,
+:root[data-theme="light"] .sim-act-btn.secondary {
+  background: var(--bg-card);
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .sim-chrome-header,
+:root[data-theme="light"] .sim-sidebar,
+:root[data-theme="light"] .sim-section-header-row,
+:root[data-theme="light"] .sim-meta-stack,
+:root[data-theme="light"] .sim-lineage-table td {
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .app-simulator-container {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] .sim-critical-heading,
+:root[data-theme="light"] .sim-act-btn.primary,
+:root[data-theme="light"] .audio-play-btn,
+:root[data-theme="light"] .btn-red-deck {
+  color: #fff;
+}
+
+:root[data-theme="light"] .sim-hq-btn {
+  background: var(--bg-elevated);
+  border-color: var(--line);
+  color: var(--white);
+}
+
+:root[data-theme="light"] .sim-hq-btn:hover,
+:root[data-theme="light"] .sim-act-btn.secondary:hover {
+  background: var(--gray-800);
+  border-color: var(--line-strong);
+  color: var(--white);
+}
+
+:root[data-theme="light"] .sim-part-badge.standard-service {
+  background: var(--bg-elevated);
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .chapter-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: var(--line);
 }
 
 /* ================= Sections ================= */
@@ -963,7 +1223,7 @@ a {
   transition: all 0.2s var(--ease);
 }
 .problem-row:hover {
-  background: rgba(255, 42, 42, 0.02);
+  background: rgba(235, 43, 43, 0.02);
 }
 
 .problem-idx {
@@ -1020,7 +1280,7 @@ a {
 
 .comparison-table th.nameplate-col,
 .comparison-table td.nameplate-col {
-  background: rgba(255, 42, 42, 0.04);
+  background: rgba(235, 43, 43, 0.04);
   border-left: 1px solid var(--red-border);
   border-right: 1px solid var(--red-border);
 }
@@ -1300,7 +1560,7 @@ a {
   border-right: none;
 }
 .arch-node:hover {
-  background: rgba(255, 42, 42, 0.02);
+  background: rgba(235, 43, 43, 0.02);
 }
 
 .arch-header-row {
@@ -1574,6 +1834,13 @@ a {
   z-index: 12;
 }
 
+:root[data-theme="light"] .screen-badge-pill {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: rgba(0, 0, 0, 0.18);
+  color: #111111;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+}
+
 .screen-card-caption {
   margin-top: 16px;
   display: flex;
@@ -1717,9 +1984,10 @@ a {
 
 @media (max-width: 820px) {
   .header-row {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
   }
-  .nav-actions { display: none; }
+  .nav-actions { display: flex; gap: 10px; }
+  .nav-actions > a { display: none; }
   .nav-toggle { display: flex; }
   .site-nav {
     display: none;
@@ -1734,6 +2002,10 @@ a {
     background: rgba(8, 8, 8, 0.98);
     border-color: var(--line-strong);
     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55);
+  }
+  html[data-theme="light"] .site-nav {
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.14);
   }
   .site-nav.is-open { display: grid; }
   .site-nav a {
@@ -1846,8 +2118,8 @@ a {
 .sim-npid-pill {
   padding: 2px 8px;
   border-radius: var(--radius);
-  background: rgba(255, 42, 42, 0.12);
-  border: 1px solid rgba(255, 42, 42, 0.35);
+  background: rgba(235, 43, 43, 0.12);
+  border: 1px solid rgba(235, 43, 43, 0.35);
   color: var(--red);
   font-weight: 800;
   font-family: var(--font-mono);
@@ -2190,7 +2462,7 @@ a {
 }
 
 .sim-part-badge.high-capex {
-  background: rgba(255, 42, 42, 0.15);
+  background: rgba(235, 43, 43, 0.15);
   border: 1px solid var(--red-border);
   color: var(--red);
 }
@@ -2638,8 +2910,8 @@ a {
 }
 
 .chapter-item.is-active-chapter {
-  background: rgba(255, 42, 42, 0.08);
-  border-color: rgba(255, 42, 42, 0.3);
+  background: rgba(235, 43, 43, 0.08);
+  border-color: rgba(235, 43, 43, 0.3);
   color: var(--white);
 }
 
@@ -2702,7 +2974,7 @@ a {
 .btn-outline-deck:hover {
   border-color: var(--red);
   color: var(--red);
-  background: rgba(255, 42, 42, 0.05);
+  background: rgba(235, 43, 43, 0.05);
 }
 
 .btn-red-deck {
@@ -2860,4 +3132,3 @@ a {
     padding: 20px;
   }
 }
-

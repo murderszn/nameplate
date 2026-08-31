@@ -4,12 +4,13 @@
 
 ---
 
-## 1. The three surfaces
+## 1. The four product surfaces
 
 | Surface | Name | Tech | Primary user | Network assumption |
 |---|---|---|---|---|
 | Mobile | **Nameplate Field** | Flutter (iOS + Android) | Maintenance technician | **Offline-first.** Assume no signal. |
 | Web console | **Nameplate HQ** | React + TypeScript + Vite | Remote portfolio manager, property manager | Always online. |
+| Resident web portal | **Nameplate Resident** | React + TypeScript + Vite | Current resident / renter | Always online; mobile web first. |
 | Marketing site | nameplate.app | Astro (static) | Prospect | Always online. |
 | API | Nameplate API | NestJS (TypeScript) on Node 22 | — | — |
 | Database | — | **PostgreSQL 16** | — | — |
@@ -77,7 +78,7 @@ Right database, wrong amount of it. Pushing all logic into RLS policies and Post
 
 > ## Decision
 >
-> **PostgreSQL 16 + NestJS (Node 22, TypeScript) + Prisma ORM, REST API. Postgres, Auth, and Object Storage hosted on Supabase for V0. React + TypeScript for HQ. Flutter + Drift (SQLite) for Field.**
+> **PostgreSQL 16 + NestJS (Node 22, TypeScript) + Prisma ORM, REST API. Postgres, Auth, and Object Storage hosted on Supabase for V0. React + TypeScript for HQ and Resident. Flutter + Drift (SQLite) for Field.**
 
 **Justification:**
 
@@ -177,6 +178,28 @@ POST   /v1/turns                         start a turn; server generates checklis
 PATCH  /v1/turns/:id/items/:itemId       per-asset finding: present/missing/broken
 POST   /v1/turns/:id/complete            emits work orders for flagged items
 ```
+
+**Resident portal** — resident auth and occupancy scope are separate from staff
+RBAC. See `resident-portal-backend-plan.md` for the schema, privacy boundary,
+status projection, and delivery sequence.
+```text
+POST   /v1/resident/auth/accept-invitation
+GET    /v1/resident/me
+GET    /v1/resident/home                 unit + appliances + open requests
+GET    /v1/resident/appliances
+GET    /v1/resident/appliances/:npid     occupancy-scoped tag resolution
+GET    /v1/resident/work-orders
+POST   /v1/resident/work-orders          source/unit/property derived server-side
+GET    /v1/resident/work-orders/:id
+POST   /v1/resident/work-orders/:id/comments
+POST   /v1/resident/media/upload-url
+POST   /v1/resident/media/:id/attach
+GET    /v1/resident/notification-preferences
+PATCH  /v1/resident/notification-preferences
+```
+Resident serializers are allowlists. They never expose internal notes, costs,
+SLA calculations, serial numbers, custody history, staff contact data, or
+records outside the authenticated resident's active unit occupancy.
 
 **Media**
 ```
@@ -351,6 +374,11 @@ Monorepo, pnpm workspaces + Turborepo. Flutter lives inside it but builds indepe
 │       Stack: React 18 + TS + Vite, TanStack Query + Table, Tailwind,
 │       Recharts. → Cloudflare Pages, calls api.nameplate.app.
 │
+├── portal/                     ← Nameplate Resident — resident web portal
+│   ├── src/                    home, request, work-order, appliance, scan flows
+│   └── vite.config.ts
+│       Stack: React + TS + Vite. → CDN/SPA, calls resident-scoped API routes.
+│
 ├── infra/                      Terraform, Dockerfiles, CI workflows, migration runbooks
 ├── turbo.json   pnpm-workspace.yaml   package.json
 └── README.md
@@ -358,7 +386,7 @@ Monorepo, pnpm workspaces + Turborepo. Flutter lives inside it but builds indepe
 
 **Note on `hq/`:** the brief lists `website/`, `app/`, `backend/`. HQ is a distinct deployable application with a different audience, auth model, and build pipeline from the marketing site — bundling it into `website/` would couple a static content site to an authenticated SPA. **Create `hq/` as a fourth top-level directory.** If a three-folder layout is a hard constraint, the fallback is `website/` containing `website/marketing/` and `website/hq/` as separate workspace packages — but a sibling `hq/` is cleaner and is the recommendation.
 
-**Contract flow:** `backend/packages/contracts/openapi.yaml` is authored alongside the Nest DTOs and verified against them in CI. From it we generate `ts-client` (for HQ) and the Dart client (into `app/lib/data/remote/`). A breaking API change fails CI in all three surfaces at once.
+**Contract flow:** `backend/packages/contracts/openapi.yaml` is authored alongside the Nest DTOs and verified against them in CI. From it we generate `ts-client` (for HQ and Resident) and the Dart client (into `app/lib/data/remote/`). Resident-safe response DTOs are separate schemas rather than subsets selected by the browser. A breaking API change fails CI across all clients.
 
 ---
 
@@ -367,10 +395,10 @@ Monorepo, pnpm workspaces + Turborepo. Flutter lives inside it but builds indepe
 | Env | Purpose |
 |---|---|
 | `local` | Docker Compose: Postgres, Redis, MinIO. Seeded with a synthetic 3-property / 220-unit / ~900-asset portfolio. |
-| `staging` | Full mirror. Every PR deploys a preview of HQ + website. TestFlight / Play internal track for Field. |
+| `staging` | Full mirror. Every PR deploys a preview of HQ + Resident + website. TestFlight / Play internal track for Field. |
 | `production` | Supabase Postgres (PITR + daily backups, restore drilled quarterly), API on Fly.io or Railway (2+ instances, health-checked), workers separate, Redis managed, Cloudflare in front. |
 
 - **CI:** typecheck, lint, unit + integration tests (Testcontainers Postgres), Prisma migration dry-run, OpenAPI diff check, `flutter test` + `flutter analyze`.
 - **Migrations** run as a pre-deploy step; expand-contract only (add column → backfill → switch reads → drop later). Never a destructive migration in a single deploy — the Field app in the wild may be several versions behind.
 - **API version support window: 6 months.** Field apps go stale on phones that never update. The `/v1/sync/*` contract in particular must stay backward compatible; the app sends `X-Client-Version` and the server can return a soft "update recommended" or hard "update required" directive.
-- **Observability:** OpenTelemetry traces, Sentry on all three clients, and a purpose-built **sync health dashboard** (outbox depth per device, oldest unsynced op, push failure rate by error type). If sync silently breaks, techs lose trust in the app permanently — this is the metric to page on.
+- **Observability:** OpenTelemetry traces, Sentry on all four product surfaces, resident request/notification delivery telemetry, and a purpose-built **sync health dashboard** (outbox depth per device, oldest unsynced op, push failure rate by error type). If sync silently breaks, techs lose trust in the app permanently — this is the metric to page on.

@@ -163,7 +163,7 @@ export function AssetDetail() {
             const ageMonths = (yearsOld(asset.installDate) ?? 0) * 12;
             const lifeRatio = expectedLifeMonths ? Math.min(ageMonths / expectedLifeMonths, 1.2) : null;
             if (lifeRatio == null) return null;
-            const fill = lifeRatio > 1 ? '#ff2a2a' : lifeRatio > 0.8 ? '#ff2a2a' : lifeRatio > 0.6 ? '#f5a623' : '#22c55e';
+            const fill = lifeRatio > 1 ? '#eb2b2b' : lifeRatio > 0.8 ? '#eb2b2b' : lifeRatio > 0.6 ? '#f5a623' : '#22c55e';
             return (
               <div className="np-life-bar">
                 <div className="np-life-bar__label">
@@ -177,18 +177,18 @@ export function AssetDetail() {
           })()}
 
           <div className="np-asset-card" style={{ marginTop: 16 }}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(var(--overlay-rgb), 0.06)'}}>
               <span className="np-muted">OEM Base</span>
               <span className="np-badge">{warrantyActive ? 'Active' : 'Expired'} {warrantyYear ? `(${warrantyYear})` : ''}</span>
             </div>
             {cf.warrantyExtra && (
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(var(--overlay-rgb), 0.06)'}}>
                 <span className="np-muted">Extended Warranty</span>
                 <span className="np-badge">{cf.warrantyExtra}</span>
               </div>
             )}
             {(cf as any).compressorWarranty && (
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:'1px solid rgba(var(--overlay-rgb), 0.06)'}}>
                 <span className="np-muted">Compressor Warranty</span>
                 <span className="np-badge">{(cf as any).compressorWarranty}</span>
               </div>
@@ -270,7 +270,7 @@ export function AssetDetail() {
               </thead>
               <tbody>
                 {lineage.map((e: ServiceEvent) => (
-                  <tr key={e.id} style={e.isWarrantyClaim ? { background: 'rgba(255,42,42,0.06)' } : undefined}>
+                  <tr key={e.id} style={e.isWarrantyClaim ? { background: 'rgba(235, 43, 43,0.06)' } : undefined}>
                     <td className="mono">{isoDate(e.occurredAt)}</td>
                     <td>
                       <div className="np-lineage-findings">

@@ -201,8 +201,8 @@ export function Assets() {
           display: 'flex',
           flexDirection: 'column',
           gap: 12,
-          background: '#0d0d0d',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--bg-card)',
+          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
           borderRadius: 2,
           padding: '14px 16px',
         }}
@@ -232,11 +232,11 @@ export function Assets() {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             style={{
-              background: '#141414',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
               borderRadius: 2,
               padding: '6px 10px',
-              color: '#fff',
+              color: 'var(--white)',
               fontSize: '0.8rem',
               outline: 'none',
               cursor: 'pointer',
@@ -254,11 +254,11 @@ export function Assets() {
             value={selectedProperty}
             onChange={(e) => setSelectedProperty(e.target.value)}
             style={{
-              background: '#141414',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
               borderRadius: 2,
               padding: '6px 10px',
-              color: '#fff',
+              color: 'var(--white)',
               fontSize: '0.8rem',
               outline: 'none',
               cursor: 'pointer',
@@ -276,11 +276,11 @@ export function Assets() {
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
             style={{
-              background: '#141414',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
               borderRadius: 2,
               padding: '6px 10px',
-              color: '#fff',
+              color: 'var(--white)',
               fontSize: '0.8rem',
               outline: 'none',
               cursor: 'pointer',
@@ -299,7 +299,7 @@ export function Assets() {
               onClick={clearFilters}
               style={{
                 background: 'transparent',
-                border: '1px solid rgba(255,42,42,0.4)',
+                border: '1px solid rgba(235, 43, 43,0.4)',
                 color: '#ff6666',
                 borderRadius: 2,
                 padding: '5px 10px',

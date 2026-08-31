@@ -106,7 +106,18 @@
 - Seed data: synthetic 3-property / 220-unit / ~900-asset portfolio for demos and tests
 - Observability: OTel traces, Sentry, **sync-health dashboard with alerting**
 
-### 1.4 Website (nameplate.app)
+### 1.4 Nameplate Resident (responsive web portal)
+
+- Invitation/magic-link authentication tied to a verified, time-bounded unit occupancy
+- Home summary with resident-safe appliance roster, open requests, next appointment, and emergency contact
+- Scan or manually enter a Nameplate Tag to preselect the exact in-unit asset
+- Create a maintenance request with description, urgency signal, photo/video, entry preference, and idempotent receipt
+- Track resident-safe work-order status, appointment windows, public updates, and completion
+- Add follow-up comments/media and manage notification preferences
+- Strict privacy boundary: no other units/residents, costs, internal notes, custody history, or staff-only fields
+- Backend/schema delivery and acceptance tests per `resident-portal-backend-plan.md`
+
+### 1.5 Website (nameplate.app)
 
 Static Astro, five pages, one job: get a portfolio manager to book a demo.
 
@@ -130,7 +141,6 @@ Not "no" — "not now." Each has a trigger.
 |---|---|---|
 | **NFC tags** | QR proves the loop first; NFC is 10–30× cost and adds on-metal complexity | A pilot customer reports tag-scanning friction or high shrinkage |
 | **Preventive-maintenance scheduling** | Needs a trusted registry first; scheduling against bad data creates noise | Registry completeness > 80% |
-| **Tenant-facing request portal** | Different user, different product surface, tenant PII obligations | Customer demand from 2+ accounts |
 | **Vendor portal / external contractor access** | New auth surface + billing model | A customer with heavy outsourced maintenance |
 | **Purchase orders & inventory ordering** | Adjacent product; big scope | — |
 | **Push notifications** | Nice-to-have; V0 techs check the queue | Work-order assignment latency complaints |
@@ -189,7 +199,7 @@ Cut features before cutting any of these:
 | 3 — Offline | 7–10 | Sync engine, outbox, delta pull, media queue, conflict rules, sync-health dashboard. *(Overlaps phase 2 deliberately — sync is designed in from the start and hardened here.)* |
 | 4 — Turns & shrinkage | 9–11 | Turn workflow, grace-window job, unconfirmed-asset sweep, HQ shrinkage review |
 | 5 — Reporting & polish | 11–13 | `metric_snapshot` rollups, V0 reports, CSV export, dashboard tiles, audit viewer |
-| 6 — Website & pilot | 12–14 | Marketing site, TestFlight/Play internal, onboard design partner, tags printed and shipped |
+| 6 — Resident portal & pilot | 12–14 | Resident auth/occupancy, request API, portal wiring, notifications, marketing site, TestFlight/Play internal, onboard design partner, tags printed and shipped |
 
 **Pilot exit criteria (90 days in):**
 - ≥ 95% of in-unit assets at the pilot property tagged and categorized

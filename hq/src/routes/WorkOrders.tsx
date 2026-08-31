@@ -11,9 +11,9 @@ const COLUMNS = [
 
 const PRIORITIES = [
   { value: 'all', label: 'All Priorities' },
-  { value: 'urgent', label: 'Urgent', color: '#FF2A2A' },
+  { value: 'urgent', label: 'Urgent', color: '#eb2b2b' },
   { value: 'high', label: 'High', color: '#F97316' },
-  { value: 'normal', label: 'Normal', color: '#FFFFFF' },
+  { value: 'normal', label: 'Normal', color: 'var(--white)' },
   { value: 'low', label: 'Low', color: '#71717A' },
 ];
 
@@ -165,8 +165,8 @@ export function WorkOrders() {
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: 16,
-          background: '#0D0D0D',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--bg-card)',
+          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
           borderRadius: 2,
           padding: '12px 18px',
         }}
@@ -180,11 +180,11 @@ export function WorkOrders() {
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
-                background: '#141414',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: 'var(--bg-elevated)',
+                border: '1px solid rgba(var(--overlay-rgb), 0.12)',
                 borderRadius: 2,
                 padding: '7px 12px',
-                color: '#fff',
+                color: 'var(--white)',
                 fontSize: '0.84rem',
                 outline: 'none',
                 fontFamily: 'inherit',
@@ -196,11 +196,11 @@ export function WorkOrders() {
             value={selectedPriority}
             onChange={(e) => setSelectedPriority(e.target.value)}
             style={{
-              background: '#141414',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
               borderRadius: 2,
               padding: '7px 10px',
-              color: '#fff',
+              color: 'var(--white)',
               fontSize: '0.82rem',
               outline: 'none',
               cursor: 'pointer',
@@ -217,11 +217,11 @@ export function WorkOrders() {
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
             style={{
-              background: '#141414',
-              border: '1px solid rgba(255,255,255,0.12)',
+              background: 'var(--bg-elevated)',
+              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
               borderRadius: 2,
               padding: '7px 10px',
-              color: '#fff',
+              color: 'var(--white)',
               fontSize: '0.82rem',
               outline: 'none',
               cursor: 'pointer',
@@ -242,8 +242,8 @@ export function WorkOrders() {
           <button
             onClick={() => setShowCreateModal(true)}
             style={{
-              background: '#FF2A2A',
-              color: '#fff',
+              background: '#eb2b2b',
+              color: 'var(--white)',
               border: 'none',
               borderRadius: 2,
               padding: '8px 16px',
@@ -291,8 +291,8 @@ export function WorkOrders() {
                 setDragOverCol(null);
               }}
               style={{
-                background: isDragOver ? 'rgba(255,42,42,0.06)' : '#0A0A0A',
-                border: isDragOver ? '1px dashed #FF2A2A' : '1px solid rgba(255,255,255,0.07)',
+                background: isDragOver ? 'rgba(235, 43, 43,0.06)' : '#0A0A0A',
+                border: isDragOver ? '1px dashed #eb2b2b' : '1px solid rgba(var(--overlay-rgb), 0.07)',
                 borderRadius: 2,
                 display: 'flex',
                 flexDirection: 'column',
@@ -304,11 +304,11 @@ export function WorkOrders() {
               <div
                 style={{
                   padding: '12px 16px',
-                  borderBottom: '1px solid rgba(255,255,255,0.07)',
+                  borderBottom: '1px solid rgba(var(--overlay-rgb), 0.07)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  background: '#0e0e0e',
+                  background: 'var(--bg-card)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -329,10 +329,10 @@ export function WorkOrders() {
                   style={{
                     fontFamily: 'monospace',
                     fontSize: '0.74rem',
-                    background: 'rgba(255,255,255,0.08)',
+                    background: 'rgba(var(--overlay-rgb), 0.08)',
                     padding: '2px 8px',
                     borderRadius: 2,
-                    color: '#fff',
+                    color: 'var(--white)',
                     fontWeight: 700,
                   }}
                 >
@@ -352,8 +352,8 @@ export function WorkOrders() {
                       onDragStart={() => setDraggedWoId(wo.id)}
                       onClick={() => setSelectedWo(wo)}
                       style={{
-                        background: '#121212',
-                        border: isUrgent ? '1px solid rgba(255,42,42,0.4)' : '1px solid rgba(255,255,255,0.08)',
+                        background: 'var(--bg-elevated)',
+                        border: isUrgent ? '1px solid rgba(235, 43, 43,0.4)' : '1px solid rgba(var(--overlay-rgb), 0.08)',
                         borderRadius: 2,
                         padding: 12,
                         cursor: 'pointer',
@@ -365,16 +365,16 @@ export function WorkOrders() {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.borderColor = isUrgent ? '#FF2A2A' : '#FFFFFF';
+                        e.currentTarget.style.borderColor = isUrgent ? '#eb2b2b' : '#FFFFFF';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'none';
-                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(255,42,42,0.4)' : 'rgba(255,255,255,0.08)';
+                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(235, 43, 43,0.4)' : 'rgba(var(--overlay-rgb), 0.08)';
                       }}
                     >
                       {/* Card Topline: ID + Priority Chip + Category */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', fontWeight: 800, color: '#FF2A2A' }}>
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', fontWeight: 800, color: '#eb2b2b' }}>
                           WO-{wo.number}
                         </span>
 
@@ -383,8 +383,8 @@ export function WorkOrders() {
                             <span
                               style={{
                                 fontSize: '0.66rem',
-                                background: 'rgba(255,255,255,0.06)',
-                                border: '1px solid rgba(255,255,255,0.1)',
+                                background: 'rgba(var(--overlay-rgb), 0.06)',
+                                border: '1px solid rgba(var(--overlay-rgb), 0.1)',
                                 padding: '2px 5px',
                                 borderRadius: 3,
                                 color: '#D4D4D4',
@@ -400,9 +400,9 @@ export function WorkOrders() {
                               textTransform: 'uppercase',
                               padding: '2px 6px',
                               borderRadius: 3,
-                              background: isUrgent ? 'rgba(255,42,42,0.2)' : 'rgba(255,255,255,0.08)',
-                              color: isUrgent ? '#FF4D4D' : '#D4D4D4',
-                              border: isUrgent ? '1px solid rgba(255,42,42,0.4)' : 'none',
+                              background: isUrgent ? 'rgba(235, 43, 43,0.2)' : 'rgba(var(--overlay-rgb), 0.08)',
+                              color: isUrgent ? '#f44343' : '#D4D4D4',
+                              border: isUrgent ? '1px solid rgba(235, 43, 43,0.4)' : 'none',
                             }}
                           >
                             {wo.priority}
@@ -411,7 +411,7 @@ export function WorkOrders() {
                       </div>
 
                       {/* Card Title */}
-                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#FFF', lineHeight: 1.35 }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--white)', lineHeight: 1.35 }}>
                         {wo.title}
                       </div>
 
@@ -426,10 +426,10 @@ export function WorkOrders() {
                           fontFamily: 'monospace',
                         }}
                       >
-                        <span style={{ color: '#FF2A2A' }}>●</span>
+                        <span style={{ color: '#eb2b2b' }}>●</span>
                         <span>{wo.unitLabel ?? 'Unit 402'}</span>
                         <span>·</span>
-                        <span style={{ color: '#FFF' }}>{wo.assetNpid ?? 'NP-ASSET'}</span>
+                        <span style={{ color: 'var(--white)' }}>{wo.assetNpid ?? 'NP-ASSET'}</span>
                       </div>
 
                       {/* Card Footer: Assignee + Swimlane Mover Controls */}
@@ -438,7 +438,7 @@ export function WorkOrders() {
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',
-                          borderTop: '1px solid rgba(255,255,255,0.06)',
+                          borderTop: '1px solid rgba(var(--overlay-rgb), 0.06)',
                           paddingTop: 8,
                           marginTop: 2,
                         }}
@@ -449,14 +449,14 @@ export function WorkOrders() {
                               width: 18,
                               height: 18,
                               borderRadius: '50%',
-                              background: '#2A2A2A',
-                              border: '1px solid rgba(255,255,255,0.2)',
+                              background: 'var(--bg-elevated)',
+                              border: '1px solid rgba(var(--overlay-rgb), 0.2)',
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               fontSize: '0.6rem',
                               fontWeight: 700,
-                              color: '#FFF',
+                              color: 'var(--white)',
                             }}
                           >
                             {wo.assignee ? wo.assignee.charAt(0) : 'T'}
@@ -474,9 +474,9 @@ export function WorkOrders() {
                             onClick={() => handleMoveLane(wo, 'prev')}
                             disabled={col.id === 'intake'}
                             style={{
-                              background: '#222',
-                              border: '1px solid rgba(255,255,255,0.1)',
-                              color: '#fff',
+                              background: 'var(--bg-elevated)',
+                              border: '1px solid rgba(var(--overlay-rgb), 0.1)',
+                              color: 'var(--white)',
                               borderRadius: 4,
                               width: 22,
                               height: 22,
@@ -492,9 +492,9 @@ export function WorkOrders() {
                             onClick={() => handleMoveLane(wo, 'next')}
                             disabled={col.id === 'completed'}
                             style={{
-                              background: '#222',
-                              border: '1px solid rgba(255,255,255,0.1)',
-                              color: '#fff',
+                              background: 'var(--bg-elevated)',
+                              border: '1px solid rgba(var(--overlay-rgb), 0.1)',
+                              color: 'var(--white)',
                               borderRadius: 4,
                               width: 22,
                               height: 22,
@@ -549,8 +549,8 @@ export function WorkOrders() {
               width: '100%',
               maxWidth: 640,
               height: '100%',
-              background: '#0D0D0D',
-              borderLeft: '1px solid rgba(255,255,255,0.15)',
+              background: 'var(--bg-card)',
+              borderLeft: '1px solid rgba(var(--overlay-rgb), 0.15)',
               display: 'flex',
               flexDirection: 'column',
               boxShadow: '-20px 0 60px rgba(0,0,0,0.9)',
@@ -562,11 +562,11 @@ export function WorkOrders() {
             <div
               style={{
                 padding: '20px 24px',
-                borderBottom: '1px solid rgba(255,255,255,0.1)',
+                borderBottom: '1px solid rgba(var(--overlay-rgb), 0.1)',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                background: '#121212',
+                background: 'var(--bg-elevated)',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -575,7 +575,7 @@ export function WorkOrders() {
                     fontFamily: 'monospace',
                     fontSize: '1rem',
                     fontWeight: 800,
-                    color: '#FF2A2A',
+                    color: '#eb2b2b',
                   }}
                 >
                   WO-{selectedWo.number}
@@ -586,8 +586,8 @@ export function WorkOrders() {
                     textTransform: 'uppercase',
                     padding: '2px 8px',
                     borderRadius: 4,
-                    background: 'rgba(255,255,255,0.1)',
-                    color: '#fff',
+                    background: 'rgba(var(--overlay-rgb), 0.1)',
+                    color: 'var(--white)',
                     fontWeight: 700,
                   }}
                 >
@@ -613,7 +613,7 @@ export function WorkOrders() {
             <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 24, flex: 1 }}>
               {/* Title & Stage Controller */}
               <div>
-                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFF', marginBottom: 12 }}>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--white)', marginBottom: 12 }}>
                   {selectedWo.title}
                 </h2>
 
@@ -627,11 +627,11 @@ export function WorkOrders() {
                       onChange={(e) => handleStatusChange(selectedWo.id, e.target.value)}
                       style={{
                         width: '100%',
-                        background: '#181818',
-                        border: '1px solid rgba(255,255,255,0.15)',
+                        background: 'var(--bg-elevated)',
+                        border: '1px solid rgba(var(--overlay-rgb), 0.15)',
                         borderRadius: 2,
                         padding: '8px 10px',
-                        color: '#FFF',
+                        color: 'var(--white)',
                         fontSize: '0.85rem',
                       }}
                     >
@@ -656,11 +656,11 @@ export function WorkOrders() {
                       }}
                       style={{
                         width: '100%',
-                        background: '#181818',
-                        border: '1px solid rgba(255,255,255,0.15)',
+                        background: 'var(--bg-elevated)',
+                        border: '1px solid rgba(var(--overlay-rgb), 0.15)',
                         borderRadius: 2,
                         padding: '8px 10px',
-                        color: '#FFF',
+                        color: 'var(--white)',
                         fontSize: '0.85rem',
                       }}
                     >
@@ -676,8 +676,8 @@ export function WorkOrders() {
               {/* Asset & Spatial Context Box */}
               <div
                 style={{
-                  background: '#141414',
-                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid rgba(var(--overlay-rgb), 0.1)',
                   borderRadius: 2,
                   padding: 16,
                   display: 'flex',
@@ -691,13 +691,13 @@ export function WorkOrders() {
                   </span>
                   <Link
                     to={`/assets/${selectedWo.assetId ?? 'asset_hvac_402'}`}
-                    style={{ fontSize: '0.76rem', color: '#FF2A2A', fontWeight: 700 }}
+                    style={{ fontSize: '0.76rem', color: '#eb2b2b', fontWeight: 700 }}
                   >
                     View Asset Plate →
                   </Link>
                 </div>
 
-                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#FFF' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--white)' }}>
                   {selectedWo.assetName ?? 'Carrier 2.5-Ton Variable Speed Air Handler'}
                 </div>
 
@@ -715,8 +715,8 @@ export function WorkOrders() {
                 </span>
                 <div
                   style={{
-                    background: '#141414',
-                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid rgba(var(--overlay-rgb), 0.08)',
                     borderRadius: 2,
                     padding: 14,
                     fontSize: '0.88rem',
@@ -739,8 +739,8 @@ export function WorkOrders() {
                       <span
                         key={idx}
                         style={{
-                          background: 'rgba(255,42,42,0.1)',
-                          border: '1px solid rgba(255,42,42,0.3)',
+                          background: 'rgba(235, 43, 43,0.1)',
+                          border: '1px solid rgba(235, 43, 43,0.3)',
                           color: '#FF8888',
                           padding: '4px 10px',
                           borderRadius: 2,
@@ -758,8 +758,8 @@ export function WorkOrders() {
               </div>
 
               {/* Activity & Comments Thread (Linear Style) */}
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 20 }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#FFF', display: 'block', marginBottom: 14 }}>
+              <div style={{ borderTop: '1px solid rgba(var(--overlay-rgb), 0.1)', paddingTop: 20 }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--white)', display: 'block', marginBottom: 14 }}>
                   Activity & Field Notes Thread
                 </span>
 
@@ -769,8 +769,8 @@ export function WorkOrders() {
                     <div
                       key={note.id}
                       style={{
-                        background: '#141414',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: 'var(--bg-elevated)',
+                        border: '1px solid rgba(var(--overlay-rgb), 0.06)',
                         borderRadius: 2,
                         padding: '10px 14px',
                         display: 'flex',
@@ -779,7 +779,7 @@ export function WorkOrders() {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#71717A' }}>
-                        <strong style={{ color: '#FFF' }}>{note.author}</strong>
+                        <strong style={{ color: 'var(--white)' }}>{note.author}</strong>
                         <span>{new Date(note.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                       <div style={{ fontSize: '0.84rem', color: '#D4D4D4' }}>{note.text}</div>
@@ -796,11 +796,11 @@ export function WorkOrders() {
                     onChange={(e) => setNoteInput(e.target.value)}
                     style={{
                       width: '100%',
-                      background: '#161616',
-                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'var(--bg-elevated)',
+                      border: '1px solid rgba(var(--overlay-rgb), 0.15)',
                       borderRadius: 2,
                       padding: 12,
-                      color: '#FFF',
+                      color: 'var(--white)',
                       fontSize: '0.86rem',
                       outline: 'none',
                       fontFamily: 'inherit',
@@ -815,7 +815,7 @@ export function WorkOrders() {
                       placeholder="Your Name"
                       style={{
                         background: 'transparent',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        border: '1px solid rgba(var(--overlay-rgb), 0.1)',
                         borderRadius: 2,
                         padding: '4px 8px',
                         color: '#A3A3A3',
@@ -865,8 +865,8 @@ export function WorkOrders() {
             style={{
               width: '100%',
               maxWidth: 540,
-              background: '#0F0F0F',
-              border: '1px solid rgba(255,255,255,0.15)',
+              background: 'var(--bg-card)',
+              border: '1px solid rgba(var(--overlay-rgb), 0.15)',
               borderRadius: 2,
               padding: 28,
               boxShadow: '0 30px 80px rgba(0,0,0,0.95)',
@@ -874,7 +874,7 @@ export function WorkOrders() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFF' }}>Create Work Order</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--white)' }}>Create Work Order</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 style={{ background: 'transparent', border: 'none', color: '#A3A3A3', fontSize: '1.2rem', cursor: 'pointer' }}
@@ -894,11 +894,11 @@ export function WorkOrders() {
                   onChange={(e) => setNewTitle(e.target.value)}
                   style={{
                     width: '100%',
-                    background: '#1A1A1A',
-                    border: '1px solid rgba(255,255,255,0.15)',
+                    background: 'var(--bg-elevated)',
+                    border: '1px solid rgba(var(--overlay-rgb), 0.15)',
                     borderRadius: 2,
                     padding: '10px 14px',
-                    color: '#FFF',
+                    color: 'var(--white)',
                     fontSize: '0.9rem',
                     outline: 'none',
                   }}
@@ -911,7 +911,7 @@ export function WorkOrders() {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid rgba(var(--overlay-rgb), 0.15)', borderRadius: 2, padding: '9px 12px', color: 'var(--white)' }}
                   >
                     <option value="HVAC">HVAC</option>
                     <option value="Appliance">Appliance</option>
@@ -925,7 +925,7 @@ export function WorkOrders() {
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid rgba(var(--overlay-rgb), 0.15)', borderRadius: 2, padding: '9px 12px', color: 'var(--white)' }}
                   >
                     <option value="urgent">Urgent</option>
                     <option value="high">High</option>
@@ -942,7 +942,7 @@ export function WorkOrders() {
                     type="text"
                     value={newUnit}
                     onChange={(e) => setNewUnit(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid rgba(var(--overlay-rgb), 0.15)', borderRadius: 2, padding: '9px 12px', color: 'var(--white)' }}
                   />
                 </div>
 
@@ -952,7 +952,7 @@ export function WorkOrders() {
                     type="text"
                     value={newAssetNpid}
                     onChange={(e) => setNewAssetNpid(e.target.value)}
-                    style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '9px 12px', color: '#FFF' }}
+                    style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid rgba(var(--overlay-rgb), 0.15)', borderRadius: 2, padding: '9px 12px', color: 'var(--white)' }}
                   />
                 </div>
               </div>
@@ -964,7 +964,7 @@ export function WorkOrders() {
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Field notes, failure symptoms, or required tools…"
-                  style={{ width: '100%', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 2, padding: '10px 14px', color: '#FFF', resize: 'none' }}
+                  style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid rgba(var(--overlay-rgb), 0.15)', borderRadius: 2, padding: '10px 14px', color: 'var(--white)', resize: 'none' }}
                 />
               </div>
 
@@ -972,13 +972,13 @@ export function WorkOrders() {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.15)', color: '#FFF', borderRadius: 2, padding: '9px 16px', cursor: 'pointer' }}
+                  style={{ background: 'transparent', border: '1px solid rgba(var(--overlay-rgb), 0.15)', color: 'var(--white)', borderRadius: 2, padding: '9px 16px', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{ background: '#FF2A2A', border: 'none', color: '#FFF', borderRadius: 2, padding: '9px 20px', fontWeight: 700, cursor: 'pointer' }}
+                  style={{ background: '#eb2b2b', border: 'none', color: 'var(--white)', borderRadius: 2, padding: '9px 20px', fontWeight: 700, cursor: 'pointer' }}
                 >
                   Create Work Order
                 </button>

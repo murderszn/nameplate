@@ -51,8 +51,10 @@ not evidence that its complete business workflow is finished.
 
 ## What's deliberately deferred
 
-The V1 `part_movement` ledger and future `notification`, `job_outbox`,
-`api_key`, `webhook_delivery`, and `export_job` tables are not modeled.
+The resident identity/occupancy, resident request activity, notification,
+`part_movement`, `job_outbox`, `api_key`, `webhook_delivery`, and `export_job`
+tables are not modeled yet. Resident schema and API requirements are specified
+in [`../docs/resident-portal-backend-plan.md`](../docs/resident-portal-backend-plan.md).
 Several modeled V0 areas still need domain services/endpoints—notably custody
 history, turns, reconciliation, media upload intents, metrics, and device
 revocation. See the blueprint roadmap rather than inferring completion from
@@ -135,4 +137,7 @@ dev server (`localhost:5173`) can call this API directly.
 2. Harden the implemented `asset_location` custody transaction with database-backed concurrency and end-to-end tests.
 3. Persist sync idempotency receipts and expand the existing pull/push slice to the complete working-set and tombstone contract (`architecture.md` §4).
 4. Turns, media presigned uploads, reports (hand-written SQL on the read replica), and broader audit coverage.
-5. OpenAPI 3.1 spec (`backend/packages/contracts` in the target repo layout) generated from/verified against these DTOs, per `architecture.md` §6.
+5. Add resident profile/occupancy/invitation tables, resident-scoped auth guard,
+   safe work-order/activity DTOs, media intents, and notification outbox per
+   `resident-portal-backend-plan.md`.
+6. OpenAPI 3.1 spec (`backend/packages/contracts` in the target repo layout) generated from/verified against these DTOs, per `architecture.md` §6.

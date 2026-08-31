@@ -121,7 +121,7 @@ export function Analytics() {
         </div>
         <div className="np-kpi-tile">
           <div className="np-kpi-tile__label">Shrinkage Risk Assets</div>
-          <div className="np-kpi-tile__value" style={{ color: '#FF2A2A' }}>{unconfirmedAssets.length}</div>
+          <div className="np-kpi-tile__value" style={{ color: '#eb2b2b' }}>{unconfirmedAssets.length}</div>
         </div>
       </div>
 
@@ -151,8 +151,8 @@ export function Analytics() {
                         height: 38,
                         borderRadius: 2,
                         overflow: 'hidden',
-                        background: '#111',
-                        border: '1px solid rgba(255,255,255,0.1)',
+                        background: 'var(--bg-elevated)',
+                        border: '1px solid rgba(var(--overlay-rgb), 0.1)',
                       }}
                     >
                       <img
@@ -167,14 +167,14 @@ export function Analytics() {
                   </td>
                   <td>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                      <strong style={{ color: '#fff', fontSize: '0.9rem' }}>{pm.name}</strong>
+                      <strong style={{ color: 'var(--white)', fontSize: '0.9rem' }}>{pm.name}</strong>
                       <span style={{ fontSize: '0.74rem', color: '#888' }}>
                         {pm.city}, {pm.state} · <span className="mono">{pm.code}</span>
                       </span>
                     </div>
                   </td>
                   <td>
-                    <span style={{ fontWeight: 700, color: '#fff' }}>{pm.assetsCount}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--white)' }}>{pm.assetsCount}</span>
                   </td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -182,7 +182,7 @@ export function Analytics() {
                         style={{
                           width: 80,
                           height: 6,
-                          background: 'rgba(255,255,255,0.1)',
+                          background: 'rgba(var(--overlay-rgb), 0.1)',
                           borderRadius: 2,
                           overflow: 'hidden',
                         }}
@@ -232,7 +232,7 @@ export function Analytics() {
         <ChartCard title="OEM Brand Reliability Mix" subtitle="Tracked inventory share by manufacturer">
           <DonutChart
             data={[
-              { label: 'Whirlpool', value: 10, color: '#ffffff' },
+              { label: 'Whirlpool', value: 10, color: 'var(--white)' },
               { label: 'GE Appliances', value: 8, color: '#0B5D8A' },
               { label: 'Rheem', value: 6, color: '#3E9BC9' },
               { label: 'Carrier', value: 4, color: '#F0A028' },
@@ -270,7 +270,7 @@ export function Analytics() {
                       style={{
                         fontWeight: 700,
                         background: b.score.startsWith('A') ? '#137A5B' : b.score.startsWith('B') ? '#0B5D8A' : '#C23B3B',
-                        color: '#fff',
+                        color: 'var(--white)',
                       }}
                     >
                       Grade {b.score}
@@ -316,7 +316,7 @@ export function Analytics() {
 
                   return (
                     <tr key={a.id}>
-                      <td className="mono" style={{ color: '#FF2A2A', fontWeight: 700 }}>{a.npid}</td>
+                      <td className="mono" style={{ color: '#eb2b2b', fontWeight: 700 }}>{a.npid}</td>
                       <td>{brand} {model} ({category})</td>
                       <td>{loc}</td>
                       <td>{a.currentLocationConfirmedAt ? new Date(a.currentLocationConfirmedAt).toLocaleDateString() : 'Never Scanned'}</td>

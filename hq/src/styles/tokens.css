@@ -5,35 +5,36 @@
  */
 
 :root {
-  --bg: #000000;
-  --bg-subtle: #080808;
-  --bg-elevated: #111111;
-  --bg-card: #141414;
+  --bg: #ffffff;
+  --bg-subtle: #f7f7f7;
+  --bg-elevated: #eeeeee;
+  --bg-card: #fafafa;
 
-  --white: #ffffff;
-  --white-90: rgba(255, 255, 255, 0.9);
-  --white-70: rgba(255, 255, 255, 0.7);
-  --white-40: rgba(255, 255, 255, 0.4);
-  --white-15: rgba(255, 255, 255, 0.15);
-  --white-08: rgba(255, 255, 255, 0.08);
+  --white: #111111;
+  --white-90: rgba(17, 17, 17, 0.9);
+  --white-70: rgba(17, 17, 17, 0.7);
+  --white-40: rgba(17, 17, 17, 0.4);
+  --white-15: rgba(17, 17, 17, 0.15);
+  --white-08: rgba(17, 17, 17, 0.08);
 
-  --red: #ff2a2a;
-  --red-hover: #ff4d4d;
-  --red-deep: #d91d1d;
+  --red: #eb2b2b;
+  --red-hover: #f44343;
+  --red-deep: #c91f1f;
   --red-glow: none;
-  --red-subtle: rgba(255, 42, 42, 0.08);
-  --red-border: rgba(255, 42, 42, 0.4);
+  --red-subtle: rgba(235, 43, 43, 0.08);
+  --red-border: rgba(235, 43, 43, 0.4);
 
-  --gray-900: #121212;
-  --gray-800: #1f1f1f;
-  --gray-700: #2e2e2e;
+  --gray-900: #f3f3f3;
+  --gray-800: #e9e9e9;
+  --gray-700: #d4d4d4;
   --gray-500: #6b6b6b;
-  --gray-400: #a3a3a3;
-  --gray-300: #d4d4d4;
+  --gray-400: #555555;
+  --gray-300: #333333;
 
-  --line: rgba(255, 255, 255, 0.1);
-  --line-light: rgba(255, 255, 255, 0.05);
-  --line-strong: rgba(255, 255, 255, 0.2);
+  --line: rgba(0, 0, 0, 0.12);
+  --line-light: rgba(0, 0, 0, 0.06);
+  --line-strong: rgba(0, 0, 0, 0.24);
+  --overlay-rgb: 0, 0, 0;
 
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter',
     'Helvetica Neue', Arial, sans-serif;
@@ -73,4 +74,30 @@
   --np-sidebar-collapsed-width: 68px;
   --np-font-sans: var(--font-sans);
   --np-font-mono: var(--font-mono);
+}
+
+:root[data-theme='dark'] {
+  --bg: #000000;
+  --bg-subtle: #080808;
+  --bg-elevated: #111111;
+  --bg-card: #141414;
+
+  --white: #ffffff;
+  --white-90: rgba(255, 255, 255, 0.9);
+  --white-70: rgba(255, 255, 255, 0.7);
+  --white-40: rgba(255, 255, 255, 0.4);
+  --white-15: rgba(255, 255, 255, 0.15);
+  --white-08: rgba(255, 255, 255, 0.08);
+
+  --gray-900: #121212;
+  --gray-800: #1f1f1f;
+  --gray-700: #2e2e2e;
+  --gray-500: #6b6b6b;
+  --gray-400: #a3a3a3;
+  --gray-300: #d4d4d4;
+
+  --line: rgba(255, 255, 255, 0.1);
+  --line-light: rgba(255, 255, 255, 0.05);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --overlay-rgb: 255, 255, 255;
 }

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Report maintenance issues and track work for your home." />
+    <script>
+      (() => {
+        let theme = 'light';
+        try { theme = localStorage.getItem('nameplate-theme') === 'dark' ? 'dark' : 'light'; } catch {}
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <title>NAMEPLATE — Portal</title>
+    <link rel="icon" href="./nameplate-logo-transparent.png" type="image/png" />
+    <style>
+      :root {
+        --np-load-bg: #ffffff;
+        --np-load-card: #fafafa;
+        --np-load-border: rgba(0, 0, 0, 0.12);
+        --np-load-text: #111111;
+        --np-load-text-sub: rgba(17, 17, 17, 0.65);
+        --np-load-red: #eb2b2b;
+        --np-load-red-subtle: rgba(235, 43, 43, 0.08);
+        --np-load-red-border: rgba(235, 43, 43, 0.35);
+        --np-load-grid: rgba(0, 0, 0, 0.03);
+      }
+      :root[data-theme="dark"] {
+        --np-load-bg: #000000;
+        --np-load-card: #141414;
+        --np-load-border: rgba(255, 255, 255, 0.15);
+        --np-load-text: #ffffff;
+        --np-load-text-sub: rgba(255, 255, 255, 0.65);
+        --np-load-red: #ff2a2a;
+        --np-load-red-subtle: rgba(255, 42, 42, 0.12);
+        --np-load-red-border: rgba(255, 42, 42, 0.4);
+        --np-load-grid: rgba(255, 255, 255, 0.03);
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--np-load-bg);
+      }
+      .np-preloader {
+        position: fixed;
+        inset: 0;
+        background: var(--np-load-bg);
+        background-image: radial-gradient(var(--np-load-grid) 1px, transparent 0);
+        background-size: 28px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--np-load-text);
+        z-index: 99999;
+      }
+      .np-preloader__wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 32px;
+      }
+      .np-preloader__logo-box {
+        background: var(--np-load-card);
+        border: 1px solid var(--np-load-border);
+        padding: 16px 20px;
+        border-radius: 4px;
+        margin-bottom: 22px;
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+      }
+      .np-preloader__logo {
+        height: 48px;
+        width: auto;
+        display: block;
+      }
+      .np-preloader__logo--light { display: none; }
+      .np-preloader__logo--dark { display: block; }
+      :root[data-theme="light"] .np-preloader__logo--dark { display: none; }
+      :root[data-theme="light"] .np-preloader__logo--light { display: block; }
+
+      .np-preloader__kicker {
+        font-family: "IBM Plex Mono", "SF Mono", Menlo, Consolas, monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        color: var(--np-load-red);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .np-preloader__kicker::before {
+        content: "";
+        display: inline-block;
+        width: 3px;
+        height: 12px;
+        background: var(--np-load-red);
+        border-radius: 1px;
+      }
+      .np-preloader__title {
+        font-size: 22px;
+        font-weight: 850;
+        letter-spacing: -0.02em;
+        color: var(--np-load-text);
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+      }
+      .np-preloader__title span {
+        font-family: "IBM Plex Mono", "SF Mono", Menlo, Consolas, monospace;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        color: var(--np-load-red);
+        background: var(--np-load-red-subtle);
+        border: 1px solid var(--np-load-red-border);
+        padding: 2px 6px;
+        border-radius: 2px;
+      }
+      .np-preloader__sub {
+        font-size: 13px;
+        color: var(--np-load-text-sub);
+        margin-top: 6px;
+        margin-bottom: 28px;
+      }
+      .np-preloader__bar {
+        width: 220px;
+        height: 2px;
+        background: var(--np-load-border);
+        border-radius: 2px;
+        overflow: hidden;
+        position: relative;
+      }
+      .np-preloader__progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 45%;
+        background: var(--np-load-red);
+        border-radius: 2px;
+        box-shadow: 0 0 8px var(--np-load-red);
+        animation: np-portal-pulse 1.35s ease-in-out infinite alternate;
+      }
+      @keyframes np-portal-pulse {
+        0% { left: 0%; width: 25%; }
+        50% { width: 55%; }
+        100% { left: 75%; width: 25%; }
+      }
+      .np-preloader__status {
+        font-family: "IBM Plex Mono", "SF Mono", Menlo, Consolas, monospace;
+        font-size: 9.5px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: var(--np-load-text-sub);
+        margin-top: 14px;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BGy4N9dC.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CH2psybJ.css">
+  </head>
+  <body>
+    <div id="root">
+      <div class="np-preloader">
+        <div class="np-preloader__wrap">
+          <div class="np-preloader__logo-box">
+            <img src="./nameplate-logo-transparent.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--dark" />
+            <img src="./nameplate-logo-light.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--light" />
+          </div>
+          <div class="np-preloader__kicker">00 / RESIDENT PORTAL</div>
+          <div class="np-preloader__title">NAMEPLATE <span>PORTAL</span></div>
+          <div class="np-preloader__sub">Maintenance, without the runaround.</div>
+          <div class="np-preloader__bar">
+            <div class="np-preloader__progress"></div>
+          </div>
+          <div class="np-preloader__status">CONNECTING TO PROPERTY RECORD...</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

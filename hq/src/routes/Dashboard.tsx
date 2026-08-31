@@ -16,9 +16,9 @@ const OPEN_STATUSES = ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awa
 const FLAGGED_STATUSES = ['unaccounted_for', 'needs_repair', 'in_repair'];
 const STATUS_COLORS: Record<string, string> = {
   active: '#ffffff',
-  needs_repair: '#ff2a2a',
-  in_repair: '#d91d1d',
-  unaccounted_for: '#ff4d4d',
+  needs_repair: '#eb2b2b',
+  in_repair: '#c91f1f',
+  unaccounted_for: '#f44343',
   awaiting_parts: '#a3a3a3',
   retired: '#6b6b6b',
   disposed: '#2e2e2e',
@@ -253,8 +253,8 @@ export function Dashboard() {
           <GroupedBarChart
             data={propertyBars}
             series={[
-              { key: 'assets', label: 'Assets', color: '#ffffff' },
-              { key: 'spend', label: 'Spend $', color: '#ff2a2a' },
+              { key: 'assets', label: 'Assets', color: 'var(--white)' },
+              { key: 'spend', label: 'Spend $', color: '#eb2b2b' },
             ]}
           />
         </ChartCard>
@@ -324,7 +324,7 @@ export function Dashboard() {
               const isPastDue = w.slaDueAt && new Date(w.slaDueAt).getTime() < Date.now();
               const daysOverdue = isPastDue ? Math.floor((Date.now() - new Date(w.slaDueAt!).getTime()) / 86400000) : null;
               return (
-                <tr key={w.id} style={isPastDue ? { background: 'rgba(255,42,42,0.06)' } : undefined}>
+                <tr key={w.id} style={isPastDue ? { background: 'rgba(235, 43, 43,0.06)' } : undefined}>
                   <td className="mono">WO-{w.number}</td>
                   <td><Link to="/work-orders" className="np-table-link">{w.title} ↗</Link></td>
                   <td>

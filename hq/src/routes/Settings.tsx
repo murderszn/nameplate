@@ -121,8 +121,8 @@ export function Settings() {
       <form onSubmit={handleSave}>
         {activeTab === 'general' && (
           <div className="np-settings-grid">
-            <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, padding: 24 }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Organization Profile</h3>
+            <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 24 }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>Organization Profile</h3>
               <p className="np-muted" style={{ fontSize: '0.8rem', marginBottom: 20 }}>
                 Tenant root details and global accounting defaults.
               </p>
@@ -187,8 +187,8 @@ export function Settings() {
               </div>
             </div>
 
-            <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, padding: 24 }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Financial Rules & Thresholds</h3>
+            <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 24 }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>Financial Rules & Thresholds</h3>
               <p className="np-muted" style={{ fontSize: '0.8rem', marginBottom: 20 }}>
                 Automated guardrails for field repair vs. replace decisions.
               </p>
@@ -229,8 +229,8 @@ export function Settings() {
         )}
 
         {activeTab === 'slas' && (
-          <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, padding: 24, maxWidth: 900 }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Service Level Agreement (SLA) Targets</h3>
+          <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 24, maxWidth: 900 }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>Service Level Agreement (SLA) Targets</h3>
             <p className="np-muted" style={{ fontSize: '0.8rem', marginBottom: 20 }}>
               Resolution countdown timers triggered on work order dispatch. At-risk tickets are flagged on the Operations Cockpit.
             </p>
@@ -238,7 +238,7 @@ export function Settings() {
             <div className="np-sla-grid">
               <div className="np-sla-box">
                 <div className="np-sla-box__header">
-                  <span className="np-badge" style={{ background: 'rgba(255,42,42,0.15)', color: '#FF2A2A', borderColor: 'rgba(255,42,42,0.4)', fontWeight: 800 }}>EMERGENCY</span>
+                  <span className="np-badge" style={{ background: 'rgba(235, 43, 43,0.15)', color: '#eb2b2b', borderColor: 'rgba(235, 43, 43,0.4)', fontWeight: 800 }}>EMERGENCY</span>
                   <span className="mono" style={{ fontSize: '0.75rem', color: '#888' }}>{slaEmergency} HRS</span>
                 </div>
                 <span className="np-muted" style={{ fontSize: '0.78rem', marginBottom: 12, minHeight: 36 }}>
@@ -276,7 +276,7 @@ export function Settings() {
 
               <div className="np-sla-box">
                 <div className="np-sla-box__header">
-                  <span className="np-badge" style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', borderColor: 'rgba(255,255,255,0.2)', fontWeight: 800 }}>STANDARD</span>
+                  <span className="np-badge" style={{ background: 'rgba(var(--overlay-rgb), 0.08)', color: 'var(--white)', borderColor: 'rgba(var(--overlay-rgb), 0.2)', fontWeight: 800 }}>STANDARD</span>
                   <span className="mono" style={{ fontSize: '0.75rem', color: '#888' }}>{slaStandard} HRS</span>
                 </div>
                 <span className="np-muted" style={{ fontSize: '0.78rem', marginBottom: 12, minHeight: 36 }}>
@@ -295,7 +295,7 @@ export function Settings() {
 
               <div className="np-sla-box">
                 <div className="np-sla-box__header">
-                  <span className="np-badge" style={{ background: 'rgba(255,255,255,0.04)', color: '#888', borderColor: 'rgba(255,255,255,0.1)', fontWeight: 800 }}>LOW</span>
+                  <span className="np-badge" style={{ background: 'rgba(var(--overlay-rgb), 0.04)', color: '#888', borderColor: 'rgba(var(--overlay-rgb), 0.1)', fontWeight: 800 }}>LOW</span>
                   <span className="mono" style={{ fontSize: '0.75rem', color: '#888' }}>{slaLow} HRS</span>
                 </div>
                 <span className="np-muted" style={{ fontSize: '0.78rem', marginBottom: 12, minHeight: 36 }}>
@@ -316,8 +316,8 @@ export function Settings() {
         )}
 
         {activeTab === 'field' && (
-          <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, padding: 24, maxWidth: 900 }}>
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Field Device Policies & Verification</h3>
+          <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 24, maxWidth: 900 }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>Field Device Policies & Verification</h3>
             <p className="np-muted" style={{ fontSize: '0.8rem', marginBottom: 20 }}>
               Control mobile app behaviors for technicians using Nameplate Field tablets.
             </p>
@@ -373,8 +373,8 @@ export function Settings() {
 
         {activeTab === 'integrations' && (
           <div className="np-settings-grid">
-            <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, padding: 24 }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>Connected CMMS & Work Order Sync</h3>
+            <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 24 }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>Connected CMMS & Work Order Sync</h3>
               <p className="np-muted" style={{ fontSize: '0.8rem', marginBottom: 20 }}>
                 Live two-way synchronization with Linear, Jira, Yardi, and property management systems.
               </p>
@@ -382,7 +382,7 @@ export function Settings() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div className="np-integration-row">
                   <div className="np-integration-meta">
-                    <strong style={{ color: '#fff', fontSize: '0.88rem' }}>Linear Tracker</strong>
+                    <strong style={{ color: 'var(--white)', fontSize: '0.88rem' }}>Linear Tracker</strong>
                     <span className="np-badge np-badge--status-active">Connected · Team APPL-OPS</span>
                   </div>
                   <span className="mono" style={{ fontSize: '0.74rem', color: '#22c55e' }}>● Sync Active</span>
@@ -390,7 +390,7 @@ export function Settings() {
 
                 <div className="np-integration-row">
                   <div className="np-integration-meta">
-                    <strong style={{ color: '#fff', fontSize: '0.88rem' }}>Jira Service Desk</strong>
+                    <strong style={{ color: 'var(--white)', fontSize: '0.88rem' }}>Jira Service Desk</strong>
                     <span className="np-badge np-badge--status-active">Connected · Project SON-FIELD</span>
                   </div>
                   <span className="mono" style={{ fontSize: '0.74rem', color: '#22c55e' }}>● Sync Active</span>
@@ -398,7 +398,7 @@ export function Settings() {
 
                 <div className="np-integration-row">
                   <div className="np-integration-meta">
-                    <strong style={{ color: '#fff', fontSize: '0.88rem' }}>Yardi Voyager</strong>
+                    <strong style={{ color: 'var(--white)', fontSize: '0.88rem' }}>Yardi Voyager</strong>
                     <span className="np-badge">Read-Only</span>
                   </div>
                   <span className="mono" style={{ fontSize: '0.74rem', color: '#888' }}>Scheduled 02:00 UTC</span>
@@ -406,8 +406,8 @@ export function Settings() {
               </div>
             </div>
 
-            <div className="np-card" style={{ background: '#0e0e0e', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 2, padding: 24 }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#fff', margin: '0 0 4px' }}>API Keys & Webhook Endpoints</h3>
+            <div className="np-card" style={{ background: 'var(--bg-card)', border: '1px solid rgba(var(--overlay-rgb), 0.08)', borderRadius: 2, padding: 24 }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 4px' }}>API Keys & Webhook Endpoints</h3>
               <p className="np-muted" style={{ fontSize: '0.8rem', marginBottom: 20 }}>
                 Secure endpoints for webhook dispatch and sync cursors.
               </p>

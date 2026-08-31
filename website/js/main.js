@@ -17,6 +17,46 @@
       .replace(/'/g, '&#39;');
   }
 
+  // ================= Theme =================
+  function initTheme() {
+    var root = document.documentElement;
+    var buttons = document.querySelectorAll('.theme-toggle');
+    var themeColor = document.querySelector('meta[name="theme-color"]');
+    var media = window.matchMedia('(prefers-color-scheme: light)');
+
+    function savedTheme() {
+      try { return localStorage.getItem('nameplate-theme'); } catch (error) { return null; }
+    }
+
+    function applyTheme(theme, persist) {
+      root.setAttribute('data-theme', theme);
+      if (persist) {
+        try { localStorage.setItem('nameplate-theme', theme); } catch (error) {}
+      }
+      if (themeColor) themeColor.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
+      buttons.forEach(function (button) {
+        var nextTheme = theme === 'light' ? 'dark' : 'light';
+        var label = 'Use ' + nextTheme + ' mode';
+        button.setAttribute('aria-label', label);
+        button.setAttribute('title', label);
+      });
+    }
+
+    applyTheme(root.getAttribute('data-theme') || (media.matches ? 'light' : 'dark'), false);
+
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        applyTheme(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light', true);
+      });
+    });
+
+    function followSystem(event) {
+      if (!savedTheme()) applyTheme(event.matches ? 'light' : 'dark', false);
+    }
+    if (media.addEventListener) media.addEventListener('change', followSystem);
+    else if (media.addListener) media.addListener(followSystem);
+  }
+
   // ================= 1. Master Schematics & Live Asset Data =================
   var ASSET_RECORDS = {
     hvac: {
@@ -747,6 +787,7 @@
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       initHeader();
+      initTheme();
       initOversizedQrStudio();
       initSchematicsViewer();
       initScreensFilter();
@@ -756,6 +797,7 @@
     });
   } else {
     initHeader();
+    initTheme();
     initOversizedQrStudio();
     initSchematicsViewer();
     initScreensFilter();

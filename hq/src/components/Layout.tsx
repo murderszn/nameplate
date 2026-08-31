@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const STORAGE_KEY = 'np_sidebar_collapsed';
+const THEME_STORAGE_KEY = 'nameplate-theme';
+type Theme = 'light' | 'dark';
 
 interface NavItem {
   to: string;
@@ -111,6 +113,24 @@ export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      return localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // Ignore storage errors.
+    }
+  }, [theme]);
 
   // 1. Collapsed state saved to localStorage
   const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -257,7 +277,7 @@ export function Layout() {
         <div className="np-sidebar__header">
           <div className="np-sidebar__brand">
             <img
-              src="./images/nameplate-logo-transparent.png"
+              src={theme === 'light' ? './images/nameplate-logo-light.png' : './images/nameplate-logo-transparent.png'}
               alt="Nameplate"
               className="np-sidebar__logo"
             />
@@ -397,6 +417,22 @@ export function Layout() {
               <kbd>⌘K</kbd>
             </form>
 
+            <button
+              type="button"
+              className="np-theme-toggle"
+              onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
+              aria-label={`Use ${theme === 'light' ? 'dark' : 'light'} mode`}
+              title={`Use ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              <svg className="np-theme-toggle__icon np-theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 15.2A8.2 8.2 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2Z" />
+              </svg>
+              <svg className="np-theme-toggle__icon np-theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3.5" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
+              </svg>
+            </button>
+
             <a
               href={window.location.port === '5173' ? 'http://localhost:8080' : '../field/index.html'}
               target="_blank"
@@ -419,4 +455,3 @@ export function Layout() {
     </div>
   );
 }
-

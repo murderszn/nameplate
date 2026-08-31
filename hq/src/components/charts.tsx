@@ -1,10 +1,10 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import * as d3 from 'd3';
 
-const RED = '#ff2a2a';
+const RED = '#eb2b2b';
 const WHITE = '#ffffff';
 const GRAY = '#6b6b6b';
-const LINE = 'rgba(255,255,255,0.10)';
+const LINE = 'rgba(var(--overlay-rgb), 0.10)';
 const MONO = '"IBM Plex Mono", "SF Mono", Menlo, monospace';
 
 function clearTip() {

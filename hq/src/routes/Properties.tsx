@@ -108,8 +108,8 @@ export function Properties() {
           alignItems: 'center',
           gap: 12,
           flexWrap: 'wrap',
-          background: '#0d0d0d',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'var(--bg-card)',
+          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
           borderRadius: 2,
           padding: '12px 16px',
         }}
@@ -214,8 +214,8 @@ export function Properties() {
                           height: 44,
                           borderRadius: 2,
                           overflow: 'hidden',
-                          background: '#111',
-                          border: '1px solid rgba(255,255,255,0.1)',
+                          background: 'var(--bg-elevated)',
+                          border: '1px solid rgba(var(--overlay-rgb), 0.1)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -233,7 +233,7 @@ export function Properties() {
                     </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                        <strong style={{ color: '#fff', fontSize: '0.92rem' }}>{p.name}</strong>
+                        <strong style={{ color: 'var(--white)', fontSize: '0.92rem' }}>{p.name}</strong>
                         <span style={{ fontSize: '0.74rem', color: '#888' }}>
                           {p.addressLine1 ?? 'Maricopa County, AZ'}
                         </span>

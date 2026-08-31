@@ -15,9 +15,9 @@ const OPEN = ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_app
 const FLAGGED = ['unaccounted_for', 'needs_repair', 'in_repair'];
 const STATUS_COLORS: Record<string, string> = {
   active: '#ffffff',
-  needs_repair: '#ff2a2a',
-  in_repair: '#d91d1d',
-  unaccounted_for: '#ff4d4d',
+  needs_repair: '#eb2b2b',
+  in_repair: '#c91f1f',
+  unaccounted_for: '#f44343',
   vacant: '#6b6b6b',
   occupied: '#ffffff',
   turning: '#a3a3a3',
@@ -165,8 +165,8 @@ export function PropertyDetail() {
           position: 'relative',
           borderRadius: 2,
           overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.08)',
-          background: '#0d0d0d',
+          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
+          background: 'var(--bg-card)',
           minHeight: 220,
           display: 'flex',
           flexDirection: 'column',
@@ -198,7 +198,7 @@ export function PropertyDetail() {
                 {property.status.replaceAll('_', ' ')}
               </span>
             </div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--white)', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
               {property.name}
             </h1>
             <p style={{ color: '#ccc', margin: 0, fontSize: '0.88rem' }}>
@@ -206,19 +206,19 @@ export function PropertyDetail() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: 10, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '8px 14px', borderRadius: 2, border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div style={{ display: 'flex', gap: 10, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '8px 14px', borderRadius: 2, border: '1px solid rgba(var(--overlay-rgb), 0.1)' }}>
             <div style={{ textAlign: 'center', padding: '0 8px' }}>
-              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#fff' }}>{units.length}</div>
+              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: 'var(--white)' }}>{units.length}</div>
               <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Units</div>
             </div>
-            <div style={{ width: 1, background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ width: 1, background: 'rgba(var(--overlay-rgb), 0.1)' }} />
             <div style={{ textAlign: 'center', padding: '0 8px' }}>
-              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#fff' }}>{assets.length}</div>
+              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: 'var(--white)' }}>{assets.length}</div>
               <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Plates</div>
             </div>
-            <div style={{ width: 1, background: 'rgba(255,255,255,0.1)' }} />
+            <div style={{ width: 1, background: 'rgba(var(--overlay-rgb), 0.1)' }} />
             <div style={{ textAlign: 'center', padding: '0 8px' }}>
-              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#ff4d4d' }}>{openWo}</div>
+              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#f44343' }}>{openWo}</div>
               <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Open Orders</div>
             </div>
           </div>

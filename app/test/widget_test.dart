@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:nameplate_field/main.dart';
+import 'package:nameplate_field/screens/splash_screen.dart';
 
 void main() {
   testWidgets('App shell renders navigation destinations on standard screen', (
@@ -57,4 +58,21 @@ void main() {
       expect(find.text('Manual NPID Lookup'), findsOneWidget);
     },
   );
+
+  testWidgets('Splash screen renders brand logo and transitions', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(
+      child: NameplateFieldApp(home: SplashScreen(duration: Duration(milliseconds: 100))),
+    ));
+    await tester.pump();
+
+    expect(find.text('NAMEPLATE'), findsOneWidget);
+    expect(find.text('FIELD'), findsOneWidget);
+    expect(find.text('00 / OFFLINE LEDGER'), findsOneWidget);
+
+    await tester.pump(const Duration(milliseconds: 150));
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.text('Scan the plate'), findsOneWidget);
+  });
 }
