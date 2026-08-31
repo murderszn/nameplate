@@ -2,21 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="./images/nameplate-logo-transparent.png" type="image/png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Report maintenance issues and track work for your home." />
     <script>
-      (function () {
-        var theme = 'light';
-        try { theme = localStorage.getItem('nameplate-theme') === 'dark' ? 'dark' : 'light'; } catch (error) {}
-        document.documentElement.setAttribute('data-theme', theme);
+      (() => {
+        let theme = 'light';
+        try { theme = localStorage.getItem('nameplate-theme') === 'dark' ? 'dark' : 'light'; } catch {}
+        document.documentElement.dataset.theme = theme;
         document.documentElement.style.colorScheme = theme;
       })();
     </script>
-    <title>NAMEPLATE HQ — Portfolio Console</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <title>NAMEPLATE — Portal</title>
+    <link rel="icon" href="./nameplate-logo-transparent.png" type="image/png" />
     <style>
       :root {
         --np-load-bg: #ffffff;
@@ -145,9 +143,9 @@
         background: var(--np-load-red);
         border-radius: 2px;
         box-shadow: 0 0 8px var(--np-load-red);
-        animation: np-hq-pulse 1.35s ease-in-out infinite alternate;
+        animation: np-portal-pulse 1.35s ease-in-out infinite alternate;
       }
-      @keyframes np-hq-pulse {
+      @keyframes np-portal-pulse {
         0% { left: 0%; width: 25%; }
         50% { width: 55%; }
         100% { left: 75%; width: 25%; }
@@ -161,24 +159,24 @@
         margin-top: 14px;
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-UYxnqFMq.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-D5Ev3ZxU.css">
+    <script type="module" crossorigin src="./assets/index-BGy4N9dC.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CH2psybJ.css">
   </head>
   <body>
     <div id="root">
       <div class="np-preloader">
         <div class="np-preloader__wrap">
           <div class="np-preloader__logo-box">
-            <img src="./images/nameplate-logo-transparent.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--dark" />
-            <img src="./images/nameplate-logo-light.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--light" />
+            <img src="./nameplate-logo-transparent.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--dark" />
+            <img src="./nameplate-logo-light.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--light" />
           </div>
-          <div class="np-preloader__kicker">00 / PORTFOLIO CONSOLE</div>
-          <div class="np-preloader__title">NAMEPLATE <span>HQ</span></div>
-          <div class="np-preloader__sub">Every appliance accounted for.</div>
+          <div class="np-preloader__kicker">00 / RESIDENT PORTAL</div>
+          <div class="np-preloader__title">NAMEPLATE <span>PORTAL</span></div>
+          <div class="np-preloader__sub">Maintenance, without the runaround.</div>
           <div class="np-preloader__bar">
             <div class="np-preloader__progress"></div>
           </div>
-          <div class="np-preloader__status">LOADING PORTFOLIO REGISTRY...</div>
+          <div class="np-preloader__status">CONNECTING TO PROPERTY RECORD...</div>
         </div>
       </div>
     </div>
