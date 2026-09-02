@@ -295,6 +295,36 @@ class _WorkOrderCard extends ConsumerWidget {
                 ),
                 Spacer(),
                 NpStatusPill(label: wo.priority.label, tone: tone),
+                SizedBox(width: 6),
+                NpMenuButton<String>(
+                  size: 28,
+                  items: [
+                    if (asset != null)
+                      NpMenuItem(
+                        value: 'asset',
+                        label: 'Asset Specs (${asset.npid})',
+                        icon: Icons.inventory_2_outlined,
+                      ),
+                    NpMenuItem(
+                      value: 'copy',
+                      label: 'Copy WO Reference',
+                      icon: Icons.copy_rounded,
+                    ),
+                  ],
+                  onSelected: (val) {
+                    if (val == 'asset' && asset != null) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => AssetDetailScreen(assetId: asset.id),
+                        ),
+                      );
+                    } else if (val == 'copy') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Copied ${wo.id} to clipboard')),
+                      );
+                    }
+                  },
+                ),
               ],
             ),
             SizedBox(height: 8),
@@ -357,33 +387,14 @@ class _WorkOrderCard extends ConsumerWidget {
               ],
             ),
             SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: NpButton.primary(
-                    icon: Icons.build_rounded,
-                    label: wo.status == WorkOrderStatus.inProgress
-                        ? 'Log service'
-                        : 'Start work',
-                    size: NpButtonSize.sm,
-                    onPressed: openServiceLogger,
-                  ),
-                ),
-                if (asset != null) ...[
-                  SizedBox(width: 8),
-                  NpIconButton(
-                    icon: Icons.inventory_2_outlined,
-                    tooltip: 'Asset Details',
-                    size: 34,
-                    iconSize: 15,
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => AssetDetailScreen(assetId: asset.id),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+            NpButton.primary(
+              icon: Icons.build_rounded,
+              label: wo.status == WorkOrderStatus.inProgress
+                  ? 'Log service event'
+                  : 'Start work order',
+              size: NpButtonSize.sm,
+              isExpanded: true,
+              onPressed: openServiceLogger,
             ),
           ],
         ),

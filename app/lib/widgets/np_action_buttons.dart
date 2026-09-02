@@ -490,17 +490,22 @@ class NpIconChip extends StatelessWidget {
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (icon != null) ...[
               Icon(icon, size: 14, color: fg),
               SizedBox(width: 6),
             ],
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: fg,
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  color: fg,
+                ),
               ),
             ),
           ],
@@ -509,3 +514,93 @@ class NpIconChip extends StatelessWidget {
     );
   }
 }
+
+/// Item definition for [NpMenuButton].
+class NpMenuItem<T> {
+  final T value;
+  final String label;
+  final IconData? icon;
+  final bool isDestructive;
+
+  const NpMenuItem({
+    required this.value,
+    required this.label,
+    this.icon,
+    this.isDestructive = false,
+  });
+}
+
+/// Tactile industrial context menu button with structured dropdown items.
+class NpMenuButton<T> extends StatelessWidget {
+  final List<NpMenuItem<T>> items;
+  final ValueChanged<T> onSelected;
+  final IconData icon;
+  final double size;
+  final String? tooltip;
+
+  const NpMenuButton({
+    super.key,
+    required this.items,
+    required this.onSelected,
+    this.icon = Icons.more_vert,
+    this.size = 38,
+    this.tooltip,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<T>(
+      tooltip: tooltip ?? 'Options',
+      color: context.npColors.bgElevated,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(2),
+        side: BorderSide(color: context.npColors.lineStrong),
+      ),
+      onSelected: (val) {
+        HapticFeedback.selectionClick();
+        onSelected(val);
+      },
+      itemBuilder: (BuildContext context) {
+        return items.map((item) {
+          final color = item.isDestructive ? NpColors.red : context.npColors.white;
+          return PopupMenuItem<T>(
+            value: item.value,
+            height: 40,
+            child: Row(
+              children: [
+                if (item.icon != null) ...[
+                  Icon(item.icon, size: 16, color: color),
+                  SizedBox(width: 10),
+                ],
+                Expanded(
+                  child: Text(
+                    item.label,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList();
+      },
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: context.npColors.bgElevated,
+          borderRadius: BorderRadius.circular(2),
+          border: Border.all(color: context.npColors.lineStrong),
+        ),
+        child: Center(
+          child: Icon(icon, size: 18, color: context.npColors.gray400),
+        ),
+      ),
+    );
+  }
+}
+

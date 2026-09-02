@@ -114,7 +114,66 @@ class AssetDetailScreen extends ConsumerWidget {
         }
 
         return Scaffold(
-          appBar: NpBrandAppBar(title: asset.npid),
+          appBar: NpBrandAppBar(
+            title: asset.npid,
+            actions: [
+              Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: NpMenuButton<String>(
+                  tooltip: 'Asset Options',
+                  items: [
+                    NpMenuItem(
+                      value: 'flag',
+                      label: 'Flag Missing / Damaged',
+                      icon: Icons.flag_rounded,
+                      isDestructive: true,
+                    ),
+                    NpMenuItem(
+                      value: 'relocate',
+                      label: 'Relocate Equipment',
+                      icon: Icons.swap_horiz_rounded,
+                    ),
+                    NpMenuItem(
+                      value: 'studio',
+                      label: 'Hardware Tag Studio',
+                      icon: Icons.qr_code_2_rounded,
+                    ),
+                    NpMenuItem(
+                      value: 'copy',
+                      label: 'Copy NPID Tag',
+                      icon: Icons.copy_rounded,
+                    ),
+                  ],
+                  onSelected: (action) {
+                    switch (action) {
+                      case 'flag':
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => FlagMissingBrokenScreen(asset: asset),
+                          ),
+                        );
+                        break;
+                      case 'relocate':
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Relocation workflow active for ${asset.npid}')),
+                        );
+                        break;
+                      case 'studio':
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => TagStudioScreen()),
+                        );
+                        break;
+                      case 'copy':
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Copied ${asset.npid} to clipboard')),
+                        );
+                        break;
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
           body: isTablet
               ? Padding(
                   padding: EdgeInsets.all(20),
@@ -129,7 +188,7 @@ class AssetDetailScreen extends ConsumerWidget {
                             children: [
                               _Header(asset: asset),
                               SizedBox(height: 16),
-                              _ActionsRow(asset: asset),
+                              _PrimaryActionCard(asset: asset),
                             ],
                           ),
                         ),
@@ -149,7 +208,7 @@ class AssetDetailScreen extends ConsumerWidget {
                   children: [
                     _Header(asset: asset),
                     SizedBox(height: 16),
-                    _ActionsRow(asset: asset),
+                    _PrimaryActionCard(asset: asset),
                     SizedBox(height: 20),
                     _buildHistorySection(context, ref, asset),
                   ],
@@ -342,14 +401,14 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-class _ActionsRow extends StatelessWidget {
+class _PrimaryActionCard extends StatelessWidget {
   final Asset asset;
-  const _ActionsRow({required this.asset});
+  const _PrimaryActionCard({required this.asset});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(14),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.npColors.bgCard,
         border: Border.fromBorderSide(
@@ -359,52 +418,18 @@ class _ActionsRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          NpSectionLabel('Quick actions'),
+          NpSectionLabel('Primary field action'),
           SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              NpButton.primary(
-                icon: Icons.build_rounded,
-                label: 'Log Service',
-                size: NpButtonSize.md,
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => LogServiceEventScreen(asset: asset),
-                  ),
-                ),
+          NpButton.primary(
+            icon: Icons.build_rounded,
+            label: 'Log Service Event',
+            size: NpButtonSize.lg,
+            isExpanded: true,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => LogServiceEventScreen(asset: asset),
               ),
-              NpButton.danger(
-                icon: Icons.flag_rounded,
-                label: 'Flag Issue',
-                size: NpButtonSize.md,
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => FlagMissingBrokenScreen(asset: asset),
-                  ),
-                ),
-              ),
-              NpButton.secondary(
-                icon: Icons.swap_horiz_rounded,
-                label: 'Relocate',
-                size: NpButtonSize.md,
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Relocation is not available yet.')),
-                  );
-                },
-              ),
-              NpIconButton(
-                icon: Icons.qr_code_2_rounded,
-                tooltip: 'Hardware Tag Studio',
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => TagStudioScreen())),
-                size: 44,
-              ),
-            ],
+            ),
           ),
         ],
       ),

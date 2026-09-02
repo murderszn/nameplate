@@ -281,12 +281,15 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<ResolutionCode>(
+                    isExpanded: true,
                     initialValue: _resolutionCode,
                     decoration: InputDecoration(labelText: 'Resolution'),
                     items: ResolutionCode.values
                         .map(
-                          (r) =>
-                              DropdownMenuItem(value: r, child: Text(r.label)),
+                          (r) => DropdownMenuItem(
+                            value: r,
+                            child: Text(r.label, overflow: TextOverflow.ellipsis),
+                          ),
                         )
                         .toList(),
                     onChanged: (v) => setState(() => _resolutionCode = v),
@@ -295,13 +298,14 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<AssetCondition>(
+                    isExpanded: true,
                     initialValue: _conditionAfter,
                     decoration: InputDecoration(labelText: 'Condition after'),
                     items: AssetCondition.values
                         .map(
                           (c) => DropdownMenuItem(
                             value: c,
-                            child: Text(c.label),
+                            child: Text(c.label, overflow: TextOverflow.ellipsis),
                           ),
                         )
                         .toList(),
@@ -313,13 +317,14 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             ),
             SizedBox(height: 16),
             DropdownButtonFormField<RepairVsReplaceDecision>(
+              isExpanded: true,
               initialValue: _decision,
               decoration: InputDecoration(labelText: 'Repair or replace'),
               items: RepairVsReplaceDecision.values
                   .map(
                     (d) => DropdownMenuItem(
                       value: d,
-                      child: Text(d.label),
+                      child: Text(d.label, overflow: TextOverflow.ellipsis),
                     ),
                   )
                   .toList(),
@@ -353,7 +358,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 Expanded(
                   child: NpIconChip(
                     icon: Icons.inventory_2_outlined,
-                    label: 'New part',
+                    label: 'New Part',
                     isSelected: _partSource == _PartSource.newInventory,
                     onTap: () =>
                         setState(() => _partSource = _PartSource.newInventory),
@@ -363,7 +368,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 Expanded(
                   child: NpIconChip(
                     icon: Icons.recycling_rounded,
-                    label: 'From another unit',
+                    label: 'Salvaged Donor',
                     isSelected: _partSource == _PartSource.salvagedFromDonor,
                     onTap: () => setState(
                       () => _partSource = _PartSource.salvagedFromDonor,
@@ -385,6 +390,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             if (_partSource == _PartSource.salvagedFromDonor) ...[
               SizedBox(height: 12),
               DropdownButtonFormField<Asset>(
+                isExpanded: true,
                 initialValue: _selectedDonorAsset,
                 decoration: InputDecoration(
                   labelText: 'Took part from',
@@ -400,6 +406,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                     child: Text(
                       '${a.categoryDisplayName} · ${a.npid} (${a.currentLocationLabel ?? "Storage"})',
                       style: TextStyle(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   );
                 }).toList(),

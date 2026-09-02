@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ActionMenu } from '../components/ActionMenu';
 import {
   api,
   type InviteMaintenanceUserInput,
@@ -276,9 +277,28 @@ export function Users() {
                   <td><span className="np-user-last-seen">{formatSeen(user.lastSeenAt)}</span></td>
                   <td><span className={`np-badge np-badge--status-${user.status}`}>{user.status === 'revoked' ? 'Suspended' : user.status}</span></td>
                   <td>
-                    <div className="np-user-row-actions">
-                      <button type="button" onClick={() => openEdit(user)}>Configure</button>
-                      {user.status !== 'invited' && <button type="button" className={user.status === 'revoked' ? 'restore' : 'danger'} onClick={() => toggleAccess(user)}>{user.status === 'revoked' ? 'Restore' : 'Suspend'}</button>}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <ActionMenu
+                        items={[
+                          { label: 'Configure Scope & Rates', onClick: () => openEdit(user) },
+                          {
+                            label: 'Copy Work Email',
+                            onClick: () => {
+                              navigator.clipboard?.writeText(user.email);
+                              setNotice(`Copied ${user.email}`);
+                            },
+                          },
+                          ...(user.status !== 'invited'
+                            ? [
+                                {
+                                  label: user.status === 'revoked' ? 'Restore Operational Access' : 'Suspend Access',
+                                  variant: (user.status === 'revoked' ? 'default' : 'danger') as 'default' | 'danger',
+                                  onClick: () => toggleAccess(user),
+                                },
+                              ]
+                            : []),
+                        ]}
+                      />
                     </div>
                   </td>
                 </tr>

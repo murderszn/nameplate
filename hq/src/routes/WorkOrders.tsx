@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ActionMenu } from '../components/ActionMenu';
 import { api, type WorkOrder } from '../api/client';
 
 const COLUMNS = [
@@ -464,47 +465,38 @@ export function WorkOrders() {
                           <span>{wo.assignee ? wo.assignee.split(' ')[0] : 'Unassigned'}</span>
                         </div>
 
-                        {/* Fast Swimlane Shift Arrows */}
-                        <div
-                          style={{ display: 'flex', gap: 4 }}
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
-                            title="Move to Previous Column"
-                            onClick={() => handleMoveLane(wo, 'prev')}
-                            disabled={col.id === 'intake'}
-                            style={{
-                              background: 'var(--bg-elevated)',
-                              border: '1px solid rgba(var(--overlay-rgb), 0.1)',
-                              color: 'var(--white)',
-                              borderRadius: 4,
-                              width: 22,
-                              height: 22,
-                              cursor: col.id === 'intake' ? 'default' : 'pointer',
-                              opacity: col.id === 'intake' ? 0.3 : 1,
-                              fontSize: '0.7rem',
-                            }}
-                          >
-                            ←
-                          </button>
-                          <button
-                            title="Move to Next Column"
-                            onClick={() => handleMoveLane(wo, 'next')}
-                            disabled={col.id === 'completed'}
-                            style={{
-                              background: 'var(--bg-elevated)',
-                              border: '1px solid rgba(var(--overlay-rgb), 0.1)',
-                              color: 'var(--white)',
-                              borderRadius: 4,
-                              width: 22,
-                              height: 22,
-                              cursor: col.id === 'completed' ? 'default' : 'pointer',
-                              opacity: col.id === 'completed' ? 0.3 : 1,
-                              fontSize: '0.7rem',
-                            }}
-                          >
-                            →
-                          </button>
+                        {/* Contextual Action Menu */}
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <ActionMenu
+                            items={[
+                              {
+                                label: 'Inspect Full Record',
+                                onClick: () => setSelectedWo(wo),
+                              },
+                              ...(col.id !== 'completed'
+                                ? [
+                                    {
+                                      label: 'Advance Stage →',
+                                      onClick: () => handleMoveLane(wo, 'next'),
+                                    },
+                                  ]
+                                : []),
+                              ...(col.id !== 'intake'
+                                ? [
+                                    {
+                                      label: '← Move Back',
+                                      onClick: () => handleMoveLane(wo, 'prev'),
+                                    },
+                                  ]
+                                : []),
+                              {
+                                label: `Copy WO-${wo.number}`,
+                                onClick: () => {
+                                  navigator.clipboard?.writeText(`WO-${wo.number}`);
+                                },
+                              },
+                            ]}
+                          />
                         </div>
                       </div>
                     </div>

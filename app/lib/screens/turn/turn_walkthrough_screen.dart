@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/asset.dart';
 import '../../models/turn.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
@@ -558,110 +557,89 @@ class _TurnItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: item.verifiedByScan
-                        ? NpColors.redSubtle
-                        : context.npColors.bgElevated,
-                    borderRadius: BorderRadius.circular(2),
-                    border: Border.all(
-                      color: item.verifiedByScan
-                          ? NpColors.redBorder
-                          : context.npColors.lineStrong,
-                    ),
-                  ),
-                  child: Icon(
-                    item.verifiedByScan
-                        ? Icons.qr_code_scanner_rounded
-                        : Icons.qr_code_outlined,
-                    size: 18,
-                    color: item.verifiedByScan
-                        ? NpColors.red
-                        : context.npColors.gray500,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final f in [
-                  ..._findings,
-                  if (item.finding == TurnItemFinding.unexpectedFound)
-                    TurnItemFinding.unexpectedFound,
-                ])
-                  NpIconChip(
-                    icon: _findingIcon(f),
-                    label: f.label,
-                    isSelected: item.finding == f,
-                    activeColor: _findingColor(context, f),
-                    activeBg: _findingColor(context, f).withValues(alpha: 0.15),
-                    onTap: readOnly
-                        ? null
-                        : () {
-                            item.finding = f;
-                            if (f == TurnItemFinding.missing) {
-                              item.decision = TurnItemDecision.investigate;
-                            } else if (f == TurnItemFinding.presentDamaged) {
-                              item.decision = TurnItemDecision.repair;
-                            }
-                            onChanged();
-                          },
-                  ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<TurnItemDecision>(
-                    initialValue: item.decision,
-                    decoration: InputDecoration(
-                      labelText: 'Decision',
-                      isDense: true,
-                    ),
-                    items: TurnItemDecision.values
-                        .map(
-                          (d) =>
-                              DropdownMenuItem(value: d, child: Text(d.label)),
-                        )
-                        .toList(),
-                    onChanged: readOnly
-                        ? null
-                        : (v) {
-                            item.decision = v ?? TurnItemDecision.none;
-                            onChanged();
-                          },
-                  ),
-                ),
                 SizedBox(width: 8),
-                Expanded(
-                  child: DropdownButtonFormField<AssetCondition>(
-                    initialValue: item.condition,
-                    decoration: InputDecoration(
-                      labelText: 'Condition',
-                      isDense: true,
+                NpMenuButton<String>(
+                  size: 32,
+                  items: [
+                    NpMenuItem(
+                      value: 'scan',
+                      label: 'Verify Tag Scan',
+                      icon: Icons.qr_code_scanner_rounded,
                     ),
-                    items: AssetCondition.values
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(c.label),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: readOnly
-                        ? null
-                        : (v) {
-                            item.condition = v;
-                            onChanged();
-                          },
-                  ),
+                    NpMenuItem(
+                      value: 'photo',
+                      label: 'Attach Photo',
+                      icon: Icons.camera_alt_outlined,
+                    ),
+                    NpMenuItem(
+                      value: 'na',
+                      label: 'Mark Not Applicable',
+                      icon: Icons.remove_circle_outline_rounded,
+                    ),
+                  ],
+                  onSelected: (action) {
+                    switch (action) {
+                      case 'scan':
+                        onVerify();
+                        break;
+                      case 'photo':
+                        onAddPhoto();
+                        break;
+                      case 'na':
+                        item.finding = TurnItemFinding.notApplicable;
+                        item.decision = TurnItemDecision.none;
+                        onChanged();
+                        break;
+                    }
+                  },
                 ),
               ],
+            ),
+            SizedBox(height: 12),
+            DropdownButtonFormField<TurnItemFinding>(
+              initialValue: item.finding,
+              decoration: InputDecoration(
+                labelText: 'Inspection Finding',
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              ),
+              items: [
+                ..._findings,
+                if (item.finding == TurnItemFinding.unexpectedFound)
+                  TurnItemFinding.unexpectedFound,
+              ].map((f) {
+                return DropdownMenuItem<TurnItemFinding>(
+                  value: f,
+                  child: Row(
+                    children: [
+                      Icon(_findingIcon(f), size: 16, color: _findingColor(context, f)),
+                      SizedBox(width: 10),
+                      Text(
+                        f.label,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: context.npColors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: readOnly
+                  ? null
+                  : (v) {
+                      if (v == null) return;
+                      item.finding = v;
+                      if (v == TurnItemFinding.missing) {
+                        item.decision = TurnItemDecision.investigate;
+                      } else if (v == TurnItemFinding.presentDamaged) {
+                        item.decision = TurnItemDecision.repair;
+                      } else if (v == TurnItemFinding.presentOk) {
+                        item.decision = TurnItemDecision.none;
+                      }
+                      onChanged();
+                    },
             ),
 
             // Photo Evidence Section
