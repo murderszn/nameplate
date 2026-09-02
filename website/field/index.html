@@ -14,21 +14,21 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <!-- Keep the committed web bundle relocatable under the GitHub Pages path. -->
-  <base href="./">
+  <base href="/field/">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Nameplate Field — the offline-first app for maintenance technicians.">
+  <meta name="theme-color" content="#000000">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="nameplate_field">
+  <meta name="apple-mobile-web-app-title" content="Nameplate">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="assets/assets/images/nameplate-logo-transparent.png"/>
+  <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>NAMEPLATE FIELD — Physical Asset Record</title>
   <link rel="manifest" href="manifest.json">
@@ -165,21 +165,32 @@
   </div>
 
   <script>
-    // Smoothly dismiss loader when Flutter view renders
+    if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+      location.replace(location.pathname + '/' + location.search + location.hash);
+    }
+
+    function removeLoader() {
+      const loader = document.getElementById('np-loading-screen');
+      if (loader && !loader.dataset.dismissed) {
+        loader.dataset.dismissed = 'true';
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        setTimeout(() => loader.remove(), 480);
+      }
+    }
+
     const observer = new MutationObserver(() => {
-      const flt = document.querySelector('flutter-view, flt-glass-pane');
+      const flt = document.querySelector('flutter-view, flt-glass-pane, flt-scene-host, canvas');
       if (flt) {
         observer.disconnect();
-        const loader = document.getElementById('np-loading-screen');
-        if (loader) {
-          loader.style.opacity = '0';
-          loader.style.pointerEvents = 'none';
-          setTimeout(() => loader.remove(), 480);
-        }
+        removeLoader();
       }
     });
     observer.observe(document.body, { childList: true, subtree: true });
+
+    window.addEventListener('flutter-first-frame', removeLoader);
+    setTimeout(removeLoader, 4000);
   </script>
-  <script src="flutter_bootstrap.js?v=20260829.3" async></script>
+  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

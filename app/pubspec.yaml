@@ -40,6 +40,7 @@ dependencies:
   qr_flutter: ^4.1.0
   crypto: ^3.0.6
   mobile_scanner: ^7.4.0
+  shared_preferences: ^2.5.3
 
   # Planned for the real sync engine (architecture.md §4) — not wired up yet in this scaffold.
   # drift: ^2.20.0
@@ -72,6 +73,7 @@ flutter:
 
   assets:
     - assets/images/nameplate-logo-transparent.png
+    - assets/images/nameplate-logo-light.png
     - assets/images/schematics/fridge.png
     - assets/images/schematics/washer.png
     - assets/images/schematics/dryer.png

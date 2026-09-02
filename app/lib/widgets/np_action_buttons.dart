@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 
 enum NpButtonVariant {
-  primary, // Solid brand Red, White text/icon
+  primary, // Light: solid black. Dark: solid brand red. White text/icon.
   secondary, // Elevated dark charcoal, hairline border, White text
   outline, // Transparent bg, hairline border, White/Red text
   danger, // High-visibility Alert/Red tone
@@ -130,45 +130,44 @@ class NpButton extends StatelessWidget {
 
     final (bg, fg, border, iconBoxBg) = switch (variant) {
       NpButtonVariant.primary => (
-        disabled ? NpColors.gray800 : NpColors.red,
-        disabled ? NpColors.gray500 : NpColors.white,
-        disabled ? NpColors.line : NpColors.redDeep,
-        NpColors.white.withValues(alpha: 0.15),
+        disabled ? context.npColors.gray800 : context.npSolid,
+        disabled ? context.npColors.gray500 : NpColors.onSolid,
+        disabled ? context.npColors.line : context.npSolid,
+        NpColors.onSolid.withValues(alpha: 0.15),
       ),
       NpButtonVariant.secondary => (
-        disabled ? NpColors.bgSubtle : NpColors.bgElevated,
-        disabled ? NpColors.gray500 : NpColors.white,
-        NpColors.lineStrong,
-        NpColors.white08,
+        disabled ? context.npColors.bgSubtle : context.npColors.bgElevated,
+        disabled ? context.npColors.gray500 : context.npColors.white,
+        context.npColors.lineStrong,
+        context.npColors.white08,
       ),
       NpButtonVariant.outline => (
         Colors.transparent,
-        disabled ? NpColors.gray500 : NpColors.white,
-        disabled ? NpColors.line : NpColors.lineStrong,
+        disabled ? context.npColors.gray500 : context.npColors.white,
+        disabled ? context.npColors.line : context.npColors.lineStrong,
         Colors.transparent,
       ),
       NpButtonVariant.danger => (
-        disabled ? NpColors.bgSubtle : NpColors.redSubtle,
-        disabled ? NpColors.gray500 : NpColors.red,
-        disabled ? NpColors.line : NpColors.redBorder,
+        disabled ? context.npColors.bgSubtle : NpColors.redSubtle,
+        disabled ? context.npColors.gray500 : NpColors.red,
+        disabled ? context.npColors.line : NpColors.redBorder,
         NpColors.red.withValues(alpha: 0.15),
       ),
       NpButtonVariant.success => (
-        disabled ? NpColors.bgSubtle : const Color(0xFF0D2818),
-        disabled ? NpColors.gray500 : const Color(0xFF22C55E),
-        disabled ? NpColors.line : const Color(0x6622C55E),
-        const Color(0x3322C55E),
+        disabled ? context.npColors.bgSubtle : context.npSuccessBg,
+        disabled ? context.npColors.gray500 : context.npSuccessFg,
+        disabled ? context.npColors.line : context.npSuccessFg.withValues(alpha: 0.4),
+        context.npSuccessFg.withValues(alpha: 0.2),
       ),
       NpButtonVariant.white => (
-        disabled ? NpColors.gray800 : NpColors.white,
-        disabled ? NpColors.gray500 : NpColors.bg,
-        disabled ? NpColors.line : NpColors.white,
-        NpColors.bg.withValues(alpha: 0.12),
+        disabled ? context.npColors.gray800 : context.npColors.white,
+        disabled ? context.npColors.gray500 : context.npColors.bg,
+        disabled ? context.npColors.line : context.npColors.white,
+        context.npColors.bg.withValues(alpha: 0.12),
       ),
     };
 
-    final (height, iconSize, fontSize, horizontalPad, iconGap) =
-        switch (size) {
+    final (height, iconSize, fontSize, horizontalPad, iconGap) = switch (size) {
       NpButtonSize.sm => (34.0, 14.0, 11.0, 12.0, 6.0),
       NpButtonSize.md => (44.0, 18.0, 12.0, 16.0, 8.0),
       NpButtonSize.lg => (52.0, 20.0, 13.0, 20.0, 10.0),
@@ -194,7 +193,7 @@ class NpButton extends StatelessWidget {
           )
         else if (icon != null)
           Container(
-            padding: const EdgeInsets.all(4),
+            padding: EdgeInsets.all(4),
             margin: EdgeInsets.only(right: iconGap),
             decoration: BoxDecoration(
               color: iconBoxBg,
@@ -216,9 +215,9 @@ class NpButton extends StatelessWidget {
           ),
         ),
         if (badge != null) ...[
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: iconBoxBg,
               borderRadius: BorderRadius.circular(2),
@@ -233,10 +232,7 @@ class NpButton extends StatelessWidget {
             ),
           ),
         ],
-        if (trailing != null) ...[
-          const SizedBox(width: 8),
-          trailing!,
-        ],
+        if (trailing != null) ...[SizedBox(width: 8), trailing!],
       ],
     );
 
@@ -288,16 +284,18 @@ class NpIconButton extends StatelessWidget {
     final disabled = onPressed == null;
 
     final bg = active
-        ? NpColors.red
-        : (isDestructive ? NpColors.redSubtle : NpColors.bgElevated);
+        ? context.npSolid
+        : (isDestructive ? context.npDangerBg : context.npColors.bgElevated);
     final fg = disabled
-        ? NpColors.gray500
+        ? context.npColors.gray500
         : (active
-            ? NpColors.white
-            : (isDestructive ? NpColors.red : NpColors.white));
+              ? NpColors.onSolid
+              : (isDestructive ? context.npDangerFg : context.npColors.white));
     final border = active
-        ? NpColors.red
-        : (isDestructive ? NpColors.redBorder : NpColors.lineStrong);
+        ? context.npSolid
+        : (isDestructive
+              ? context.npDangerFg.withValues(alpha: 0.4)
+              : context.npColors.lineStrong);
 
     final button = GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -328,13 +326,11 @@ class NpIconButton extends StatelessWidget {
   }
 }
 
-/// Rich interactive action tile with icon container badge, title, subtitle,
-/// and trailing indicator or action chevron.
+/// Interactive action tile with an icon, title, optional detail, and action.
 class NpActionTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String? subtitle;
-  final String? kicker;
   final VoidCallback? onTap;
   final bool isSelected;
   final bool isDestructive;
@@ -346,7 +342,6 @@ class NpActionTile extends StatelessWidget {
     required this.icon,
     required this.title,
     this.subtitle,
-    this.kicker,
     this.onTap,
     this.isSelected = false,
     this.isDestructive = false,
@@ -360,10 +355,10 @@ class NpActionTile extends StatelessWidget {
         accentColor ?? (isDestructive ? NpColors.red : NpColors.red);
     final bg = isSelected
         ? effectiveAccent.withValues(alpha: 0.12)
-        : NpColors.bgElevated;
+        : context.npColors.bgElevated;
     final border = isSelected
         ? effectiveAccent
-        : (isDestructive ? NpColors.redBorder : NpColors.lineStrong);
+        : (isDestructive ? NpColors.redBorder : context.npColors.lineStrong);
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -374,7 +369,7 @@ class NpActionTile extends StatelessWidget {
             }
           : null,
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(2),
@@ -387,55 +382,41 @@ class NpActionTile extends StatelessWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: isSelected
-                    ? effectiveAccent
-                    : NpColors.bgCard,
+                color: isSelected ? effectiveAccent : context.npColors.bgCard,
                 borderRadius: BorderRadius.circular(2),
                 border: Border.all(
                   color: isSelected
                       ? effectiveAccent
-                      : NpColors.lineStrong,
+                      : context.npColors.lineStrong,
                 ),
               ),
               child: Icon(
                 icon,
                 size: 20,
-                color: isSelected ? NpColors.white : effectiveAccent,
+                color: isSelected ? NpColors.onSolid : effectiveAccent,
               ),
             ),
-            const SizedBox(width: 14),
+            SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (kicker != null) ...[
-                    Text(
-                      kicker!.toUpperCase(),
-                      style: NpType.mono.copyWith(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: effectiveAccent,
-                        letterSpacing: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                  ],
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: NpColors.white,
+                      color: context.npColors.white,
                     ),
                   ),
                   if (subtitle != null) ...[
-                    const SizedBox(height: 2),
+                    SizedBox(height: 2),
                     Text(
                       subtitle!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: NpColors.gray400,
+                        color: context.npColors.gray400,
                         height: 1.25,
                       ),
                     ),
@@ -444,14 +425,14 @@ class NpActionTile extends StatelessWidget {
               ),
             ),
             if (trailing != null) ...[
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               trailing!,
             ] else if (onTap != null) ...[
-              const SizedBox(width: 10),
-              const Icon(
+              SizedBox(width: 10),
+              Icon(
                 Icons.arrow_forward_ios,
                 size: 13,
-                color: NpColors.gray500,
+                color: context.npColors.gray500,
               ),
             ],
           ],
@@ -483,14 +464,14 @@ class NpIconChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fg = isSelected
-        ? (activeColor ?? NpColors.white)
-        : NpColors.gray400;
+        ? (activeColor ?? NpColors.onSolid)
+        : context.npColors.gray400;
     final bg = isSelected
-        ? (activeBg ?? NpColors.red)
-        : NpColors.bgElevated;
+        ? (activeBg ?? context.npSolid)
+        : context.npColors.bgElevated;
     final border = isSelected
-        ? (activeColor ?? NpColors.red)
-        : NpColors.lineStrong;
+        ? (activeColor ?? context.npSolid)
+        : context.npColors.lineStrong;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -501,7 +482,7 @@ class NpIconChip extends StatelessWidget {
             }
           : null,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(2),
@@ -512,7 +493,7 @@ class NpIconChip extends StatelessWidget {
           children: [
             if (icon != null) ...[
               Icon(icon, size: 14, color: fg),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
             ],
             Text(
               label,

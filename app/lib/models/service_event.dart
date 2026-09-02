@@ -17,6 +17,22 @@ enum ServiceEventType {
   decommission,
 }
 
+extension ServiceEventTypeX on ServiceEventType {
+  String get label => switch (this) {
+    ServiceEventType.inspection => 'Inspection',
+    ServiceEventType.diagnostic => 'Diagnostic',
+    ServiceEventType.repair => 'Repair',
+    ServiceEventType.partReplacement => 'Part replacement',
+    ServiceEventType.fullReplacement => 'Full replacement',
+    ServiceEventType.installation => 'Installation',
+    ServiceEventType.removal => 'Removal',
+    ServiceEventType.cleaning => 'Cleaning',
+    ServiceEventType.preventiveMaintenance => 'Preventive maintenance',
+    ServiceEventType.warrantyService => 'Warranty service',
+    ServiceEventType.decommission => 'Decommission',
+  };
+}
+
 enum ResolutionCode {
   fixed,
   partReplaced,
@@ -27,7 +43,27 @@ enum ResolutionCode {
   unrepairable,
 }
 
+extension ResolutionCodeX on ResolutionCode {
+  String get label => switch (this) {
+    ResolutionCode.fixed => 'Fixed',
+    ResolutionCode.partReplaced => 'Part replaced',
+    ResolutionCode.assetReplaced => 'Asset replaced',
+    ResolutionCode.noFaultFound => 'No fault found',
+    ResolutionCode.deferred => 'Deferred',
+    ResolutionCode.needsVendor => 'Needs vendor',
+    ResolutionCode.unrepairable => 'Unrepairable',
+  };
+}
+
 enum RepairVsReplaceDecision { repaired, replaced, deferred }
+
+extension RepairVsReplaceDecisionX on RepairVsReplaceDecision {
+  String get label => switch (this) {
+    RepairVsReplaceDecision.repaired => 'Repaired',
+    RepairVsReplaceDecision.replaced => 'Replaced',
+    RepairVsReplaceDecision.deferred => 'Deferred',
+  };
+}
 
 class ServiceEvent {
   final String id; // UUIDv7, client-generated offline

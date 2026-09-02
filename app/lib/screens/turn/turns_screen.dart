@@ -35,28 +35,27 @@ class TurnsScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      appBar: const NpBrandAppBar(
-        kicker: '02 / Turnover',
+      appBar: NpBrandAppBar(
         title: 'Unit turns',
         showLogo: true,
         actions: [SyncStatusBadge()],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
+        padding: EdgeInsets.fromLTRB(16, 20, 16, 40),
         children: [
           Text(
-            'Checklist is the unit\'s asset roster. Flag damage or gaps; completing emits work orders.',
+            'Walk the unit\'s appliances. Flag damage or missing items — finishing the turn creates work orders.',
             style: Theme.of(
               context,
-            ).textTheme.bodyMedium?.copyWith(color: NpColors.gray400),
+            ).textTheme.bodyMedium?.copyWith(color: context.npColors.gray400),
           ),
           if (inProgress.isNotEmpty) ...[
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             NpSectionLabel('In progress (${inProgress.length})'),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             ...inProgress.map(
               (t) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.only(bottom: 10),
                 child: _TurnCard(
                   turn: t,
                   onOpen: () => _openWalkthrough(context, t),
@@ -65,16 +64,16 @@ class TurnsScreen extends ConsumerWidget {
               ),
             ),
           ],
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
           NpSectionLabel('Ready for turn (${ready.length})'),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           if (ready.isEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 4),
+              padding: EdgeInsets.only(top: 4),
               child: Text(
                 'No vacant or turning units in your property scope.',
                 style: NpType.mono.copyWith(
-                  color: NpColors.gray500,
+                  color: context.npColors.gray500,
                   fontSize: 12,
                 ),
               ),
@@ -82,7 +81,7 @@ class TurnsScreen extends ConsumerWidget {
           else
             ...ready.map(
               (u) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.only(bottom: 10),
                 child: _UnitCard(
                   unit: u,
                   assetCount: session.rosterForUnit(u.id).length,
@@ -90,12 +89,12 @@ class TurnsScreen extends ConsumerWidget {
                 ),
               ),
             ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
           NpSectionLabel('Occupied — spot audit'),
-          const SizedBox(height: 10),
+          SizedBox(height: 10),
           ...occupied.map(
             (u) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: EdgeInsets.only(bottom: 10),
               child: _UnitCard(
                 unit: u,
                 assetCount: session.rosterForUnit(u.id).length,
@@ -104,12 +103,12 @@ class TurnsScreen extends ConsumerWidget {
             ),
           ),
           if (completed.isNotEmpty) ...[
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             NpSectionLabel('Completed this shift (${completed.length})'),
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
             ...completed.map(
               (t) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: EdgeInsets.only(bottom: 10),
                 child: _TurnCard(
                   turn: t,
                   onOpen: () => _openWalkthrough(context, t),
@@ -129,34 +128,43 @@ class TurnsScreen extends ConsumerWidget {
 
     final type = await showModalBottomSheet<TurnType>(
       context: context,
-      backgroundColor: NpColors.bgCard,
+      backgroundColor: context.npColors.bgCard,
       showDragHandle: true,
       isScrollControlled: true,
       builder: (ctx) {
         return SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            padding: EdgeInsets.fromLTRB(20, 8, 20, 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                NpKicker('${unit.propertyName} · ${unit.displayName}'),
-                const SizedBox(height: 8),
-                const Text(
-                  'Start Unit Turnover',
+                Text(
+                  'Start ${unit.displayName} turnover',
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 22,
-                    color: NpColors.white,
+                    color: context.npColors.white,
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
+                Text(
+                  unit.propertyName,
+                  style: TextStyle(
+                    color: context.npColors.gray400,
+                    fontSize: 13,
+                  ),
+                ),
+                SizedBox(height: 4),
                 Text(
                   'Pre-populating $count appliance records for room-by-room verification.',
-                  style: const TextStyle(color: NpColors.gray400, fontSize: 13),
+                  style: TextStyle(
+                    color: context.npColors.gray400,
+                    fontSize: 13,
+                  ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 ...TurnType.values.map((t) {
                   final subtitle = switch (t) {
                     TurnType.moveOut =>
@@ -178,42 +186,44 @@ class TurnsScreen extends ConsumerWidget {
                     TurnType.onboarding => Icons.add_business_rounded,
                   };
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: EdgeInsets.only(bottom: 8),
                     child: Material(
-                      color: NpColors.bgElevated,
-                      shape: const RoundedRectangleBorder(
+                      color: context.npColors.bgElevated,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
-                        side: BorderSide(color: NpColors.lineStrong),
+                        side: BorderSide(color: context.npColors.lineStrong),
                       ),
                       child: ListTile(
                         leading: Container(
-                          padding: const EdgeInsets.all(6),
+                          padding: EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: NpColors.bgCard,
+                            color: context.npColors.bgCard,
                             borderRadius: BorderRadius.circular(2),
-                            border: Border.all(color: NpColors.lineStrong),
+                            border: Border.all(
+                              color: context.npColors.lineStrong,
+                            ),
                           ),
                           child: Icon(icon, color: NpColors.red, size: 20),
                         ),
                         title: Text(
                           t.label,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
-                            color: NpColors.white,
+                            color: context.npColors.white,
                           ),
                         ),
                         subtitle: Text(
                           subtitle,
-                          style: const TextStyle(
-                            color: NpColors.gray400,
+                          style: TextStyle(
+                            color: context.npColors.gray400,
                             fontSize: 11,
                           ),
                         ),
-                        trailing: const Icon(
+                        trailing: Icon(
                           Icons.arrow_forward_ios,
                           size: 12,
-                          color: NpColors.gray500,
+                          color: context.npColors.gray500,
                         ),
                         onTap: () => Navigator.pop(ctx, t),
                       ),
@@ -254,12 +264,14 @@ class _UnitCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: NpColors.bgCard,
-        border: Border.fromBorderSide(BorderSide(color: NpColors.lineStrong)),
+      decoration: BoxDecoration(
+        color: context.npColors.bgCard,
+        border: Border.fromBorderSide(
+          BorderSide(color: context.npColors.lineStrong),
+        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -268,10 +280,10 @@ class _UnitCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     unit.displayName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 16,
-                      color: NpColors.white,
+                      color: context.npColors.white,
                     ),
                   ),
                 ),
@@ -285,12 +297,12 @@ class _UnitCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6),
             Text(
               '${unit.propertyName} · $assetCount assets on roster',
-              style: const TextStyle(color: NpColors.gray400, fontSize: 13),
+              style: TextStyle(color: context.npColors.gray400, fontSize: 13),
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -298,14 +310,14 @@ class _UnitCard extends StatelessWidget {
                   '$assetCount ITEMS',
                   style: NpType.mono.copyWith(
                     fontSize: 11,
-                    color: NpColors.gray500,
+                    color: context.npColors.gray500,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.8,
                   ),
                 ),
                 NpButton.primary(
                   icon: Icons.play_arrow_rounded,
-                  label: 'START TURN',
+                  label: 'Start turn',
                   size: NpButtonSize.sm,
                   onPressed: onStart,
                 ),
@@ -338,19 +350,19 @@ class _TurnCard extends StatelessWidget {
       onTap: onOpen,
       child: Container(
         decoration: BoxDecoration(
-          color: NpColors.bgCard,
+          color: context.npColors.bgCard,
           border: Border(
             left: BorderSide(
-              color: isActive ? NpColors.red : NpColors.lineStrong,
+              color: isActive ? NpColors.red : context.npColors.lineStrong,
               width: isActive ? 3 : 1,
             ),
-            top: const BorderSide(color: NpColors.lineStrong),
-            right: const BorderSide(color: NpColors.lineStrong),
-            bottom: const BorderSide(color: NpColors.lineStrong),
+            top: BorderSide(color: context.npColors.lineStrong),
+            right: BorderSide(color: context.npColors.lineStrong),
+            bottom: BorderSide(color: context.npColors.lineStrong),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -359,10 +371,10 @@ class _TurnCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       turn.unitLabel,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
-                        color: NpColors.white,
+                        color: context.npColors.white,
                       ),
                     ),
                   ),
@@ -374,36 +386,36 @@ class _TurnCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(
                 '${turn.type.label} · ${turn.inspectedCount}/${turn.items.length} inspected',
-                style: const TextStyle(color: NpColors.gray400, fontSize: 13),
+                style: TextStyle(color: context.npColors.gray400, fontSize: 13),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               // Progress bar
               Stack(
                 children: [
                   Container(
                     height: 4,
-                    decoration: const BoxDecoration(color: NpColors.white08),
+                    decoration: BoxDecoration(color: context.npColors.white08),
                   ),
                   FractionallySizedBox(
                     widthFactor: progress.clamp(0.0, 1.0),
                     child: Container(
                       height: 4,
                       color: turn.status == TurnStatus.completed
-                          ? NpColors.white
+                          ? context.npColors.white
                           : NpColors.red,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               Text(
                 '${(progress * 100).round()}% COMPLETE',
                 style: NpType.mono.copyWith(
                   fontSize: 10,
-                  color: NpColors.gray500,
+                  color: context.npColors.gray500,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.8,
                 ),

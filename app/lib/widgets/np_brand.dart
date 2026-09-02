@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
+import 'responsive_layout.dart';
 
 class NpAssets {
   NpAssets._();
 
-  static const logo = 'assets/images/nameplate-logo-transparent.png';
+  static const logoDark = 'assets/images/nameplate-logo-transparent.png';
+  static const logoLight = 'assets/images/nameplate-logo-light.png';
 
   static const schematicFridge = 'assets/images/schematics/fridge.png';
   static const schematicWasher = 'assets/images/schematics/washer.png';
@@ -40,19 +42,20 @@ class NpDotGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CustomPaint(
-      painter: _DotGridPainter(),
-      child: SizedBox.expand(),
+    return CustomPaint(
+      painter: _DotGridPainter(context.npColors.dotGrid),
+      child: const SizedBox.expand(),
     );
   }
 }
 
 class _DotGridPainter extends CustomPainter {
-  const _DotGridPainter();
+  final Color color;
+  const _DotGridPainter(this.color);
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = const Color(0x06FFFFFF);
+    final paint = Paint()..color = color;
     const step = 28.0;
     for (double y = 0; y < size.height; y += step) {
       for (double x = 0; x < size.width; x += step) {
@@ -62,40 +65,8 @@ class _DotGridPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-/// Editorial kicker: red left-bar rule + mono all-caps label.
-class NpKicker extends StatelessWidget {
-  final String text;
-  const NpKicker(this.text, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 3,
-          height: 14,
-          decoration: const BoxDecoration(
-            color: NpColors.red,
-            borderRadius: BorderRadius.all(Radius.circular(1)),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          text.toUpperCase(),
-          style: NpType.mono.copyWith(
-            color: NpColors.red,
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.6,
-          ),
-        ),
-      ],
-    );
-  }
+  bool shouldRepaint(covariant _DotGridPainter oldDelegate) =>
+      color != oldDelegate.color;
 }
 
 class NpLogo extends StatelessWidget {
@@ -105,78 +76,72 @@ class NpLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      NpAssets.logo,
+      Theme.of(context).brightness == Brightness.light
+          ? NpAssets.logoLight
+          : NpAssets.logoDark,
       height: height,
       filterQuality: FilterQuality.high,
     );
   }
 }
 
-/// App bar matching HQ topbar: kicker + display title, optional logo lockup.
+/// Compact app bar with one clear title and an optional logo lockup.
 class NpBrandAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String kicker;
   final String title;
   final List<Widget>? actions;
   final bool showLogo;
 
   const NpBrandAppBar({
     super.key,
-    required this.kicker,
     required this.title,
     this.actions,
     this.showLogo = false,
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(72);
+  Size get preferredSize => Size.fromHeight(58);
 
   @override
   Widget build(BuildContext context) {
+    final shouldShowLogo = showLogo && !context.isTablet;
     return AppBar(
-      toolbarHeight: 71,
-      titleSpacing: showLogo ? 8 : 16,
+      toolbarHeight: 57,
+      titleSpacing: shouldShowLogo ? 8 : 16,
       title: Row(
         children: [
-          if (showLogo) ...[
-            const NpLogo(height: 32),
-            const SizedBox(width: 12),
-            Container(width: 1, height: 32, color: NpColors.lineStrong),
-            const SizedBox(width: 12),
+          if (shouldShowLogo) ...[
+            NpLogo(height: 28),
+            SizedBox(width: 10),
+            Container(width: 1, height: 28, color: context.npColors.lineStrong),
+            SizedBox(width: 10),
           ],
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                NpKicker(kicker),
-                const SizedBox(height: 3),
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: NpColors.white,
-                    fontSize: 19,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                    height: 1.1,
-                  ),
-                ),
-              ],
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: context.npColors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+                height: 1.1,
+              ),
             ),
           ),
         ],
       ),
       actions: actions,
-      bottom: const PreferredSize(
+      bottom: PreferredSize(
         preferredSize: Size.fromHeight(1),
-        child: Divider(height: 1, color: NpColors.lineStrong),
+        child: Divider(height: 1, color: context.npColors.lineStrong),
       ),
     );
   }
 }
 
-/// Section label with a red left-bar rule — use inside scrollable content.
+/// A quiet section heading used to organize controls without competing with
+/// the page title.
 class NpSectionLabel extends StatelessWidget {
   final String text;
   final Widget? trailing;
@@ -186,15 +151,13 @@ class NpSectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(width: 3, height: 14, color: NpColors.red),
-        const SizedBox(width: 8),
         Expanded(
           child: Text(
-            text.toUpperCase(),
-            style: NpType.mono.copyWith(
-              color: NpColors.gray400,
-              fontSize: 11,
-              letterSpacing: 1.4,
+            text,
+            style: TextStyle(
+              color: context.npColors.white,
+              fontSize: 13,
+              letterSpacing: -0.1,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -218,22 +181,30 @@ class NpStatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (fg, bg, border) = switch (tone) {
-      NpPillTone.verified => (NpColors.bg, NpColors.white, Colors.transparent),
-      NpPillTone.caution => (
-        NpColors.red,
-        NpColors.redSubtle,
-        NpColors.redBorder,
-      ),
-      NpPillTone.fault => (NpColors.white, NpColors.red, Colors.transparent),
-      NpPillTone.neutral => (
-        NpColors.gray400,
+      NpPillTone.verified => (
+        context.npColors.bg,
+        context.npColors.white,
         Colors.transparent,
-        NpColors.lineStrong,
+      ),
+      NpPillTone.caution => (
+        context.npDangerFg,
+        context.npDangerBg,
+        context.npDangerFg.withValues(alpha: 0.35),
+      ),
+      NpPillTone.fault => (
+        NpColors.onSolid,
+        context.npDangerFg,
+        Colors.transparent,
+      ),
+      NpPillTone.neutral => (
+        context.npColors.gray400,
+        Colors.transparent,
+        context.npColors.lineStrong,
       ),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(2),

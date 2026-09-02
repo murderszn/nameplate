@@ -29,10 +29,26 @@ class _AppShellState extends State<AppShell> {
   ];
 
   static const _destinations = [
-    (icon: Icons.qr_code_scanner_outlined, activeIcon: Icons.qr_code_scanner, label: 'Scan'),
-    (icon: Icons.assignment_outlined, activeIcon: Icons.assignment, label: 'Orders'),
-    (icon: Icons.checklist_outlined, activeIcon: Icons.checklist, label: 'Turns'),
-    (icon: Icons.settings_outlined, activeIcon: Icons.settings, label: 'Settings'),
+    (
+      icon: Icons.qr_code_scanner_outlined,
+      activeIcon: Icons.qr_code_scanner,
+      label: 'Scan',
+    ),
+    (
+      icon: Icons.assignment_outlined,
+      activeIcon: Icons.assignment,
+      label: 'Orders',
+    ),
+    (
+      icon: Icons.checklist_outlined,
+      activeIcon: Icons.checklist,
+      label: 'Turns',
+    ),
+    (
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings,
+      label: 'Settings',
+    ),
   ];
 
   @override
@@ -48,7 +64,7 @@ class _AppShellState extends State<AppShell> {
               onDestinationSelected: (i) => setState(() => _index = i),
               destinations: _destinations,
             ),
-            Container(width: 1, color: NpColors.lineStrong),
+            Container(width: 1, color: context.npColors.lineStrong),
             Expanded(
               child: IndexedStack(index: _index, children: _screens),
             ),
@@ -84,27 +100,19 @@ class _SideRail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 72,
-      color: NpColors.bg,
+      color: context.npColors.bg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 56),
-          Center(child: const NpLogo(height: 28)),
-          const SizedBox(height: 4),
-          Center(
-            child: Text(
-              'NP',
-              style: NpType.mono.copyWith(
-                color: NpColors.red,
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 2,
-              ),
+          // Top logo block aligned to exact 72px app bar height
+          SizedBox(
+            height: 71,
+            child: Center(
+              child: NpLogo(height: 30),
             ),
           ),
-          const SizedBox(height: 24),
-          Container(height: 1, color: NpColors.lineStrong),
-          const SizedBox(height: 8),
+          Container(height: 1, color: context.npColors.lineStrong),
+          SizedBox(height: 12),
           ...destinations.asMap().entries.map((entry) {
             final i = entry.key;
             final d = entry.value;
@@ -117,9 +125,9 @@ class _SideRail extends StatelessWidget {
               onTap: () => onDestinationSelected(i),
             );
           }),
-          const Spacer(),
-          Container(height: 1, color: NpColors.lineStrong),
-          const SizedBox(height: 24),
+          Spacer(),
+          Container(height: 1, color: context.npColors.lineStrong),
+          SizedBox(height: 24),
         ],
       ),
     );
@@ -143,46 +151,61 @@ class _RailItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: context.npColors.bgCard.withValues(alpha: 0.5),
       child: Stack(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.center,
         children: [
           // Red left indicator bar
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 180),
-            width: 3,
-            height: selected ? 32 : 0,
-            decoration: const BoxDecoration(
-              color: NpColors.red,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(2),
-                bottomRight: Radius.circular(2),
+          Positioned(
+            left: 0,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 180),
+              width: 3,
+              height: selected ? 32 : 0,
+              decoration: BoxDecoration(
+                color: NpColors.red,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(2),
+                  bottomRight: Radius.circular(2),
+                ),
               ),
             ),
           ),
+          // Centered Icon & Label
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            child: Column(
-              children: [
-                Icon(
-                  selected ? activeIcon : icon,
-                  size: 22,
-                  color: selected ? NpColors.white : NpColors.gray500,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  label.toUpperCase(),
-                  style: NpType.mono.copyWith(
-                    fontSize: 8,
-                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                    color: selected ? NpColors.white : NpColors.gray500,
-                    letterSpacing: 0.8,
+            padding: EdgeInsets.symmetric(vertical: 14),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    selected ? activeIcon : icon,
+                    size: 22,
+                    color: selected
+                        ? context.npColors.white
+                        : context.npColors.gray500,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                  SizedBox(height: 5),
+                  Text(
+                    label.toUpperCase(),
+                    style: NpType.mono.copyWith(
+                      fontSize: 8.5,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                      color: selected
+                          ? context.npColors.white
+                          : context.npColors.gray500,
+                      letterSpacing: 0.8,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -205,55 +228,66 @@ class _BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomPad = MediaQuery.of(context).padding.bottom;
     return Container(
-      decoration: const BoxDecoration(
-        color: NpColors.bg,
-        border: Border(top: BorderSide(color: NpColors.lineStrong)),
+      decoration: BoxDecoration(
+        color: context.npColors.bg,
+        border: Border(top: BorderSide(color: context.npColors.lineStrong)),
       ),
-      child: SizedBox(
-        height: 56 + bottomPad,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: destinations.asMap().entries.map((entry) {
-            final i = entry.key;
-            final d = entry.value;
-            final selected = selectedIndex == i;
-            return Expanded(
-              child: GestureDetector(
-                onTap: () => onDestinationSelected(i),
-                behavior: HitTestBehavior.opaque,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Red top accent line
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 180),
-                      height: 2,
-                      color: selected ? NpColors.red : Colors.transparent,
-                    ),
-                    const SizedBox(height: 10),
-                    Icon(
-                      selected ? d.activeIcon : d.icon,
-                      size: 22,
-                      color: selected ? NpColors.white : NpColors.gray500,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      d.label.toUpperCase(),
-                      style: NpType.mono.copyWith(
-                        fontSize: 9,
-                        fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                        color: selected ? NpColors.white : NpColors.gray500,
-                        letterSpacing: 0.6,
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 56,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: destinations.asMap().entries.map((entry) {
+              final i = entry.key;
+              final d = entry.value;
+              final selected = selectedIndex == i;
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () => onDestinationSelected(i),
+                  behavior: HitTestBehavior.opaque,
+                  child: Column(
+                    children: [
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 180),
+                        height: 2,
+                        color: selected ? NpColors.red : Colors.transparent,
                       ),
-                    ),
-                    SizedBox(height: bottomPad + 6),
-                  ],
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              selected ? d.activeIcon : d.icon,
+                              size: 22,
+                              color: selected
+                                  ? context.npColors.white
+                                  : context.npColors.gray500,
+                            ),
+                            SizedBox(height: 3),
+                            Text(
+                              d.label.toUpperCase(),
+                              style: NpType.mono.copyWith(
+                                fontSize: 9,
+                                fontWeight: selected
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                                color: selected
+                                    ? context.npColors.white
+                                    : context.npColors.gray500,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
       ),
     );

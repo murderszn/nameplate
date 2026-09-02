@@ -18,9 +18,9 @@ void main() {
     await tester.tap(find.text('TURNS'));
     await tester.pump();
     expect(find.text('Unit turns'), findsOneWidget);
-    expect(find.text('START TURN'), findsWidgets);
+    expect(find.text('Start turn'), findsWidgets);
 
-    await tester.tap(find.text('START TURN').first);
+    await tester.tap(find.text('Start turn').first);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Move-out'), findsOneWidget);
@@ -30,7 +30,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.text('Complete turn (0/6)'), findsOneWidget);
-    expect(find.text('Building C — Unit 4B'), findsWidgets);
+    expect(find.textContaining('Unit 4B'), findsWidgets);
   });
 
   testWidgets('Settings identity, offline toggle, and tag studio open', (
@@ -40,7 +40,7 @@ void main() {
 
     await tester.tap(find.text('SETTINGS'));
     await tester.pump();
-    expect(find.text('Field console'), findsOneWidget);
+    expect(find.text('Settings'), findsWidgets);
     expect(find.textContaining('J. Morales'), findsOneWidget);
     expect(find.text('Nameplate Tag studio'), findsOneWidget);
 
@@ -55,7 +55,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.text('Tag studio'), findsOneWidget);
-    expect(find.text('MINT A PLATE'), findsOneWidget);
+    expect(find.text('Create a tag'), findsOneWidget);
   });
 
   test('NPID mint is Crockford Base32 with NP- prefix', () {

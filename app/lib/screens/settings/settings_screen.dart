@@ -5,6 +5,7 @@ import '../../services/field_session.dart';
 import '../../services/providers.dart';
 import '../../services/sync_status_service.dart';
 import '../../theme/app_theme.dart';
+import '../../theme/theme_controller.dart';
 import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
@@ -18,15 +19,12 @@ class SettingsScreen extends ConsumerWidget {
     final session = ref.watch(fieldSessionProvider);
     final snapshot = session.syncSnapshot;
     final lastSync = session.lastSyncedAt;
+    final darkMode = ref.watch(themeModeProvider) == ThemeMode.dark;
 
     return Scaffold(
-      appBar: const NpBrandAppBar(
-        kicker: '03 / Device',
-        title: 'Field console',
-        showLogo: true,
-      ),
+      appBar: NpBrandAppBar(title: 'Settings', showLogo: true),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 40),
+        padding: EdgeInsets.fromLTRB(16, 20, 16, 40),
         children: [
           ResponsiveContainer(
             maxWidth: 720,
@@ -36,7 +34,7 @@ class SettingsScreen extends ConsumerWidget {
               children: [
                 // ── Identity ────────────────────────────────────────
                 NpSectionLabel('Identity'),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 _SettingsGroup(
                   children: [
                     _SettingsTile(
@@ -52,8 +50,9 @@ class SettingsScreen extends ConsumerWidget {
                       icon: Icons.apartment_outlined,
                       title: 'Assigned properties',
                       subtitle: session.properties
-                          .where((p) =>
-                              session.assignedPropertyIds.contains(p.id))
+                          .where(
+                            (p) => session.assignedPropertyIds.contains(p.id),
+                          )
                           .map((p) => p.name)
                           .join(', '),
                       onTap: () => _pickProperties(context, ref, session),
@@ -61,11 +60,34 @@ class SettingsScreen extends ConsumerWidget {
                   ],
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 20),
+
+                // ── Appearance ───────────────────────────────────────
+                NpSectionLabel('Appearance'),
+                SizedBox(height: 10),
+                _SettingsGroup(
+                  children: [
+                    _SwitchTile(
+                      icon: darkMode
+                          ? Icons.dark_mode_outlined
+                          : Icons.light_mode_outlined,
+                      title: 'Dark mode',
+                      subtitle: darkMode
+                          ? 'Dark Nameplate theme'
+                          : 'White Nameplate theme · default',
+                      value: darkMode,
+                      onChanged: (enabled) => ref
+                          .read(themeModeProvider.notifier)
+                          .setDarkMode(enabled),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 20),
 
                 // ── Sync ─────────────────────────────────────────────
-                NpSectionLabel('Sync engine'),
-                const SizedBox(height: 10),
+                NpSectionLabel('Sync'),
+                SizedBox(height: 10),
                 _SettingsGroup(
                   children: [
                     _SettingsTile(
@@ -74,12 +96,12 @@ class SettingsScreen extends ConsumerWidget {
                       subtitle: snapshot.state == SyncState.offline
                           ? 'Offline · ${snapshot.pendingCount} queued'
                           : snapshot.pendingCount == 0
-                              ? 'Current · last push ${_ago(lastSync)}'
-                              : '${snapshot.pendingCount} pending'
-                                  '${snapshot.oldestUnsyncedAt != null ? ' · oldest ${_ago(snapshot.oldestUnsyncedAt)}' : ''}',
+                          ? 'Current · last push ${_ago(lastSync)}'
+                          : '${snapshot.pendingCount} pending'
+                                '${snapshot.oldestUnsyncedAt != null ? ' · oldest ${_ago(snapshot.oldestUnsyncedAt)}' : ''}',
                       trailing: NpButton.outline(
                         icon: Icons.sync_rounded,
-                        label: 'SYNC',
+                        label: 'Sync',
                         size: NpButtonSize.sm,
                         isLoading: session.syncing,
                         onPressed: session.offlineMode
@@ -89,11 +111,12 @@ class SettingsScreen extends ConsumerWidget {
                                     .read(fieldSessionProvider)
                                     .forceSync();
                                 if (!context.mounted) return;
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Outbox drained. Working set current.')),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Synced. Nothing waiting to upload.',
+                                    ),
+                                  ),
                                 );
                               },
                       ),
@@ -110,8 +133,8 @@ class SettingsScreen extends ConsumerWidget {
                     _GroupDivider(),
                     _SwitchTile(
                       icon: Icons.wifi_tethering_outlined,
-                      title: 'Photos on unmetered Wi-Fi only',
-                      subtitle: 'Tech-overridable · default on',
+                      title: 'Photos on Wi-Fi only',
+                      subtitle: 'Skip photo upload on cellular. On by default.',
                       value: session.photoWifiOnly,
                       onChanged: (v) =>
                           ref.read(fieldSessionProvider).setPhotoWifiOnly(v),
@@ -120,36 +143,41 @@ class SettingsScreen extends ConsumerWidget {
                 ),
 
                 if (session.outbox.isNotEmpty) ...[
-                  const SizedBox(height: 28),
-                  NpSectionLabel('Outbox', trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: NpColors.redSubtle,
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(color: NpColors.redBorder),
-                    ),
-                    child: Text(
-                      '${session.outbox.length}',
-                      style: NpType.mono.copyWith(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: NpColors.red,
+                  SizedBox(height: 20),
+                  NpSectionLabel(
+                    'Waiting to upload',
+                    trailing: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: NpColors.redSubtle,
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(color: NpColors.redBorder),
+                      ),
+                      child: Text(
+                        '${session.outbox.length}',
+                        style: NpType.mono.copyWith(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: NpColors.red,
+                        ),
                       ),
                     ),
-                  )),
-                  const SizedBox(height: 10),
+                  ),
+                  SizedBox(height: 10),
                   _SettingsGroup(
                     children: [
-                      ...session.outbox.take(8).map((op) => _OutboxItem(op: op)),
+                      ...session.outbox
+                          .take(8)
+                          .map((op) => _OutboxItem(op: op)),
                     ],
                   ),
                 ],
 
-                const SizedBox(height: 28),
+                SizedBox(height: 20),
 
                 // ── Tools ────────────────────────────────────────────
                 NpSectionLabel('Tools'),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 _SettingsGroup(
                   children: [
                     _SettingsTile(
@@ -157,18 +185,17 @@ class SettingsScreen extends ConsumerWidget {
                       title: 'Nameplate Tag studio',
                       subtitle: 'Mint NPID + QR payload for a physical plate',
                       onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (_) => const TagStudioScreen()),
+                        MaterialPageRoute(builder: (_) => TagStudioScreen()),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 28),
+                SizedBox(height: 20),
 
                 // ── About ────────────────────────────────────────────
                 NpSectionLabel('Device & app'),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 _SettingsGroup(
                   children: [
                     _SettingsTile(
@@ -178,7 +205,7 @@ class SettingsScreen extends ConsumerWidget {
                           '${session.deviceId} · ${MediaQuery.sizeOf(context).shortestSide >= 640 ? 'Tablet' : 'Phone'} layout',
                     ),
                     _GroupDivider(),
-                    const _SettingsTile(
+                    _SettingsTile(
                       icon: Icons.info_outline,
                       title: 'About Nameplate Field',
                       subtitle: 'v0.1.0 · Offline-first appliance registry',
@@ -194,19 +221,24 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Future<void> _pickTech(
-      BuildContext context, WidgetRef ref, FieldSession session) async {
+    BuildContext context,
+    WidgetRef ref,
+    FieldSession session,
+  ) async {
     final next = await showModalBottomSheet<FieldTech>(
       context: context,
-      backgroundColor: NpColors.bgCard,
+      backgroundColor: context.npColors.bgCard,
       showDragHandle: true,
       builder: (ctx) => SafeArea(
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const ListTile(
-                title: Text('Sign in as',
-                    style: TextStyle(fontWeight: FontWeight.w800)),
+              ListTile(
+                title: Text(
+                  'Sign in as',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
               ),
               ...session.roster.map((t) {
                 final selected = session.tech.id == t.id;
@@ -215,14 +247,14 @@ class SettingsScreen extends ConsumerWidget {
                     selected
                         ? Icons.radio_button_checked
                         : Icons.radio_button_off,
-                    color: selected ? NpColors.red : NpColors.gray500,
+                    color: selected ? NpColors.red : context.npColors.gray500,
                   ),
                   title: Text(t.name),
                   subtitle: Text('${t.role} · ${t.email}'),
                   onTap: () => Navigator.pop(ctx, t),
                 );
               }),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
             ],
           ),
         ),
@@ -232,26 +264,32 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Future<void> _pickProperties(
-      BuildContext context, WidgetRef ref, FieldSession session) async {
+    BuildContext context,
+    WidgetRef ref,
+    FieldSession session,
+  ) async {
     final selected = Set<String>.from(session.assignedPropertyIds);
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: NpColors.bgCard,
+      backgroundColor: context.npColors.bgCard,
       showDragHandle: true,
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setModal) {
             return SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: EdgeInsets.only(bottom: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const ListTile(
-                      title: Text('Property scope',
-                          style: TextStyle(fontWeight: FontWeight.w800)),
+                    ListTile(
+                      title: Text(
+                        'Property scope',
+                        style: TextStyle(fontWeight: FontWeight.w800),
+                      ),
                       subtitle: Text(
-                          'Turns and work orders filter to these properties'),
+                        'Turns and work orders filter to these properties',
+                      ),
                     ),
                     ...session.properties.map(
                       (p) => CheckboxListTile(
@@ -270,7 +308,7 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: NpButton.primary(
                         icon: Icons.check_rounded,
                         label: 'Save Scope',
@@ -313,9 +351,11 @@ class _SettingsGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: NpColors.bgCard,
-        border: Border.fromBorderSide(BorderSide(color: NpColors.lineStrong)),
+      decoration: BoxDecoration(
+        color: context.npColors.bgCard,
+        border: Border.fromBorderSide(
+          BorderSide(color: context.npColors.lineStrong),
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -331,7 +371,7 @@ class _SettingsGroup extends StatelessWidget {
 class _GroupDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
-      const Divider(height: 1, color: NpColors.lineStrong);
+      Divider(height: 1, color: context.npColors.lineStrong);
 }
 
 class _SettingsTile extends StatelessWidget {
@@ -357,21 +397,26 @@ class _SettingsTile extends StatelessWidget {
       leading: Icon(icon, color: NpColors.red, size: 20),
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: NpColors.white,
+          color: context.npColors.white,
         ),
       ),
       subtitle: subtitle != null
           ? Text(
               subtitle!,
-              style: const TextStyle(color: NpColors.gray400, fontSize: 12),
+              style: TextStyle(color: context.npColors.gray400, fontSize: 12),
             )
           : null,
-      trailing: trailing ??
+      trailing:
+          trailing ??
           (onTap != null
-              ? const Icon(Icons.chevron_right, color: NpColors.gray500, size: 18)
+              ? Icon(
+                  Icons.chevron_right,
+                  color: context.npColors.gray500,
+                  size: 18,
+                )
               : null),
       isThreeLine: isThreeLine,
       onTap: onTap,
@@ -400,15 +445,15 @@ class _SwitchTile extends StatelessWidget {
       secondary: Icon(icon, color: NpColors.red, size: 20),
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: NpColors.white,
+          color: context.npColors.white,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(color: NpColors.gray400, fontSize: 12),
+        style: TextStyle(color: context.npColors.gray400, fontSize: 12),
       ),
       value: value,
       onChanged: onChanged,
@@ -423,22 +468,25 @@ class _OutboxItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       dense: true,
       leading: Icon(
         op.synced ? Icons.check_circle : Icons.cloud_upload,
-        color: op.synced ? NpColors.white : NpColors.red,
+        color: op.synced ? context.npColors.white : NpColors.pending,
         size: 16,
       ),
       title: Text(
         op.summary,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(fontSize: 13, color: NpColors.white),
+        style: TextStyle(fontSize: 13, color: context.npColors.white),
       ),
       subtitle: Text(
         op.type,
-        style: NpType.mono.copyWith(fontSize: 10, color: NpColors.gray500),
+        style: NpType.mono.copyWith(
+          fontSize: 10,
+          color: context.npColors.gray500,
+        ),
       ),
     );
   }

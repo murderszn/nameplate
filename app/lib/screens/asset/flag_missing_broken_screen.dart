@@ -18,12 +18,14 @@ class FlagMissingBrokenScreen extends ConsumerStatefulWidget {
   const FlagMissingBrokenScreen({super.key, required this.asset});
 
   @override
-  ConsumerState<FlagMissingBrokenScreen> createState() => _FlagMissingBrokenScreenState();
+  ConsumerState<FlagMissingBrokenScreen> createState() =>
+      _FlagMissingBrokenScreenState();
 }
 
 enum _FlagReason { unaccountedFor, broken }
 
-class _FlagMissingBrokenScreenState extends ConsumerState<FlagMissingBrokenScreen> {
+class _FlagMissingBrokenScreenState
+    extends ConsumerState<FlagMissingBrokenScreen> {
   _FlagReason _reason = _FlagReason.unaccountedFor;
   final _notesController = TextEditingController();
   bool _submitting = false;
@@ -40,42 +42,48 @@ class _FlagMissingBrokenScreenState extends ConsumerState<FlagMissingBrokenScree
     await repo.flagMissingOrBroken(
       assetId: widget.asset.id,
       reason: _reason.name,
-      notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+      notes: _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
     );
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Flag recorded. Queued for sync.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Issue saved. Queued to upload.')));
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const NpBrandAppBar(
-        kicker: '02 / Plate',
-        title: 'Flag issue',
-      ),
+      appBar: NpBrandAppBar(title: 'Flag issue'),
       body: ResponsiveContainer(
         maxWidth: 640,
         child: Container(
-          decoration: const BoxDecoration(
-            color: NpColors.bgCard,
-            border: Border.fromBorderSide(BorderSide(color: NpColors.lineStrong)),
+          decoration: BoxDecoration(
+            color: context.npColors.bgCard,
+            border: Border.fromBorderSide(
+              BorderSide(color: context.npColors.lineStrong),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: const BoxDecoration(
-                  border: Border(bottom: BorderSide(color: NpColors.lineStrong)),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: context.npColors.lineStrong),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const NpKicker('01 / Exception Report'),
-                    const Spacer(),
+                    Text(
+                      'Issue details',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Spacer(),
                     Text(
                       widget.asset.npid,
                       style: NpType.mono.copyWith(
@@ -89,58 +97,62 @@ class _FlagMissingBrokenScreenState extends ConsumerState<FlagMissingBrokenScree
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Flag Asset Condition',
+                      'Report an asset issue',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
-                      'This updates the asset registry ledger and schedules an immediate triage ticket.',
-                      style: const TextStyle(color: NpColors.gray400, fontSize: 13),
+                      'Choose what happened and add any details the next technician needs.',
+                      style: TextStyle(
+                        color: context.npColors.gray400,
+                        fontSize: 13,
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     NpActionTile(
                       icon: Icons.search_off_rounded,
-                      kicker: 'Location Unconfirmed',
-                      title: 'Unaccounted For',
-                      subtitle: 'Cannot locate asset where records indicate it should be.',
+                      title: 'Unaccounted for',
+                      subtitle: 'Not found at its recorded location.',
                       isSelected: _reason == _FlagReason.unaccountedFor,
                       isDestructive: true,
-                      onTap: () => setState(() => _reason = _FlagReason.unaccountedFor),
+                      onTap: () =>
+                          setState(() => _reason = _FlagReason.unaccountedFor),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: 10),
                     NpActionTile(
                       icon: Icons.hardware_rounded,
-                      kicker: 'Physical / Operational Damage',
-                      title: 'Broken / Inoperable',
-                      subtitle: 'Asset is present, but critical functions have failed.',
+                      title: 'Asset is broken',
+                      subtitle: 'Present, but not working correctly.',
                       isSelected: _reason == _FlagReason.broken,
                       isDestructive: true,
                       onTap: () => setState(() => _reason = _FlagReason.broken),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
                     TextField(
                       controller: _notesController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Field Notes & Context (optional)',
-                        hintText: 'Provide details for the investigation work order...',
+                      decoration: InputDecoration(
+                        labelText: 'Notes (optional)',
+                        hintText: 'Anything the next technician should know…',
                         prefixIcon: Icon(Icons.edit_note_rounded),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
                     Row(
                       children: [
                         Expanded(
                           child: NpButton.danger(
                             icon: Icons.flag_rounded,
-                            label: _submitting ? 'RECORDING...' : 'SUBMIT STATUS FLAG',
+                            label: _submitting
+                                ? 'Saving…'
+                                : 'Submit issue',
                             size: NpButtonSize.lg,
                             isExpanded: true,
                             isLoading: _submitting,
@@ -159,4 +171,3 @@ class _FlagMissingBrokenScreenState extends ConsumerState<FlagMissingBrokenScree
     );
   }
 }
-

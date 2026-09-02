@@ -29,7 +29,12 @@ class WorkOrder {
 }
 
 extension WorkOrderPriorityX on WorkOrderPriority {
-  String get label => name;
+  String get label => switch (this) {
+    WorkOrderPriority.emergency => 'Emergency',
+    WorkOrderPriority.urgent => 'Urgent',
+    WorkOrderPriority.standard => 'Standard',
+    WorkOrderPriority.low => 'Low',
+  };
 }
 
 extension WorkOrderStatusX on WorkOrderStatus {

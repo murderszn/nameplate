@@ -20,7 +20,7 @@
   // ================= Theme =================
   function initTheme() {
     var root = document.documentElement;
-    var buttons = document.querySelectorAll('.theme-toggle');
+    var buttons = document.querySelectorAll('.theme-toggle, .footer-theme-toggle, #footerThemeToggle');
     var themeColor = document.querySelector('meta[name="theme-color"]');
     var media = window.matchMedia('(prefers-color-scheme: light)');
 
@@ -34,12 +34,16 @@
         try { localStorage.setItem('nameplate-theme', theme); } catch (error) {}
       }
       if (themeColor) themeColor.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
+      var nextTheme = theme === 'light' ? 'dark' : 'light';
+      var label = 'Use ' + nextTheme + ' mode';
       buttons.forEach(function (button) {
-        var nextTheme = theme === 'light' ? 'dark' : 'light';
-        var label = 'Use ' + nextTheme + ' mode';
         button.setAttribute('aria-label', label);
         button.setAttribute('title', label);
       });
+      var footerLabel = document.getElementById('footerThemeLabel');
+      if (footerLabel) {
+        footerLabel.textContent = theme === 'light' ? 'Dark Mode' : 'Light Mode';
+      }
     }
 
     applyTheme(root.getAttribute('data-theme') || (media.matches ? 'light' : 'dark'), false);
@@ -80,9 +84,9 @@
       cost: '$3,800.00',
       spend: '$38.00 (1.0%)',
       parts: [
-        { type: 'red', text: '<strong>Heating Element & Sensors (Red)</strong> — Critical thermal safety control, monitored for burnout cycles.' },
-        { type: 'red', text: '<strong>Compressor & Thermostat Bus</strong> — High-CapEx failure risk; captures OEM warranty eligibility.' },
-        { type: 'white', text: '<strong>Blower & Condenser Fan</strong> — Mechanical airflow system logged during semi-annual PM audits.' }
+        { type: 'red', text: '<strong>Heating Element &amp; Sensors</strong> — Monitored for burnout cycles.' },
+        { type: 'red', text: '<strong>Compressor &amp; Thermostat Bus</strong> — Covered under OEM warranty.' },
+        { type: 'white', text: '<strong>Blower &amp; Condenser Fan</strong> — Logged during semi-annual PM audits.' }
       ],
       lineage: [
         { date: '2026-03-20', part: 'Blower Motor Amperage Certified (2.8A)', oem: 'OEM-CAR-BLW48', tech: 'Tech J. Morales · WO-1014', status: 'PM Passed', statusClass: 'standard-service' },
@@ -111,9 +115,9 @@
       cost: '$1,320.00',
       spend: '$0.00 (0.0%)',
       parts: [
-        { type: 'red', text: '<strong>Water Inlet Valve & Drain Pump (Red)</strong> — High flood-risk points; tracked for solenoid wear.' },
-        { type: 'red', text: '<strong>Internal Water Heater & Control Panel</strong> — Monitored for power surges and electronic logic faults.' },
-        { type: 'white', text: '<strong>Drive Motor & Outer Drum Casing</strong> — Structural balance and bearing integrity verification.' }
+        { type: 'red', text: '<strong>Water Inlet Valve &amp; Drain Pump</strong> — Tracked for solenoid wear.' },
+        { type: 'red', text: '<strong>Internal Water Heater &amp; Control Board</strong> — Monitored for logic and power faults.' },
+        { type: 'white', text: '<strong>Drive Motor &amp; Drum Casing</strong> — Bearing integrity verification.' }
       ],
       lineage: [
         { date: '2026-05-14', part: 'Door Gasket Sanitization & Balance Test', oem: 'GSK-SQ-F70', tech: 'Tech D. Vance · Turn Audit', status: 'Verified Healthy', statusClass: 'warranty-covered' },
@@ -141,9 +145,9 @@
       cost: '$1,450.00',
       spend: '$64.20 (4.4%)',
       parts: [
-        { type: 'red', text: '<strong>Hermetic Sealed Compressor (Red)</strong> — Primary refrigeration power; core warranty recovery asset.' },
-        { type: 'red', text: '<strong>Evaporator Coils & Defrost Loop</strong> — Cold-wall freeze risk; tracked for refrigerant efficiency.' },
-        { type: 'white', text: '<strong>Thermostat & Magnetic Door Seals</strong> — Air-tight envelope monitoring preventing frost buildup.' }
+        { type: 'red', text: '<strong>Hermetic Sealed Compressor</strong> — Core warranty recovery asset.' },
+        { type: 'red', text: '<strong>Evaporator Coils &amp; Defrost Loop</strong> — Cold-wall freeze risk.' },
+        { type: 'white', text: '<strong>Thermostat &amp; Door Gaskets</strong> — Air-tight seal monitoring.' }
       ],
       lineage: [
         { date: '2026-06-12', part: 'Defrost Bi-Metal Thermostat Replaced', oem: 'WPW10225581', tech: 'Tech J. Morales · WO-1048', status: 'OEM Warranty ($0.00)', statusClass: 'warranty-covered' },
@@ -173,9 +177,9 @@
       cost: '$1,250.00',
       spend: '$0.00 (0.0%)',
       parts: [
-        { type: 'red', text: '<strong>High-Density Heating Element (Red)</strong> — Critical fire-safety checkpoint; resistance certified at turns.' },
-        { type: 'white', text: '<strong>Centrifugal Exhaust Blower & Lint Screen</strong> — Airflow backpressure tested to prevent lint accumulation.' },
-        { type: 'white', text: '<strong>Drum Drive Belt & Idler Pulley</strong> — Mechanical rotation verified during make-ready turns.' }
+        { type: 'red', text: '<strong>High-Density Heating Element</strong> — Resistance verified at make-ready turns.' },
+        { type: 'white', text: '<strong>Exhaust Blower &amp; Lint Screen</strong> — Airflow backpressure tested.' },
+        { type: 'white', text: '<strong>Drum Drive Belt &amp; Idler Pulley</strong> — Mechanical rotation verified.' }
       ],
       lineage: [
         { date: '2026-05-14', part: 'Exhaust Duct Airflow Certified 480 CFM', oem: 'DUCT-CFM-TEST', tech: 'Tech D. Vance · Turn Walk', status: 'Airflow Certified', statusClass: 'warranty-covered' },
@@ -203,9 +207,9 @@
       cost: '$899.00',
       spend: '$24.00 (2.6%)',
       parts: [
-        { type: 'red', text: '<strong>Internal Water Booster Heater (Red)</strong> — High-temperature sanitation verification.' },
-        { type: 'white', text: '<strong>Float Switch & Circulation Pump</strong> — Sub-floor leak mitigation sensors tested annually.' },
-        { type: 'white', text: '<strong>Upper/Lower Spray Arms & Racks</strong> — Mechanical wash integrity checked during turnover audits.' }
+        { type: 'red', text: '<strong>Water Booster Heater</strong> — High-temperature sanitation verification.' },
+        { type: 'white', text: '<strong>Float Switch &amp; Circulation Pump</strong> — Sub-floor leak mitigation sensors.' },
+        { type: 'white', text: '<strong>Upper/Lower Spray Arms</strong> — Mechanical wash integrity checked.' }
       ],
       lineage: [
         { date: '2026-01-09', part: 'Drain Pump Filter Cleared & Calibrated', oem: 'PUMP-GE-PDT7', tech: 'Tech D. Vance · WO-0932', status: 'Maintenance ($24.00)', statusClass: 'standard-service' },
@@ -233,9 +237,9 @@
       cost: '$180.00',
       spend: '$0.00 (0.0%)',
       parts: [
-        { type: 'red', text: '<strong>HVAC Relay Bus & Control Panel (Red)</strong> — 24V signaling protection against power surges.' },
-        { type: 'white', text: '<strong>Digital LCD Display & User Interface</strong> — Hardware status telemetry reporting.' },
-        { type: 'white', text: '<strong>Precision Temperature Sensor</strong> — Thermal calibration audit logged across seasons.' }
+        { type: 'red', text: '<strong>HVAC Relay Bus &amp; Control Panel</strong> — 24V signaling protection.' },
+        { type: 'white', text: '<strong>Digital LCD Display</strong> — Hardware status telemetry reporting.' },
+        { type: 'white', text: '<strong>Precision Temperature Sensor</strong> — Thermal calibration audit.' }
       ],
       lineage: [
         { date: '2024-02-18', part: 'Remote Room Sensor Paired & Commissioned', oem: 'RCHTSENSOR-V1', tech: 'Tech J. Morales', status: 'Commissioned', statusClass: 'standard-service' }
@@ -262,9 +266,9 @@
       cost: '$540.00',
       spend: '$0.00 (0.0%)',
       parts: [
-        { type: 'red', text: '<strong>Magnetron & High-Voltage Tube (Red)</strong> — Core microwave radiation generator.' },
-        { type: 'white', text: '<strong>Dual Interlock Safety Door Latches</strong> — Door closure sensor preventing open-door operation.' },
-        { type: 'white', text: '<strong>Waveguide Chamber & Exhaust Fan</strong> — Energy dissipation and kitchen grease ventilation.' }
+        { type: 'red', text: '<strong>Magnetron Tube</strong> — Microwave radiation generator.' },
+        { type: 'white', text: '<strong>Interlock Safety Door Latches</strong> — Closure sensor.' },
+        { type: 'white', text: '<strong>Waveguide Chamber &amp; Exhaust Fan</strong> — Ventilation integrity.' }
       ],
       lineage: [
         { date: '2024-07-15', part: 'Initial Tag Affixed & Range Hood Paired', oem: 'NPID-SYSTEM', tech: 'Tech J. Morales', status: 'Commissioned', statusClass: 'standard-service' }
@@ -291,9 +295,9 @@
       cost: '$1,650.00',
       spend: '$0.00 (0.0%)',
       parts: [
-        { type: 'red', text: '<strong>Upper/Lower Titanium Heating Elements (Red)</strong> — Dual dry-fire protected thermal resistors.' },
-        { type: 'white', text: '<strong>Sacrificial Magnesium Anode Rod</strong> — Corrosion barrier inspected during annual turn audit.' },
-        { type: 'white', text: '<strong>Temperature & Pressure Relief Valve</strong> — Safety pressure discharge rated to 150 PSI.' }
+        { type: 'red', text: '<strong>Titanium Heating Elements</strong> — Dual thermal resistors.' },
+        { type: 'white', text: '<strong>Sacrificial Magnesium Anode Rod</strong> — Corrosion barrier.' },
+        { type: 'white', text: '<strong>Temperature &amp; Pressure Relief Valve</strong> — Safety discharge rated to 150 PSI.' }
       ],
       lineage: [
         { date: '2025-06-18', part: 'Anode Rod Depletion Inspection (92% Life)', oem: 'RH-ANODE-MG', tech: 'Tech J. Morales · WO-0740', status: 'PM Passed', statusClass: 'warranty-covered' },
@@ -346,6 +350,7 @@
 
     // 2. Live Simulator Header & Sidebar
     var simHdrNpid = document.getElementById('simHeaderNpid');
+    var simLoc = document.getElementById('simAssetLocationTag');
     var simImg = document.getElementById('simSidebarSchematicImg');
     var simName = document.getElementById('simAssetName');
     var simCat = document.getElementById('simAssetCategory');
@@ -355,7 +360,8 @@
     var simAddr = document.getElementById('simAssetAddress');
     var simGps = document.getElementById('simAssetGps');
 
-    if (simHdrNpid) simHdrNpid.textContent = 'NPID: ' + data.npid;
+    if (simHdrNpid) simHdrNpid.textContent = data.npid;
+    if (simLoc) simLoc.textContent = data.property + ' · ' + data.room;
     if (simImg) simImg.src = data.img;
     if (simName) simName.textContent = data.title;
     if (simCat) simCat.textContent = data.category;
@@ -380,18 +386,21 @@
     if (statSpend) statSpend.textContent = data.spend;
     if (dateInst) dateInst.textContent = data.dates;
 
-    // 4. Lineage Table Rows
+    // 4. Lineage Event Stream
     var tableBody = document.getElementById('simLineageTableBody');
     if (tableBody) {
       var tHtml = '';
       data.lineage.forEach(function (row) {
-        tHtml += '<tr>' +
-          '<td class="mono">' + esc(row.date) + '</td>' +
-          '<td><strong>' + esc(row.part) + '</strong></td>' +
-          '<td class="mono" style="color: var(--gray-400);">' + esc(row.oem) + '</td>' +
-          '<td>' + esc(row.tech) + '</td>' +
-          '<td><span class="sim-part-badge ' + esc(row.statusClass) + '">' + esc(row.status) + '</span></td>' +
-          '</tr>';
+        tHtml += '<div class="lineage-event-row">' +
+          '<div class="lineage-event-main">' +
+          '<span class="lineage-date mono">' + esc(row.date) + '</span>' +
+          '<div class="lineage-desc">' +
+          '<strong>' + esc(row.part) + '</strong>' +
+          '<span class="lineage-meta mono">' + esc(row.oem) + ' · ' + esc(row.tech) + '</span>' +
+          '</div>' +
+          '</div>' +
+          '<span class="sim-part-badge ' + esc(row.statusClass) + '">' + esc(row.status) + '</span>' +
+          '</div>';
       });
       tableBody.innerHTML = tHtml;
     }
@@ -464,8 +473,6 @@
   function initOversizedQrStudio() {
     var input = document.getElementById('liveStudioNpidInput');
     var btnRand = document.getElementById('btnRandomizeOversized');
-    var btnScan = document.getElementById('btnTriggerLaserScan');
-    var laser = document.getElementById('laserScanline');
 
     if (input) {
       input.addEventListener('input', function () {
@@ -479,31 +486,6 @@
         var newId = generateBase32Npid();
         if (input) input.value = newId;
         renderOversizedQr(newId);
-      });
-    }
-
-    if (btnScan) {
-      btnScan.addEventListener('click', function () {
-        if (laser) {
-          laser.classList.add('is-active');
-        }
-        // Detach the original label + icon nodes so they can be restored
-        // verbatim, without round-tripping the button through innerHTML.
-        var origNodes = Array.prototype.slice.call(btnScan.childNodes);
-        btnScan.textContent = 'Scanning Tag...';
-
-        setTimeout(function () {
-          if (laser) laser.classList.remove('is-active');
-          btnScan.textContent = '✓ Physical Asset Resolved (0.4s)';
-          btnScan.style.background = '#FFFFFF';
-          btnScan.style.color = '#000000';
-
-          setTimeout(function () {
-            btnScan.replaceChildren.apply(btnScan, origNodes);
-            btnScan.style.background = '';
-            btnScan.style.color = '';
-          }, 2400);
-        }, 1200);
       });
     }
 
@@ -774,13 +756,100 @@
     // Keyboard Arrow Navigation
     document.addEventListener('keydown', function (e) {
       var tag = (document.activeElement && document.activeElement.tagName) || '';
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (e.key === 'ArrowLeft') {
         updateSlide(currentSlide - 1);
       } else if (e.key === 'ArrowRight') {
         updateSlide(currentSlide + 1);
       }
     });
+  }
+
+  // ================= 8. Contact Us / Information Modal =================
+  function initContactModal() {
+    var modal = document.getElementById('contactModal');
+    var openTriggers = document.querySelectorAll('.open-contact-modal-trigger');
+    var closeBtn = document.getElementById('closeContactModalBtn');
+    var doneBtn = document.getElementById('contactDoneBtn');
+    var form = document.getElementById('contactModalForm');
+    var formContainer = document.getElementById('contactFormContainer');
+    var successState = document.getElementById('contactSuccessState');
+    var submitBtn = document.getElementById('contactSubmitBtn');
+    var lastFocusedEl = null;
+
+    if (!modal) return;
+
+    function openModal(e) {
+      if (e) e.preventDefault();
+      lastFocusedEl = document.activeElement;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      var firstInput = modal.querySelector('input:not([type=hidden]), textarea');
+      if (firstInput) {
+        setTimeout(function () { firstInput.focus(); }, 100);
+      }
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (lastFocusedEl && typeof lastFocusedEl.focus === 'function') {
+        lastFocusedEl.focus();
+      }
+    }
+
+    openTriggers.forEach(function (btn) {
+      btn.addEventListener('click', openModal);
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+
+    if (doneBtn) {
+      doneBtn.addEventListener('click', function () {
+        closeModal();
+        setTimeout(function () {
+          if (form) form.reset();
+          if (formContainer) formContainer.style.display = '';
+          if (successState) successState.style.display = 'none';
+          if (submitBtn) {
+            submitBtn.classList.remove('is-loading');
+            submitBtn.disabled = false;
+          }
+        }, 300);
+      });
+    }
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+        closeModal();
+      }
+    });
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (submitBtn) {
+          submitBtn.classList.add('is-loading');
+          submitBtn.disabled = true;
+        }
+
+        // Smooth simulated submission with immediate confirmation
+        setTimeout(function () {
+          if (formContainer) formContainer.style.display = 'none';
+          if (successState) successState.style.display = 'block';
+        }, 500);
+      });
+    }
   }
 
   // Initialize
@@ -793,6 +862,7 @@
       initScreensFilter();
       initInvestorAudioPlayer();
       initSlideDeckViewer();
+      initContactModal();
       renderLiveAppRecord('hvac');
     });
   } else {
@@ -803,6 +873,7 @@
     initScreensFilter();
     initInvestorAudioPlayer();
     initSlideDeckViewer();
+    initContactModal();
     renderLiveAppRecord('hvac');
   }
 

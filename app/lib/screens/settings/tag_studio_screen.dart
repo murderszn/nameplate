@@ -35,62 +35,40 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
     final session = ref.watch(fieldSessionProvider);
 
     return Scaffold(
-      appBar: const NpBrandAppBar(
-        kicker: '04 / Hardware',
-        title: 'Tag studio',
-      ),
+      appBar: NpBrandAppBar(title: 'Tag studio'),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         children: [
-          const NpKicker('Mint a plate'),
-          const SizedBox(height: 8),
+          Text('Create a tag', style: Theme.of(context).textTheme.titleLarge),
+          SizedBox(height: 6),
           Text(
-            'Generate a Crockford Base32 Nameplate ID with HMAC-SHA256 offline authentication. Minted locally from pre-allocated device pool.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: NpColors.gray400),
+            'Create a Nameplate ID you can print, even when this device is offline.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: context.npColors.gray400),
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: NpColors.bg,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: NpColors.gray800),
-            ),
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.offline_bolt, color: NpColors.red, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      'OFFLINE VAULT POOL',
-                      style: NpType.mono.copyWith(fontSize: 11, fontWeight: FontWeight.w700, color: NpColors.gray300),
-                    ),
-                  ],
-                ),
-                Text(
-                  '${session.remainingOfflinePoolCount} / 500 Available',
-                  style: NpType.mono.copyWith(fontSize: 11, fontWeight: FontWeight.w700, color: NpColors.red),
-                ),
-              ],
-            ),
+          SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.offline_bolt, color: NpColors.red, size: 16),
+              SizedBox(width: 7),
+              Text(
+                '${session.remainingOfflinePoolCount} tags available offline',
+                style: TextStyle(fontSize: 12, color: context.npColors.gray400),
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           NameplateTag(npid: _npid),
-          const SizedBox(height: 20),
+          SizedBox(height: 20),
           NpButton.primary(
             icon: Icons.offline_bolt_rounded,
-            label: 'Mint Next Pre-Allocated Tag',
+            label: 'Create next tag',
             size: NpButtonSize.lg,
             isExpanded: true,
             onPressed: _mint,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Row(
             children: [
               Expanded(
@@ -107,17 +85,19 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
                   },
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: NpButton.secondary(
                   icon: Icons.link_rounded,
                   label: 'Copy URL',
                   size: NpButtonSize.md,
                   onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: Npid.payloadUrl(_npid)));
+                    await Clipboard.setData(
+                      ClipboardData(text: Npid.payloadUrl(_npid)),
+                    );
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Copied scan payload URL')),
+                      SnackBar(content: Text('Copied scan payload URL')),
                     );
                   },
                 ),
@@ -125,48 +105,69 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
             ],
           ),
           if (session.mintedTags.isNotEmpty) ...[
-            const SizedBox(height: 28),
+            SizedBox(height: 28),
             Text(
-              'MINTED THIS SHIFT (${session.mintedTags.length})',
+              'Created this shift (${session.mintedTags.length})',
               style: NpType.mono.copyWith(
-                color: NpColors.gray500,
+                color: context.npColors.gray500,
                 fontSize: 11,
                 letterSpacing: 1.4,
                 fontWeight: FontWeight.w700,
               ),
             ),
-            const SizedBox(height: 10),
-            ...session.mintedTags.take(12).map(
-              (t) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Material(
-                  color: NpColors.bgElevated,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                    side: BorderSide(color: NpColors.lineStrong),
-                  ),
-                  child: ListTile(
-                    dense: true,
-                    leading: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: NpColors.bgCard,
-                        borderRadius: BorderRadius.circular(2),
-                        border: Border.all(color: NpColors.lineStrong),
+            SizedBox(height: 10),
+            ...session.mintedTags
+                .take(12)
+                .map(
+                  (t) => Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: Material(
+                      color: context.npColors.bgElevated,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                        side: BorderSide(color: context.npColors.lineStrong),
                       ),
-                      child: const Icon(Icons.qr_code_2_rounded, color: NpColors.red, size: 16),
+                      child: ListTile(
+                        dense: true,
+                        leading: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: context.npColors.bgCard,
+                            borderRadius: BorderRadius.circular(2),
+                            border: Border.all(
+                              color: context.npColors.lineStrong,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.qr_code_2_rounded,
+                            color: NpColors.red,
+                            size: 16,
+                          ),
+                        ),
+                        title: Text(
+                          t.npid,
+                          style: NpType.mono.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: NpColors.red,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'Minted ${t.mintedAt.hour.toString().padLeft(2, '0')}:${t.mintedAt.minute.toString().padLeft(2, '0')}',
+                          style: TextStyle(
+                            color: context.npColors.gray400,
+                            fontSize: 11,
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.chevron_right,
+                          size: 16,
+                          color: context.npColors.gray500,
+                        ),
+                        onTap: () => setState(() => _npid = t.npid),
+                      ),
                     ),
-                    title: Text(t.npid, style: NpType.mono.copyWith(fontWeight: FontWeight.w700, color: NpColors.red)),
-                    subtitle: Text(
-                      'Minted ${t.mintedAt.hour.toString().padLeft(2, '0')}:${t.mintedAt.minute.toString().padLeft(2, '0')}',
-                      style: const TextStyle(color: NpColors.gray400, fontSize: 11),
-                    ),
-                    trailing: const Icon(Icons.chevron_right, size: 16, color: NpColors.gray500),
-                    onTap: () => setState(() => _npid = t.npid),
                   ),
                 ),
-              ),
-            ),
           ],
         ],
       ),

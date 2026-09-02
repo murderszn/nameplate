@@ -19,6 +19,16 @@ enum AssetStatus {
 
 enum AssetCondition { newCondition, good, fair, poor, failed }
 
+extension AssetConditionX on AssetCondition {
+  String get label => switch (this) {
+    AssetCondition.newCondition => 'New',
+    AssetCondition.good => 'Good',
+    AssetCondition.fair => 'Fair',
+    AssetCondition.poor => 'Poor',
+    AssetCondition.failed => 'Failed',
+  };
+}
+
 enum LocationType { unit, storage, vendor, inTransit, disposed, unknown }
 
 class Asset {

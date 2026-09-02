@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:nameplate_field/main.dart';
 import 'package:nameplate_field/screens/splash_screen.dart';
+import 'package:nameplate_field/theme/theme_controller.dart';
 
 void main() {
   testWidgets('App shell renders navigation destinations on standard screen', (
@@ -23,7 +24,7 @@ void main() {
     expect(find.text('TURNS'), findsOneWidget);
     expect(find.text('SETTINGS'), findsOneWidget);
     expect(find.text('Scan the plate'), findsOneWidget);
-    expect(find.text('SCAN WITH CAMERA'), findsOneWidget);
+    expect(find.text('Scan with camera'), findsOneWidget);
 
     await tester.tap(find.text('ORDERS'));
     await tester.pump();
@@ -35,7 +36,28 @@ void main() {
 
     await tester.tap(find.text('SETTINGS'));
     await tester.pump();
-    expect(find.text('Field console'), findsOneWidget);
+    expect(find.text('Settings'), findsWidgets);
+  });
+
+  testWidgets('App defaults to light mode and can switch to dark mode', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: NameplateFieldApp()));
+    await tester.pump();
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(NameplateFieldApp)),
+    );
+    expect(container.read(themeModeProvider), ThemeMode.light);
+
+    await tester.tap(find.text('SETTINGS'));
+    await tester.pump();
+    expect(find.text('White Nameplate theme · default'), findsOneWidget);
+
+    await tester.tap(find.text('Dark mode'));
+    await tester.pump();
+    expect(container.read(themeModeProvider), ThemeMode.dark);
+    expect(find.text('Dark Nameplate theme'), findsOneWidget);
   });
 
   testWidgets(
@@ -50,26 +72,28 @@ void main() {
       await tester.pumpWidget(const ProviderScope(child: NameplateFieldApp()));
       await tester.pump();
 
-      expect(find.text('NP'), findsOneWidget);
       expect(find.text('SCAN'), findsOneWidget);
       expect(find.text('ORDERS'), findsOneWidget);
       expect(find.text('TURNS'), findsOneWidget);
       expect(find.text('SETTINGS'), findsOneWidget);
-      expect(find.text('Manual NPID Lookup'), findsOneWidget);
+      expect(find.text('Enter a tag ID'), findsOneWidget);
     },
   );
 
   testWidgets('Splash screen renders brand logo and transitions', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const ProviderScope(
-      child: NameplateFieldApp(home: SplashScreen(duration: Duration(milliseconds: 100))),
-    ));
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: NameplateFieldApp(
+          home: SplashScreen(duration: Duration(milliseconds: 100)),
+        ),
+      ),
+    );
     await tester.pump();
 
     expect(find.text('NAMEPLATE'), findsOneWidget);
-    expect(find.text('FIELD'), findsOneWidget);
-    expect(find.text('00 / OFFLINE LEDGER'), findsOneWidget);
+    expect(find.text('Every appliance accounted for.'), findsOneWidget);
 
     await tester.pump(const Duration(milliseconds: 150));
     await tester.pump(const Duration(milliseconds: 500));

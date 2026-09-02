@@ -27,7 +27,7 @@ class _CameraScannerScreenState extends State<CameraScannerScreen>
     _scannerController = MobileScannerController(
       detectionSpeed: DetectionSpeed.noDuplicates,
       facing: CameraFacing.back,
-      formats: const [BarcodeFormat.qrCode],
+      formats: [BarcodeFormat.qrCode],
     );
   }
 
@@ -79,11 +79,11 @@ class _CameraScannerScreenState extends State<CameraScannerScreen>
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        foregroundColor: NpColors.white,
+        foregroundColor: NpColors.onSolid,
         title: Text(
-          'SCAN NAMEPLATE',
+          'Scan nameplate',
           style: NpType.mono.copyWith(
-            color: NpColors.white,
+            color: NpColors.onSolid,
             fontSize: 13,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.2,
@@ -119,8 +119,8 @@ class _CameraScannerScreenState extends State<CameraScannerScreen>
               child: AspectRatio(
                 aspectRatio: 1,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: CustomPaint(painter: const _ScannerFramePainter()),
+                  padding: EdgeInsets.all(16),
+                  child: CustomPaint(painter: _ScannerFramePainter()),
                 ),
               ),
             ),
@@ -128,22 +128,19 @@ class _CameraScannerScreenState extends State<CameraScannerScreen>
           Align(
             alignment: Alignment.bottomCenter,
             child: SafeArea(
-              minimum: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+              minimum: EdgeInsets.fromLTRB(20, 20, 20, 28),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 14,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 14),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.78),
-                  border: Border.all(color: NpColors.lineStrong),
+                  border: Border.all(color: context.npColors.lineStrong),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'CENTER THE NAMEPLATE QR CODE IN THE FRAME',
+                  'Center the QR code in the frame',
                   textAlign: TextAlign.center,
                   style: NpType.mono.copyWith(
-                    color: NpColors.white,
+                    color: context.npColors.white,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1,
@@ -168,41 +165,41 @@ class _ScannerError extends StatelessWidget {
     final permissionDenied =
         error.errorCode == MobileScannerErrorCode.permissionDenied;
     return ColoredBox(
-      color: NpColors.bg,
+      color: context.npColors.bg,
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.all(28),
+          padding: EdgeInsets.all(28),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.no_photography_outlined,
                 color: NpColors.red,
                 size: 44,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Text(
                 permissionDenied
-                    ? 'CAMERA ACCESS REQUIRED'
-                    : 'CAMERA UNAVAILABLE',
+                    ? 'Camera access required'
+                    : 'Camera unavailable',
                 style: NpType.mono.copyWith(
-                  color: NpColors.white,
+                  color: context.npColors.white,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Text(
                 permissionDenied
                     ? 'Enable Camera for Nameplate Field in iPhone Settings, then reopen the scanner.'
                     : error.errorDetails?.message ?? error.errorCode.message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: NpColors.gray400),
+                style: TextStyle(color: context.npColors.gray400),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
               OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Back'),
+                child: Text('Back'),
               ),
             ],
           ),
@@ -213,7 +210,7 @@ class _ScannerError extends StatelessWidget {
 }
 
 class _ScannerFramePainter extends CustomPainter {
-  const _ScannerFramePainter();
+  _ScannerFramePainter();
 
   @override
   void paint(Canvas canvas, Size size) {

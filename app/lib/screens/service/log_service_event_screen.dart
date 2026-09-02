@@ -18,14 +18,11 @@ class LogServiceEventScreen extends ConsumerStatefulWidget {
   final Asset asset;
   final WorkOrder? workOrder;
 
-  const LogServiceEventScreen({
-    super.key,
-    required this.asset,
-    this.workOrder,
-  });
+  const LogServiceEventScreen({super.key, required this.asset, this.workOrder});
 
   @override
-  ConsumerState<LogServiceEventScreen> createState() => _LogServiceEventScreenState();
+  ConsumerState<LogServiceEventScreen> createState() =>
+      _LogServiceEventScreenState();
 }
 
 const _symptomMap = {
@@ -68,8 +65,8 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
   Asset? _selectedDonorAsset;
   bool _submitting = false;
 
-  static const double _hourlyLaborRate = 85.0;
-  static const double _defaultReplacementCost = 850.0;
+  static final double _hourlyLaborRate = 85.0;
+  static final double _defaultReplacementCost = 850.0;
 
   @override
   void initState() {
@@ -93,15 +90,16 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
     return (mins / 60.0) * _hourlyLaborRate;
   }
 
-  double get _partsCost => double.tryParse(_partCostController.text.trim()) ?? 0;
+  double get _partsCost =>
+      double.tryParse(_partCostController.text.trim()) ?? 0;
 
   double get _totalEstimatedCost => _laborCost + _partsCost;
 
-  bool get _isRepairLike => const {
-        ServiceEventType.repair,
-        ServiceEventType.diagnostic,
-        ServiceEventType.partReplacement,
-      }.contains(_eventType);
+  bool get _isRepairLike => {
+    ServiceEventType.repair,
+    ServiceEventType.diagnostic,
+    ServiceEventType.partReplacement,
+  }.contains(_eventType);
 
   bool get _canSubmit => !_isRepairLike || _symptoms.isNotEmpty;
 
@@ -114,37 +112,43 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
       final partDesc = _partDescriptionController.text.trim();
       final cost = _partsCost;
 
-      if (_partSource == _PartSource.salvagedFromDonor && _selectedDonorAsset != null) {
-        partsUsed.add(PartUsage(
-          id: 'pu-salvage-${DateTime.now().microsecondsSinceEpoch}',
-          action: PartUsageAction.installed,
-          descriptionOnly: partDesc,
-          unitCost: cost,
-          part: Part(
-            id: 'part-salvaged-${DateTime.now().microsecondsSinceEpoch}',
-            componentType: partDesc,
-            origin: PartOrigin.salvaged,
-            sourceAssetId: _selectedDonorAsset!.id,
-            sourceAssetLabel: '${_selectedDonorAsset!.categoryDisplayName} ${_selectedDonorAsset!.npid} (${_selectedDonorAsset!.currentLocationLabel ?? "Storage"})',
-            salvagedAt: DateTime.now(),
-            condition: PartCondition.testedGood,
-            imputedValue: cost > 0 ? cost : 45.0,
+      if (_partSource == _PartSource.salvagedFromDonor &&
+          _selectedDonorAsset != null) {
+        partsUsed.add(
+          PartUsage(
+            id: 'pu-salvage-${DateTime.now().microsecondsSinceEpoch}',
+            action: PartUsageAction.installed,
+            descriptionOnly: partDesc,
+            unitCost: cost,
+            part: Part(
+              id: 'part-salvaged-${DateTime.now().microsecondsSinceEpoch}',
+              componentType: partDesc,
+              origin: PartOrigin.salvaged,
+              sourceAssetId: _selectedDonorAsset!.id,
+              sourceAssetLabel:
+                  '${_selectedDonorAsset!.categoryDisplayName} ${_selectedDonorAsset!.npid} (${_selectedDonorAsset!.currentLocationLabel ?? "Storage"})',
+              salvagedAt: DateTime.now(),
+              condition: PartCondition.testedGood,
+              imputedValue: cost > 0 ? cost : 45.0,
+            ),
           ),
-        ));
+        );
       } else {
-        partsUsed.add(PartUsage(
-          id: 'pu-new-${DateTime.now().microsecondsSinceEpoch}',
-          action: PartUsageAction.installed,
-          descriptionOnly: partDesc,
-          unitCost: cost,
-          part: Part(
-            id: 'part-new-${DateTime.now().microsecondsSinceEpoch}',
-            componentType: partDesc,
-            origin: PartOrigin.newPurchase,
-            condition: PartCondition.newCondition,
-            acquisitionCost: cost,
+        partsUsed.add(
+          PartUsage(
+            id: 'pu-new-${DateTime.now().microsecondsSinceEpoch}',
+            action: PartUsageAction.installed,
+            descriptionOnly: partDesc,
+            unitCost: cost,
+            part: Part(
+              id: 'part-new-${DateTime.now().microsecondsSinceEpoch}',
+              componentType: partDesc,
+              origin: PartOrigin.newPurchase,
+              condition: PartCondition.newCondition,
+              acquisitionCost: cost,
+            ),
           ),
-        ));
+        );
       }
     }
 
@@ -156,7 +160,9 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
       assetId: widget.asset.id,
       eventType: _eventType,
       symptomCodes: _symptoms.toList(),
-      findings: _findingsController.text.trim().isEmpty ? null : _findingsController.text.trim(),
+      findings: _findingsController.text.trim().isEmpty
+          ? null
+          : _findingsController.text.trim(),
       resolutionCode: _resolutionCode,
       repairVsReplaceDecision: _decision,
       laborMinutes: laborMins,
@@ -169,14 +175,19 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
 
     final session = ref.read(fieldSessionProvider);
     widget.asset.condition = _conditionAfter;
-    widget.asset.status = _resolutionCode == ResolutionCode.fixed || _resolutionCode == ResolutionCode.partReplaced
+    widget.asset.status =
+        _resolutionCode == ResolutionCode.fixed ||
+            _resolutionCode == ResolutionCode.partReplaced
         ? AssetStatus.active
         : AssetStatus.needsRepair;
     widget.asset.lastServiceAt = DateTime.now();
     widget.asset.lifetimeServiceCost += (event.totalCost + _laborCost);
 
     if (widget.workOrder != null) {
-      session.updateWorkOrderStatus(widget.workOrder!, WorkOrderStatus.completed);
+      session.updateWorkOrderStatus(
+        widget.workOrder!,
+        WorkOrderStatus.completed,
+      );
     }
 
     if (!mounted) return;
@@ -184,7 +195,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Service recorded on ${widget.asset.npid}. Total: \$${(_totalEstimatedCost).toStringAsFixed(2)} · Outbox queued.',
+          'Service saved on ${widget.asset.npid}. Total \$${(_totalEstimatedCost).toStringAsFixed(2)} — queued to upload.',
         ),
       ),
     );
@@ -193,35 +204,48 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
   Widget _buildLeftColumn() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const NpKicker('01 / Diagnostics'),
+                Text(
+                  'Diagnostics',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
                 if (_isRepairLike)
                   Text(
-                    'Symptom Required',
-                    style: NpType.mono.copyWith(color: NpColors.red, fontSize: 10, fontWeight: FontWeight.w700),
+                    'Symptom required',
+                    style: NpType.mono.copyWith(
+                      color: NpColors.red,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
               ],
             ),
-            const SizedBox(height: 8),
-            Text('Event Type & Root Cause', style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             DropdownButtonFormField<ServiceEventType>(
               initialValue: _eventType,
-              decoration: const InputDecoration(labelText: 'Event Type'),
+              decoration: InputDecoration(labelText: 'Event Type'),
               items: ServiceEventType.values
-                  .map((t) => DropdownMenuItem(value: t, child: Text(t.name.toUpperCase())))
+                  .map(
+                    (t) => DropdownMenuItem(
+                      value: t,
+                      child: Text(t.label),
+                    ),
+                  )
                   .toList(),
               onChanged: (v) => setState(() => _eventType = v!),
             ),
-            const SizedBox(height: 16),
-            Text('Symptom Codes', style: Theme.of(context).textTheme.labelLarge),
-            const SizedBox(height: 8),
+            SizedBox(height: 16),
+            Text(
+              'Symptoms',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            SizedBox(height: 8),
             Wrap(
               spacing: 6,
               runSpacing: 6,
@@ -243,47 +267,61 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                   ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
               controller: _findingsController,
               maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Technician Findings & Work Performed',
-                hintText: 'Describe issue, root cause, and component condition...',
+              decoration: InputDecoration(
+                labelText: 'What you found and what you did',
+                hintText: 'Issue, cause, and what you repaired…',
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: DropdownButtonFormField<ResolutionCode>(
                     initialValue: _resolutionCode,
-                    decoration: const InputDecoration(labelText: 'Resolution Code'),
+                    decoration: InputDecoration(labelText: 'Resolution'),
                     items: ResolutionCode.values
-                        .map((r) => DropdownMenuItem(value: r, child: Text(r.name)))
+                        .map(
+                          (r) =>
+                              DropdownMenuItem(value: r, child: Text(r.label)),
+                        )
                         .toList(),
                     onChanged: (v) => setState(() => _resolutionCode = v),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<AssetCondition>(
                     initialValue: _conditionAfter,
-                    decoration: const InputDecoration(labelText: 'Condition After'),
+                    decoration: InputDecoration(labelText: 'Condition after'),
                     items: AssetCondition.values
-                        .map((c) => DropdownMenuItem(value: c, child: Text(c == AssetCondition.newCondition ? 'New' : c.name)))
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(c.label),
+                          ),
+                        )
                         .toList(),
-                    onChanged: (v) => setState(() => _conditionAfter = v ?? _conditionAfter),
+                    onChanged: (v) =>
+                        setState(() => _conditionAfter = v ?? _conditionAfter),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             DropdownButtonFormField<RepairVsReplaceDecision>(
               initialValue: _decision,
-              decoration: const InputDecoration(labelText: 'Action Disposition'),
+              decoration: InputDecoration(labelText: 'Repair or replace'),
               items: RepairVsReplaceDecision.values
-                  .map((d) => DropdownMenuItem(value: d, child: Text(d.name.toUpperCase())))
+                  .map(
+                    (d) => DropdownMenuItem(
+                      value: d,
+                      child: Text(d.label),
+                    ),
+                  )
                   .toList(),
               onChanged: (v) => setState(() => _decision = v),
             ),
@@ -295,82 +333,105 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
 
   Widget _buildRightColumn() {
     final session = ref.watch(fieldSessionProvider);
-    final donorCandidates = session.assets.where((a) => a.id != widget.asset.id).toList();
+    final donorCandidates = session.assets
+        .where((a) => a.id != widget.asset.id)
+        .toList();
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const NpKicker('02 / Parts & Hardware Lineage'),
-            const SizedBox(height: 8),
-            Text('Part Sourcing & Traceability', style: Theme.of(context).textTheme.titleSmall),
-            const SizedBox(height: 12),
+            Text(
+              'Parts and traceability',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: NpIconChip(
                     icon: Icons.inventory_2_outlined,
-                    label: 'Van Stock (New)',
+                    label: 'New part',
                     isSelected: _partSource == _PartSource.newInventory,
-                    onTap: () => setState(() => _partSource = _PartSource.newInventory),
+                    onTap: () =>
+                        setState(() => _partSource = _PartSource.newInventory),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Expanded(
                   child: NpIconChip(
                     icon: Icons.recycling_rounded,
-                    label: 'Harvest from Donor',
+                    label: 'From another unit',
                     isSelected: _partSource == _PartSource.salvagedFromDonor,
-                    onTap: () => setState(() => _partSource = _PartSource.salvagedFromDonor),
+                    onTap: () => setState(
+                      () => _partSource = _PartSource.salvagedFromDonor,
+                    ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             TextField(
               controller: _partDescriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Component Description',
-                hintText: 'e.g. Defrost Timer, Inverter Board',
+              decoration: InputDecoration(
+                labelText: 'Part',
+                hintText: 'e.g. defrost timer, inverter board',
                 prefixIcon: Icon(Icons.build_circle_outlined, size: 18),
               ),
               onChanged: (_) => setState(() {}),
             ),
             if (_partSource == _PartSource.salvagedFromDonor) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               DropdownButtonFormField<Asset>(
                 initialValue: _selectedDonorAsset,
-                decoration: const InputDecoration(
-                  labelText: 'Select Donor Asset (Cannibalized)',
-                  prefixIcon: Icon(Icons.recycling, color: NpColors.red, size: 18),
+                decoration: InputDecoration(
+                  labelText: 'Took part from',
+                  prefixIcon: Icon(
+                    Icons.recycling,
+                    color: NpColors.red,
+                    size: 18,
+                  ),
                 ),
                 items: donorCandidates.map((a) {
                   return DropdownMenuItem(
                     value: a,
-                    child: Text('${a.categoryDisplayName} · ${a.npid} (${a.currentLocationLabel ?? "Storage"})', style: const TextStyle(fontSize: 12)),
+                    child: Text(
+                      '${a.categoryDisplayName} · ${a.npid} (${a.currentLocationLabel ?? "Storage"})',
+                      style: TextStyle(fontSize: 12),
+                    ),
                   );
                 }).toList(),
                 onChanged: (val) => setState(() => _selectedDonorAsset = val),
               ),
               if (_selectedDonorAsset != null) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D2818),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: const Color(0xFF22C55E)),
+                    color: context.npSuccessBg,
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(
+                      color: context.npSuccessFg.withValues(alpha: 0.4),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.verified, color: Color(0xFF22C55E), size: 16),
-                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.verified,
+                        color: context.npSuccessFg,
+                        size: 16,
+                      ),
+                      SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Lineage Link: Cannibalized from ${_selectedDonorAsset!.npid}',
-                          style: const TextStyle(color: Color(0xFF22C55E), fontSize: 11, fontWeight: FontWeight.w700),
+                          'Part came from ${_selectedDonorAsset!.npid}',
+                          style: TextStyle(
+                            color: context.npSuccessFg,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ],
@@ -378,27 +439,29 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 ),
               ],
             ],
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _laborMinutesController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Labor (Mins)',
-                      suffixText: 'mins',
+                    decoration: InputDecoration(
+                      labelText: 'Labor minutes',
+                      suffixText: 'min',
                       prefixIcon: Icon(Icons.timer_outlined, size: 18),
                     ),
                     onChanged: (_) => setState(() {}),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: TextField(
                     controller: _partCostController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    decoration: InputDecoration(
                       labelText: 'Part Cost',
                       prefixText: '\$',
                       prefixIcon: Icon(Icons.attach_money, size: 18),
@@ -408,24 +471,26 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             _buildRepairVsReplaceEstimator(),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             NpButton.primary(
               icon: Icons.check_circle_outline_rounded,
               label: _submitting
-                  ? 'RECORDING...'
-                  : (widget.workOrder != null ? 'Record Service & Close Work Order' : 'Save & Queue Service Event'),
+                  ? 'Saving…'
+                  : (widget.workOrder != null
+                        ? 'Save and close work order'
+                        : 'Save service log'),
               size: NpButtonSize.lg,
               isExpanded: true,
               isLoading: _submitting,
               onPressed: _canSubmit && !_submitting ? _submit : null,
             ),
             if (!_canSubmit)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Text(
-                  'Select at least one symptom code to submit a repair event.',
+                  'Pick at least one symptom before saving a repair.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: NpColors.red, fontSize: 12),
                 ),
@@ -442,11 +507,11 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
     final isEconomical = ratio < 50;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: NpColors.bg,
+        color: context.npColors.bg,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: NpColors.gray800),
+        border: Border.all(color: context.npColors.gray800),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -454,37 +519,71 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('REPAIR VS. REPLACE ESTIMATE', style: NpType.mono.copyWith(fontSize: 10, color: NpColors.gray400, fontWeight: FontWeight.w700)),
               Text(
-                isEconomical ? '✓ ECONOMICAL' : '⚠ REPLACE',
-                style: NpType.mono.copyWith(fontSize: 10, color: isEconomical ? const Color(0xFF22C55E) : NpColors.red, fontWeight: FontWeight.w700),
+                'Repair vs replace',
+                style: NpType.mono.copyWith(
+                  fontSize: 10,
+                  color: context.npColors.gray400,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                isEconomical ? 'Cheaper to repair' : 'Consider replacing',
+                style: NpType.mono.copyWith(
+                  fontSize: 10,
+                  color: isEconomical
+                      ? context.npSuccessFg
+                      : context.npDangerFg,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total (Labor + Parts):', style: const TextStyle(fontSize: 12, color: NpColors.white)),
-              Text('\$${cost.toStringAsFixed(2)}', style: NpType.mono.copyWith(fontWeight: FontWeight.w800, fontSize: 12, color: NpColors.white)),
+              Text(
+                'Total (Labor + Parts):',
+                style: TextStyle(fontSize: 12, color: context.npColors.white),
+              ),
+              Text(
+                '\$${cost.toStringAsFixed(2)}',
+                style: NpType.mono.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 12,
+                  color: context.npColors.white,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Benchmark:', style: const TextStyle(fontSize: 11, color: NpColors.gray400)),
-              Text('\$$_defaultReplacementCost (${ratio.toStringAsFixed(0)}%)', style: NpType.mono.copyWith(fontSize: 11, color: NpColors.gray400)),
+              Text(
+                'Benchmark:',
+                style: TextStyle(fontSize: 11, color: context.npColors.gray400),
+              ),
+              Text(
+                '\$$_defaultReplacementCost (${ratio.toStringAsFixed(0)}%)',
+                style: NpType.mono.copyWith(
+                  fontSize: 11,
+                  color: context.npColors.gray400,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: LinearProgressIndicator(
               value: (ratio / 100).clamp(0.0, 1.0),
               minHeight: 4,
-              color: isEconomical ? const Color(0xFF22C55E) : NpColors.red,
-              backgroundColor: NpColors.bgElevated,
+              color: isEconomical
+                  ? context.npSuccessFg
+                  : context.npDangerFg,
+              backgroundColor: context.npColors.bgElevated,
             ),
           ),
         ],
@@ -498,10 +597,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
     final isTablet = MediaQuery.of(context).size.width >= 768;
 
     return Scaffold(
-      appBar: NpBrandAppBar(
-        kicker: widget.workOrder != null ? '01 / Work Order' : '02 / Service',
-        title: 'Service: ${widget.asset.npid}',
-      ),
+      appBar: NpBrandAppBar(title: 'Service: ${widget.asset.npid}'),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(isTablet ? 20 : 14),
         child: Column(
@@ -510,30 +606,49 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             // Header card
             Card(
               child: Padding(
-                padding: const EdgeInsets.all(14),
+                padding: EdgeInsets.all(14),
                 child: Row(
                   children: [
                     if (schematic != null) ...[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(6),
-                        child: Image.asset(schematic, width: 44, height: 44, fit: BoxFit.cover),
+                        child: Image.asset(
+                          schematic,
+                          width: 44,
+                          height: 44,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                     ],
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.asset.categoryDisplayName, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: NpColors.white)),
-                          const SizedBox(height: 2),
+                          Text(
+                            widget.asset.categoryDisplayName,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: context.npColors.white,
+                            ),
+                          ),
+                          SizedBox(height: 2),
                           Text(
                             '${widget.asset.manufacturer ?? "Unknown"} ${widget.asset.modelNumber ?? ""} · ${widget.asset.npid}',
-                            style: NpType.mono.copyWith(fontSize: 11, color: NpColors.red, fontWeight: FontWeight.w700),
+                            style: NpType.mono.copyWith(
+                              fontSize: 11,
+                              color: NpColors.red,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                           if (widget.workOrder != null)
                             Text(
-                              'Linked WO: ${widget.workOrder!.id} (${widget.workOrder!.priority.label})',
-                              style: const TextStyle(fontSize: 11, color: NpColors.gray400),
+                              'Work order ${widget.workOrder!.id} · ${widget.workOrder!.priority.label}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: context.npColors.gray400,
+                              ),
                             ),
                         ],
                       ),
@@ -542,19 +657,19 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             if (isTablet)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(flex: 6, child: _buildLeftColumn()),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Expanded(flex: 6, child: _buildRightColumn()),
                 ],
               )
             else ...[
               _buildLeftColumn(),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               _buildRightColumn(),
             ],
           ],

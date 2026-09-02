@@ -32,14 +32,15 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
         return wo.priority == WorkOrderPriority.urgent ||
             wo.priority == WorkOrderPriority.emergency;
       }
-      if (_filter == 'in_progress') return wo.status == WorkOrderStatus.inProgress;
+      if (_filter == 'in_progress') {
+        return wo.status == WorkOrderStatus.inProgress;
+      }
       return true;
     }).toList();
     final isTablet = context.isTablet;
 
     return Scaffold(
-      appBar: const NpBrandAppBar(
-        kicker: '01 / Dispatch',
+      appBar: NpBrandAppBar(
         title: 'My work orders',
         showLogo: true,
         actions: [SyncStatusBadge()],
@@ -49,10 +50,12 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
         children: [
           // Filter bar
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: const BoxDecoration(
-              color: NpColors.bg,
-              border: Border(bottom: BorderSide(color: NpColors.lineStrong)),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: context.npColors.bg,
+              border: Border(
+                bottom: BorderSide(color: context.npColors.lineStrong),
+              ),
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -61,11 +64,13 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                   _FilterTab(
                     icon: Icons.pending_actions_rounded,
                     label: 'Open',
-                    count: orders.where((w) => w.status != WorkOrderStatus.completed).length,
+                    count: orders
+                        .where((w) => w.status != WorkOrderStatus.completed)
+                        .length,
                     selected: _filter == 'all',
                     onTap: () => setState(() => _filter = 'all'),
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   _FilterTab(
                     icon: Icons.warning_amber_rounded,
                     label: 'Urgent',
@@ -73,7 +78,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                     onTap: () => setState(() => _filter = 'urgent'),
                     accentRed: true,
                   ),
-                  const SizedBox(width: 6),
+                  SizedBox(width: 6),
                   _FilterTab(
                     icon: Icons.engineering_rounded,
                     label: 'In Progress',
@@ -90,13 +95,16 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.assignment_turned_in_outlined,
-                            size: 48, color: NpColors.gray700),
-                        const SizedBox(height: 12),
+                        Icon(
+                          Icons.assignment_turned_in_outlined,
+                          size: 48,
+                          color: context.npColors.gray700,
+                        ),
+                        SizedBox(height: 12),
                         Text(
                           'No work orders in this filter.',
                           style: NpType.mono.copyWith(
-                            color: NpColors.gray500,
+                            color: context.npColors.gray500,
                             fontSize: 12,
                             letterSpacing: 0.6,
                           ),
@@ -105,26 +113,25 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                     ),
                   )
                 : isTablet
-                    ? GridView.builder(
-                        padding: const EdgeInsets.all(20),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          mainAxisExtent: 216,
-                        ),
-                        itemCount: filtered.length,
-                        itemBuilder: (context, i) =>
-                            _WorkOrderCard(wo: filtered[i]),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: filtered.length,
-                        separatorBuilder: (_, _) => const SizedBox(height: 10),
-                        itemBuilder: (context, i) =>
-                            _WorkOrderCard(wo: filtered[i]),
-                      ),
+                ? GridView.builder(
+                    padding: EdgeInsets.all(20),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      mainAxisExtent: 216,
+                    ),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, i) =>
+                        _WorkOrderCard(wo: filtered[i]),
+                  )
+                : ListView.separated(
+                    padding: EdgeInsets.all(16),
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, _) => SizedBox(height: 10),
+                    itemBuilder: (context, i) =>
+                        _WorkOrderCard(wo: filtered[i]),
+                  ),
           ),
         ],
       ),
@@ -152,8 +159,8 @@ class _FilterTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fg = selected
-        ? NpColors.bg
-        : (accentRed ? NpColors.red : NpColors.gray400);
+        ? context.npColors.bg
+        : (accentRed ? NpColors.red : context.npColors.gray400);
 
     return Material(
       color: Colors.transparent,
@@ -164,21 +171,25 @@ class _FilterTab extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(2),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
-            color: selected ? NpColors.white : NpColors.bgElevated,
+            color: selected
+                ? context.npColors.white
+                : context.npColors.bgElevated,
             borderRadius: BorderRadius.circular(2),
             border: Border.all(
               color: selected
-                  ? NpColors.white
-                  : (accentRed ? NpColors.redBorder : NpColors.lineStrong),
+                  ? context.npColors.white
+                  : (accentRed
+                        ? NpColors.redBorder
+                        : context.npColors.lineStrong),
             ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 14, color: fg),
-              const SizedBox(width: 6),
+              SizedBox(width: 6),
               Text(
                 label.toUpperCase(),
                 style: NpType.mono.copyWith(
@@ -189,13 +200,13 @@ class _FilterTab extends StatelessWidget {
                 ),
               ),
               if (count != null) ...[
-                const SizedBox(width: 6),
+                SizedBox(width: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                   decoration: BoxDecoration(
                     color: selected
-                        ? NpColors.bg.withValues(alpha: 0.12)
-                        : NpColors.bgCard,
+                        ? context.npColors.bg.withValues(alpha: 0.12)
+                        : context.npColors.bgCard,
                     borderRadius: BorderRadius.circular(2),
                   ),
                   child: Text(
@@ -203,7 +214,9 @@ class _FilterTab extends StatelessWidget {
                     style: NpType.mono.copyWith(
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      color: selected ? NpColors.bg : NpColors.gray400,
+                      color: selected
+                          ? context.npColors.bg
+                          : context.npColors.gray400,
                     ),
                   ),
                 ),
@@ -222,7 +235,8 @@ class _WorkOrderCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isUrgent = wo.priority == WorkOrderPriority.urgent ||
+    final isUrgent =
+        wo.priority == WorkOrderPriority.urgent ||
         wo.priority == WorkOrderPriority.emergency;
     final tone = switch (wo.priority) {
       WorkOrderPriority.emergency => NpPillTone.fault,
@@ -231,7 +245,9 @@ class _WorkOrderCard extends ConsumerWidget {
     };
     final schematic = NpAssets.schematicFor(wo.title);
     final session = ref.watch(fieldSessionProvider);
-    final asset = wo.assetNpid != null ? session.lookupAsset(wo.assetNpid!) : null;
+    final asset = wo.assetNpid != null
+        ? session.lookupAsset(wo.assetNpid!)
+        : null;
 
     void openServiceLogger() {
       if (asset != null) {
@@ -241,27 +257,27 @@ class _WorkOrderCard extends ConsumerWidget {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No asset bound to ${wo.id}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('No asset bound to ${wo.id}')));
       }
     }
 
     return Container(
       decoration: BoxDecoration(
-        color: NpColors.bgCard,
+        color: context.npColors.bgCard,
         border: Border(
           left: BorderSide(
-            color: isUrgent ? NpColors.red : NpColors.lineStrong,
+            color: isUrgent ? NpColors.red : context.npColors.lineStrong,
             width: isUrgent ? 3 : 1,
           ),
-          top: const BorderSide(color: NpColors.lineStrong),
-          right: const BorderSide(color: NpColors.lineStrong),
-          bottom: const BorderSide(color: NpColors.lineStrong),
+          top: BorderSide(color: context.npColors.lineStrong),
+          right: BorderSide(color: context.npColors.lineStrong),
+          bottom: BorderSide(color: context.npColors.lineStrong),
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,28 +293,33 @@ class _WorkOrderCard extends ConsumerWidget {
                     letterSpacing: 0.4,
                   ),
                 ),
-                const Spacer(),
+                Spacer(),
                 NpStatusPill(label: wo.priority.label, tone: tone),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (schematic != null) ...[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(2),
-                    child: Image.asset(schematic, width: 38, height: 38, fit: BoxFit.cover),
+                    child: Image.asset(
+                      schematic,
+                      width: 38,
+                      height: 38,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                 ],
                 Expanded(
                   child: Text(
                     wo.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      color: NpColors.white,
+                      color: context.npColors.white,
                       height: 1.3,
                     ),
                     maxLines: 2,
@@ -307,39 +328,49 @@ class _WorkOrderCard extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.place_outlined, size: 13, color: NpColors.gray500),
-                const SizedBox(width: 4),
+                Icon(
+                  Icons.place_outlined,
+                  size: 13,
+                  color: context.npColors.gray500,
+                ),
+                SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     wo.unitLabel,
-                    style: const TextStyle(fontSize: 12, color: NpColors.gray400),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: context.npColors.gray400,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Text(
                   wo.slaLabel,
-                  style: NpType.mono.copyWith(fontSize: 10, color: NpColors.gray500),
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    color: context.npColors.gray500,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
                   child: NpButton.primary(
                     icon: Icons.build_rounded,
                     label: wo.status == WorkOrderStatus.inProgress
-                        ? 'LOG SERVICE'
-                        : 'START WORK',
+                        ? 'Log service'
+                        : 'Start work',
                     size: NpButtonSize.sm,
                     onPressed: openServiceLogger,
                   ),
                 ),
                 if (asset != null) ...[
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   NpIconButton(
                     icon: Icons.inventory_2_outlined,
                     tooltip: 'Asset Details',
