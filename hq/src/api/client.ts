@@ -1190,18 +1190,52 @@ async function userApiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json();
 }
 
+const FASTAPI_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8080/api';
+
+async function fastApiFetch<T>(endpoint: string, options?: RequestInit): Promise<T | null> {
+  try {
+    const res = await fetch(`${FASTAPI_BASE}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.headers || {}),
+      },
+    });
+    if (res.ok) {
+      return (await res.json()) as T;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ================= API Interface =================
 export const api = {
-  getOrg: async (): Promise<Organization> => DEMO_ORG,
+  getOrg: async (): Promise<Organization> => {
+    const remote = await fastApiFetch<Organization>('/org');
+    return remote || DEMO_ORG;
+  },
 
-  listProperties: async (_orgId?: string): Promise<Property[]> => DEMO_PROPERTIES,
+  listProperties: async (_orgId?: string): Promise<Property[]> => {
+    const remote = await fastApiFetch<Property[]>('/properties');
+    return remote && remote.length > 0 ? remote : DEMO_PROPERTIES;
+  },
 
   listUsers: async (): Promise<MaintenanceUser[]> => {
+    const remote = await fastApiFetch<MaintenanceUser[]>('/users');
+    if (remote && remote.length > 0) return remote;
     if (USER_API_BASE) return userApiRequest<MaintenanceUser[]>('/v1/users');
     return [...inMemoryUsers];
   },
 
   inviteUser: async (input: InviteMaintenanceUserInput): Promise<MaintenanceUser> => {
+    const remote = await fastApiFetch<MaintenanceUser>('/users/invite', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    });
+    if (remote) return remote;
+
     if (USER_API_BASE) {
       return userApiRequest<MaintenanceUser>('/v1/users/invite', {
         method: 'POST',
@@ -1235,6 +1269,12 @@ export const api = {
   },
 
   updateUser: async (id: string, input: UpdateMaintenanceUserInput): Promise<MaintenanceUser> => {
+    const remote = await fastApiFetch<MaintenanceUser>(`/users/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(input),
+    });
+    if (remote) return remote;
+
     if (USER_API_BASE) {
       return userApiRequest<MaintenanceUser>(`/v1/users/${id}`, {
         method: 'PATCH',
@@ -1255,18 +1295,32 @@ export const api = {
   },
 
   getProperty: async (id: string): Promise<Property> => {
+    const remote = await fastApiFetch<Property>(`/properties/${id}`);
+    if (remote) return remote;
     const found = DEMO_PROPERTIES.find((p) => p.id === id);
     if (!found) throw new Error('Property not found: ' + id);
     return found;
   },
 
-  listBuildings: async (propId?: string): Promise<Building[]> =>
-    DEMO_BUILDINGS.filter((b) => !propId || b.propertyId === propId),
+  listBuildings: async (propId?: string): Promise<Building[]> => {
+    if (propId) {
+      const remote = await fastApiFetch<Building[]>(`/properties/${propId}/buildings`);
+      if (remote && remote.length > 0) return remote;
+    }
+    return DEMO_BUILDINGS.filter((b) => !propId || b.propertyId === propId);
+  },
 
-  listUnits: async (propId?: string, buildingId?: string): Promise<Unit[]> =>
-    DEMO_UNITS.filter(
+  listUnits: async (propId?: string, buildingId?: string): Promise<Unit[]> => {
+    if (propId) {
+      const remote = await fastApiFetch<Unit[]>(`/properties/${propId}/units`);
+      if (remote && remote.length > 0) {
+        return remote.filter((u) => !buildingId || u.buildingId === buildingId);
+      }
+    }
+    return DEMO_UNITS.filter(
       (u) => (!propId || u.propertyId === propId) && (!buildingId || u.buildingId === buildingId),
-    ).map(hydrateUnit),
+    ).map(hydrateUnit);
+  },
 
   getUnit: async (id: string): Promise<Unit> => {
     const found = DEMO_UNITS.find((u) => u.id === id);
@@ -1274,9 +1328,16 @@ export const api = {
     return hydrateUnit(found);
   },
 
-  listCategories: async (): Promise<AssetCategory[]> => DEMO_CATEGORIES,
+  listCategories: async (): Promise<AssetCategory[]> => {
+    const remote = await fastApiFetch<AssetCategory[]>('/categories');
+    return remote && remote.length > 0 ? remote : DEMO_CATEGORIES;
+  },
 
   listAssets: async (_orgId?: string, params: Record<string, string> = {}): Promise<Asset[]> => {
+    const qs = new URLSearchParams(params).toString();
+    const remote = await fastApiFetch<Asset[]>(`/assets${qs ? '?' + qs : ''}`);
+    if (remote && remote.length > 0) return remote;
+
     let list = [...DEMO_ASSETS];
     if (params.propertyId) {
       list = list.filter((a) => a.currentPropertyId === params.propertyId);
@@ -1300,29 +1361,44 @@ export const api = {
   },
 
   getAsset: async (id: string, _orgId?: string): Promise<Asset> => {
+    const remote = await fastApiFetch<Asset>(`/assets/${id}`);
+    if (remote) return remote;
     const found = DEMO_ASSETS.find((a) => a.id === id || a.npid === id);
     if (!found) throw new Error('Asset not found: ' + id);
     return found;
   },
 
   lookupAsset: async (code: string, _orgId?: string): Promise<Asset> => {
+    const remote = await fastApiFetch<Asset>(`/assets/lookup/${encodeURIComponent(code)}`);
+    if (remote) return remote;
     const clean = code.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     const found = DEMO_ASSETS.find((a) => a.npid.replace(/[^A-Za-z0-9]/g, '').toUpperCase() === clean);
     if (!found) throw new Error('Asset not found with code: ' + code);
     return found;
   },
 
-  listWorkOrders: async (_orgId?: string, _params: Record<string, string> = {}): Promise<WorkOrder[]> => {
+  listWorkOrders: async (_orgId?: string, params: Record<string, string> = {}): Promise<WorkOrder[]> => {
+    const qs = new URLSearchParams(params).toString();
+    const remote = await fastApiFetch<WorkOrder[]>(`/work-orders${qs ? '?' + qs : ''}`);
+    if (remote && remote.length > 0) return remote;
     return [...inMemoryWorkOrders];
   },
 
   getWorkOrder: async (id: string): Promise<WorkOrder> => {
+    const remote = await fastApiFetch<WorkOrder>(`/work-orders/${id}`);
+    if (remote) return remote;
     const found = inMemoryWorkOrders.find((w) => w.id === id || String(w.number) === id);
     if (!found) throw new Error('Work order not found: ' + id);
     return found;
   },
 
   updateWorkOrder: async (id: string, patch: Partial<WorkOrder>): Promise<WorkOrder> => {
+    const remote = await fastApiFetch<WorkOrder>(`/work-orders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(patch),
+    });
+    if (remote) return remote;
+
     const idx = inMemoryWorkOrders.findIndex((w) => w.id === id);
     if (idx === -1) throw new Error('Work order not found: ' + id);
     const updated = { ...inMemoryWorkOrders[idx], ...patch };
@@ -1332,6 +1408,12 @@ export const api = {
   },
 
   createWorkOrder: async (newWo: Omit<WorkOrder, 'id' | 'number'>): Promise<WorkOrder> => {
+    const remote = await fastApiFetch<WorkOrder>('/work-orders', {
+      method: 'POST',
+      body: JSON.stringify(newWo),
+    });
+    if (remote) return remote;
+
     const nextNum = Math.max(...inMemoryWorkOrders.map((w) => w.number), 1050) + 1;
     const item: WorkOrder = {
       ...newWo,
@@ -1349,6 +1431,12 @@ export const api = {
   },
 
   addWorkOrderNote: async (id: string, noteText: string, author = 'Tech Morales'): Promise<WorkOrder> => {
+    const remote = await fastApiFetch<WorkOrder>(`/work-orders/${id}/notes`, {
+      method: 'POST',
+      body: JSON.stringify({ author, text: noteText }),
+    });
+    if (remote) return remote;
+
     const idx = inMemoryWorkOrders.findIndex((w) => w.id === id);
     if (idx === -1) throw new Error('Work order not found: ' + id);
     const note: WorkOrderNote = {
@@ -1367,54 +1455,35 @@ export const api = {
     return updated;
   },
 
-  listServiceEvents: async (_orgId?: string): Promise<ServiceEvent[]> => [
-    {
-      id: 'evt_1',
-      assetId: 'asset_hvac_402',
-      workOrderId: 'wo_1048',
-      propertyId: 'prop_sonoran_ridge',
-      unitId: 'unit_402',
-      technicianId: 'tech_morales',
-      eventType: 'maintenance',
-      findings: 'Run capacitor tested 41 uF on 45 uF spec. Blower amperage 2.8A.',
-      symptomCodes: ['AIRFLOW_LOW'],
-      resolutionCode: 'PM_PASSED',
-      laborMinutes: 45,
-      laborRate: 65,
-      laborCost: 48.75,
-      partsCost: 38.00,
-      otherCost: 0,
-      totalCost: 86.75,
-      costBorneBy: 'owner',
-      isWarrantyClaim: false,
-      occurredAt: '2026-08-20T10:15:00Z',
-      technician: { id: 'tech_morales', user: { fullName: 'J. Morales' } },
-      workOrder: { id: 'wo_1048', number: 1048, title: 'HVAC Air Handler — High-Heat Sensor Sweep' },
-      partUsages: [{ oemPartNumber: 'CAP-45-5-370V', action: 'replaced' }],
-    },
-    {
-      id: 'evt_2',
-      assetId: 'asset_fridge_402',
-      workOrderId: 'wo_1045',
-      propertyId: 'prop_sonoran_ridge',
-      unitId: 'unit_402',
-      technicianId: 'tech_morales',
-      eventType: 'repair',
-      findings: 'Defrost bi-metal thermostat open circuit. Replaced under manufacturer warranty.',
-      symptomCodes: ['FROST_BUILDUP'],
-      resolutionCode: 'PART_REPLACED',
-      laborMinutes: 30,
-      laborRate: 65,
-      laborCost: 32.50,
-      partsCost: 64.20,
-      otherCost: 0,
-      totalCost: 96.70,
-      costBorneBy: 'warranty',
-      isWarrantyClaim: true,
-      occurredAt: '2026-06-12T11:00:00Z',
-      technician: { id: 'tech_morales', user: { fullName: 'J. Morales' } },
-      workOrder: { id: 'wo_1045', number: 1045, title: 'Refrigerator — Defrost Sensor Replacement' },
-      partUsages: [{ oemPartNumber: 'WPW10225581', action: 'warranty_replacement' }],
-    },
-  ],
+  listServiceEvents: async (_orgId?: string): Promise<ServiceEvent[]> => {
+    const remote = await fastApiFetch<ServiceEvent[]>('/service-events');
+    if (remote && remote.length > 0) return remote;
+    return [
+      {
+        id: 'evt_1',
+        assetId: 'asset_carrier_58sb0a',
+        workOrderId: 'wo-1842',
+        propertyId: 'prop_sonoran_ridge',
+        unitId: 'unit_402',
+        technicianId: 'user-morales',
+        eventType: 'maintenance',
+        findings: 'Run capacitor tested 41 uF on 45 uF spec. Blower amperage 2.8A.',
+        symptomCodes: ['AIRFLOW_LOW'],
+        resolutionCode: 'PM_PASSED',
+        laborMinutes: 45,
+        laborRate: 65,
+        laborCost: 48.75,
+        partsCost: 38.00,
+        otherCost: 0,
+        totalCost: 86.75,
+        costBorneBy: 'owner',
+        isWarrantyClaim: false,
+        occurredAt: '2026-08-20T10:15:00Z',
+        technician: { id: 'tech_morales', user: { fullName: 'J. Morales' } },
+        workOrder: { id: 'wo-1842', number: 1842, title: 'Air handler blower motor vibrating & thermal tripping' },
+        partUsages: [{ oemPartNumber: 'HK44EA124', action: 'replaced' }],
+      },
+    ];
+  },
 };
+

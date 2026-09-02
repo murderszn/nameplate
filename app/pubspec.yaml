@@ -41,6 +41,7 @@ dependencies:
   crypto: ^3.0.6
   mobile_scanner: ^7.4.0
   shared_preferences: ^2.5.3
+  http: ^1.2.0
 
   # Planned for the real sync engine (architecture.md §4) — not wired up yet in this scaffold.
   # drift: ^2.20.0

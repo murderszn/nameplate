@@ -88,11 +88,14 @@ function Brand() {
   );
 }
 
+const FASTAPI_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8080/api';
+
 function App() {
   const [theme, setTheme] = useState<Theme>(() => {
     try { return localStorage.getItem('nameplate-theme') === 'dark' ? 'dark' : 'light'; } catch { return 'light'; }
   });
   const [view, setView] = useState<View>('home');
+  const [myAppliances, setMyAppliances] = useState<Appliance[]>(appliances);
   const [orders, setOrders] = useState<WorkOrder[]>(() => {
     try { return JSON.parse(localStorage.getItem('np_resident_orders') || 'null') || seededOrders; } catch { return seededOrders; }
   });
@@ -100,6 +103,52 @@ function App() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [specModalAsset, setSpecModalAsset] = useState<Appliance | null>(null);
   const [toast, setToast] = useState('');
+
+  // Initial load from live backend if available
+  useEffect(() => {
+    async function loadLiveData() {
+      try {
+        const resAssets = await fetch(`${FASTAPI_BASE}/assets?propertyId=prop_sonoran_ridge`);
+        if (resAssets.ok) {
+          const rawAssets = await resAssets.json();
+          if (Array.isArray(rawAssets) && rawAssets.length > 0) {
+            const mapped: Appliance[] = rawAssets.map((a: any) => ({
+              id: a.id,
+              npid: a.npid,
+              name: a.category?.displayName || 'Appliance',
+              brand: a.manufacturerRaw || 'Carrier',
+              model: a.modelRaw || '',
+              location: a.currentUnit?.label || 'Unit 214',
+              lastService: a.lastServiceAt ? `Serviced ${new Date(a.lastServiceAt).toLocaleDateString()}` : 'No service on record',
+              serial: a.serialNumber,
+              installDate: a.installDate ? new Date(a.installDate).toLocaleDateString() : 'Verified',
+            }));
+            setMyAppliances(mapped);
+          }
+        }
+
+        const resOrders = await fetch(`${FASTAPI_BASE}/work-orders?propertyId=prop_sonoran_ridge`);
+        if (resOrders.ok) {
+          const rawOrders = await resOrders.json();
+          if (Array.isArray(rawOrders) && rawOrders.length > 0) {
+            const mappedOrders: WorkOrder[] = rawOrders.map((o: any) => ({
+              id: `WO-${o.number}`,
+              title: o.title,
+              appliance: o.assetName || o.category || 'Appliance',
+              status: o.status === 'completed' ? 'Completed' : o.status === 'in_progress' ? 'In progress' : o.status === 'assigned' ? 'Scheduled' : 'Submitted',
+              priority: o.priority === 'urgent' || o.priority === 'emergency' ? 'Urgent' : 'Standard',
+              opened: o.slaDueAt ? new Date(o.slaDueAt).toLocaleDateString() : 'Today',
+              description: o.description || undefined,
+            }));
+            setOrders(mappedOrders);
+          }
+        }
+      } catch {
+        // Fallback to seeded demo state
+      }
+    }
+    loadLiveData();
+  }, []);
 
   useEffect(() => { localStorage.setItem('np_resident_orders', JSON.stringify(orders)); }, [orders]);
   useEffect(() => {
@@ -110,9 +159,9 @@ function App() {
   }, [theme]);
   useEffect(() => {
     const raw = `${location.pathname}${location.hash}${location.search}`.toUpperCase();
-    const found = appliances.find((a) => raw.includes(a.npid) || raw.includes(a.npid.replace('-', '')));
+    const found = myAppliances.find((a) => raw.includes(a.npid) || raw.includes(a.npid.replace('-', '')));
     if (found) { setSelectedAsset(found.id); setView('request'); }
-  }, []);
+  }, [myAppliances]);
 
   const navigate = (next: View) => { setView(next); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2800); };
@@ -173,6 +222,7 @@ function App() {
         {view === 'home' && <Home openOrders={openOrders} onNavigate={navigate} onScan={() => setScannerOpen(true)} onNotify={notify} />}
         {view === 'request' && (
           <RequestWizard
+            appliancesList={myAppliances}
             selectedAsset={selectedAsset}
             setSelectedAsset={setSelectedAsset}
             onScan={() => setScannerOpen(true)}
@@ -187,6 +237,7 @@ function App() {
         {view === 'orders' && <Orders orders={orders} onNotify={notify} onNewRequest={() => navigate('request')} />}
         {view === 'appliances' && (
           <Appliances
+            appliancesList={myAppliances}
             onReport={(id) => { setSelectedAsset(id); navigate('request'); }}
             onScan={() => setScannerOpen(true)}
             onViewSpecs={(appliance) => setSpecModalAsset(appliance)}
@@ -305,12 +356,14 @@ function Home({ openOrders, onNavigate, onScan, onNotify }: { openOrders: WorkOr
 
 /* ================= Step-by-Step Issue Reporting Wizard ================= */
 function RequestWizard({
+  appliancesList,
   selectedAsset,
   setSelectedAsset,
   onScan,
   onSubmit,
   onCancel,
 }: {
+  appliancesList: Appliance[];
   selectedAsset: string;
   setSelectedAsset: (id: string) => void;
   onScan: () => void;
@@ -323,7 +376,7 @@ function RequestWizard({
   const [urgent, setUrgent] = useState(false);
   const [photo, setPhoto] = useState('');
 
-  const activeAppliance = appliances.find((a) => a.id === selectedAsset);
+  const activeAppliance = appliancesList.find((a) => a.id === selectedAsset);
 
   const handleNextFromStep1 = () => {
     if (!selectedAsset) return;
@@ -335,10 +388,33 @@ function RequestWizard({
     setStep(3);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    let woId = `WO-${1900 + Math.floor(Math.random() * 90)}`;
+    try {
+      const res = await fetch(`${FASTAPI_BASE}/work-orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          description: details,
+          priority: urgent ? 'urgent' : 'normal',
+          category: activeAppliance?.name || 'General',
+          propertyId: 'prop_sonoran_ridge',
+          unitId: 'unit_214',
+          assetNpid: activeAppliance?.npid,
+        }),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        woId = `WO-${created.number}`;
+      }
+    } catch {
+      // Offline fallback
+    }
+
     onSubmit({
-      id: `WO-${1900 + Math.floor(Math.random() * 90)}`,
+      id: woId,
       title,
       appliance: activeAppliance?.name || 'General / Other',
       status: 'Submitted',
@@ -645,11 +721,13 @@ function OrderCard({ order, compact = false, onNotify }: { order: WorkOrder; com
 
 /* ================= Appliances View ================= */
 function Appliances({
+  appliancesList = appliances,
   onReport,
   onScan,
   onViewSpecs,
   onNotify,
 }: {
+  appliancesList?: Appliance[];
   onReport: (id: string) => void;
   onScan: () => void;
   onViewSpecs: (appliance: Appliance) => void;
@@ -660,7 +738,7 @@ function Appliances({
       <div className="np-appliance-lead">
         <div>
           <span className="np-kicker np-kicker--red">YOUR HOME’S EQUIPMENT</span>
-          <h2>4 appliances registered.</h2>
+          <h2>{appliancesList.length} appliances registered.</h2>
           <p>Every major appliance in Unit 214 has a verified digital service ledger.</p>
         </div>
         <button className="np-btn np-btn--outline" onClick={onScan}>
@@ -669,7 +747,7 @@ function Appliances({
       </div>
 
       <div className="np-appliance-grid">
-        {appliances.map((item, index) => (
+        {appliancesList.map((item, index) => (
           <ApplianceCard
             key={item.id}
             appliance={item}
