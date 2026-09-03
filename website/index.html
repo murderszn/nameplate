@@ -128,33 +128,42 @@
       </div>
 
       <!-- Technical Anatomy Blueprint Stage with Central Interactive Tag -->
-      <div class="tag-anatomy-stage has-corner-ticks" id="tagAnatomyStage">
+      <div class="tag-anatomy-stage" id="tagAnatomyStage">
         <!-- Left Callouts -->
         <div class="anatomy-callout-col left-col">
-          <div class="anatomy-callout-chip has-corner-ticks" data-pointer="finder">
-            <div class="chip-header mono red-accent">01 // FINDER PATTERNS</div>
+          <div class="anatomy-callout-chip" data-pointer="finder">
+            <div class="chip-header mono">
+              <span class="chip-num red-accent">01 //</span>
+              <span class="chip-title">FINDER PATTERNS</span>
+            </div>
             <div class="chip-body">3 optical orientation anchors for sub-second CoreML recognition.</div>
           </div>
 
-          <div class="anatomy-callout-chip has-corner-ticks" data-pointer="ecc">
-            <div class="chip-header mono red-accent">02 // LEVEL-H REDUNDANCY</div>
+          <div class="anatomy-callout-chip" data-pointer="ecc">
+            <div class="chip-header mono">
+              <span class="chip-num red-accent">02 //</span>
+              <span class="chip-title">LEVEL-H REDUNDANCY</span>
+            </div>
             <div class="chip-body">30% data recovery payload readable through heavy grime &amp; scratches.</div>
           </div>
 
-          <div class="anatomy-callout-chip has-corner-ticks" data-pointer="slits">
-            <div class="chip-header mono red-accent">03 // TAMPER INCISIONS</div>
+          <div class="anatomy-callout-chip" data-pointer="slits">
+            <div class="chip-header mono">
+              <span class="chip-num red-accent">03 //</span>
+              <span class="chip-title">TAMPER INCISIONS</span>
+            </div>
             <div class="chip-body">4 laser-cut stress incisions that permanently fracture the plate if peeled.</div>
           </div>
         </div>
 
-        <!-- Center: Interactive Code-Generated Physical Tag -->
+        <!-- Center: Interactive Code-Generated Physical Tag & Integrated Mint Dock -->
         <div class="anatomy-center-frame">
-          <div class="oversized-tag-card has-corner-ticks" id="oversizedTagCard">
+          <div class="oversized-tag-card" id="oversizedTagCard">
             <!-- 4 Hex Rivets -->
-            <span class="hex-rivet tl"></span>
-            <span class="hex-rivet tr"></span>
-            <span class="hex-rivet bl"></span>
-            <span class="hex-rivet br"></span>
+            <span class="hex-rivet tl" title="Corner fiducial benchmark"></span>
+            <span class="hex-rivet tr" title="Corner fiducial benchmark"></span>
+            <span class="hex-rivet bl" title="Corner fiducial benchmark"></span>
+            <span class="hex-rivet br" title="Corner fiducial benchmark"></span>
 
             <!-- 4 Tamper-Evident Diagonal Security Incisions -->
             <span class="tamper-slit tl"></span>
@@ -164,6 +173,7 @@
 
             <!-- Giant QR Container -->
             <div class="tag-qr-large-box" id="giantQrBox">
+              <div class="laser-scanline is-active"></div>
               <div id="liveOversizedQrContainer" style="width: 100%; height: 100%;">
                 <!-- Vector SVG QR rendered via pure JS -->
               </div>
@@ -177,44 +187,57 @@
               </div>
 
               <div class="tag-large-npid-wrap">
-                <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--gray-400); letter-spacing: 0.08em; margin-bottom: 4px;">NAMEPLATE ID</div>
+                <div class="tag-npid-label mono">NAMEPLATE ID</div>
                 <div class="tag-large-npid" id="liveOversizedNpid">NP-7K2M4QX9</div>
               </div>
 
-              <div class="tag-large-fineprint">
+              <div class="tag-large-fineprint mono">
                 PROPERTY ASSET RECORD · DO NOT REMOVE<br>
                 SCAN WITH NATIVE CAMERA TO RESOLVE TELEMETRY
               </div>
             </div>
           </div>
+
+          <!-- Studio Mint Controls Integrated With Tag -->
+          <div class="tag-studio-controls-bottom">
+            <div class="studio-input-wrapper">
+              <div class="studio-input-prefix mono">
+                <span class="live-pulse-dot"></span>
+                <span>NPID //</span>
+              </div>
+              <input type="text" id="liveStudioNpidInput" class="studio-large-input mono" value="NP-7K2M4QX9" maxlength="12" spellcheck="false" placeholder="NP-7K2M4QX9" aria-label="Nameplate ID">
+              <button class="btn btn-red" id="btnRandomizeOversized">Mint New ID →</button>
+            </div>
+            <p class="studio-subtext mono">Live Crockford Base32 generator · Updates vector QR matrix in real-time</p>
+          </div>
         </div>
 
         <!-- Right Callouts -->
         <div class="anatomy-callout-col right-col">
-          <div class="anatomy-callout-chip has-corner-ticks" data-pointer="rivets">
-            <div class="chip-header mono red-accent">04 // HEX BENCHMARKS</div>
+          <div class="anatomy-callout-chip" data-pointer="rivets">
+            <div class="chip-header mono">
+              <span class="chip-num red-accent">04 //</span>
+              <span class="chip-title">HEX BENCHMARKS</span>
+            </div>
             <div class="chip-body">Corner fiducial registration points for machine vision alignment.</div>
           </div>
 
-          <div class="anatomy-callout-chip has-corner-ticks" data-pointer="npid">
-            <div class="chip-header mono red-accent">05 // CROCKFORD BASE32</div>
+          <div class="anatomy-callout-chip" data-pointer="npid">
+            <div class="chip-header mono">
+              <span class="chip-num red-accent">05 //</span>
+              <span class="chip-title">CROCKFORD BASE32</span>
+            </div>
             <div class="chip-body">High-legibility 8-character ID without ambiguous glyphs (no I, L, O, U).</div>
           </div>
 
-          <div class="anatomy-callout-chip has-corner-ticks" data-pointer="telemetry">
-            <div class="chip-header mono red-accent">06 // ZERO-APP TELEMETRY</div>
+          <div class="anatomy-callout-chip" data-pointer="telemetry">
+            <div class="chip-header mono">
+              <span class="chip-num red-accent">06 //</span>
+              <span class="chip-title">ZERO-APP TELEMETRY</span>
+            </div>
             <div class="chip-body">Direct camera instruction requiring no app download for property managers.</div>
           </div>
         </div>
-      </div>
-
-      <!-- Studio Mint Controls Directly Under Interactive Tag -->
-      <div class="tag-studio-controls-bottom" style="margin: 32px auto 0;">
-        <div class="studio-input-wrapper">
-          <input type="text" id="liveStudioNpidInput" class="studio-large-input" value="NP-7K2M4QX9" maxlength="12" spellcheck="false" placeholder="NP-7K2M4QX9">
-          <button class="btn btn-red" id="btnRandomizeOversized">Mint New ID →</button>
-        </div>
-        <p class="studio-subtext mono">Live Crockford Base32 generator · Updates vector QR matrix in real-time</p>
       </div>
     </div>
   </section>

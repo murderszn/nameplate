@@ -52,3 +52,6 @@ app/ios/Flutter/ephemeral/
 # Python
 __pycache__/
 *.pyc
+*.db-shm
+*.db-wal
+/nameplate.db
