@@ -473,6 +473,25 @@
   function initOversizedQrStudio() {
     var input = document.getElementById('liveStudioNpidInput');
     var btnRand = document.getElementById('btnRandomizeOversized');
+    var qrBox = document.getElementById('giantQrBox');
+    var npidDisplay = document.getElementById('liveOversizedNpid');
+    var fineprint = document.querySelector('.tag-large-fineprint');
+    var rivets = document.querySelectorAll('.hex-rivet');
+    var slits = document.querySelectorAll('.tamper-slit');
+    var chips = document.querySelectorAll('.anatomy-callout-chip');
+
+    function triggerMintFlash() {
+      if (npidDisplay) {
+        npidDisplay.classList.remove('mint-flash');
+        void npidDisplay.offsetWidth;
+        npidDisplay.classList.add('mint-flash');
+      }
+      if (qrBox) {
+        qrBox.classList.remove('mint-flash');
+        void qrBox.offsetWidth;
+        qrBox.classList.add('mint-flash');
+      }
+    }
 
     if (input) {
       input.addEventListener('input', function () {
@@ -486,8 +505,38 @@
         var newId = generateBase32Npid();
         if (input) input.value = newId;
         renderOversizedQr(newId);
+        triggerMintFlash();
       });
     }
+
+    // Interactive callout hover connections
+    chips.forEach(function (chip) {
+      var pointer = chip.getAttribute('data-pointer');
+
+      chip.addEventListener('mouseenter', function () {
+        chip.classList.add('is-active');
+        if (pointer === 'finder' || pointer === 'ecc') {
+          if (qrBox) qrBox.classList.add('is-highlighted');
+        } else if (pointer === 'slits') {
+          slits.forEach(function (s) { s.classList.add('is-highlighted'); });
+        } else if (pointer === 'rivets') {
+          rivets.forEach(function (r) { r.classList.add('is-highlighted'); });
+        } else if (pointer === 'npid') {
+          if (npidDisplay) npidDisplay.classList.add('is-highlighted');
+        } else if (pointer === 'telemetry') {
+          if (fineprint) fineprint.classList.add('is-highlighted');
+        }
+      });
+
+      chip.addEventListener('mouseleave', function () {
+        chip.classList.remove('is-active');
+        if (qrBox) qrBox.classList.remove('is-highlighted');
+        slits.forEach(function (s) { s.classList.remove('is-highlighted'); });
+        rivets.forEach(function (r) { r.classList.remove('is-highlighted'); });
+        if (npidDisplay) npidDisplay.classList.remove('is-highlighted');
+        if (fineprint) fineprint.classList.remove('is-highlighted');
+      });
+    });
 
     // Initial render
     renderOversizedQr('NP-7K2M4QX9');
