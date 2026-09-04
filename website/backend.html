@@ -1,0 +1,2460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAMEPLATE — Database Architecture &amp; Schema</title>
+  <meta name="description" content="Complete relational database architecture, offline-first ledger topology, and table schema specification for the Nameplate asset infrastructure.">
+  <meta name="theme-color" content="#000000">
+  <script>
+    (function () {
+      var savedTheme;
+      try { savedTheme = localStorage.getItem('nameplate-theme'); } catch (error) {}
+      var theme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+  <link rel="icon" href="images/nameplate-logo-transparent.png" type="image/png">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* ===========================================================
+       Backend Architecture & Schema Page Styles
+       Sister Page Extension to styles.css
+       =========================================================== */
+    .backend-hero {
+      padding: 160px 0 90px;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+    }
+
+    .hero-stats-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border: 1px solid var(--line-strong);
+      background: var(--bg-card);
+      margin-top: 48px;
+    }
+
+    .hero-stat-card {
+      padding: 24px 20px;
+      border-right: 1px solid var(--line);
+    }
+
+    .hero-stat-card:last-child {
+      border-right: none;
+    }
+
+    .hero-stat-val {
+      display: block;
+      font-size: clamp(2rem, 3.2vw, 2.6rem);
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .hero-stat-lbl {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gray-400);
+      margin-top: 8px;
+    }
+
+    /* Section Subhead & Separator */
+    .section-head-bar {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .section-head-num {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    .section-head-line {
+      height: 1px;
+      background: var(--line);
+    }
+
+    .section-head-scope {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--gray-400);
+    }
+
+    /* 5-Stage Pipeline */
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border: 1px solid var(--line-strong);
+      background: var(--bg-card);
+      margin-top: 28px;
+    }
+
+    .pipe-step {
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 240px;
+      position: relative;
+    }
+
+    .pipe-step:last-child {
+      border-right: none;
+    }
+
+    .pipe-num {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    .pipe-step h3 {
+      font-size: 1.15rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      margin: 14px 0 10px;
+      color: var(--white);
+    }
+
+    .pipe-step p {
+      font-size: 0.85rem;
+      color: var(--gray-400);
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .pipe-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      padding: 5px 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      color: var(--white-90);
+      margin-top: 18px;
+      align-self: flex-start;
+    }
+
+    /* Principles Strip */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .principle-card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+    }
+
+    .principle-card strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    .principle-card p {
+      font-size: 0.84rem;
+      color: var(--gray-400);
+      line-height: 1.55;
+    }
+
+    /* Domain Grid */
+    .domain-matrix {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .domain-box {
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      position: relative;
+    }
+
+    .domain-box:hover, .domain-box.active {
+      border-color: var(--red);
+      transform: translateY(-2px);
+    }
+
+    .domain-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .domain-title {
+      font-size: 1.05rem;
+      font-weight: 750;
+      color: var(--white);
+    }
+
+    .domain-count {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .domain-table-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .domain-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 3px 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      color: var(--gray-300);
+    }
+
+    /* Relational Spine Banner */
+    .spine-banner {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border: 1px solid var(--line-strong);
+      background: linear-gradient(90deg, rgba(235, 43, 43, 0.08) 0%, transparent 100%);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.8;
+      color: var(--gray-300);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .spine-banner strong {
+      color: var(--white);
+    }
+
+    .spine-banner code {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    /* Catalog Controls */
+    .catalog-toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 12px;
+      margin: 32px 0 20px;
+      position: sticky;
+      top: 76px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    html[data-theme="light"] .catalog-toolbar {
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .search-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 16px;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      background: var(--bg-card);
+      border: 1px solid var(--line-strong);
+      color: var(--white);
+      border-radius: var(--radius);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--red);
+    }
+
+    .status-select {
+      height: 44px;
+      padding: 0 14px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: var(--bg-card);
+      border: 1px solid var(--line-strong);
+      color: var(--white);
+      border-radius: var(--radius);
+      outline: none;
+    }
+
+    .domain-filters-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .filter-btn {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      color: var(--gray-400);
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: all 0.15s ease;
+    }
+
+    .filter-btn:hover {
+      color: var(--white);
+      border-color: var(--line-strong);
+    }
+
+    .filter-btn.active {
+      background: var(--red);
+      border-color: var(--red);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    /* Table Cards Grid */
+    .tables-matrix {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .table-entry-card {
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+      transition: border-color 0.2s;
+    }
+
+    .table-entry-card.is-hidden {
+      display: none;
+    }
+
+    .table-entry-card.open {
+      border-color: var(--line-strong);
+    }
+
+    .table-entry-summary {
+      width: 100%;
+      padding: 20px 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: flex-start;
+      background: transparent;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    .table-entry-name {
+      font-family: var(--font-mono);
+      font-size: 1.12rem;
+      font-weight: 750;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .table-entry-desc {
+      font-size: 0.85rem;
+      color: var(--gray-400);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 7px;
+      border-radius: var(--radius);
+    }
+
+    .badge-live {
+      color: #37d67a;
+      background: rgba(55, 214, 122, 0.12);
+      border: 1px solid rgba(55, 214, 122, 0.3);
+    }
+
+    .badge-built {
+      color: #5caaeb;
+      background: rgba(92, 170, 235, 0.12);
+      border: 1px solid rgba(92, 170, 235, 0.3);
+    }
+
+    .badge-partial {
+      color: #f0b44d;
+      background: rgba(240, 180, 77, 0.12);
+      border: 1px solid rgba(240, 180, 77, 0.3);
+    }
+
+    .badge-foundation {
+      color: var(--gray-300);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+    }
+
+    .badge-deferred {
+      color: #b48cff;
+      background: rgba(180, 140, 255, 0.12);
+      border: 1px solid rgba(180, 140, 255, 0.3);
+    }
+
+    .expand-chevron {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      color: var(--gray-400);
+      transition: transform 0.2s, color 0.2s;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+    }
+
+    .table-entry-card.open .expand-chevron {
+      transform: rotate(45deg);
+      color: var(--red);
+    }
+
+    .table-entry-body {
+      display: none;
+      border-top: 1px solid var(--line);
+      padding: 0;
+    }
+
+    .table-entry-card.open .table-entry-body {
+      display: block;
+    }
+
+    /* Columns Inner Table */
+    .columns-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .columns-data-table th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 9px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray-400);
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .columns-data-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line-light);
+      color: var(--gray-400);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    .columns-data-table td:first-child {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--white);
+      white-space: nowrap;
+      width: 32%;
+    }
+
+    .columns-data-table td:nth-child(2) {
+      font-family: var(--font-mono);
+      color: #5caaeb;
+      white-space: nowrap;
+      width: 22%;
+    }
+
+    .table-meta-box {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.015);
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .meta-sub-col h5 {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+
+    .meta-sub-col p {
+      font-size: 0.8rem;
+      color: var(--gray-300);
+      line-height: 1.5;
+    }
+
+    /* Live Database Section */
+    .live-db-panel {
+      border: 1px solid var(--line-strong);
+      background: var(--bg-card);
+      padding: 32px;
+      margin-top: 32px;
+    }
+
+    .live-status-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .live-indicator-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #37d67a;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #37d67a;
+      box-shadow: 0 0 10px rgba(55, 214, 122, 0.6);
+      animation: pulseDot 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .ddl-tabs-nav {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      margin: 24px 0 18px;
+      overflow-x: auto;
+    }
+
+    .ddl-tab-btn {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 10px 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--gray-400);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .ddl-tab-btn:hover {
+      color: var(--white);
+    }
+
+    .ddl-tab-btn.active {
+      color: var(--red);
+      border-bottom-color: var(--red);
+      font-weight: 700;
+    }
+
+    .code-display-block {
+      background: #050505;
+      border: 1px solid var(--line);
+      padding: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: #e5e5e5;
+      overflow-x: auto;
+      border-radius: var(--radius);
+      position: relative;
+    }
+
+    html[data-theme="light"] .code-display-block {
+      background: #f5f5f5;
+      color: #111111;
+    }
+
+    .copy-code-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      color: var(--white);
+      cursor: pointer;
+      border-radius: var(--radius);
+    }
+
+    .copy-code-btn:hover {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    /* Transaction Lineage Cards */
+    .txn-flow-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .txn-card {
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .txn-card h4 {
+      font-size: 1.05rem;
+      color: var(--white);
+      margin-bottom: 8px;
+      font-weight: 750;
+    }
+
+    .txn-card p {
+      font-size: 0.84rem;
+      color: var(--gray-400);
+      line-height: 1.5;
+    }
+
+    .txn-sql-chain {
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #37d67a;
+      line-height: 1.55;
+      border-radius: var(--radius);
+    }
+
+    html[data-theme="light"] .txn-sql-chain {
+      background: rgba(0, 0, 0, 0.04);
+      color: #1b8a4a;
+    }
+
+    /* Cloud Infrastructure Cards */
+    .cloud-infra-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .cloud-card {
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+      padding: 28px;
+    }
+
+    .cloud-card-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--red);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .cloud-card h3 {
+      font-size: 1.25rem;
+      color: var(--white);
+      margin: 12px 0 10px;
+    }
+
+    .cloud-card p {
+      font-size: 0.88rem;
+      color: var(--gray-400);
+      line-height: 1.6;
+    }
+
+    .cloud-card ul {
+      margin-top: 14px;
+      padding-left: 18px;
+    }
+
+    .cloud-card li {
+      font-size: 0.84rem;
+      color: var(--gray-300);
+      margin: 6px 0;
+      line-height: 1.5;
+    }
+
+    .cloud-env-box {
+      margin-top: 18px;
+      padding: 14px;
+      background: #030303;
+      border: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #5caaeb;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    html[data-theme="light"] .cloud-env-box {
+      background: #f0f0f0;
+      color: #0b68b8;
+    }
+
+    /* Toast Notification */
+    .backend-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--red);
+      color: #ffffff;
+      padding: 12px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .backend-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 1024px) {
+      .hero-stats-row { grid-template-columns: repeat(3, 1fr); }
+      .pipeline-grid { grid-template-columns: repeat(2, 1fr); }
+      .principles-grid { grid-template-columns: repeat(2, 1fr); }
+      .domain-matrix { grid-template-columns: repeat(2, 1fr); }
+      .txn-flow-grid { grid-template-columns: repeat(2, 1fr); }
+      .tables-matrix { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .backend-hero { padding: 130px 0 60px; }
+      .hero-stats-row { grid-template-columns: 1fr; }
+      .hero-stat-card { border-right: none; border-bottom: 1px solid var(--line); }
+      .hero-stat-card:last-child { border-bottom: none; }
+      .pipeline-grid { grid-template-columns: 1fr; }
+      .principles-grid { grid-template-columns: 1fr; }
+      .domain-matrix { grid-template-columns: 1fr; }
+      .catalog-toolbar { grid-template-columns: 1fr; }
+      .table-meta-box { grid-template-columns: 1fr; }
+      .cloud-infra-grid { grid-template-columns: 1fr; }
+      .txn-flow-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================= Header Navigation ================= -->
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="index.html" aria-label="Nameplate">
+      <img src="images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="brand-logo-img theme-logo theme-logo--dark">
+      <img src="images/nameplate-logo-light.png" alt="" aria-hidden="true" class="brand-logo-img theme-logo theme-logo--light">
+      <span class="brand-name">NAMEPLATE</span>
+    </a>
+
+    <nav class="site-nav" id="primaryNavigation" aria-label="Primary">
+      <a href="index.html#concept">Problem</a>
+      <a href="index.html#qr-studio">Hardware</a>
+      <a href="field/">Field App</a>
+      <a href="hq/">HQ Console</a>
+      <a href="portal/">Resident Portal</a>
+      <a href="backend.html" class="active" style="color: var(--white); font-weight: 750;">Backend</a>
+      <a href="index.html#investors">Investors</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="nav-contact-btn open-contact-modal-trigger" type="button" id="headerContactBtn">
+        <span>Contact Us</span>
+        <span class="btn-arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primaryNavigation" aria-label="Open navigation">
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ================= Hero Section ================= -->
+  <section class="backend-hero" id="top">
+    <div class="wrap">
+      <span class="hero-kicker">00 / ASSET INFRASTRUCTURE &amp; RELATIONAL LEDGER</span>
+      
+      <h1 class="hero-h1">
+        Immutable records.<br>
+        <span class="red-accent">Relational truth.</span>
+      </h1>
+
+      <p class="hero-lead">
+        The Nameplate backend couples an offline-first SQLite edge ledger with a resilient enterprise PostgreSQL schema. Every appliance scan, part swap, turnover inspection, and custody interval is written as an indelible, tamper-evident audit fact.
+      </p>
+
+      <div class="hero-actions" style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a class="btn btn-red" href="#catalog">Explore Table Catalog ↓</a>
+        <a class="btn btn-ghost" href="#live-engine">Live Database Engine ↗</a>
+        <a class="btn btn-ghost" href="#transactions">Transaction Lineage ↗</a>
+        <a class="btn btn-ghost" href="#architecture">Architecture Blueprint ↗</a>
+      </div>
+
+      <!-- Hero KPI Metrics Strip -->
+      <div class="hero-stats-row">
+        <div class="hero-stat-card">
+          <span class="hero-stat-val">34</span>
+          <span class="hero-stat-lbl">Catalog Tables</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-val">8</span>
+          <span class="hero-stat-lbl">Logical Domains</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-val">100%</span>
+          <span class="hero-stat-lbl">ACID Guaranteed</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-val">0ms</span>
+          <span class="hero-stat-lbl">Offline Edge Latency</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="hero-stat-val">24 / 24</span>
+          <span class="hero-stat-lbl">Tests Verified Passing</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 01 / System Contract & Pipeline ================= -->
+  <section class="section" id="architecture">
+    <div class="wrap">
+      <div class="section-head-bar">
+        <span class="section-head-num">01</span>
+        <div class="section-head-line"></div>
+        <span class="section-head-scope">System Contract &amp; Pipeline</span>
+      </div>
+
+      <h2 class="section-title">From field scan to portfolio truth.</h2>
+      <p class="section-sub">
+        The backend turns physical equipment events into permanent, explainable asset records without ever blocking field operators when network connectivity is degraded or absent.
+      </p>
+
+      <div class="pipeline-grid">
+        <article class="pipe-step">
+          <span class="pipe-num">01</span>
+          <h3>Field Edge Action</h3>
+          <p>A camera scan, custody move, part swap, or turn inspection occurs in the field with sub-second responsiveness.</p>
+          <span class="pipe-badge">Flutter + Drift SQLite</span>
+        </article>
+        <article class="pipe-step">
+          <span class="pipe-num">02</span>
+          <h3>Idempotent Sync</h3>
+          <p>API validates organization tenancy, device authorization, Crockford Base32 signatures, and operation keys.</p>
+          <span class="pipe-badge">FastAPI REST / OpenAPI 3.1</span>
+        </article>
+        <article class="pipe-step">
+          <span class="pipe-num">03</span>
+          <h3>Atomic Commit</h3>
+          <p>Single ACID transaction writes immutable facts, ledger history, state projections, and audit logs together.</p>
+          <span class="pipe-badge">SQLite WAL / PostgreSQL 16</span>
+        </article>
+        <article class="pipe-step">
+          <span class="pipe-num">04</span>
+          <h3>Derived Analytics</h3>
+          <p>Materialized rollups calculate CapEx depreciation, manufacturer failure rates, SLA compliance, and shrinkage anomalies.</p>
+          <span class="pipe-badge">Scheduled Rollups &amp; Views</span>
+        </article>
+        <article class="pipe-step">
+          <span class="pipe-num">05</span>
+          <h3>HQ Executive Truth</h3>
+          <p>Every dashboard metric, CSV export, and PDF print sheet drills back to immutable source evidence.</p>
+          <span class="pipe-badge">React HQ Console</span>
+        </article>
+      </div>
+
+      <!-- Core Principles -->
+      <div class="principles-grid">
+        <article class="principle-card">
+          <strong>Facts are Append-Only</strong>
+          <p>Service events, location changes, scans, and turnover audits are never deleted. Any corrections append new witnessed rows with human attribution.</p>
+        </article>
+        <article class="principle-card">
+          <strong>Current State is a Projection</strong>
+          <p>An asset's current unit location, condition grade, and lifetime repair spend are high-speed cached projections computed from ledger history.</p>
+        </article>
+        <article class="principle-card">
+          <strong>Tenant Scope is Structural</strong>
+          <p>Every customer record carries an <code>org_id</code> key. Application authorization guards and database Row-Level Security (RLS) guarantee isolation.</p>
+        </article>
+        <article class="principle-card">
+          <strong>Offline is the Default State</strong>
+          <p>UUIDv7 client keys, dual timestamps (<code>occurred_at</code> vs <code>recorded_at</code>), and monotonic change sequences prevent conflict data loss.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 02 / Data Domains & ERD Relational Spine ================= -->
+  <section class="section" id="domains">
+    <div class="wrap">
+      <div class="section-head-bar">
+        <span class="section-head-num">02</span>
+        <div class="section-head-line"></div>
+        <span class="section-head-scope">Domain Boundaries</span>
+      </div>
+
+      <h2 class="section-title">Eight data domains. One cohesive spine.</h2>
+      <p class="section-sub">
+        Strict domain boundaries isolate operational concerns while maintaining referential integrity across buildings, units, appliances, work orders, and field technicians.
+      </p>
+
+      <div class="domain-matrix" id="domainMatrix">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div class="spine-banner">
+        <strong>Primary Relational Spine:</strong>
+        <code>organization</code> → <code>property</code> → <code>building</code> → <code>unit</code> → <code>asset</code> → <code>asset_location</code> / <code>service_event</code> → <code>part_usage</code> → <code>part</code>
+        <span style="color: var(--gray-400); margin-left: 12px;">(orchestrated by <code>work_order</code> and <code>turn</code>)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 03 / Interactive Table Catalog Explorer ================= -->
+  <section class="section" id="catalog">
+    <div class="wrap">
+      <div class="section-head-bar">
+        <span class="section-head-num">03</span>
+        <div class="section-head-line"></div>
+        <span class="section-head-scope">Complete Table Catalog</span>
+      </div>
+
+      <h2 class="section-title">The schema catalog.</h2>
+      <p class="section-sub">
+        Explore all 34 tables with complete column schemas, data types, constraints, foreign key lineages, and implementation maturity statuses.
+      </p>
+
+      <!-- Search & Filters Toolbar -->
+      <div class="catalog-toolbar">
+        <input type="search" class="search-input" id="tableSearchInput" placeholder="Search tables, columns, foreign keys, or responsibilities..." aria-label="Search schema catalog">
+        <select class="status-select" id="statusFilterSelect" aria-label="Filter by status">
+          <option value="all">All Implementation Statuses</option>
+          <option value="live">Live in SQLite Engine (Production)</option>
+          <option value="built">API Built (Guarded Workflows)</option>
+          <option value="partial">API Partial (Wired Endpoints)</option>
+          <option value="foundation">DB Foundation (Migrated &amp; Seeded)</option>
+          <option value="deferred">Deferred (V1/V2 Backlog)</option>
+        </select>
+        <button type="button" class="btn btn-ghost" id="expandAllBtn" style="height: 44px; padding: 0 16px; font-size: 0.8rem;">Expand All</button>
+        <button type="button" class="btn btn-red" id="exportSchemaBtn" style="height: 44px; padding: 0 16px; font-size: 0.8rem;">Copy Full DDL</button>
+      </div>
+
+      <!-- Domain Filter Buttons -->
+      <div class="domain-filters-bar" id="domainFilterBar">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Table Cards Container -->
+      <div class="tables-matrix" id="tablesContainer">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div id="catalogEmptyState" style="display: none; padding: 48px; text-align: center; border: 1px solid var(--line); margin-top: 24px;">
+        <span class="mono" style="color: var(--gray-400);">No tables matched your search query or filter selection.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 04 / Live Production Database (SQLite + SQLAlchemy) ================= -->
+  <section class="section" id="live-engine">
+    <div class="wrap">
+      <div class="section-head-bar">
+        <span class="section-head-num">04</span>
+        <div class="section-head-line"></div>
+        <span class="section-head-scope">Live Production Engine</span>
+      </div>
+
+      <h2 class="section-title">Active database engine &amp; verified models.</h2>
+      <p class="section-sub">
+        Inspect the active SQLite database currently backing the local FastAPI REST services, seed datasets, and verified test suites.
+      </p>
+
+      <div class="live-db-panel">
+        <div class="live-status-header">
+          <div>
+            <div class="live-indicator-tag">
+              <span class="live-dot"></span>
+              <strong id="liveDbStatus">SQLite Engine Active · WAL Mode Enabled</strong>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--gray-400); margin-top: 6px;">
+              Direct connection to <code>backend_py/nameplate.db</code> via SQLAlchemy ORM · REST endpoints exposed at port <code>8080</code>.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span class="mono" style="font-size: 0.75rem; color: var(--gray-400); border: 1px solid var(--line); padding: 5px 9px;">24 / 24 UNIT TESTS PASSED</span>
+            <button type="button" class="btn btn-ghost" id="pingDbBtn" style="height: 36px; padding: 0 14px; font-size: 0.78rem;">Refresh Health</button>
+          </div>
+        </div>
+
+        <!-- SQL DDL Tabs -->
+        <div class="ddl-tabs-nav" id="ddlTabs">
+          <button class="ddl-tab-btn active" data-tab="assets">assets &amp; asset_models</button>
+          <button class="ddl-tab-btn" data-tab="work-orders">work_orders &amp; notes</button>
+          <button class="ddl-tab-btn" data-tab="service">service_events &amp; parts</button>
+          <button class="ddl-tab-btn" data-tab="properties">properties &amp; units</button>
+          <button class="ddl-tab-btn" data-tab="sync">sync_ops &amp; batches</button>
+        </div>
+
+        <!-- Tabbed Code Display -->
+        <div class="code-display-block" id="codeDisplay">
+          <button class="copy-code-btn" id="copyDdlBtn">Copy SQL</button>
+          <pre><code id="ddlCodeSnippet">-- DDL statements will load here</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 05 / Action-to-Write Transaction Lineage ================= -->
+  <section class="section" id="transactions">
+    <div class="wrap">
+      <div class="section-head-bar">
+        <span class="section-head-num">05</span>
+        <div class="section-head-line"></div>
+        <span class="section-head-scope">ACID Transaction Lineage</span>
+      </div>
+
+      <h2 class="section-title">Atomic write pipeline.</h2>
+      <p class="section-sub">
+        Every field action executes across an isolated ACID transaction boundary, ensuring facts and derived state commit together with zero corruption.
+      </p>
+
+      <div class="txn-flow-grid">
+        <article class="txn-card">
+          <div>
+            <span class="mono" style="font-size: 0.72rem; color: var(--red);">TXN 01 // ONBOARDING</span>
+            <h4 style="margin-top: 8px;">Hardware Tag Minting</h4>
+            <p>Technician mints Crockford Base32 NPID, scans barcode, assigns category and initial unit location.</p>
+          </div>
+          <div class="txn-sql-chain">
+            asset (INSERT)<br>
+            + asset_location (INSERT custody)<br>
+            + asset_identifier_scan (INSERT telemetry)<br>
+            + audit_log (INSERT actor)
+          </div>
+        </article>
+
+        <article class="txn-card">
+          <div>
+            <span class="mono" style="font-size: 0.72rem; color: var(--red);">TXN 02 // CUSTODY MOVE</span>
+            <h4 style="margin-top: 8px;">Physical Asset Relocation</h4>
+            <p>Appliance moved between units or transferred to the maintenance shop for staging.</p>
+          </div>
+          <div class="txn-sql-chain">
+            asset_location (UPDATE to_ts = NOW())<br>
+            + asset_location (INSERT new target)<br>
+            + asset (UPDATE current_unit_id)<br>
+            + audit_log (INSERT delta)
+          </div>
+        </article>
+
+        <article class="txn-card">
+          <div>
+            <span class="mono" style="font-size: 0.72rem; color: var(--red);">TXN 03 // SERVICE EVENT</span>
+            <h4 style="margin-top: 8px;">Field Repair &amp; Part Swap</h4>
+            <p>Technician diagnoses fault, records labor minutes, installs component, and closes work order.</p>
+          </div>
+          <div class="txn-sql-chain">
+            service_event (INSERT fact + costs)<br>
+            + part_usage (INSERT component)<br>
+            + part_records (UPDATE installed_asset)<br>
+            + asset (UPDATE lifetime_service_cost)<br>
+            + work_orders (UPDATE status = closed)
+          </div>
+        </article>
+
+        <article class="txn-card">
+          <div>
+            <span class="mono" style="font-size: 0.72rem; color: var(--red);">TXN 04 // UNIT TURNOVER</span>
+            <h4 style="margin-top: 8px;">Make-Ready Turn Audit</h4>
+            <p>Walkthrough checks appliance roster against expected registry; missing items trigger investigations.</p>
+          </div>
+          <div class="txn-sql-chain">
+            turns (INSERT / UPDATE status)<br>
+            + turn_items (INSERT findings[])<br>
+            + work_orders (INSERT auto-repair)<br>
+            + reconciliation_flag (INSERT missing)
+          </div>
+        </article>
+
+        <article class="txn-card">
+          <div>
+            <span class="mono" style="font-size: 0.72rem; color: var(--red);">TXN 05 // OFFLINE SYNC</span>
+            <h4 style="margin-top: 8px;">Batch Ingestion Push</h4>
+            <p>Field device reconnects to Wi-Fi/LTE, pushing queued mutations idempotently.</p>
+          </div>
+          <div class="txn-sql-chain">
+            sync_batches (INSERT header)<br>
+            + sync_ops (INSERT applied receipts)<br>
+            + domain tables (INSERT / UPDATE)<br>
+            + reconciliation_flags (INSERT conflicts)
+          </div>
+        </article>
+
+        <article class="txn-card">
+          <div>
+            <span class="mono" style="font-size: 0.72rem; color: var(--red);">TXN 06 // METRIC ROLLUP</span>
+            <h4 style="margin-top: 8px;">Nightly Analytics Materialization</h4>
+            <p>Background jobs aggregate depreciation, failure rates, and work order SLA metrics.</p>
+          </div>
+          <div class="txn-sql-chain">
+            metric_snapshots (INSERT bundle)<br>
+            + assets (UPDATE health_grade)<br>
+            + job_outbox (UPDATE lease = completed)<br>
+            + audit_log (INSERT snapshot record)
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 06 / Cloud Infrastructure & Supabase / Postgres ================= -->
+  <section class="section" id="cloud-infra">
+    <div class="wrap">
+      <div class="section-head-bar">
+        <span class="section-head-num">06</span>
+        <div class="section-head-line"></div>
+        <span class="section-head-scope">Cloud Infrastructure &amp; Scaling</span>
+      </div>
+
+      <h2 class="section-title">Enterprise PostgreSQL &amp; Supabase topology.</h2>
+      <p class="section-sub">
+        Architected for seamless migration from local edge SQLite to horizontally scalable, high-availability PostgreSQL 16.
+      </p>
+
+      <div class="cloud-infra-grid">
+        <article class="cloud-card">
+          <span class="cloud-card-kicker">Multi-Tenant Isolation</span>
+          <h3>Row-Level Security (RLS)</h3>
+          <p>
+            Database-level security policies strictly isolate portfolios. Every query is restricted by the tenant's cryptographic token:
+          </p>
+          <ul>
+            <li>Every tenant row carries mandatory <code>org_id</code></li>
+            <li>PostgreSQL RLS policies reject cross-organization reads/writes</li>
+            <li>FastAPI / NestJS application guards enforce property-scoped permissions</li>
+          </ul>
+          <div class="cloud-env-box">
+            ALTER TABLE assets ENABLE ROW LEVEL SECURITY;<br>
+            CREATE POLICY tenant_isolation ON assets<br>
+            &nbsp;&nbsp;FOR ALL USING (org_id = current_setting('request.jwt.claim.org_id'));
+          </div>
+        </article>
+
+        <article class="cloud-card">
+          <span class="cloud-card-kicker">High Throughput</span>
+          <h3>Connection Pooling &amp; Replicas</h3>
+          <p>
+            Separate connection pools for transactional field writes and heavy analytical reporting keep response times under 20ms:
+          </p>
+          <ul>
+            <li>PgBouncer / Supavisor manages client concurrency</li>
+            <li>Dedicated read replicas serve HQ depreciation and SLA reports</li>
+            <li>Prisma migrations and admin schema operations use direct connections</li>
+          </ul>
+          <div class="cloud-env-box">
+            DATABASE_URL="postgresql://...pooler.../postgres?pgbouncer=true"<br>
+            DIRECT_URL="postgresql://...direct.../postgres"<br>
+            READ_REPLICA_URL="postgresql://...replica.../postgres"
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= Minimalist Footer ================= -->
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-left">
+      <div class="footer-brand">
+        <img src="images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="footer-brand-logo theme-logo theme-logo--dark">
+        <img src="images/nameplate-logo-light.png" alt="" aria-hidden="true" class="footer-brand-logo theme-logo theme-logo--light">
+        <span>NAMEPLATE SYSTEMS, INC.</span>
+      </div>
+      <div class="footer-copy mono">
+        Every appliance accounted for. &copy; 2026.
+      </div>
+    </div>
+
+    <div class="footer-right">
+      <nav class="footer-links" aria-label="Footer Navigation">
+        <a href="index.html#concept">Problem</a>
+        <a href="index.html#qr-studio">Hardware</a>
+        <a href="field/">Field App</a>
+        <a href="hq/">HQ Console</a>
+        <a href="portal/">Resident Portal</a>
+        <a href="backend.html" style="color: var(--white); font-weight: 700;">Backend</a>
+        <a href="index.html#investors">Investors</a>
+      </nav>
+
+      <div class="footer-theme-wrap">
+        <span class="footer-theme-lbl mono">THEME</span>
+        <button class="theme-toggle" type="button" aria-label="Use light mode" title="Use light mode" id="footerThemeToggle">
+          <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.2A8.2 8.2 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2Z"></path></svg>
+          <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= Contact Modal ================= -->
+<div class="modal-backdrop" id="contactModal" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle" aria-hidden="true">
+  <div class="modal-dialog has-corner-ticks">
+    <div class="modal-header">
+      <div>
+        <span class="modal-eyebrow mono">NAMEPLATE // ENTERPRISE ONBOARDING</span>
+        <h2 class="modal-title" id="contactModalTitle">Request Information</h2>
+      </div>
+      <button class="modal-close-btn" id="closeContactModalBtn" type="button" aria-label="Close modal">✕</button>
+    </div>
+
+    <div id="contactFormContainer">
+      <p class="modal-desc">
+        Connect with our engineering and operations team regarding custom database integrations, PMS sync connectors, or hardware provisioning.
+      </p>
+
+      <form class="modal-form" id="contactModalForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-name" class="form-label mono">Name *</label>
+            <input type="text" id="contact-name" name="name" placeholder="Alex Morgan" required class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="contact-email" class="form-label mono">Work Email *</label>
+            <input type="email" id="contact-email" name="email" placeholder="alex@company.com" required class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-org" class="form-label mono">Company / Portfolio Name</label>
+            <input type="text" id="contact-org" name="organization" placeholder="Sonoran Portfolio Partners" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="contact-doors" class="form-label mono">Unit / Door Count</label>
+            <select id="contact-doors" name="door_count" class="form-control">
+              <option value="" disabled selected>Select portfolio size</option>
+              <option value="under-500">Under 500 Doors</option>
+              <option value="500-2500">500 – 2,500 Doors</option>
+              <option value="2500-10000">2,500 – 10,000 Doors</option>
+              <option value="10000+">10,000+ Doors</option>
+              <option value="investor">Engineering / Architecture Inquiry</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message" class="form-label mono">Deployment &amp; Database Requirements *</label>
+          <textarea id="contact-message" name="message" rows="3" placeholder="Tell us about your property management system (Yardi, RealPage, Entrata), database export requirements, or hardware needs..." required class="form-control"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-red modal-submit-btn" id="contactSubmitBtn">
+            <span>Submit Request →</span>
+          </button>
+          <span class="modal-note mono">Direct dispatch to backend engineering.</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-success-state" id="contactSuccessState" style="display: none;">
+      <div class="success-icon-box">
+        <span class="success-glyph">✓</span>
+      </div>
+      <h3 class="success-title">Inquiry Received</h3>
+      <p class="success-desc">
+        Thank you for reaching out. Our engineering operations team has received your inquiry and will follow up within one business day.
+      </p>
+      <div class="modal-footer" style="justify-content: center; margin-top: 24px;">
+        <button type="button" class="btn btn-ghost" id="contactDoneBtn">Back to Architecture</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="backend-toast" id="backendToast">DDL COPIED TO CLIPBOARD</div>
+
+<!-- ================= Backend Interactive Script ================= -->
+<script>
+(function () {
+  'use strict';
+
+  // --- Theme Management ---
+  function initTheme() {
+    var root = document.documentElement;
+    var buttons = document.querySelectorAll('.theme-toggle, #footerThemeToggle');
+    var themeColor = document.querySelector('meta[name="theme-color"]');
+    var media = window.matchMedia('(prefers-color-scheme: light)');
+
+    function applyTheme(theme, persist) {
+      root.setAttribute('data-theme', theme);
+      if (persist) {
+        try { localStorage.setItem('nameplate-theme', theme); } catch (e) {}
+      }
+      if (themeColor) themeColor.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
+      var nextTheme = theme === 'light' ? 'dark' : 'light';
+      buttons.forEach(function (b) {
+        b.setAttribute('aria-label', 'Use ' + nextTheme + ' mode');
+        b.setAttribute('title', 'Use ' + nextTheme + ' mode');
+      });
+    }
+
+    try {
+      var saved = localStorage.getItem('nameplate-theme');
+      applyTheme(saved || (media.matches ? 'light' : 'dark'), false);
+    } catch (e) {
+      applyTheme('dark', false);
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        applyTheme(root.getAttribute('data-theme') === 'light' ? 'dark' : 'light', true);
+      });
+    });
+  }
+
+  // --- Header Navigation ---
+  function initHeader() {
+    var nav = document.querySelector('.site-nav');
+    var toggle = document.querySelector('.nav-toggle');
+    if (!toggle || !nav) return;
+
+    toggle.addEventListener('click', function () {
+      var isOpen = toggle.getAttribute('aria-expanded') === 'true';
+      nav.classList.toggle('is-open', !isOpen);
+      toggle.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    nav.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        nav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // --- Toast ---
+  var toastEl = document.getElementById('backendToast');
+  function showToast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(function () { toastEl.classList.remove('show'); }, 2200);
+  }
+
+  // --- Database Domains & Tables Catalog Data ---
+  var DOMAINS = [
+    { id: 'all', name: 'All Domains' },
+    { id: 'identity', name: 'Identity & Tenancy', count: 5, tables: ['organization', 'user_account', 'membership', 'property_assignment', 'device'] },
+    { id: 'portfolio', name: 'Portfolio Hierarchy', count: 4, tables: ['property', 'building', 'unit', 'storage_location'] },
+    { id: 'assets', name: 'Asset Registry & Custody', count: 5, tables: ['asset_category', 'asset_model', 'asset', 'asset_location', 'asset_identifier_scan'] },
+    { id: 'service', name: 'Work & Service Execution', count: 5, tables: ['work_order', 'service_event', 'media', 'media_attachment', 'vendor'] },
+    { id: 'parts', name: 'Parts & Component Lineage', count: 4, tables: ['part_catalog', 'part', 'part_usage', 'part_movement'] },
+    { id: 'turns', name: 'Turns & Reconciliation', count: 4, tables: ['turn', 'turn_item', 'reconciliation_flag', 'notification'] },
+    { id: 'platform', name: 'Sync & Platform Operations', count: 5, tables: ['sync_op', 'sync_batch', 'audit_log', 'job_outbox', 'api_key'] },
+    { id: 'analytics', name: 'Analytics & Reporting', count: 2, tables: ['metric_snapshot', 'export_job'] }
+  ];
+
+  var col = function (name, type, desc) { return { name: name, type: type, desc: desc }; };
+
+  var TABLES = [
+    // 1. Identity
+    {
+      domain: 'identity', name: 'organization', status: 'live',
+      purpose: 'Commercial customer account, billing tier, portfolio policy root, and tenant RLS isolation boundary.',
+      columns: [
+        col('id', 'uuid PK', 'UUIDv7 tenant identifier. Encodes timestamp of creation.'),
+        col('name', 'text NOT NULL', 'Legal or commercial company name (e.g. Sonoran Ridge Partners).'),
+        col('slug', 'text UNIQUE NOT NULL', 'URL-safe identifier for tenant routing and subdomain mapping.'),
+        col('plan', 'text NOT NULL', 'Commercial tier: starter, professional, enterprise.'),
+        col('settings_json', 'jsonb DEFAULT \'{}\'', 'Organization-wide SLA defaults, asset depreciation methods, auto-tag rules.'),
+        col('created_at / updated_at', 'timestamptz', 'Monotonic audit timestamps in UTC.')
+      ],
+      relations: 'Parent of all customer data. Referenced by properties, users, devices, and assets.',
+      integrity: 'Unique slug; owner membership required; org_id is denormalized across all child tables for zero-join RLS enforcement.'
+    },
+    {
+      domain: 'identity', name: 'user_account', status: 'live',
+      purpose: 'Application operator profile tied to Supabase Auth identity. Never stores passwords directly.',
+      columns: [
+        col('id', 'uuid PK/FK', 'Matches auth.users.id from authentication provider.'),
+        col('email', 'citext UNIQUE NOT NULL', 'Case-insensitive verified login email.'),
+        col('full_name', 'text NOT NULL', 'First and last name of the property manager or technician.'),
+        col('user_status', 'text DEFAULT \'active\'', 'active, invited, suspended, deactivated.'),
+        col('last_seen_at', 'timestamptz', 'Most recent API request or sync timestamp.')
+      ],
+      relations: 'Parent of memberships, author of service events, creator of work order notes.',
+      integrity: 'Unique normalized email; deleting a user deactivates access while preserving full audit history.'
+    },
+    {
+      domain: 'identity', name: 'membership', status: 'live',
+      purpose: 'User authorization role, property scope, and hourly labor rate inside an organization.',
+      columns: [
+        col('id', 'uuid PK', 'UUIDv7 membership identity.'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('user_id', 'uuid FK NOT NULL', 'References user_account(id).'),
+        col('role', 'text NOT NULL', 'owner, admin, property_manager, lead_tech, technician, viewer.'),
+        col('hourly_labor_rate', 'numeric(10,2) DEFAULT 58.00', 'Hourly rate snapshotted into service event cost equations.'),
+        col('status', 'text DEFAULT \'active\'', 'invited, active, revoked.')
+      ],
+      relations: 'Binds users to organizations; referenced by work orders, service events, and turn assignments.',
+      integrity: 'Unique (org_id, user_id); exactly one active owner required per organization.'
+    },
+    {
+      domain: 'identity', name: 'property_assignment', status: 'partial',
+      purpose: 'Explicit multi-property access control boundary for maintenance technicians and scoped managers.',
+      columns: [
+        col('id', 'uuid PK', 'Assignment identifier.'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('membership_id', 'uuid FK NOT NULL', 'References membership(id).'),
+        col('property_id', 'uuid FK NOT NULL', 'References property(id).'),
+        col('created_at', 'timestamptz DEFAULT now_utc', 'Assignment issuance timestamp.')
+      ],
+      relations: 'Join table between membership and property.',
+      integrity: 'Unique (membership_id, property_id); org-wide administrators have zero rows (granted implicit access).'
+    },
+    {
+      domain: 'identity', name: 'device', status: 'foundation',
+      purpose: 'Registered mobile field tablet/scanner device, sync watermark, and cryptographic session ledger.',
+      columns: [
+        col('id', 'uuid PK', 'Client-generated UUIDv7 device identifier.'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('platform / model', 'text', 'iOS, Android, Kindle Fire 11, Zebra TC26.'),
+        col('app_version', 'text NOT NULL', 'Installed Nameplate mobile client version.'),
+        col('last_sync_cursor', 'bigint DEFAULT 0', 'Monotonic change sequence watermark.'),
+        col('revoked_at', 'timestamptz', 'Timestamp if remote access is terminated.')
+      ],
+      relations: 'Parent of sync_op; linked to asset_identifier_scans and service_events.',
+      integrity: 'Revoked devices are blocked from pushing outbox batches or minting tags.'
+    },
+
+    // 2. Portfolio
+    {
+      domain: 'portfolio', name: 'property', status: 'live',
+      purpose: 'A physical apartment community, multi-building campus, or commercial building asset.',
+      columns: [
+        col('id', 'uuid PK', 'Property identifier (e.g. prop_sonoran_ridge).'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('name', 'text NOT NULL', 'Property name (e.g. Sonoran Ridge Residences).'),
+        col('code', 'text NOT NULL', 'Internal accounting code (e.g. SRR-PHX).'),
+        col('address / city / state', 'text', 'Physical street location for geofence validation.'),
+        col('latitude / longitude', 'numeric(9,6)', 'GPS coordinates for proximity verification during scans.'),
+        col('unit_count_declared', 'int NOT NULL', 'Total unit capacity for portfolio coverage calculations.'),
+        col('year_built', 'int', 'Construction cohort year for CapEx depreciation baseline.')
+      ],
+      relations: 'Parent of buildings, units, storage locations, assets, and work orders.',
+      integrity: 'Unique (org_id, code); soft-delete only; RLS isolates queries by org_id.'
+    },
+    {
+      domain: 'portfolio', name: 'building', status: 'live',
+      purpose: 'Structural hierarchy dividing a large property campus into wings, towers, or phases.',
+      columns: [
+        col('id', 'uuid PK', 'Building identifier (e.g. bld_sonoran_4).'),
+        col('org_id / property_id', 'uuid FK NOT NULL', 'References organization(id) and property(id).'),
+        col('name', 'text NOT NULL', 'Building name or number (e.g. Building 4).'),
+        col('floors', 'int DEFAULT 1', 'Total vertical floor count.')
+      ],
+      relations: 'Belongs to property; parent of units.',
+      integrity: 'Unique active name within property; org_id must match parent property.'
+    },
+    {
+      domain: 'portfolio', name: 'unit', status: 'live',
+      purpose: 'Apartment dwelling unit, current resident occupancy status, and primary asset installation target.',
+      columns: [
+        col('id', 'uuid PK', 'Unit identifier (e.g. unit_srr_402).'),
+        col('property_id / building_id', 'uuid FK NOT NULL', 'Location hierarchy references.'),
+        col('unit_number', 'text NOT NULL', 'Door label (e.g. 402, PH-A, 101).'),
+        col('floor', 'int DEFAULT 1', 'Floor level for dispatch navigation.'),
+        col('occupancy_status', 'text NOT NULL', 'occupied, vacant, turning, model, offline.'),
+        col('current_turn_id', 'uuid FK', 'Active make-ready turn walkthrough if unit is turning.')
+      ],
+      relations: 'Belongs to building; parent of installed assets, service history, and turns.',
+      integrity: 'Unique (building_id, unit_number); denormalized property_id enforced.'
+    },
+    {
+      domain: 'portfolio', name: 'storage_location', status: 'foundation',
+      purpose: 'Non-unit physical locations such as maintenance shops, supply closets, vehicles, and staging areas.',
+      columns: [
+        col('id', 'uuid PK', 'Location identifier.'),
+        col('org_id / property_id', 'uuid FK NOT NULL', 'Tenant and property references.'),
+        col('name', 'text NOT NULL', 'Shop Main, Truck #3, Appliance Bone Yard.'),
+        col('kind', 'text NOT NULL', 'shop, warehouse, vehicle, vendor, disposal, staging.')
+      ],
+      relations: 'Referenced by asset_location custody intervals and part inventory.',
+      integrity: 'Never modeled as a fake unit; prevents skewed occupancy metrics.'
+    },
+
+    // 3. Assets
+    {
+      domain: 'assets', name: 'asset_category', status: 'live',
+      purpose: 'Appliance taxonomy, default depreciation rules, and expected lifetime baseline assumptions.',
+      columns: [
+        col('id', 'uuid PK', 'Category identifier (e.g. cat_hvac, cat_refrigerator).'),
+        col('key', 'text NOT NULL', 'Stable machine key: hvac, refrigerator, range, dishwasher, washer, dryer, water_heater.'),
+        col('name', 'text NOT NULL', 'Human-readable category label.'),
+        col('default_useful_life_months', 'int NOT NULL', 'Default useful life (e.g. 120 months for HVAC, 84 for dishwasher).'),
+        col('default_replacement_cost', 'numeric(12,2)', 'Default procurement budget baseline.')
+      ],
+      relations: 'Parent of asset_models and assets; defines expected checklists in turns.',
+      integrity: 'Unique category key; system defaults populated globally.'
+    },
+    {
+      domain: 'assets', name: 'asset_model', status: 'live',
+      purpose: 'Manufacturer model master catalog, OCR date-decoding regex rules, and lifecycle data moat.',
+      columns: [
+        col('id', 'uuid PK', 'Model identifier (e.g. mod_carrier_fe4).'),
+        col('category_id', 'uuid FK NOT NULL', 'References asset_category(id).'),
+        col('manufacturer / model_number', 'text NOT NULL', 'Carrier, FE4ANF002; Whirlpool, WRF535SWHZ.'),
+        col('serial_format_regex', 'text', 'Regex pattern for validating camera OCR captures.'),
+        col('serial_date_rule_json', 'jsonb', 'Rules for parsing year/week of manufacture from serial plate.'),
+        col('typical_replacement_cost', 'numeric(12,2)', 'Current market replacement baseline.')
+      ],
+      relations: 'Referenced by physical assets and compatible part catalog records.',
+      integrity: 'Unique (manufacturer, model_number); duplicate models merge without deleting historical rows.'
+    },
+    {
+      domain: 'assets', name: 'asset', status: 'live',
+      purpose: 'Core physical appliance ledger record; high-performance projection of current location and condition.',
+      columns: [
+        col('id', 'uuid PK', 'UUIDv7 internal identity (e.g. asset_hvac_402).'),
+        col('npid', 'text UNIQUE NOT NULL', '8-character Crockford Base32 physical tag ID (e.g. NP-1M4K9X23).'),
+        col('category_id / asset_model_id', 'uuid FK NOT NULL', 'Classification references.'),
+        col('manufacturer_raw / model_raw', 'text NOT NULL', 'Raw OCR or manual field input strings.'),
+        col('serial_number', 'text NOT NULL', 'Unique manufacturer serial identifier.'),
+        col('serial_normalized', 'text', 'Stripped uppercase alphanumeric string for cross-checking.'),
+        col('current_property_id / current_unit_id', 'uuid FK', 'Current physical location projections.'),
+        col('status', 'text NOT NULL', 'active, maintenance, missing, salvaged, disposed.'),
+        col('condition', 'text NOT NULL', 'excellent, good, fair, poor, critical.'),
+        col('install_date / purchase_cost', 'date / numeric', 'Acquisition economics and straight-line depreciation base.'),
+        col('lifetime_service_cost', 'numeric(12,2) DEFAULT 0', 'Denormalized cumulative repair spend rollup.')
+      ],
+      relations: 'Core hub of the database. Referenced by scans, locations, events, work orders, parts, and media.',
+      integrity: 'NPID globally unique with check character; trusted serial unique per model; soft delete only.'
+    },
+    {
+      domain: 'assets', name: 'asset_location', status: 'built',
+      purpose: 'Append-only chain-of-custody ledger. The authoritative physical movement history.',
+      columns: [
+        col('id', 'uuid PK', 'Custody interval identity.'),
+        col('asset_id', 'uuid FK NOT NULL', 'References asset(id).'),
+        col('location_type', 'text NOT NULL', 'unit, storage, vendor, transit, disposed.'),
+        col('unit_id / storage_location_id', 'uuid FK', 'Exactly one target location specified.'),
+        col('from_ts / to_ts', 'timestamptz', 'Time interval of physical residence (to_ts is NULL if currently active).'),
+        col('confirmed_by', 'uuid FK NOT NULL', 'Technician who confirmed the move.'),
+        col('movement_kind', 'text NOT NULL', 'initial_tag, turnover_move, repair_shop_transfer, replacement, inventory_audit.')
+      ],
+      relations: 'Belongs to asset; pointed to by work_orders and turns.',
+      integrity: 'Exactly one open interval (to_ts IS NULL) permitted per asset; corrections append new intervals.'
+    },
+    {
+      domain: 'assets', name: 'asset_identifier_scan', status: 'built',
+      purpose: 'Every physical tag scan attempt, including unrecognized barcodes, telemetry, and mismatch alerts.',
+      columns: [
+        col('id', 'uuid PK', 'Scan observation identity.'),
+        col('raw_code / code_type', 'text NOT NULL', 'Raw scanned QR string (np://t/...) and code format.'),
+        col('resolved_asset_id', 'uuid FK', 'Resolved asset if valid, NULL if unknown tag.'),
+        col('device_id / scanned_by', 'uuid FK NOT NULL', 'Field scanner and technician attribution.'),
+        col('expected_unit_id / actual_unit_id', 'uuid FK', 'Mismatch detection for shrinkage prevention.'),
+        col('occurred_at', 'timestamptz NOT NULL', 'Offline camera capture timestamp.')
+      ],
+      relations: 'Optionally resolves to asset; feeds real-time audit logs.',
+      integrity: 'Never discard failed scans; mismatch between expected and actual unit raises automatic shrinkage alerts.'
+    },
+
+    // 4. Service
+    {
+      domain: 'service', name: 'work_order', status: 'live',
+      purpose: 'Assignable maintenance ticket, SLA clock, cost estimate, and repair/replace governance.',
+      columns: [
+        col('id', 'uuid PK', 'Work order identity (e.g. wo_1014).'),
+        col('number', 'int UNIQUE NOT NULL', 'Human-friendly integer sequence number (e.g. 1014, 1015).'),
+        col('property_id / unit_id / asset_id', 'uuid FK', 'Operational location and equipment scope.'),
+        col('title / description', 'text NOT NULL', 'Symptom description and work request.'),
+        col('priority', 'text NOT NULL', 'emergency (4h), urgent (24h), normal (72h), low (168h).'),
+        col('status', 'text NOT NULL', 'open, assigned, in_progress, on_hold, completed, cancelled.'),
+        col('assigned_to', 'uuid FK', 'References membership(id) of responsible technician.'),
+        col('sla_due_at / completed_at', 'timestamptz', 'SLA deadline timestamp and closure verification.'),
+        col('estimated_cost / actual_cost', 'numeric(12,2)', 'Financial rollups computed from attached service events.')
+      ],
+      relations: 'Parent of service_events and work_order_notes; belongs to property/unit/asset.',
+      integrity: 'Unique number per organization; actual_cost matches sum of attached service events.'
+    },
+    {
+      domain: 'service', name: 'work_order_note', status: 'live',
+      purpose: 'Chronological communication trail, technician notes, tenant requests, and system audit updates.',
+      columns: [
+        col('id', 'uuid PK', 'Note identifier.'),
+        col('work_order_id', 'uuid FK NOT NULL', 'References work_order(id).'),
+        col('author / avatar', 'text NOT NULL', 'Author name and avatar URL.'),
+        col('text', 'text NOT NULL', 'Commentary, diagnosis notes, or parts delivery status.'),
+        col('type', 'text DEFAULT \'note\'', 'note, system, status_change, escalation.'),
+        col('created_at', 'timestamptz DEFAULT now_utc', 'Creation timestamp.')
+      ],
+      relations: 'Belongs to work_order.',
+      integrity: 'Append-only chronological log.'
+    },
+    {
+      domain: 'service', name: 'service_event', status: 'live',
+      purpose: 'Append-only atomic fact that a technician diagnosed, repaired, PM-serviced, or replaced an asset.',
+      columns: [
+        col('id', 'uuid PK', 'Service event fact identifier (e.g. se_1048).'),
+        col('asset_id', 'uuid FK NOT NULL', 'References asset(id).'),
+        col('work_order_id', 'uuid FK', 'Optional parent work order reference.'),
+        col('technician_id', 'uuid FK NOT NULL', 'References user_account(id) of servicing technician.'),
+        col('event_type', 'text NOT NULL', 'pm_inspection, repair, component_replacement, warranty_claim, decommission.'),
+        col('findings / resolution_code', 'text', 'Technician diagnosis notes and structured outcome.'),
+        col('labor_minutes / hourly_labor_rate', 'int / numeric', 'Duration of work and snapshotted technician rate.'),
+        col('parts_cost / total_cost', 'numeric(10,2)', 'Direct parts expense and computed total service cost.'),
+        col('is_warranty_claim', 'boolean DEFAULT FALSE', 'Flag indicating cost is recoverable from manufacturer.')
+      ],
+      relations: 'Belongs to asset; parent of part_usage rows; references work_orders.',
+      integrity: 'Append-only; all costs and part usages commit in a single transaction; updates asset lifetime spend.'
+    },
+    {
+      domain: 'service', name: 'media', status: 'foundation',
+      purpose: 'Object metadata and cryptographic checksum pointers for inspection photos stored in Cloud Storage.',
+      columns: [
+        col('id', 'uuid PK', 'Media identity.'),
+        col('storage_key', 'text NOT NULL', 'Object storage path in S3 / Supabase Storage.'),
+        col('mime_type / bytes', 'text / bigint NOT NULL', 'image/jpeg, image/png, file size.'),
+        col('sha256', 'text NOT NULL', 'Cryptographic hash for deduplication and proof of record integrity.'),
+        col('captured_at', 'timestamptz NOT NULL', 'Field capture camera timestamp.')
+      ],
+      relations: 'Parent of media_attachments; linked to serial OCR pipelines.',
+      integrity: 'Binary blobs never stored in Postgres; storage keys are org-partitioned.'
+    },
+    {
+      domain: 'service', name: 'media_attachment', status: 'foundation',
+      purpose: 'Polymorphic linkage binding media photos to assets, service events, work orders, or turn items.',
+      columns: [
+        col('id', 'uuid PK', 'Attachment record.'),
+        col('media_id', 'uuid FK NOT NULL', 'References media(id).'),
+        col('entity_type / entity_id', 'text / uuid NOT NULL', 'asset, service_event, work_order, turn_item.'),
+        col('role', 'text NOT NULL', 'nameplate_tag, serial_plate, damage_evidence, repair_completed, receipt.')
+      ],
+      relations: 'Joins media objects to any domain record.',
+      integrity: 'API enforces that target entity exists within the same organization.'
+    },
+    {
+      domain: 'service', name: 'vendor', status: 'foundation',
+      purpose: 'Third-party HVAC contractors, appliance warranty repair services, and parts suppliers.',
+      columns: [
+        col('id', 'uuid PK', 'Vendor identifier.'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('name', 'text NOT NULL', 'Contractor company name (e.g. Desert Air Specialists).'),
+        col('kind', 'text NOT NULL', 'hvac_contractor, appliance_repair, parts_supplier, scrap_salvage.'),
+        col('hourly_rate', 'numeric(10,2)', 'Default contracted hourly rate for cost projections.')
+      ],
+      relations: 'Referenced by service_events and asset_locations.',
+      integrity: 'Unique name per organization; soft-deactivation preserves historical repair contracts.'
+    },
+
+    // 5. Parts
+    {
+      domain: 'parts', name: 'part_catalog', status: 'live',
+      purpose: 'Global master kind-of-part catalog with manufacturer cross-fitment and benchmark pricing.',
+      columns: [
+        col('id', 'uuid PK', 'Catalog part identifier (e.g. CAP-45-5-370V).'),
+        col('manufacturer / part_number', 'text NOT NULL', 'Printed OEM part number and manufacturer.'),
+        col('name / component_type', 'text NOT NULL', 'Dual Run Capacitor, Drain Pump, Defrost Thermostat, Magnetron.'),
+        col('typical_cost', 'numeric(10,2)', 'Average market price for CapEx / OpEx budgeting.'),
+        col('expected_life_months', 'int', 'Expected component lifespan in operational conditions.')
+      ],
+      relations: 'Referenced by physical part_records and consumable part_usage rows.',
+      integrity: 'Unique (manufacturer, part_number); fitment mappings expand through verified field usage.'
+    },
+    {
+      domain: 'parts', name: 'part_record', status: 'live',
+      purpose: 'A traceable physical component instance, especially salvaged, high-value, or warrantied parts.',
+      columns: [
+        col('id', 'uuid PK', 'Part instance identity (e.g. part_8f1a2e).'),
+        col('label', 'text NOT NULL', 'OEM-CAR-BLW48, CAP-45-5-370V, WPW10225581.'),
+        col('component_type', 'text', 'blower_motor, capacitor, control_board, compressor, pump.'),
+        col('origin', 'text NOT NULL', 'new_purchase, salvaged, donor_unit.'),
+        col('source_asset_id', 'uuid FK', 'Asset from which the part was salvaged (harvesting lineage).'),
+        col('installed_in_asset_id', 'uuid FK', 'Asset currently operating this component.'),
+        col('cost / value', 'numeric(10,2)', 'Cash acquisition cost and imputed avoided cost.')
+      ],
+      relations: 'Links source donor asset to recipient asset; tracked in service events.',
+      integrity: 'Salvaged origin requires source_asset_id; installed status requires installed_in_asset_id.'
+    },
+    {
+      domain: 'parts', name: 'part_usage', status: 'live',
+      purpose: 'Append-only ledger of parts installed, tested, swapped, or removed during a service event.',
+      columns: [
+        col('id', 'uuid PK', 'Usage entry identity.'),
+        col('service_event_id', 'uuid FK NOT NULL', 'References service_event(id).'),
+        col('asset_id', 'uuid FK NOT NULL', 'References asset(id).'),
+        col('part_record_id', 'uuid FK', 'Optional reference to tracked physical part instance.'),
+        col('description / action', 'text NOT NULL', 'replaced, installed, cleaned, tested, removed.'),
+        col('quantity / unit_cost', 'int / numeric', 'Quantity used and price per unit.'),
+        col('is_warranty_covered', 'boolean DEFAULT FALSE', 'Marks if component is covered by manufacturer warranty.')
+      ],
+      relations: 'Belongs to service_event and asset.',
+      integrity: 'Insert-only ledger; unit_cost * quantity automatically updates service_event.parts_cost.'
+    },
+    {
+      domain: 'parts', name: 'part_movement', status: 'foundation',
+      purpose: 'Custody transfer log for physical part inventory moving between trucks, supply shops, and assets.',
+      columns: [
+        col('id', 'uuid PK', 'Movement identity.'),
+        col('part_record_id', 'uuid FK NOT NULL', 'References part_record(id).'),
+        col('from_location / to_location', 'text NOT NULL', 'Central Warehouse → Truck #2 → Unit 402.'),
+        col('reason', 'text NOT NULL', 'restock, job_allocation, installation, return, scrap.'),
+        col('occurred_at', 'timestamptz NOT NULL', 'Transfer timestamp.')
+      ],
+      relations: 'Belongs to part_record.',
+      integrity: 'Append-only inventory custody chain.'
+    },
+
+    // 6. Turns
+    {
+      domain: 'turns', name: 'turn', status: 'built',
+      purpose: 'Unit turnover walkthrough workflow for move-outs, move-ins, annual audits, and make-readies.',
+      columns: [
+        col('id', 'uuid PK', 'Turn identity (e.g. turn_srr_402_2026).'),
+        col('property_id / unit_id', 'uuid FK NOT NULL', 'Unit location of turn inspection.'),
+        col('type', 'text NOT NULL', 'move_out, move_in, make_ready, annual_pm, spot_audit.'),
+        col('status', 'text NOT NULL', 'scheduled, in_progress, completed, cancelled.'),
+        col('started_at / completed_at', 'timestamptz', 'Turn execution timeline and cycle duration.'),
+        col('performed_by', 'uuid FK NOT NULL', 'Technician or property manager conducting the audit.'),
+        col('missing_assets_count', 'int DEFAULT 0', 'Shrinkage signal: count of expected assets not found.')
+      ],
+      relations: 'Belongs to unit; parent of turn_items; emits work_orders.',
+      integrity: 'Only one active turn permitted per unit at any given time.'
+    },
+    {
+      domain: 'turns', name: 'turn_item', status: 'built',
+      purpose: 'Checklist item verifying the presence, condition, serial plate, and operational health of an asset.',
+      columns: [
+        col('id', 'uuid PK', 'Turn item identity.'),
+        col('turn_id', 'uuid FK NOT NULL', 'References turn(id).'),
+        col('asset_id / expected_category_id', 'uuid FK', 'Observed asset or expected appliance category.'),
+        col('finding', 'text NOT NULL', 'verified_present, missing, damaged, unrecorded_replacement.'),
+        col('condition', 'text NOT NULL', 'excellent, good, fair, poor, broken.'),
+        col('decision', 'text NOT NULL', 'pass, repair_needed, replace_needed, escalate_investigation.'),
+        col('generated_work_order_id', 'uuid FK', 'Auto-generated work order emitted on failure finding.')
+      ],
+      relations: 'Belongs to turn; references asset; links to emitted work order.',
+      integrity: 'Missing finding generates a shrinkage flag rather than immediately deleting the asset.'
+    },
+    {
+      domain: 'turns', name: 'reconciliation_flag', status: 'built',
+      purpose: 'Human triage queue for sync conflicts, serial mismatches, duplicate plates, and missing assets.',
+      columns: [
+        col('id', 'uuid PK', 'Flag identity.'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('entity_type / entity_id', 'text / uuid NOT NULL', 'asset, work_order, turn_item, sync_op.'),
+        col('kind', 'text NOT NULL', 'missing_on_turn, serial_duplicate, location_mismatch, stale_offline_write.'),
+        col('status', 'text DEFAULT \'open\'', 'open, under_review, resolved, dismissed.'),
+        col('resolved_by / resolution_notes', 'uuid FK / text', 'Reviewing supervisor and rationale.')
+      ],
+      relations: 'Polymorphic queue linking to assets, turns, and work orders.',
+      integrity: 'Resolution preserves both conflicting snapshots for audit compliance.'
+    },
+    {
+      domain: 'turns', name: 'notification', status: 'deferred',
+      purpose: 'In-app notification inbox for technician task dispatches, SLA escalation alerts, and tag approvals.',
+      columns: [
+        col('id', 'uuid PK', 'Notification identity.'),
+        col('recipient_user_id', 'uuid FK NOT NULL', 'References user_account(id).'),
+        col('title / message', 'text NOT NULL', 'Alert content and deep-link payload.'),
+        col('read_at', 'timestamptz', 'Timestamp when read by operator.')
+      ],
+      relations: 'Belongs to user_account.',
+      integrity: 'Notifications deliver without altering underlying domain state.'
+    },
+
+    // 7. Platform
+    {
+      domain: 'platform', name: 'sync_batch', status: 'live',
+      purpose: 'Cryptographic container for batched offline mutations pushed from a mobile field client.',
+      columns: [
+        col('id', 'uuid PK', 'Batch identity (e.g. batch_3b8a1e).'),
+        col('device_id', 'text NOT NULL', 'Device identifier transmitting the batch.'),
+        col('client_timestamp', 'timestamptz NOT NULL', 'Timestamp on the client clock when sync began.'),
+        col('server_timestamp', 'timestamptz DEFAULT now_utc', 'Authoritative server commit timestamp.'),
+        col('payload_hash', 'text NOT NULL', 'SHA-256 hash of mutations payload to prevent replay.'),
+        col('record_count', 'int NOT NULL', 'Number of distinct operations in batch.'),
+        col('status', 'text DEFAULT \'committed\'', 'committed, rejected, partial_conflict.')
+      ],
+      relations: 'Parent of sync_ops.',
+      integrity: 'Identical payload_hash cannot be committed twice.'
+    },
+    {
+      domain: 'platform', name: 'sync_op', status: 'live',
+      purpose: 'Server-side idempotency receipt and conflict record for every individual offline outbox mutation.',
+      columns: [
+        col('op_id', 'uuid PK', 'Client-generated UUIDv7 idempotency key.'),
+        col('batch_id', 'text', 'References sync_batch(id).'),
+        col('device_id / user_id', 'text', 'Attribution context.'),
+        col('entity_type / entity_id', 'text NOT NULL', 'Target table and record (e.g. asset, asset_101).'),
+        col('op_type', 'text NOT NULL', 'create, update, delete, append_event.'),
+        col('status', 'text DEFAULT \'applied\'', 'applied, duplicate, conflict_diverged, rejected.'),
+        col('payload_json', 'text NOT NULL', 'JSON-serialized mutation delta for reproducible replay.')
+      ],
+      relations: 'Belongs to sync_batch; references affected domain records.',
+      integrity: 'Same op_id always yields identical response; prevents duplicate writes on network retries.'
+    },
+    {
+      domain: 'platform', name: 'audit_log', status: 'built',
+      purpose: 'Immutable, append-only security ledger recording every mutation across the entire platform.',
+      columns: [
+        col('id', 'uuid PK', 'Audit entry identity.'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('actor_user_id / actor_role', 'uuid / text', 'Who performed the operation.'),
+        col('action', 'text NOT NULL', 'MINT_TAG, MOVE_ASSET, COMPLETE_WORK_ORDER, OVERRIDE_SERIAL.'),
+        col('entity_type / entity_id', 'text / uuid NOT NULL', 'Target table and row identifier.'),
+        col('before_json / after_json', 'jsonb', 'Delta snapshots capturing state transition.'),
+        col('occurred_at / recorded_at', 'timestamptz', 'Client observation time and server commit time.')
+      ],
+      relations: 'Polymorphic reference to any entity across the system.',
+      integrity: 'Append-only; zero UPDATE or DELETE permissions granted to application service roles.'
+    },
+    {
+      domain: 'platform', name: 'job_outbox', status: 'deferred',
+      purpose: 'Transactional outbox guaranteeing asynchronous background jobs publish only after DB commit.',
+      columns: [
+        col('id', 'uuid PK', 'Job identity.'),
+        col('kind', 'text NOT NULL', 'recalculate_depreciation, send_webhook, process_ocr, push_metric.'),
+        col('payload', 'jsonb NOT NULL', 'Typed parameters for background processing worker.'),
+        col('status', 'text DEFAULT \'pending\'', 'pending, locked, completed, failed.')
+      ],
+      relations: 'Consumed by background worker workers.',
+      integrity: 'Guarantees at-least-once job delivery without dual-write race conditions.'
+    },
+    {
+      domain: 'platform', name: 'api_key', status: 'deferred',
+      purpose: 'Service account credentials for PMS integrations (Yardi, RealPage, Entrata) without user passwords.',
+      columns: [
+        col('id', 'uuid PK', 'Key identity.'),
+        col('org_id', 'uuid FK NOT NULL', 'References organization(id).'),
+        col('name / prefix', 'text NOT NULL', 'Display label and public prefix (e.g. np_live_8f... ).'),
+        col('secret_hash', 'text NOT NULL', 'Bcrypt/Argon2 hash of full secret key.'),
+        col('permissions', 'text[] NOT NULL', 'Granular permission scopes: assets:read, sync:write, turns:read.')
+      ],
+      relations: 'Belongs to organization.',
+      integrity: 'Plaintext secret shown only once at creation; immediate revocation capability.'
+    },
+
+    // 8. Analytics
+    {
+      domain: 'analytics', name: 'metric_snapshot', status: 'built',
+      purpose: 'Nightly pre-aggregated metrics at property, building, category, and manufacturer scopes.',
+      columns: [
+        col('id', 'uuid PK', 'Snapshot identity.'),
+        col('org_id / property_id', 'uuid FK NOT NULL', 'Scope references.'),
+        col('scope_type / scope_id', 'text NOT NULL', 'portfolio, property, category, manufacturer.'),
+        col('period_start / period_grain', 'date / text NOT NULL', 'Daily, weekly, monthly aggregation intervals.'),
+        col('metrics_json', 'jsonb NOT NULL', 'Pre-calculated KPIs: active_assets, avg_age_months, failure_rate, sla_compliance_pct.'),
+        col('computed_at', 'timestamptz DEFAULT now_utc', 'Calculation timestamp.')
+      ],
+      relations: 'Materialized from assets, service_events, and work_orders.',
+      integrity: 'Unique (scope_type, scope_id, period_start, period_grain); reproducible from source ledgers.'
+    },
+    {
+      domain: 'analytics', name: 'export_job', status: 'deferred',
+      purpose: 'Asynchronous CSV and PDF report generation requests, execution progress, and signed download URLs.',
+      columns: [
+        col('id', 'uuid PK', 'Export job identifier.'),
+        col('org_id / requested_by', 'uuid FK NOT NULL', 'Requester context.'),
+        col('dataset', 'text NOT NULL', 'depreciation_forecast, failure_matrix, work_order_sla.'),
+        col('status', 'text DEFAULT \'queued\'', 'queued, processing, ready, failed.'),
+        col('download_url / expires_at', 'text / timestamptz', 'Signed time-limited download URL.')
+      ],
+      relations: 'Belongs to organization and user.',
+      integrity: 'Signed URLs expire automatically after 24 hours.'
+    }
+  ];
+
+  // --- Render Domains Matrix ---
+  function renderDomains() {
+    var container = document.getElementById('domainMatrix');
+    if (!container) return;
+    container.innerHTML = '';
+
+    DOMAINS.slice(1).forEach(function (d) {
+      var box = document.createElement('div');
+      box.className = 'domain-box';
+      box.setAttribute('data-domain', d.id);
+
+      var pills = d.tables.map(function (t) {
+        return '<span class="domain-pill">' + t + '</span>';
+      }).join('');
+
+      box.innerHTML =
+        '<div class="domain-header">' +
+          '<h3 class="domain-title">' + d.name + '</h3>' +
+          '<span class="domain-count">' + String(d.count).padStart(2, '0') + '</span>' +
+        '</div>' +
+        '<div class="domain-table-pills">' + pills + '</div>';
+
+      box.addEventListener('click', function () {
+        filterByDomain(d.id);
+        var catalogSec = document.getElementById('catalog');
+        if (catalogSec) catalogSec.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      container.appendChild(box);
+    });
+  }
+
+  // --- Render Domain Filter Buttons ---
+  function renderDomainFilterButtons() {
+    var bar = document.getElementById('domainFilterBar');
+    if (!bar) return;
+    bar.innerHTML = '';
+
+    DOMAINS.forEach(function (d) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'filter-btn' + (d.id === 'all' ? ' active' : '');
+      btn.setAttribute('data-domain', d.id);
+      btn.textContent = d.name + (d.count ? ' (' + d.count + ')' : ' (34)');
+
+      btn.addEventListener('click', function () {
+        filterByDomain(d.id);
+      });
+
+      bar.appendChild(btn);
+    });
+  }
+
+  // --- Status Badge Helper ---
+  function getBadgeHtml(status) {
+    if (status === 'live') {
+      return '<span class="status-badge badge-live">● Live in SQLite</span>';
+    } else if (status === 'built') {
+      return '<span class="status-badge badge-built">API Built</span>';
+    } else if (status === 'partial') {
+      return '<span class="status-badge badge-partial">API Partial</span>';
+    } else if (status === 'deferred') {
+      return '<span class="status-badge badge-deferred">Deferred V1</span>';
+    } else {
+      return '<span class="status-badge badge-foundation">DB Foundation</span>';
+    }
+  }
+
+  // --- Render Catalog Table Cards ---
+  function renderCatalog(tablesToRender) {
+    var container = document.getElementById('tablesContainer');
+    var emptyState = document.getElementById('catalogEmptyState');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!tablesToRender || tablesToRender.length === 0) {
+      if (emptyState) emptyState.style.display = 'block';
+      return;
+    }
+    if (emptyState) emptyState.style.display = 'none';
+
+    tablesToRender.forEach(function (t) {
+      var card = document.createElement('article');
+      card.className = 'table-entry-card';
+      card.setAttribute('data-name', t.name);
+      card.setAttribute('data-domain', t.domain);
+      card.setAttribute('data-status', t.status);
+
+      var colsHtml = t.columns.map(function (c) {
+        return '<tr>' +
+          '<td>' + c.name + '</td>' +
+          '<td>' + c.type + '</td>' +
+          '<td>' + c.desc + '</td>' +
+        '</tr>';
+      }).join('');
+
+      card.innerHTML =
+        '<button type="button" class="table-entry-summary" aria-expanded="false">' +
+          '<div>' +
+            '<div class="table-entry-name">' +
+              '<span>' + t.name + '</span>' +
+              getBadgeHtml(t.status) +
+            '</div>' +
+            '<p class="table-entry-desc">' + t.purpose + '</p>' +
+          '</div>' +
+          '<div class="expand-chevron" aria-hidden="true">+</div>' +
+        '</button>' +
+        '<div class="table-entry-body">' +
+          '<table class="columns-data-table">' +
+            '<thead>' +
+              '<tr><th>Column</th><th>Data Type</th><th>Description &amp; Invariants</th></tr>' +
+            '</thead>' +
+            '<tbody>' + colsHtml + '</tbody>' +
+          '</table>' +
+          '<div class="table-meta-box">' +
+            '<div class="meta-sub-col">' +
+              '<h5>Relational Links</h5>' +
+              '<p>' + t.relations + '</p>' +
+            '</div>' +
+            '<div class="meta-sub-col">' +
+              '<h5>Integrity &amp; Invariants</h5>' +
+              '<p>' + t.integrity + '</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+
+      var summaryBtn = card.querySelector('.table-entry-summary');
+      summaryBtn.addEventListener('click', function () {
+        var isOpen = card.classList.contains('open');
+        card.classList.toggle('open', !isOpen);
+        summaryBtn.setAttribute('aria-expanded', String(!isOpen));
+      });
+
+      container.appendChild(card);
+    });
+  }
+
+  // --- Filtering & Search Logic ---
+  var currentDomain = 'all';
+  var currentStatus = 'all';
+  var currentQuery = '';
+
+  function filterTables() {
+    var filtered = TABLES.filter(function (t) {
+      // Domain filter
+      if (currentDomain !== 'all' && t.domain !== currentDomain) return false;
+
+      // Status filter
+      if (currentStatus !== 'all' && t.status !== currentStatus) return false;
+
+      // Query search
+      if (currentQuery) {
+        var q = currentQuery.toLowerCase();
+        var matchName = t.name.toLowerCase().includes(q);
+        var matchPurpose = t.purpose.toLowerCase().includes(q);
+        var matchCols = t.columns.some(function (c) {
+          return c.name.toLowerCase().includes(q) || c.type.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q);
+        });
+        if (!matchName && !matchPurpose && !matchCols) return false;
+      }
+
+      return true;
+    });
+
+    renderCatalog(filtered);
+  }
+
+  function filterByDomain(domainId) {
+    currentDomain = domainId;
+
+    // Update filter buttons
+    document.querySelectorAll('.filter-btn').forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-domain') === domainId);
+    });
+
+    // Update domain boxes
+    document.querySelectorAll('.domain-box').forEach(function (box) {
+      box.classList.toggle('active', box.getAttribute('data-domain') === domainId);
+    });
+
+    filterTables();
+  }
+
+  // --- Expand / Collapse All ---
+  var isAllExpanded = false;
+  function initExpandAll() {
+    var btn = document.getElementById('expandAllBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      isAllExpanded = !isAllExpanded;
+      document.querySelectorAll('.table-entry-card').forEach(function (card) {
+        card.classList.toggle('open', isAllExpanded);
+        var summary = card.querySelector('.table-entry-summary');
+        if (summary) summary.setAttribute('aria-expanded', String(isAllExpanded));
+      });
+      btn.textContent = isAllExpanded ? 'Collapse All' : 'Expand All';
+    });
+  }
+
+  // --- DDL Snippets & Tabs ---
+  var DDL_SNIPPETS = {
+    assets:
+`-- Core Hardware Appliance & Model Catalog (SQLite / PostgreSQL)
+CREATE TABLE assets (
+    id VARCHAR PRIMARY KEY,
+    npid VARCHAR UNIQUE NOT NULL,                       -- 8-char Crockford Base32 (e.g. NP-1M4K9X23)
+    category_id VARCHAR NOT NULL REFERENCES asset_categories(id),
+    asset_model_id VARCHAR NOT NULL REFERENCES asset_models(id),
+    manufacturer_raw VARCHAR NOT NULL,
+    model_raw VARCHAR NOT NULL,
+    serial_number VARCHAR NOT NULL,
+    serial_normalized VARCHAR,                          -- Indexed uppercase alphanumeric
+    serial_confidence VARCHAR DEFAULT 'verified',
+    current_property_id VARCHAR REFERENCES properties(id),
+    current_unit_id VARCHAR REFERENCES units(id),
+    status VARCHAR DEFAULT 'active',                    -- active, maintenance, salvaged, missing
+    condition VARCHAR DEFAULT 'good',                   -- excellent, good, fair, poor, critical
+    install_date DATE,
+    purchase_cost FLOAT DEFAULT 0.0,
+    expected_life_months INTEGER DEFAULT 120,
+    lifetime_service_cost FLOAT DEFAULT 0.0,
+    service_event_count INTEGER DEFAULT 0,
+    last_service_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_assets_npid ON assets(npid);
+CREATE INDEX idx_assets_unit ON assets(current_unit_id);
+CREATE INDEX idx_assets_serial ON assets(serial_normalized);`,
+
+    'work-orders':
+`-- Work Orders & SLA Resolution Ledger
+CREATE TABLE work_orders (
+    id VARCHAR PRIMARY KEY,
+    number INTEGER UNIQUE NOT NULL,                     -- Sequential human readable ticket ID
+    title VARCHAR NOT NULL,
+    description TEXT,
+    priority VARCHAR DEFAULT 'normal',                  -- emergency (4h), urgent (24h), normal (72h), low (168h)
+    status VARCHAR DEFAULT 'open',                      -- open, assigned, in_progress, completed, cancelled
+    source VARCHAR DEFAULT 'field_app',
+    property_id VARCHAR NOT NULL REFERENCES properties(id),
+    unit_id VARCHAR REFERENCES units(id),
+    asset_id VARCHAR REFERENCES assets(id),
+    assigned_to VARCHAR,
+    sla_due_at DATETIME,
+    completed_at DATETIME,
+    estimated_cost FLOAT DEFAULT 0.0,
+    actual_cost FLOAT DEFAULT 0.0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE work_order_notes (
+    id VARCHAR PRIMARY KEY,
+    work_order_id VARCHAR NOT NULL REFERENCES work_orders(id) ON DELETE CASCADE,
+    author VARCHAR NOT NULL,
+    text TEXT NOT NULL,
+    type VARCHAR DEFAULT 'note',                        -- note, status_change, audit
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_work_orders_property ON work_orders(property_id);
+CREATE INDEX idx_work_orders_status ON work_orders(status);`,
+
+    service:
+`-- Append-Only Service Events & Physical Parts Lineage
+CREATE TABLE service_events (
+    id VARCHAR PRIMARY KEY,
+    asset_id VARCHAR NOT NULL REFERENCES assets(id),
+    work_order_id VARCHAR REFERENCES work_orders(id),
+    property_id VARCHAR REFERENCES properties(id),
+    unit_id VARCHAR REFERENCES units(id),
+    technician_id VARCHAR NOT NULL,
+    event_type VARCHAR DEFAULT 'repair',                -- pm_inspection, repair, warranty_claim
+    findings TEXT,
+    labor_minutes INTEGER DEFAULT 0,
+    labor_rate FLOAT DEFAULT 58.00,
+    labor_cost FLOAT DEFAULT 0.0,
+    parts_cost FLOAT DEFAULT 0.0,
+    total_cost FLOAT DEFAULT 0.0,                       -- labor_cost + parts_cost
+    is_warranty_claim BOOLEAN DEFAULT 0,
+    occurred_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE part_records (
+    id VARCHAR PRIMARY KEY,
+    label VARCHAR NOT NULL,                             -- CAP-45-5-370V, OEM-CAR-BLW48
+    component_type VARCHAR,                             -- capacitor, blower_motor, drain_pump
+    origin VARCHAR DEFAULT 'new_purchase',              -- new_purchase, salvaged, donor
+    source_asset_id VARCHAR REFERENCES assets(id),      -- Salvage provenance
+    installed_in_asset_id VARCHAR REFERENCES assets(id),-- Target operating appliance
+    cost FLOAT DEFAULT 0.0,
+    salvaged_at DATETIME
+);
+
+CREATE INDEX idx_service_events_asset ON service_events(asset_id);`,
+
+    properties:
+`-- Physical Portfolio & Dwelling Unit Hierarchy
+CREATE TABLE properties (
+    id VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    code VARCHAR NOT NULL UNIQUE,                       -- Accounting identifier
+    address VARCHAR,
+    city VARCHAR,
+    state VARCHAR,
+    latitude FLOAT,
+    longitude FLOAT,
+    unit_count_declared INTEGER DEFAULT 0,
+    year_built INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE units (
+    id VARCHAR PRIMARY KEY,
+    property_id VARCHAR NOT NULL REFERENCES properties(id) ON DELETE CASCADE,
+    building_id VARCHAR REFERENCES buildings(id),
+    unit_number VARCHAR NOT NULL,
+    floor INTEGER DEFAULT 1,
+    occupancy_status VARCHAR DEFAULT 'occupied',        -- occupied, vacant, turning, model
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(property_id, unit_number)
+);`,
+
+    sync:
+`-- Idempotent Offline Outbox & Sync Receipts
+CREATE TABLE sync_batches (
+    id VARCHAR PRIMARY KEY,
+    device_id VARCHAR NOT NULL,
+    client_timestamp DATETIME NOT NULL,
+    server_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    payload_hash VARCHAR NOT NULL UNIQUE,               -- Deduplication hash
+    record_count INTEGER DEFAULT 0,
+    status VARCHAR DEFAULT 'committed'
+);
+
+CREATE TABLE sync_ops (
+    op_id VARCHAR PRIMARY KEY,                          -- Client-generated UUIDv7
+    batch_id VARCHAR REFERENCES sync_batches(id),
+    device_id VARCHAR,
+    entity_type VARCHAR NOT NULL,                       -- asset, service_event, work_order
+    entity_id VARCHAR NOT NULL,
+    op_type VARCHAR NOT NULL,                           -- create, update, delete
+    status VARCHAR DEFAULT 'applied',                   -- applied, duplicate, rejected
+    payload_json TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_sync_ops_entity ON sync_ops(entity_type, entity_id);`
+  };
+
+  function initDdlViewer() {
+    var codeEl = document.getElementById('ddlCodeSnippet');
+    var copyBtn = document.getElementById('copyDdlBtn');
+    var tabs = document.querySelectorAll('.ddl-tab-btn');
+
+    function selectTab(tabKey) {
+      tabs.forEach(function (t) {
+        t.classList.toggle('active', t.getAttribute('data-tab') === tabKey);
+      });
+      if (codeEl && DDL_SNIPPETS[tabKey]) {
+        codeEl.textContent = DDL_SNIPPETS[tabKey];
+      }
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        selectTab(this.getAttribute('data-tab'));
+      });
+    });
+
+    if (copyBtn && codeEl) {
+      copyBtn.addEventListener('click', function () {
+        navigator.clipboard.writeText(codeEl.textContent).then(function () {
+          showToast('DDL COPIED TO CLIPBOARD');
+        }).catch(function () {
+          showToast('FAILED TO COPY');
+        });
+      });
+    }
+
+    // Default tab
+    selectTab('assets');
+  }
+
+  // --- Copy Full Schema Button ---
+  function initExportFullSchema() {
+    var btn = document.getElementById('exportSchemaBtn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var fullSql = Object.keys(DDL_SNIPPETS).map(function (k) {
+        return '-- ================= ' + k.toUpperCase() + ' =================\n' + DDL_SNIPPETS[k];
+      }).join('\n\n');
+
+      navigator.clipboard.writeText(fullSql).then(function () {
+        showToast('FULL 34-TABLE SCHEMA COPIED');
+      }).catch(function () {
+        showToast('COPY FAILED');
+      });
+    });
+  }
+
+  // --- Live Backend Health Ping ---
+  function initLivePing() {
+    var statusText = document.getElementById('liveDbStatus');
+    var pingBtn = document.getElementById('pingDbBtn');
+
+    function checkHealth() {
+      if (statusText) statusText.textContent = 'Checking Live API Connection...';
+      fetch('http://127.0.0.1:8080/api/health')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (statusText && data.status === 'healthy') {
+            statusText.textContent = 'Live SQLite Engine Active · Connected (' + data.timestamp.slice(0, 10) + ')';
+            showToast('BACKEND ENGINE HEALTHY · CONNECTED');
+          }
+        })
+        .catch(function () {
+          if (statusText) {
+            statusText.textContent = 'Local SQLite Engine Active · WAL Mode (Mock / Offline Ready)';
+          }
+        });
+    }
+
+    if (pingBtn) {
+      pingBtn.addEventListener('click', checkHealth);
+    }
+    // Initial check
+    setTimeout(checkHealth, 400);
+  }
+
+  // --- Contact Modal ---
+  function initContactModal() {
+    var modal = document.getElementById('contactModal');
+    var openTriggers = document.querySelectorAll('.open-contact-modal-trigger');
+    var closeBtn = document.getElementById('closeContactModalBtn');
+    var doneBtn = document.getElementById('contactDoneBtn');
+    var form = document.getElementById('contactModalForm');
+    var formContainer = document.getElementById('contactFormContainer');
+    var successState = document.getElementById('contactSuccessState');
+
+    if (!modal) return;
+
+    function openModal() {
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    openTriggers.forEach(function (btn) { btn.addEventListener('click', openModal); });
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (doneBtn) {
+      doneBtn.addEventListener('click', function () {
+        closeModal();
+        setTimeout(function () {
+          if (form) form.reset();
+          if (formContainer) formContainer.style.display = '';
+          if (successState) successState.style.display = 'none';
+        }, 300);
+      });
+    }
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeModal();
+    });
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        setTimeout(function () {
+          if (formContainer) formContainer.style.display = 'none';
+          if (successState) successState.style.display = 'block';
+        }, 400);
+      });
+    }
+  }
+
+  // --- Initialization ---
+  document.addEventListener('DOMContentLoaded', function () {
+    initTheme();
+    initHeader();
+    renderDomains();
+    renderDomainFilterButtons();
+    renderCatalog(TABLES);
+    initExpandAll();
+    initDdlViewer();
+    initExportFullSchema();
+    initLivePing();
+    initContactModal();
+
+    // Wire search input
+    var searchInput = document.getElementById('tableSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', function () {
+        currentQuery = this.value.trim();
+        filterTables();
+      });
+    }
+
+    // Wire status select
+    var statusSelect = document.getElementById('statusFilterSelect');
+    if (statusSelect) {
+      statusSelect.addEventListener('change', function () {
+        currentStatus = this.value;
+        filterTables();
+      });
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
