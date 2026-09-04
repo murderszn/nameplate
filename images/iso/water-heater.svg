@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="Rheem 50-gal hybrid heat pump water heater isometric">
+<style>
+.ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red{fill:none;stroke:#EB2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red-thin{fill:none;stroke:#EB2B2B;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.red-fill{fill:#EB2B2B;stroke:none}
+@media (prefers-color-scheme:dark){
+.ln,.thin{stroke:#F2F2F2}
+.face{stroke:#F2F2F2}
+}
+</style>
+<!-- main cylindrical tank body (cx 256, rx 96, ry 32) -->
+<path class="face" d="M160 155 V415 A 96 32 0 0 0 352 415 V155 A 96 32 0 0 1 160 155 Z"/>
+<path class="ln" d="M160 415 A 96 32 0 0 0 352 415"/>
+<!-- visible tank top rim shoulders & front rim -->
+<path class="ln" d="M184 134 A 96 32 0 0 0 160 155 A 96 32 0 0 0 352 155 A 96 32 0 0 0 328 134"/>
+<!-- top hybrid heat-pump compressor unit seated flush on tank (cx 256, rx 72, ry 24) -->
+<path class="face" d="M184 80 V155 A 72 24 0 0 0 328 155 V80 A 72 24 0 0 1 184 80 Z"/>
+<ellipse class="face" cx="256" cy="80" rx="72" ry="24"/>
+<path class="ln" d="M184 155 A 72 24 0 0 0 328 155"/>
+<!-- heat pump wrap-around air intake louvers -->
+<path class="thin" d="M196 114 A 60 20 0 0 0 316 114"/>
+<path class="thin" d="M196 128 A 60 20 0 0 0 316 128"/>
+<path class="thin" d="M196 142 A 60 20 0 0 0 316 142"/>
+<!-- heat pump status / diagnostic LED (red) -->
+<circle class="red" cx="256" cy="128" r="7"/>
+<circle cx="256" cy="128" r="2.5" class="red-fill"/>
+<!-- hot & cold water piping on top of heat-pump unit -->
+<path class="ln" d="M224 80 V50 M288 80 V50"/>
+<path class="red" d="M224 50 H198 V80"/>
+<!-- TPR valve on side with vertical discharge pipe (red) -->
+<path class="red" d="M350 215 H374 V390"/>
+<circle cx="374" cy="215" r="5" class="red-fill"/>
+<path class="red-thin" d="M374 215 L382 209"/>
+<!-- front EcoNet electronic control interface -->
+<rect class="ln" x="206" y="202" width="100" height="72" rx="4"/>
+<rect class="thin" x="216" y="212" width="80" height="26" rx="2"/>
+<circle cx="228" cy="225" r="3.5" class="red-fill"/>
+<path class="thin" d="M240 221 H284 M240 229 H272"/>
+<!-- temperature mode rocker buttons (red-thin) -->
+<rect class="red-thin" x="216" y="246" width="36" height="16" rx="2"/>
+<rect class="thin" x="260" y="246" width="36" height="16" rx="2"/>
+<!-- upper and lower heating element access covers -->
+<rect class="thin" x="220" y="294" width="72" height="42" rx="3"/>
+<circle cx="256" cy="315" r="2.5" class="thin"/>
+<rect class="thin" x="220" y="350" width="72" height="42" rx="3"/>
+<circle cx="256" cy="371" r="2.5" class="thin"/>
+<!-- brass tank drain valve at bottom left -->
+<path class="thin" d="M160 404 L136 414 V426"/>
+<!-- leveling feet -->
+<path class="ln" d="M200 435 V445 M312 435 V445"/>
+</svg>

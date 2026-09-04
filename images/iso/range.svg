@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="GE 30-inch electric range isometric">
+<style>
+.ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red{fill:none;stroke:#EB2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red-thin{fill:none;stroke:#EB2B2B;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.red-fill{fill:#EB2B2B;stroke:none}
+@media (prefers-color-scheme:dark){
+.ln,.thin{stroke:#F2F2F2}
+.face{stroke:#F2F2F2}
+}
+</style>
+<!-- rear backguard console flush with rear wall (dx -21, dy +12 forward from rear edge) -->
+<!-- rear top: (196, 75) to (416, 75) -->
+<!-- front top: (175, 87) to (395, 87) -->
+<!-- front bottom: (175, 158) to (395, 158) -->
+<!-- rear bottom: (196, 146) to (416, 146) -->
+<path class="face" d="M196 75 L416 75 L395 87 L175 87 Z"/>
+<path class="face" d="M175 87 L395 87 L395 158 L175 158 Z"/>
+<path class="face" d="M395 87 L416 75 L416 146 L395 158 Z"/>
+<!-- backguard control knobs & digital timer display -->
+<circle class="ln" cx="212" cy="122" r="9"/>
+<circle class="ln" cx="242" cy="122" r="9"/>
+<rect class="thin" x="268" y="111" width="24" height="22" rx="2"/>
+<circle class="ln" cx="318" cy="122" r="9"/>
+<circle class="red" cx="348" cy="122" r="9"/>
+<circle cx="348" cy="122" r="2.5" class="red-fill"/>
+<!-- cooktop surface plane forward of console -->
+<!-- cooktop front: (126, 196) to (346, 196) -->
+<!-- cooktop sides connect to console bottom corners (175, 158) and (395, 158) -->
+<!-- dx = 49, dy = -38 -> slope matches -38/49 -->
+<path class="face" d="M126 196 L346 196 L395 158 L175 158 Z"/>
+<!-- 4 radiant electric cooktop burners on cooktop plane -->
+<ellipse class="red" cx="192" cy="184" rx="26" ry="8"/>
+<ellipse class="ln" cx="292" cy="184" rx="24" ry="7.5"/>
+<ellipse class="ln" cx="236" cy="170" rx="18" ry="5.5"/>
+<ellipse class="red-thin" cx="334" cy="170" rx="22" ry="7"/>
+<ellipse class="thin" cx="334" cy="170" rx="13" ry="4"/>
+<!-- oven body, shared corners -->
+<path class="face" d="M126 196 L346 196 L346 438 L126 438 Z"/>
+<path class="face" d="M346 196 L416 146 L416 388 L346 438 Z"/>
+<!-- towel bar oven handle (red) -->
+<rect class="red" x="144" y="212" width="184" height="14" rx="4"/>
+<!-- large oven door window -->
+<rect class="ln" x="146" y="240" width="180" height="124" rx="6"/>
+<rect class="thin" x="160" y="254" width="152" height="96" rx="4"/>
+<!-- oven racks visible inside window -->
+<path class="thin" d="M160 292 H312 M160 322 H312"/>
+<path class="red-thin" d="M176 286 V328 M206 286 V328 M236 286 V328 M266 286 V328 M296 286 V328"/>
+<!-- bottom storage drawer -->
+<path class="ln" d="M126 384 H346"/>
+<path class="thin" d="M346 384 L416 334"/>
+<rect class="thin" x="210" y="402" width="52" height="8" rx="2"/>
+<!-- leveling feet -->
+<path class="ln" d="M146 438 V448 M326 438 V448"/>
+</svg>
