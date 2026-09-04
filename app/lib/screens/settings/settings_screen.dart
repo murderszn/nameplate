@@ -8,7 +8,6 @@ import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
 import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
-import '../../widgets/responsive_layout.dart';
 import 'tag_studio_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -21,199 +20,146 @@ class SettingsScreen extends ConsumerWidget {
     final lastSync = session.lastSyncedAt;
     final darkMode = ref.watch(themeModeProvider) == ThemeMode.dark;
 
+    final isOffline = snapshot.state == SyncState.offline || session.offlineMode;
+    final syncStatusSubtitle = isOffline
+        ? 'Offline · ${snapshot.pendingCount} queued'
+        : snapshot.pendingCount == 0
+        ? 'Current · last push ${_ago(lastSync)}'
+        : '${snapshot.pendingCount} pending'
+            '${snapshot.oldestUnsyncedAt != null ? ' · oldest ${_ago(snapshot.oldestUnsyncedAt)}' : ''}';
+
     return Scaffold(
-      appBar: NpBrandAppBar(title: 'Settings', showLogo: true),
+      appBar: const NpBrandAppBar(title: 'Settings', showLogo: true),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(16, 20, 16, 40),
+        padding: const EdgeInsets.only(bottom: 40),
         children: [
-          ResponsiveContainer(
-            maxWidth: 720,
-            padding: EdgeInsets.zero,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // ── Identity ────────────────────────────────────────
-                NpSectionLabel('Identity'),
-                SizedBox(height: 10),
-                _SettingsGroup(
-                  children: [
-                    _SettingsTile(
-                      icon: Icons.person_outline,
-                      title: 'Technician',
-                      subtitle:
-                          '${session.tech.name} · ${session.tech.role}\n${FieldSession.orgName}',
-                      isThreeLine: true,
-                      onTap: () => _pickTech(context, ref, session),
-                    ),
-                    _GroupDivider(),
-                    _SettingsTile(
-                      icon: Icons.apartment_outlined,
-                      title: 'Assigned properties',
-                      subtitle: session.properties
-                          .where(
-                            (p) => session.assignedPropertyIds.contains(p.id),
-                          )
-                          .map((p) => p.name)
-                          .join(', '),
-                      onTap: () => _pickProperties(context, ref, session),
-                    ),
-                  ],
-                ),
+          // ── 00 // Full-Bleed Technician Credentials Stage ──────────────────
+          _TechnicianHeroStage(
+            session: session,
+            onPickTech: () => _pickTech(context, ref, session),
+            onPickProperties: () => _pickProperties(context, ref, session),
+          ),
 
-                SizedBox(height: 20),
-
-                // ── Appearance ───────────────────────────────────────
-                NpSectionLabel('Appearance'),
-                SizedBox(height: 10),
-                _SettingsGroup(
-                  children: [
-                    _SwitchTile(
-                      icon: darkMode
-                          ? Icons.dark_mode_outlined
-                          : Icons.light_mode_outlined,
-                      title: 'Dark mode',
-                      subtitle: darkMode
-                          ? 'Dark Nameplate theme'
-                          : 'White Nameplate theme · default',
-                      value: darkMode,
-                      onChanged: (enabled) => ref
-                          .read(themeModeProvider.notifier)
-                          .setDarkMode(enabled),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 20),
-
-                // ── Sync ─────────────────────────────────────────────
-                NpSectionLabel('Sync'),
-                SizedBox(height: 10),
-                _SettingsGroup(
-                  children: [
-                    _SettingsTile(
-                      icon: Icons.sync,
-                      title: 'Sync status',
-                      subtitle: snapshot.state == SyncState.offline
-                          ? 'Offline · ${snapshot.pendingCount} queued'
-                          : snapshot.pendingCount == 0
-                          ? 'Current · last push ${_ago(lastSync)}'
-                          : '${snapshot.pendingCount} pending'
-                                '${snapshot.oldestUnsyncedAt != null ? ' · oldest ${_ago(snapshot.oldestUnsyncedAt)}' : ''}',
-                      trailing: NpButton.outline(
-                        icon: Icons.sync_rounded,
-                        label: 'Sync',
-                        size: NpButtonSize.sm,
-                        isLoading: session.syncing,
-                        onPressed: session.offlineMode
-                            ? null
-                            : () async {
-                                await ref
-                                    .read(fieldSessionProvider)
-                                    .forceSync();
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Synced. Nothing waiting to upload.',
-                                    ),
-                                  ),
-                                );
-                              },
+          // ── Telemetry Ribbon: Sync & Network Status ────────────────────────
+          _SyncTelemetryRibbon(
+            isOffline: isOffline,
+            statusText: syncStatusSubtitle,
+            pendingCount: snapshot.pendingCount,
+            syncing: session.syncing,
+            onSync: session.offlineMode
+                ? null
+                : () async {
+                    await ref.read(fieldSessionProvider).forceSync();
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Synced. Nothing waiting to upload.'),
                       ),
-                    ),
-                    _GroupDivider(),
-                    _SwitchTile(
-                      icon: Icons.cloud_off,
-                      title: 'Work offline',
-                      subtitle: 'Queue writes; skip pull until you reconnect',
-                      value: session.offlineMode,
-                      onChanged: (v) =>
-                          ref.read(fieldSessionProvider).setOfflineMode(v),
-                    ),
-                    _GroupDivider(),
-                    _SwitchTile(
-                      icon: Icons.wifi_tethering_outlined,
-                      title: 'Photos on Wi-Fi only',
-                      subtitle: 'Skip photo upload on cellular. On by default.',
-                      value: session.photoWifiOnly,
-                      onChanged: (v) =>
-                          ref.read(fieldSessionProvider).setPhotoWifiOnly(v),
-                    ),
-                  ],
-                ),
+                    );
+                  },
+          ),
 
-                if (session.outbox.isNotEmpty) ...[
-                  SizedBox(height: 20),
-                  NpSectionLabel(
-                    'Waiting to upload',
-                    trailing: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: NpColors.redSubtle,
-                        borderRadius: BorderRadius.circular(2),
-                        border: Border.all(color: NpColors.redBorder),
-                      ),
-                      child: Text(
-                        '${session.outbox.length}',
-                        style: NpType.mono.copyWith(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: NpColors.red,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  _SettingsGroup(
-                    children: [
-                      ...session.outbox
-                          .take(8)
-                          .map((op) => _OutboxItem(op: op)),
-                    ],
-                  ),
-                ],
+          // ── 01 // Appearance ───────────────────────────────────────────────
+          const _FullBleedSectionHeader(
+            code: '01',
+            title: 'SYSTEM APPEARANCE',
+          ),
+          _FullBleedSwitchTile(
+            icon: darkMode
+                ? Icons.dark_mode_rounded
+                : Icons.light_mode_rounded,
+            accentColor: const Color(0xFF38BDF8),
+            title: 'Dark mode',
+            subtitle: darkMode
+                ? 'Dark Nameplate theme'
+                : 'White Nameplate theme · default',
+            value: darkMode,
+            onChanged: (enabled) =>
+                ref.read(themeModeProvider.notifier).setDarkMode(enabled),
+          ),
 
-                SizedBox(height: 20),
+          const Divider(height: 1, color: Color(0xFF1E293B)),
 
-                // ── Tools ────────────────────────────────────────────
-                NpSectionLabel('Tools'),
-                SizedBox(height: 10),
-                _SettingsGroup(
-                  children: [
-                    _SettingsTile(
-                      icon: Icons.qr_code_2,
-                      title: 'Nameplate Tag studio',
-                      subtitle: 'Mint NPID + QR payload for a physical plate',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => TagStudioScreen()),
-                      ),
-                    ),
-                  ],
-                ),
+          // ── 02 // Sync & Network Data ──────────────────────────────────────
+          const _FullBleedSectionHeader(
+            code: '02',
+            title: 'DATA TRANSPORT & OFFLINE BUFFER',
+          ),
+          _FullBleedSwitchTile(
+            icon: Icons.cloud_off_rounded,
+            accentColor: const Color(0xFFF59E0B),
+            title: 'Work offline',
+            subtitle: 'Queue writes; skip pull until you reconnect',
+            value: session.offlineMode,
+            onChanged: (v) =>
+                ref.read(fieldSessionProvider).setOfflineMode(v),
+          ),
+          const Divider(height: 1, color: Color(0xFF1E293B)),
+          _FullBleedSwitchTile(
+            icon: Icons.wifi_tethering_rounded,
+            accentColor: const Color(0xFF10B981),
+            title: 'Photos on Wi-Fi only',
+            subtitle: 'Skip photo upload on cellular. On by default.',
+            value: session.photoWifiOnly,
+            onChanged: (v) =>
+                ref.read(fieldSessionProvider).setPhotoWifiOnly(v),
+          ),
 
-                SizedBox(height: 20),
-
-                // ── About ────────────────────────────────────────────
-                NpSectionLabel('Device & app'),
-                SizedBox(height: 10),
-                _SettingsGroup(
-                  children: [
-                    _SettingsTile(
-                      icon: Icons.tablet_android,
-                      title: 'Device',
-                      subtitle:
-                          '${session.deviceId} · ${MediaQuery.sizeOf(context).shortestSide >= 640 ? 'Tablet' : 'Phone'} layout',
-                    ),
-                    _GroupDivider(),
-                    _SettingsTile(
-                      icon: Icons.info_outline,
-                      title: 'About Nameplate Field',
-                      subtitle: 'v0.1.0 · Offline-first appliance registry',
-                    ),
-                  ],
-                ),
-              ],
+          // ── 03 // Hardware Minting Studio ──────────────────────────────────
+          const _FullBleedSectionHeader(
+            code: '03',
+            title: 'HARDWARE & TAG COMMISSIONING',
+          ),
+          _TagStudioBanner(
+            offlineRemainingCount: session.remainingOfflinePoolCount,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const TagStudioScreen()),
             ),
+          ),
+
+          // ── 04 // Waiting to Upload (Outbox) ───────────────────────────────
+          if (session.outbox.isNotEmpty) ...[
+            _FullBleedSectionHeader(
+              code: '04',
+              title: 'UPLOAD QUEUE BUFFER',
+              trailing: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(color: const Color(0xFFEF4444)),
+                ),
+                child: Text(
+                  '${session.outbox.length} OPS',
+                  style: NpType.mono.copyWith(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFEF4444),
+                  ),
+                ),
+              ),
+            ),
+            ...session.outbox.take(8).map((op) => _OutboxTile(op: op)),
+          ],
+
+          // ── 05 // Device & App Diagnostics ─────────────────────────────────
+          const _FullBleedSectionHeader(
+            code: '05',
+            title: 'DEVICE TELEMETRY & APP RUNTIME',
+          ),
+          _FullBleedTile(
+            icon: Icons.devices_rounded,
+            accentColor: const Color(0xFF64748B),
+            title: 'Device identifier',
+            subtitle:
+                '${session.deviceId} · ${MediaQuery.sizeOf(context).shortestSide >= 640 ? 'Tablet' : 'Phone'} layout',
+          ),
+          const Divider(height: 1, color: Color(0xFF1E293B)),
+          _FullBleedTile(
+            icon: Icons.shield_outlined,
+            accentColor: const Color(0xFF64748B),
+            title: 'About Nameplate Field',
+            subtitle: 'v0.1.0 · Offline-first appliance registry engine',
           ),
         ],
       ),
@@ -234,7 +180,7 @@ class SettingsScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
+              const ListTile(
                 title: Text(
                   'Sign in as',
                   style: TextStyle(fontWeight: FontWeight.w800),
@@ -254,7 +200,7 @@ class SettingsScreen extends ConsumerWidget {
                   onTap: () => Navigator.pop(ctx, t),
                 );
               }),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
             ],
           ),
         ),
@@ -278,11 +224,11 @@ class SettingsScreen extends ConsumerWidget {
           builder: (ctx, setModal) {
             return SafeArea(
               child: SingleChildScrollView(
-                padding: EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: 16),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ListTile(
+                    const ListTile(
                       title: Text(
                         'Property scope',
                         style: TextStyle(fontWeight: FontWeight.w800),
@@ -308,7 +254,7 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: NpButton.primary(
                         icon: Icons.check_rounded,
                         label: 'Save Scope',
@@ -342,97 +288,341 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-// ── Shared setting widgets ─────────────────────────────────────────────────────
+// ── Full-Bleed Technician Hero Stage ──────────────────────────────────────────
 
-class _SettingsGroup extends StatelessWidget {
-  final List<Widget> children;
-  const _SettingsGroup({required this.children});
+class _TechnicianHeroStage extends StatelessWidget {
+  final FieldSession session;
+  final VoidCallback onPickTech;
+  final VoidCallback onPickProperties;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border.fromBorderSide(
-          BorderSide(color: context.npColors.lineStrong),
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: children,
-        ),
-      ),
-    );
-  }
-}
-
-class _GroupDivider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Divider(height: 1, color: context.npColors.lineStrong);
-}
-
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final Widget? trailing;
-  final bool isThreeLine;
-  final VoidCallback? onTap;
-
-  const _SettingsTile({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    this.trailing,
-    this.isThreeLine = false,
-    this.onTap,
+  const _TechnicianHeroStage({
+    required this.session,
+    required this.onPickTech,
+    required this.onPickProperties,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: NpColors.red, size: 20),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: context.npColors.white,
+    final assignedProps = session.properties
+        .where((p) => session.assignedPropertyIds.contains(p.id))
+        .map((p) => p.name)
+        .join(', ');
+
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFF080A0F),
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF1E293B)),
         ),
       ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: TextStyle(color: context.npColors.gray400, fontSize: 12),
-            )
-          : null,
-      trailing:
-          trailing ??
-          (onTap != null
-              ? Icon(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF10B981),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 7),
+              Text(
+                'OPERATIVE // ${session.tech.name}',
+                style: NpType.mono.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF38BDF8),
+                  letterSpacing: 0.8,
+                ),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: onPickTech,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Text(
+                    'SWITCH',
+                    style: NpType.mono.copyWith(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          InkWell(
+            onTap: onPickTech,
+            child: Text(
+              'Technician · ${session.tech.role} · ${FieldSession.orgName}',
+              style: TextStyle(
+                fontSize: 12,
+                color: context.npColors.gray400,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 6),
+          InkWell(
+            onTap: onPickProperties,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.apartment_rounded,
+                  size: 13,
+                  color: Color(0xFFF59E0B),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    assignedProps.isNotEmpty
+                        ? 'Scope: $assignedProps'
+                        : 'No assigned properties',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: context.npColors.gray400,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const Icon(
                   Icons.chevron_right,
-                  color: context.npColors.gray500,
-                  size: 18,
-                )
-              : null),
-      isThreeLine: isThreeLine,
-      onTap: onTap,
+                  size: 14,
+                  color: Color(0xFF64748B),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _SwitchTile extends StatelessWidget {
+// ── Sync Telemetry Ribbon ─────────────────────────────────────────────────────
+
+class _SyncTelemetryRibbon extends StatelessWidget {
+  final bool isOffline;
+  final String statusText;
+  final int pendingCount;
+  final bool syncing;
+  final VoidCallback? onSync;
+
+  const _SyncTelemetryRibbon({
+    required this.isOffline,
+    required this.statusText,
+    required this.pendingCount,
+    required this.syncing,
+    required this.onSync,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+      decoration: const BoxDecoration(
+        color: Color(0xFF0F172A),
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF1E293B)),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: isOffline
+                  ? const Color(0xFFF59E0B)
+                  : const Color(0xFF10B981),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'SYNC ENGINE // ${isOffline ? 'OFFLINE BUFFER' : 'ONLINE LIVE'}',
+                  style: NpType.mono.copyWith(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    color: isOffline
+                        ? const Color(0xFFF59E0B)
+                        : const Color(0xFF10B981),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  statusText,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF94A3B8),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          NpButton.outline(
+            icon: Icons.sync_rounded,
+            label: 'Sync',
+            size: NpButtonSize.sm,
+            isLoading: syncing,
+            onPressed: onSync,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Full-Bleed Section Header ─────────────────────────────────────────────────
+
+class _FullBleedSectionHeader extends StatelessWidget {
+  final String code;
+  final String title;
+  final Widget? trailing;
+
+  const _FullBleedSectionHeader({
+    required this.code,
+    required this.title,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 8),
+      child: Row(
+        children: [
+          Text(
+            '$code //',
+            style: NpType.mono.copyWith(
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF38BDF8),
+              letterSpacing: 1.0,
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            title,
+            style: NpType.mono.copyWith(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF64748B),
+              letterSpacing: 1.2,
+            ),
+          ),
+          if (trailing != null) ...[
+            const Spacer(),
+            trailing!,
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ── Full-Bleed Tile ───────────────────────────────────────────────────────────
+
+class _FullBleedTile extends StatelessWidget {
   final IconData icon;
+  final Color accentColor;
+  final String title;
+  final String? subtitle;
+
+  const _FullBleedTile({
+    required this.icon,
+    required this.accentColor,
+    required this.title,
+    this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.npColors.bgCard,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(color: accentColor, width: 3.5),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Icon(icon, color: accentColor, size: 20),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: context.npColors.white,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.npColors.gray400,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Full-Bleed Switch Tile ────────────────────────────────────────────────────
+
+class _FullBleedSwitchTile extends StatelessWidget {
+  final IconData icon;
+  final Color accentColor;
   final String title;
   final String subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _SwitchTile({
+  const _FullBleedSwitchTile({
     required this.icon,
+    required this.accentColor,
     required this.title,
     required this.subtitle,
     required this.value,
@@ -441,53 +631,234 @@ class _SwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwitchListTile(
-      secondary: Icon(icon, color: NpColors.red, size: 20),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: context.npColors.white,
+    return Material(
+      color: context.npColors.bgCard,
+      child: InkWell(
+        onTap: () => onChanged(!value),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(
+                color: value ? accentColor : const Color(0xFF334155),
+                width: 3.5,
+              ),
+            ),
+          ),
+          padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: value ? accentColor : const Color(0xFF64748B),
+                size: 20,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: context.npColors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.npColors.gray400,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Switch(
+                value: value,
+                onChanged: onChanged,
+                activeThumbColor: accentColor,
+              ),
+            ],
+          ),
         ),
       ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(color: context.npColors.gray400, fontSize: 12),
-      ),
-      value: value,
-      onChanged: onChanged,
     );
   }
 }
 
-class _OutboxItem extends StatelessWidget {
-  final dynamic op;
-  const _OutboxItem({required this.op});
+// ── Full-Bleed Tag Studio Banner ──────────────────────────────────────────────
+
+class _TagStudioBanner extends StatelessWidget {
+  final int offlineRemainingCount;
+  final VoidCallback onTap;
+
+  const _TagStudioBanner({
+    required this.offlineRemainingCount,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-      dense: true,
-      leading: Icon(
-        op.synced ? Icons.check_circle : Icons.cloud_upload,
-        color: op.synced ? context.npColors.white : NpColors.pending,
-        size: 16,
-      ),
-      title: Text(
-        op.summary,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(fontSize: 13, color: context.npColors.white),
-      ),
-      subtitle: Text(
-        op.type,
-        style: NpType.mono.copyWith(
-          fontSize: 10,
-          color: context.npColors.gray500,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF131B2E),
+                Color(0xFF090D15),
+              ],
+            ),
+            border: Border(
+              top: BorderSide(color: Color(0xFF1E293B)),
+              bottom: BorderSide(color: Color(0xFF1E293B)),
+              left: BorderSide(color: Color(0xFFEB2B2B), width: 3.5),
+            ),
+          ),
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  border: Border.all(color: const Color(0xFF334155)),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.qr_code_2_rounded,
+                    color: Color(0xFFEB2B2B),
+                    size: 26,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Text(
+                          'Nameplate Tag studio',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEB2B2B).withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(2),
+                            border: Border.all(color: const Color(0xFFEB2B2B)),
+                          ),
+                          child: Text(
+                            '$offlineRemainingCount READY',
+                            style: NpType.mono.copyWith(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFFEB2B2B),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Mint NPID + QR payload for a physical plate',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF94A3B8),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Color(0xFF64748B),
+                size: 16,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+// ── Outbox Tile ───────────────────────────────────────────────────────────────
+
+class _OutboxTile extends StatelessWidget {
+  final dynamic op;
+  const _OutboxTile({required this.op});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFF0F172A),
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF1E293B)),
+          left: BorderSide(color: Color(0xFFF59E0B), width: 3.5),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Icon(
+            op.synced ? Icons.check_circle_rounded : Icons.cloud_upload_rounded,
+            color: op.synced ? const Color(0xFF10B981) : const Color(0xFFF59E0B),
+            size: 18,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  op.summary,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  op.type,
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    color: const Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+

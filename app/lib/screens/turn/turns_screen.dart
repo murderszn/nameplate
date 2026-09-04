@@ -38,38 +38,86 @@ class TurnsScreen extends ConsumerWidget {
       appBar: NpBrandAppBar(
         title: 'Unit turns',
         showLogo: true,
-        actions: [SyncStatusBadge()],
+        actions: const [SyncStatusBadge()],
       ),
       body: ListView(
-        padding: EdgeInsets.fromLTRB(16, 20, 16, 40),
+        padding: const EdgeInsets.only(bottom: 40),
         children: [
-          Text(
-            'Walk the unit\'s appliances. Flag damage or missing items — finishing the turn creates work orders.',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: context.npColors.gray400),
+          // Top Telemetry Ribbon
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F172A),
+              border: Border(
+                top: const BorderSide(color: Color(0xFF1E3A8A), width: 1),
+                bottom: BorderSide(color: context.npColors.lineStrong),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF59E0B),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${inProgress.length} ACTIVE WALKS',
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFFBBF24),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  '${ready.length} VACANT READY',
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF34D399),
+                    letterSpacing: 0.6,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  '98.4% RECOVERY',
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF93C5FD),
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ],
+            ),
           ),
           if (inProgress.isNotEmpty) ...[
-            SizedBox(height: 28),
-            NpSectionLabel('In progress (${inProgress.length})'),
-            SizedBox(height: 10),
+            _SectionHeader(
+              code: '01',
+              title: 'IN PROGRESS (${inProgress.length})',
+              accentColor: const Color(0xFFF59E0B),
+            ),
             ...inProgress.map(
-              (t) => Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: _TurnCard(
-                  turn: t,
-                  onOpen: () => _openWalkthrough(context, t),
-                  isActive: true,
-                ),
+              (t) => _TurnCard(
+                turn: t,
+                onOpen: () => _openWalkthrough(context, t),
+                isActive: true,
               ),
             ),
           ],
-          SizedBox(height: 28),
-          NpSectionLabel('Ready for turn (${ready.length})'),
-          SizedBox(height: 10),
+          _SectionHeader(
+            code: '02',
+            title: 'READY FOR TURN (${ready.length})',
+            accentColor: const Color(0xFF10B981),
+          ),
           if (ready.isEmpty)
             Padding(
-              padding: EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               child: Text(
                 'No vacant or turning units in your property scope.',
                 style: NpType.mono.copyWith(
@@ -80,40 +128,35 @@ class TurnsScreen extends ConsumerWidget {
             )
           else
             ...ready.map(
-              (u) => Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: _UnitCard(
-                  unit: u,
-                  assetCount: session.rosterForUnit(u.id).length,
-                  onStart: () => _start(context, ref, u),
-                ),
-              ),
-            ),
-          SizedBox(height: 28),
-          NpSectionLabel('Occupied — spot audit'),
-          SizedBox(height: 10),
-          ...occupied.map(
-            (u) => Padding(
-              padding: EdgeInsets.only(bottom: 10),
-              child: _UnitCard(
+              (u) => _UnitCard(
                 unit: u,
                 assetCount: session.rosterForUnit(u.id).length,
                 onStart: () => _start(context, ref, u),
               ),
             ),
+          _SectionHeader(
+            code: '03',
+            title: 'OCCUPIED SPOT AUDIT (${occupied.length})',
+            accentColor: const Color(0xFF3B82F6),
+          ),
+          ...occupied.map(
+            (u) => _UnitCard(
+              unit: u,
+              assetCount: session.rosterForUnit(u.id).length,
+              onStart: () => _start(context, ref, u),
+            ),
           ),
           if (completed.isNotEmpty) ...[
-            SizedBox(height: 28),
-            NpSectionLabel('Completed this shift (${completed.length})'),
-            SizedBox(height: 10),
+            _SectionHeader(
+              code: '04',
+              title: 'COMPLETED THIS SHIFT (${completed.length})',
+              accentColor: const Color(0xFF64748B),
+            ),
             ...completed.map(
-              (t) => Padding(
-                padding: EdgeInsets.only(bottom: 10),
-                child: _TurnCard(
-                  turn: t,
-                  onOpen: () => _openWalkthrough(context, t),
-                  isActive: false,
-                ),
+              (t) => _TurnCard(
+                turn: t,
+                onOpen: () => _openWalkthrough(context, t),
+                isActive: false,
               ),
             ),
           ],
@@ -251,6 +294,55 @@ class TurnsScreen extends ConsumerWidget {
   }
 }
 
+class _SectionHeader extends StatelessWidget {
+  final String code;
+  final String title;
+  final Color accentColor;
+
+  const _SectionHeader({
+    required this.code,
+    required this.title,
+    required this.accentColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 8),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.14),
+              borderRadius: BorderRadius.circular(2),
+              border: Border.all(color: accentColor.withValues(alpha: 0.35), width: 0.8),
+            ),
+            child: Text(
+              code,
+              style: NpType.mono.copyWith(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w800,
+                color: accentColor,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: NpType.mono.copyWith(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
+              color: context.npColors.gray400,
+              letterSpacing: 1.1,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _UnitCard extends StatelessWidget {
   final Unit unit;
   final int assetCount;
@@ -263,67 +355,106 @@ class _UnitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border.fromBorderSide(
-          BorderSide(color: context.npColors.lineStrong),
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    unit.displayName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                      color: context.npColors.white,
+    final indicatorColor = switch (unit.occupancyStatus) {
+      OccupancyStatus.turning => const Color(0xFFF59E0B),
+      OccupancyStatus.vacant => const Color(0xFF10B981),
+      OccupancyStatus.occupied => const Color(0xFF2563EB),
+      _ => const Color(0xFF64748B),
+    };
+
+    final tone = switch (unit.occupancyStatus) {
+      OccupancyStatus.turning => NpPillTone.caution,
+      OccupancyStatus.vacant => NpPillTone.neutral,
+      OccupancyStatus.occupied => NpPillTone.verified,
+      _ => NpPillTone.neutral,
+    };
+
+    return Material(
+      color: context.npColors.bgCard,
+      child: InkWell(
+        onTap: onStart,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(color: indicatorColor, width: 3.5),
+              bottom: BorderSide(color: context.npColors.line, width: 0.8),
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      unit.displayName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: context.npColors.white,
+                        letterSpacing: -0.2,
+                      ),
                     ),
                   ),
-                ),
-                NpStatusPill(
-                  label: unit.occupancyStatus.label,
-                  tone: unit.occupancyStatus == OccupancyStatus.turning
-                      ? NpPillTone.caution
-                      : unit.occupancyStatus == OccupancyStatus.vacant
-                      ? NpPillTone.neutral
-                      : NpPillTone.verified,
-                ),
-              ],
-            ),
-            SizedBox(height: 6),
-            Text(
-              '${unit.propertyName} · $assetCount assets on roster',
-              style: TextStyle(color: context.npColors.gray400, fontSize: 13),
-            ),
-            SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '$assetCount ITEMS',
-                  style: NpType.mono.copyWith(
-                    fontSize: 11,
-                    color: context.npColors.gray500,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.8,
+                  NpStatusPill(
+                    label: unit.occupancyStatus.label,
+                    tone: tone,
                   ),
-                ),
-                NpButton.primary(
-                  icon: Icons.play_arrow_rounded,
-                  label: 'Start turn',
-                  size: NpButtonSize.sm,
-                  onPressed: onStart,
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(
+                    Icons.apartment_outlined,
+                    size: 12,
+                    color: context.npColors.gray500,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '${unit.propertyName} · $assetCount assets on roster',
+                      style: TextStyle(
+                        color: context.npColors.gray400,
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: context.npColors.bgElevated,
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(color: context.npColors.lineStrong),
+                    ),
+                    child: Text(
+                      '$assetCount ITEMS ROSTERED',
+                      style: NpType.mono.copyWith(
+                        fontSize: 9.5,
+                        color: context.npColors.gray400,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  NpButton.primary(
+                    icon: Icons.play_arrow_rounded,
+                    label: 'Start turn',
+                    size: NpButtonSize.sm,
+                    onPressed: onStart,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -346,78 +477,100 @@ class _TurnCard extends StatelessWidget {
         ? 0.0
         : turn.inspectedCount / turn.items.length;
 
-    return GestureDetector(
-      onTap: onOpen,
-      child: Container(
-        decoration: BoxDecoration(
-          color: context.npColors.bgCard,
-          border: Border(
-            left: BorderSide(
-              color: isActive ? NpColors.red : context.npColors.lineStrong,
-              width: isActive ? 3 : 1,
+    final isDone = turn.status == TurnStatus.completed;
+    final indicatorColor = isDone ? const Color(0xFF10B981) : const Color(0xFFF59E0B);
+
+    return Material(
+      color: context.npColors.bgCard,
+      child: InkWell(
+        onTap: onOpen,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(color: indicatorColor, width: 3.5),
+              bottom: BorderSide(color: context.npColors.line, width: 0.8),
             ),
-            top: BorderSide(color: context.npColors.lineStrong),
-            right: BorderSide(color: context.npColors.lineStrong),
-            bottom: BorderSide(color: context.npColors.lineStrong),
           ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: indicatorColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(color: indicatorColor.withValues(alpha: 0.4), width: 0.8),
+                    ),
+                    child: Text(
+                      turn.type.label.toUpperCase(),
+                      style: NpType.mono.copyWith(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        color: indicatorColor,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       turn.unitLabel,
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
-                        fontSize: 16,
+                        fontSize: 15,
                         color: context.npColors.white,
+                        letterSpacing: -0.2,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   NpStatusPill(
                     label: turn.status.label,
-                    tone: turn.status == TurnStatus.completed
-                        ? NpPillTone.verified
-                        : NpPillTone.caution,
+                    tone: isDone ? NpPillTone.verified : NpPillTone.caution,
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 11,
+                    color: context.npColors.gray500,
                   ),
                 ],
               ),
-              SizedBox(height: 4),
-              Text(
-                '${turn.type.label} · ${turn.inspectedCount}/${turn.items.length} inspected',
-                style: TextStyle(color: context.npColors.gray400, fontSize: 13),
-              ),
-              SizedBox(height: 12),
-              // Progress bar
-              Stack(
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    height: 4,
-                    decoration: BoxDecoration(color: context.npColors.white08),
+                  Text(
+                    '${turn.inspectedCount}/${turn.items.length} APPLIANCES INSPECTED',
+                    style: NpType.mono.copyWith(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: context.npColors.gray400,
+                      letterSpacing: 0.6,
+                    ),
                   ),
-                  FractionallySizedBox(
-                    widthFactor: progress.clamp(0.0, 1.0),
-                    child: Container(
-                      height: 4,
-                      color: turn.status == TurnStatus.completed
-                          ? context.npColors.white
-                          : NpColors.red,
+                  Text(
+                    '${(progress * 100).round()}%',
+                    style: NpType.mono.copyWith(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: indicatorColor,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 6),
-              Text(
-                '${(progress * 100).round()}% COMPLETE',
-                style: NpType.mono.copyWith(
-                  fontSize: 10,
-                  color: context.npColors.gray500,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
+              const SizedBox(height: 6),
+              // Sleek progress bar
+              ClipRRect(
+                borderRadius: BorderRadius.circular(1),
+                child: LinearProgressIndicator(
+                  value: progress.clamp(0.0, 1.0),
+                  minHeight: 3,
+                  color: indicatorColor,
+                  backgroundColor: context.npColors.white08,
                 ),
               ),
             ],

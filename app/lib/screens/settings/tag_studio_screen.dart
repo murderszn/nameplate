@@ -10,6 +10,7 @@ import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 
 /// Field-side Nameplate Tag minting studio — sister of the marketing QR studio.
+/// Full-bleed industrial physical plate staging bay with offline entropy telemetry.
 class TagStudioScreen extends ConsumerStatefulWidget {
   const TagStudioScreen({super.key});
 
@@ -35,137 +36,197 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
     final session = ref.watch(fieldSessionProvider);
 
     return Scaffold(
-      appBar: NpBrandAppBar(title: 'Tag studio'),
+      appBar: const NpBrandAppBar(title: 'Tag studio'),
       body: ListView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.only(bottom: 40),
         children: [
-          Text('Create a tag', style: Theme.of(context).textTheme.titleLarge),
-          SizedBox(height: 6),
-          Text(
-            'Create a Nameplate ID you can print, even when this device is offline.',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: context.npColors.gray400),
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(Icons.offline_bolt, color: NpColors.red, size: 16),
-              SizedBox(width: 7),
-              Text(
-                '${session.remainingOfflinePoolCount} tags available offline',
-                style: TextStyle(fontSize: 12, color: context.npColors.gray400),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          NameplateTag(npid: _npid),
-          SizedBox(height: 20),
-          NpButton.primary(
-            icon: Icons.offline_bolt_rounded,
-            label: 'Create next tag',
-            size: NpButtonSize.lg,
-            isExpanded: true,
-            onPressed: _mint,
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: NpButton.secondary(
-                  icon: Icons.copy_rounded,
-                  label: 'Copy NPID',
-                  size: NpButtonSize.md,
-                  onPressed: () async {
-                    await Clipboard.setData(ClipboardData(text: _npid));
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Copied $_npid to clipboard')),
-                    );
-                  },
+          // ── 00 // Header & Mission Guidance ────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Create a tag',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                  ),
                 ),
-              ),
-              SizedBox(width: 8),
-              Expanded(
-                child: NpButton.secondary(
-                  icon: Icons.link_rounded,
-                  label: 'Copy URL',
-                  size: NpButtonSize.md,
-                  onPressed: () async {
-                    await Clipboard.setData(
-                      ClipboardData(text: Npid.payloadUrl(_npid)),
-                    );
-                    if (!context.mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Copied scan payload URL')),
-                    );
-                  },
+                const SizedBox(height: 4),
+                Text(
+                  'Create a Nameplate ID you can print, even when this device is offline.',
+                  style: TextStyle(
+                    color: context.npColors.gray400,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          if (session.mintedTags.isNotEmpty) ...[
-            SizedBox(height: 28),
-            Text(
-              'Created this shift (${session.mintedTags.length})',
-              style: NpType.mono.copyWith(
-                color: context.npColors.gray500,
-                fontSize: 11,
-                letterSpacing: 1.4,
-                fontWeight: FontWeight.w700,
+
+          // ── 01 // Full-Bleed Physical Tag Staging Bay ──────────────────────
+          _TagStagingBay(
+            npid: _npid,
+            onMint: _mint,
+          ),
+
+          // ── Telemetry Ribbon: Offline Entropy Pool ─────────────────────────
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            decoration: const BoxDecoration(
+              color: Color(0xFF0F172A),
+              border: Border(
+                bottom: BorderSide(color: Color(0xFF1E293B)),
               ),
             ),
-            SizedBox(height: 10),
-            ...session.mintedTags
-                .take(12)
-                .map(
-                  (t) => Padding(
-                    padding: EdgeInsets.only(bottom: 8),
-                    child: Material(
-                      color: context.npColors.bgElevated,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                        side: BorderSide(color: context.npColors.lineStrong),
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF10B981),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'OFFLINE ENTROPY POOL // SECURE',
+                        style: NpType.mono.copyWith(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF10B981),
+                          letterSpacing: 0.8,
+                        ),
                       ),
-                      child: ListTile(
-                        dense: true,
-                        leading: Container(
-                          padding: EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: context.npColors.bgCard,
-                            borderRadius: BorderRadius.circular(2),
-                            border: Border.all(
-                              color: context.npColors.lineStrong,
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.qr_code_2_rounded,
-                            color: NpColors.red,
-                            size: 16,
-                          ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${session.remainingOfflinePoolCount} tags available offline · Ed25519 verified',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF94A3B8),
+                          fontWeight: FontWeight.w600,
                         ),
-                        title: Text(
-                          t.npid,
-                          style: NpType.mono.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: NpColors.red,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Minted ${t.mintedAt.hour.toString().padLeft(2, '0')}:${t.mintedAt.minute.toString().padLeft(2, '0')}',
-                          style: TextStyle(
-                            color: context.npColors.gray400,
-                            fontSize: 11,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.chevron_right,
-                          size: 16,
-                          color: context.npColors.gray500,
-                        ),
-                        onTap: () => setState(() => _npid = t.npid),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Text(
+                    'CROCKFORD B32',
+                    style: NpType.mono.copyWith(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF38BDF8),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── 02 // Commissioning Action Controls ────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                NpButton.primary(
+                  icon: Icons.offline_bolt_rounded,
+                  label: 'Create next tag',
+                  size: NpButtonSize.lg,
+                  isExpanded: true,
+                  onPressed: _mint,
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: NpButton.secondary(
+                        icon: Icons.copy_rounded,
+                        label: 'Copy NPID',
+                        size: NpButtonSize.md,
+                        onPressed: () async {
+                          await Clipboard.setData(ClipboardData(text: _npid));
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Copied $_npid to clipboard')),
+                          );
+                        },
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: NpButton.secondary(
+                        icon: Icons.link_rounded,
+                        label: 'Copy URL',
+                        size: NpButtonSize.md,
+                        onPressed: () async {
+                          await Clipboard.setData(
+                            ClipboardData(text: Npid.payloadUrl(_npid)),
+                          );
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Copied scan payload URL')),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // ── 02 // Shift Mint Reel ──────────────────────────────────────────
+          if (session.mintedTags.isNotEmpty) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
+              child: Row(
+                children: [
+                  Text(
+                    '02 //',
+                    style: NpType.mono.copyWith(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF38BDF8),
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'CREATED THIS SHIFT (${session.mintedTags.length})',
+                    style: NpType.mono.copyWith(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF64748B),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ...session.mintedTags.take(12).map(
+                  (t) => _MintedTagTile(
+                    tag: t,
+                    isSelected: t.npid == _npid,
+                    onSelect: () => setState(() => _npid = t.npid),
                   ),
                 ),
           ],
@@ -174,3 +235,260 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
     );
   }
 }
+
+// ── Physical Tag Staging Bay ──────────────────────────────────────────────────
+
+class _TagStagingBay extends StatelessWidget {
+  final String npid;
+  final VoidCallback onMint;
+
+  const _TagStagingBay({
+    required this.npid,
+    required this.onMint,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFF07090E),
+        border: Border(
+          bottom: BorderSide(color: Color(0xFF1E293B)),
+        ),
+      ),
+      child: Stack(
+        children: [
+          // Background technical grid
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.05,
+              child: CustomPaint(painter: _StudioGridPainter()),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            child: Column(
+              children: [
+                // Top staging status pips
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E293B),
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(color: const Color(0xFF334155)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFEB2B2B),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'SPEC // 30-UP ADHESIVE PHYSICAL PLATE',
+                            style: NpType.mono.copyWith(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF94A3B8),
+                              letterSpacing: 0.8,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '1:1 PHYSICAL STAGE',
+                      style: NpType.mono.copyWith(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF38BDF8),
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Physical Nameplate Tag
+                Center(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.6),
+                          blurRadius: 24,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: NameplateTag(npid: npid),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Monospace NPID callout
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: const Color(0xFF1E293B)),
+                  ),
+                  child: Text(
+                    'NPID // $npid',
+                    style: NpType.mono.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF38BDF8),
+                      letterSpacing: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Minted Tag Tile ───────────────────────────────────────────────────────────
+
+class _MintedTagTile extends StatelessWidget {
+  final dynamic tag;
+  final bool isSelected;
+  final VoidCallback onSelect;
+
+  const _MintedTagTile({
+    required this.tag,
+    required this.isSelected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isSelected
+          ? const Color(0xFF0F172A)
+          : context.npColors.bgCard,
+      child: InkWell(
+        onTap: onSelect,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: const BorderSide(color: Color(0xFF1E293B)),
+              left: BorderSide(
+                color: isSelected ? const Color(0xFFEB2B2B) : Colors.transparent,
+                width: 3.5,
+              ),
+            ),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0xFFEB2B2B)
+                        : const Color(0xFF334155),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.qr_code_2_rounded,
+                  color: Color(0xFFEB2B2B),
+                  size: 16,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tag.npid,
+                      style: NpType.mono.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                        color: isSelected
+                            ? const Color(0xFF38BDF8)
+                            : const Color(0xFFEB2B2B),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Minted ${tag.mintedAt.hour.toString().padLeft(2, '0')}:${tag.mintedAt.minute.toString().padLeft(2, '0')}',
+                      style: TextStyle(
+                        color: context.npColors.gray400,
+                        fontSize: 11.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEB2B2B).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: const Color(0xFFEB2B2B)),
+                  ),
+                  child: Text(
+                    'STAGED',
+                    style: NpType.mono.copyWith(
+                      fontSize: 8.5,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFFEB2B2B),
+                    ),
+                  ),
+                )
+              else
+                Icon(
+                  Icons.chevron_right,
+                  size: 16,
+                  color: context.npColors.gray500,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Technical Background Grid ─────────────────────────────────────────────────
+
+class _StudioGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 0.5;
+
+    const step = 24.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+

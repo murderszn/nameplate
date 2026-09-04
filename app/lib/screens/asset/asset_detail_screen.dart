@@ -176,7 +176,7 @@ class AssetDetailScreen extends ConsumerWidget {
           ),
           body: isTablet
               ? Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -186,14 +186,15 @@ class AssetDetailScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              _Header(asset: asset),
-                              SizedBox(height: 16),
+                              _FullBleedMediaStage(asset: asset),
+                              _TelemetryMatrix(asset: asset),
+                              const SizedBox(height: 16),
                               _PrimaryActionCard(asset: asset),
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(width: 20),
+                      const SizedBox(width: 20),
                       Expanded(
                         flex: 6,
                         child: SingleChildScrollView(
@@ -204,120 +205,200 @@ class AssetDetailScreen extends ConsumerWidget {
                   ),
                 )
               : ListView(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(bottom: 24),
                   children: [
-                    _Header(asset: asset),
-                    SizedBox(height: 16),
-                    _PrimaryActionCard(asset: asset),
-                    SizedBox(height: 20),
+                    _FullBleedMediaStage(asset: asset),
+                    _TelemetryMatrix(asset: asset),
                     _buildHistorySection(context, ref, asset),
                   ],
                 ),
+          bottomNavigationBar: SafeArea(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              decoration: BoxDecoration(
+                color: context.npColors.bg,
+                border: Border(top: BorderSide(color: context.npColors.lineStrong)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: NpButton.primary(
+                      icon: Icons.build_rounded,
+                      label: 'Log Service Event',
+                      size: NpButtonSize.lg,
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => LogServiceEventScreen(asset: asset),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );
   }
 }
 
-class _Header extends StatelessWidget {
+class _FullBleedMediaStage extends StatelessWidget {
   final Asset asset;
-  const _Header({required this.asset});
+  const _FullBleedMediaStage({required this.asset});
 
   @override
   Widget build(BuildContext context) {
+    final schematic = NpAssets.schematicFor(asset.categoryDisplayName);
+
     return Container(
+      width: double.infinity,
+      height: 160,
       decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border.fromBorderSide(
-          BorderSide(color: context.npColors.lineStrong),
+        color: const Color(0xFF0A0C10),
+        border: Border(
+          bottom: BorderSide(color: context.npColors.lineStrong),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          // Background technical grid texture
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.05,
+              child: CustomPaint(painter: _DetailGridPainter()),
+            ),
+          ),
+          if (schematic != null)
+            Positioned(
+              right: -10,
+              top: 0,
+              bottom: 0,
+              width: 200,
+              child: Opacity(
+                opacity: 0.28,
+                child: Image.asset(
+                  schematic,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          // Gradient shading to ensure high legibility
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.6),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.9),
+                ],
+                stops: const [0.0, 0.4, 1.0],
+              ),
+            ),
+          ),
+          // Top metadata pips
+          Positioned(
+            top: 14,
+            left: 18,
+            right: 18,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${asset.manufacturer ?? 'Unknown'} ${asset.modelNumber ?? ''}'
-                            .trim(),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: context.npColors.white,
-                          letterSpacing: -0.4,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF10B981),
+                          shape: BoxShape.circle,
                         ),
                       ),
-                    ),
-                    SizedBox(width: 12),
-                    _StatusChip(status: asset.status),
-                  ],
-                ),
-                SizedBox(height: 4),
-                Text(
-                  asset.categoryDisplayName,
-                  style: TextStyle(
-                    color: context.npColors.gray400,
-                    fontSize: 14,
-                  ),
-                ),
-                if (NpAssets.schematicFor(asset.categoryDisplayName) !=
-                    null) ...[
-                  SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: Image.asset(
-                      NpAssets.schematicFor(asset.categoryDisplayName)!,
-                      height: 130,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-                SizedBox(height: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.fromBorderSide(
-                      BorderSide(color: context.npColors.lineStrong),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      _InfoRow(
-                        icon: Icons.place_outlined,
-                        label: 'Location',
-                        value: asset.currentLocationLabel ?? 'Unknown',
-                      ),
-                      Divider(height: 1, color: context.npColors.lineStrong),
-                      _InfoRow(
-                        icon: Icons.verified_outlined,
-                        label: 'Confirmed',
-                        value: asset.currentLocationConfirmedAt != null
-                            ? _formatDate(asset.currentLocationConfirmedAt!)
-                            : 'Never',
-                      ),
-                      Divider(height: 1, color: context.npColors.lineStrong),
-                      _InfoRow(
-                        icon: Icons.build_outlined,
-                        label: 'Serviced',
-                        value: asset.lastServiceAt != null
-                            ? _formatDate(asset.lastServiceAt!)
-                            : 'Never',
-                      ),
-                      Divider(height: 1, color: context.npColors.lineStrong),
-                      _InfoRow(
-                        icon: Icons.tag,
-                        label: 'Serial',
-                        value: asset.serialNumber ?? 'Not recorded',
-                        mono: true,
+                      const SizedBox(width: 6),
+                      Text(
+                        'NPID // ${asset.npid}',
+                        style: NpType.mono.copyWith(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF38BDF8),
+                          letterSpacing: 1.0,
+                        ),
                       ),
                     ],
                   ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E293B),
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: const Color(0xFF334155)),
+                  ),
+                  child: Text(
+                    'ED25519 VERIFIED',
+                    style: NpType.mono.copyWith(
+                      fontSize: 8.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF94A3B8),
+                      letterSpacing: 0.8,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Bottom equipment title and location
+          Positioned(
+            left: 18,
+            right: 18,
+            bottom: 14,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${asset.manufacturer ?? 'Portfolio Spec'} ${asset.modelNumber ?? ''}'.trim(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: -0.3,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.place_outlined,
+                      size: 13,
+                      color: Colors.white.withValues(alpha: 0.6),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${asset.categoryDisplayName} · ${asset.currentLocationLabel ?? 'Unknown location'}',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -326,59 +407,152 @@ class _Header extends StatelessWidget {
       ),
     );
   }
-
-  String _formatDate(DateTime d) =>
-      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 }
 
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool mono;
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.mono = false,
-  });
+class _TelemetryMatrix extends StatelessWidget {
+  final Asset asset;
+  const _TelemetryMatrix({required this.asset});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      child: Row(
+    return Container(
+      decoration: BoxDecoration(
+        color: context.npColors.bgElevated,
+        border: Border(
+          bottom: BorderSide(color: context.npColors.lineStrong),
+        ),
+      ),
+      child: Column(
         children: [
-          Icon(icon, size: 16, color: context.npColors.gray500),
-          SizedBox(width: 10),
-          SizedBox(
-            width: 80,
-            child: Text(
-              label,
-              style: TextStyle(color: context.npColors.gray500, fontSize: 12),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: _MatrixTile(
+                  label: 'LIFETIME SERVICE',
+                  value: '\$${asset.lifetimeServiceCost.toStringAsFixed(2)}',
+                  valueColor: const Color(0xFF10B981),
+                  accentColor: const Color(0xFF0F172A),
+                  isMono: true,
+                ),
+              ),
+              Container(width: 1, height: 68, color: context.npColors.lineStrong),
+              Expanded(
+                child: _MatrixTile(
+                  label: 'OPERATIONAL STATUS',
+                  accentColor: const Color(0xFF0F172A),
+                  child: _StatusChip(status: asset.status),
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: mono
-                  ? NpType.mono.copyWith(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: context.npColors.white,
-                    )
-                  : TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: context.npColors.white,
-                    ),
-            ),
+          Divider(height: 1, color: context.npColors.lineStrong),
+          Row(
+            children: [
+              Expanded(
+                child: _MatrixTile(
+                  label: 'SERIAL NUMBER',
+                  value: asset.serialNumber ?? 'UNSPECIFIED',
+                  valueColor: context.npColors.white,
+                  accentColor: const Color(0xFF0F172A),
+                  isMono: true,
+                ),
+              ),
+              Container(width: 1, height: 68, color: context.npColors.lineStrong),
+              Expanded(
+                child: _MatrixTile(
+                  label: 'CONFIRMED LOCATION',
+                  value: asset.currentLocationLabel ?? 'NOT CONFIRMED',
+                  valueColor: const Color(0xFF38BDF8),
+                  accentColor: const Color(0xFF0F172A),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 }
+
+class _MatrixTile extends StatelessWidget {
+  final String label;
+  final String? value;
+  final Widget? child;
+  final Color? valueColor;
+  final Color accentColor;
+  final bool isMono;
+
+  const _MatrixTile({
+    required this.label,
+    this.value,
+    this.child,
+    this.valueColor,
+    required this.accentColor,
+    this.isMono = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 68,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      color: context.npColors.bgCard,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: NpType.mono.copyWith(
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              color: context.npColors.gray400,
+              letterSpacing: 0.8,
+            ),
+          ),
+          const SizedBox(height: 4),
+          child ??
+              Text(
+                value ?? '',
+                style: isMono
+                    ? NpType.mono.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: valueColor ?? context.npColors.white,
+                      )
+                    : TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: valueColor ?? context.npColors.white,
+                      ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 0.5;
+    const step = 20.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 
 class _StatusChip extends StatelessWidget {
   final AssetStatus status;

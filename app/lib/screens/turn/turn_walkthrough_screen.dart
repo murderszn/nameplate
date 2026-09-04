@@ -384,43 +384,90 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
       appBar: NpBrandAppBar(title: '${turn.unitLabel} · ${turn.type.label}'),
       body: Column(
         children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Row(
+          // Top Walkthrough Hero Stage
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F172A),
+              border: Border(
+                top: const BorderSide(color: Color(0xFF1E3A8A), width: 1),
+                bottom: BorderSide(color: context.npColors.lineStrong),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    '${turn.inspectedCount}/${items.length} inspected'
-                    '${turn.missingCount > 0 ? ' · ${turn.missingCount} unaccounted' : ''}'
-                    '${turn.damagedCount > 0 ? ' · ${turn.damagedCount} flagged' : ''}',
-                    style: NpType.mono.copyWith(
-                      color: context.npColors.gray400,
-                      fontSize: 12,
-                      letterSpacing: 0.6,
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E293B),
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(color: const Color(0xFF334155)),
+                      ),
+                      child: Text(
+                        turn.type.label.toUpperCase(),
+                        style: NpType.mono.copyWith(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          color: const Color(0xFF38BDF8),
+                          letterSpacing: 0.8,
+                        ),
+                      ),
                     ),
+                    const Spacer(),
+                    if (!readOnly)
+                      NpButton.secondary(
+                        icon: Icons.add_rounded,
+                        label: 'Untagged',
+                        size: NpButtonSize.sm,
+                        onPressed: _addUnexpected,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${turn.inspectedCount}/${items.length} inspected'
+                      '${turn.missingCount > 0 ? ' · ${turn.missingCount} unaccounted' : ''}'
+                      '${turn.damagedCount > 0 ? ' · ${turn.damagedCount} flagged' : ''}',
+                      style: NpType.mono.copyWith(
+                        color: const Color(0xFF94A3B8),
+                        fontSize: 11,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    Text(
+                      '${items.isEmpty ? 0 : ((turn.inspectedCount / items.length) * 100).round()}% AUDITED',
+                      style: NpType.mono.copyWith(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF38BDF8),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(1),
+                  child: LinearProgressIndicator(
+                    value: items.isEmpty ? 0 : turn.inspectedCount / items.length,
+                    minHeight: 3.5,
+                    color: NpColors.red,
+                    backgroundColor: const Color(0xFF1E293B),
                   ),
                 ),
-                if (!readOnly)
-                  NpButton.secondary(
-                    icon: Icons.add_rounded,
-                    label: 'Untagged',
-                    size: NpButtonSize.sm,
-                    onPressed: _addUnexpected,
-                  ),
               ],
             ),
           ),
-          LinearProgressIndicator(
-            value: items.isEmpty ? 0 : turn.inspectedCount / items.length,
-            minHeight: 3,
-            color: NpColors.red,
-            backgroundColor: context.npColors.white08,
-          ),
           Expanded(
             child: ListView.separated(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.zero,
               itemCount: items.length,
-              separatorBuilder: (_, _) => SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox.shrink(),
               itemBuilder: (context, i) => _TurnItemCard(
                 item: items[i],
                 readOnly: readOnly,
@@ -443,7 +490,7 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
           ? null
           : SafeArea(
               child: Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: context.npColors.bg,
                   border: Border(
@@ -516,10 +563,20 @@ class _TurnItemCard extends StatelessWidget {
     final schematic = item.category == null
         ? null
         : NpAssets.schematicFor(item.category!);
+    final indicatorColor = item.finding == null
+        ? context.npColors.lineStrong
+        : _findingColor(context, item.finding!);
 
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(14),
+    return Material(
+      color: context.npColors.bgCard,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(color: indicatorColor, width: 3.5),
+            bottom: BorderSide(color: context.npColors.line, width: 0.8),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -7,7 +7,6 @@ import '../../services/npid.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/np_brand.dart';
-import '../../widgets/responsive_layout.dart';
 import '../../widgets/sync_status_badge.dart';
 import '../asset/asset_detail_screen.dart';
 import 'camera_scanner_screen.dart';
@@ -213,94 +212,184 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     }
   }
 
-  Widget _buildManualEntryCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border(
-          left: BorderSide(color: context.npColors.lineStrong, width: 1),
-          right: BorderSide(color: context.npColors.lineStrong, width: 1),
-          bottom: BorderSide(color: context.npColors.lineStrong, width: 1),
-          top: BorderSide(color: context.npColors.lineStrong, width: 1),
-        ),
-      ),
+  Widget _buildManualEntrySection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Enter a tag ID',
-                  style: Theme.of(context).textTheme.titleMedium,
+          Row(
+            children: [
+              Text(
+                '02 // IDENTIFICATION',
+                style: NpType.mono.copyWith(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w800,
+                  color: context.npColors.gray400,
+                  letterSpacing: 1.2,
                 ),
-                SizedBox(height: 6),
-                Text(
-                  'Type a Nameplate ID or paste a tag link.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: context.npColors.gray400,
-                  ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: context.npColors.bgElevated,
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(color: context.npColors.lineStrong),
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  controller: _controller,
-                  textCapitalization: TextCapitalization.characters,
+                child: Text(
+                  'CROCKFORD BASE32',
                   style: NpType.mono.copyWith(
+                    fontSize: 9,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 1.2,
-                    fontSize: 15,
+                    color: context.npColors.gray500,
                   ),
-                  decoration: InputDecoration(
-                    hintText: 'NP-7K2M4QX9',
-                    errorText: _error,
-                    prefixIcon: Icon(Icons.tag),
-                    suffixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (_controller.text.isNotEmpty)
-                          IconButton(
-                            icon: Icon(Icons.clear, size: 18),
-                            tooltip: 'Clear',
-                            onPressed: () {
-                              _controller.clear();
-                              setState(() {
-                                _error = null;
-                                _liveResult = null;
-                              });
-                            },
-                          ),
-                        SizedBox(width: 4),
-                      ],
-                    ),
-                  ),
-                  onSubmitted: (_) => _lookup(),
                 ),
-                if (_liveResult != null && _liveResult!.isValidFormat) ...[
-                  SizedBox(height: 10),
-                  _VerificationBanner(result: _liveResult!),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Enter a tag ID',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: context.npColors.white,
+              letterSpacing: -0.3,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Type a Nameplate ID or paste a tag link.',
+            style: TextStyle(
+              color: context.npColors.gray400,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _controller,
+            textCapitalization: TextCapitalization.characters,
+            style: NpType.mono.copyWith(
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.4,
+              fontSize: 16,
+              color: context.npColors.white,
+            ),
+            decoration: InputDecoration(
+              hintText: 'NP-7K2M4QX9',
+              errorText: _error,
+              prefixIcon: Icon(Icons.tag_rounded, color: context.npColors.gray400),
+              filled: true,
+              fillColor: context.npColors.bgElevated,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(2),
+                borderSide: BorderSide(color: context.npColors.lineStrong),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(2),
+                borderSide: BorderSide(color: context.npColors.lineStrong),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(2),
+                borderSide: const BorderSide(color: NpColors.red, width: 1.5),
+              ),
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_controller.text.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 18),
+                      tooltip: 'Clear',
+                      onPressed: () {
+                        _controller.clear();
+                        setState(() {
+                          _error = null;
+                          _liveResult = null;
+                        });
+                      },
+                    ),
+                  const SizedBox(width: 4),
                 ],
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: NpButton.primary(
-                        icon: Icons.search_rounded,
-                        label: 'Look up tag',
-                        size: NpButtonSize.md,
-                        isExpanded: true,
-                        onPressed: () => _lookup(),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    NpIconButton(
-                      icon: Icons.content_paste_rounded,
-                      tooltip: 'Paste and look up',
-                      onPressed: _pasteFromClipboard,
-                      size: 44,
-                    ),
-                  ],
+              ),
+            ),
+            onSubmitted: (_) => _lookup(),
+          ),
+          if (_liveResult != null && _liveResult!.isValidFormat) ...[
+            const SizedBox(height: 10),
+            _VerificationBanner(result: _liveResult!),
+          ],
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: NpButton.primary(
+                  icon: Icons.search_rounded,
+                  label: 'Look up tag',
+                  size: NpButtonSize.md,
+                  isExpanded: true,
+                  onPressed: () => _lookup(),
+                ),
+              ),
+              const SizedBox(width: 10),
+              NpIconButton(
+                icon: Icons.content_paste_rounded,
+                tooltip: 'Paste and look up',
+                onPressed: _pasteFromClipboard,
+                size: 44,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Fast test plates ticker
+          Row(
+            children: [
+              Icon(Icons.flash_on_rounded, size: 13, color: const Color(0xFFF59E0B)),
+              const SizedBox(width: 5),
+              Text(
+                'QUICK DISPATCH TAGS',
+                style: NpType.mono.copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: context.npColors.gray500,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _QuickTagChip(
+                  tag: 'NP-WTRHTR-04',
+                  label: 'Water Htr',
+                  toneColor: NpColors.red,
+                  onTap: () {
+                    _controller.text = 'NP-WTRHTR-04';
+                    _lookup('NP-WTRHTR-04');
+                  },
+                ),
+                const SizedBox(width: 8),
+                _QuickTagChip(
+                  tag: 'NP-HVAC-09',
+                  label: 'HVAC Air',
+                  toneColor: NpColors.red,
+                  onTap: () {
+                    _controller.text = 'NP-HVAC-09';
+                    _lookup('NP-HVAC-09');
+                  },
+                ),
+                const SizedBox(width: 8),
+                _QuickTagChip(
+                  tag: 'NP-9P4T2WB1',
+                  label: 'Washer Pump',
+                  toneColor: const Color(0xFF3B82F6),
+                  onTap: () {
+                    _controller.text = 'NP-9P4T2WB1';
+                    _lookup('NP-9P4T2WB1');
+                  },
                 ),
               ],
             ),
@@ -312,36 +401,135 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = context.isTablet;
-
     return Scaffold(
       appBar: NpBrandAppBar(
         title: 'Scan the plate',
         showLogo: true,
-        actions: [SyncStatusBadge()],
+        actions: const [SyncStatusBadge()],
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 720),
-          child: ListView(
-            padding: EdgeInsets.symmetric(
-              horizontal: isTablet ? 28 : 16,
-              vertical: isTablet ? 24 : 16,
+      body: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          // 01: Optical viewfinder stage
+          _ScannerViewfinder(
+            isScanning: _isScanning,
+            onOpenScanner: _openCameraScanner,
+          ),
+          // Telemetry strip color block
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F172A),
+              border: Border(
+                top: const BorderSide(color: Color(0xFF1E3A8A), width: 1),
+                bottom: BorderSide(color: context.npColors.lineStrong),
+              ),
             ),
-            children: [
-              Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: isTablet ? 560 : 480),
-                  child: _ScannerViewfinder(
-                    isScanning: _isScanning,
-                    onOpenScanner: _openCameraScanner,
+            child: Row(
+              children: [
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF10B981),
+                    shape: BoxShape.circle,
                   ),
                 ),
-              ),
-              SizedBox(height: 18),
-              _buildManualEntryCard(),
-            ],
+                const SizedBox(width: 8),
+                Text(
+                  'ZERO-SIGNAL READY',
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF93C5FD),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  'POOL: 48 TOKENS',
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFFBBF24),
+                    letterSpacing: 0.6,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'SYNC: LIVE',
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF6EE7B7),
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ],
+            ),
           ),
+          // 02: Manual tag identification section
+          _buildManualEntrySection(),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickTagChip extends StatelessWidget {
+  final String tag;
+  final String label;
+  final Color toneColor;
+  final VoidCallback onTap;
+
+  const _QuickTagChip({
+    required this.tag,
+    required this.label,
+    required this.toneColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(2),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: context.npColors.bgElevated,
+          border: Border.all(color: context.npColors.lineStrong),
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 5,
+              height: 5,
+              decoration: BoxDecoration(
+                color: toneColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              tag,
+              style: NpType.mono.copyWith(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: context.npColors.white,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: context.npColors.gray400,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -358,7 +546,7 @@ class _MetaRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.only(top: 4),
       child: Row(
         children: [
           Text(
@@ -401,7 +589,7 @@ class _VerificationBanner extends StatelessWidget {
         : (checksumOk ? Icons.check_circle_outline : Icons.error_outline);
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(2),
@@ -410,7 +598,7 @@ class _VerificationBanner extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 16, color: color),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               result.message,
@@ -427,7 +615,7 @@ class _VerificationBanner extends StatelessWidget {
   }
 }
 
-// ── Scanner viewfinder ─────────────────────────────────────────────────────────
+// ── Full-Bleed Scanner viewfinder ──────────────────────────────────────────────
 
 class _ScannerViewfinder extends StatelessWidget {
   final bool isScanning;
@@ -438,72 +626,217 @@ class _ScannerViewfinder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border.all(color: context.npColors.lineStrong),
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Color(0xFF080A0F),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Stack(
         children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: NpColors.redSubtle,
-                  border: Border.all(color: NpColors.redBorder),
-                ),
-                child: isScanning
-                    ? SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          color: NpColors.red,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : Icon(
-                        Icons.qr_code_scanner_rounded,
-                        color: NpColors.red,
-                        size: 24,
-                      ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          // Background technical grid texture
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.08,
+              child: CustomPaint(painter: _GridPainter()),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Top registration header
+                Row(
                   children: [
-                    Text(
-                      'Scan a tag',
-                      style: Theme.of(context).textTheme.titleMedium,
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF1E293B),
+                        border: Border.all(color: const Color(0xFF334155)),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF10B981),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'OPTICAL SCANNER // ACTIVE',
+                            style: NpType.mono.copyWith(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF38BDF8),
+                              letterSpacing: 1.1,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    SizedBox(height: 3),
+                    const Spacer(),
                     Text(
-                      'Open the camera and center the QR code.',
-                      style: TextStyle(
-                        color: context.npColors.gray400,
-                        fontSize: 12,
+                      'ED25519 VERIFIED',
+                      style: NpType.mono.copyWith(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF64748B),
+                        letterSpacing: 0.8,
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: 14),
-          NpButton.primary(
-            icon: Icons.camera_alt_rounded,
-            label: isScanning ? 'Opening camera…' : 'Scan with camera',
-            isLoading: isScanning,
-            size: NpButtonSize.md,
-            isExpanded: true,
-            onPressed: isScanning ? null : onOpenScanner,
+                const SizedBox(height: 24),
+                // Optical Targeting Reticle Frame
+                Center(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Outer bracket container
+                      Container(
+                        width: 190,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color(0xFF1E293B),
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      // Corner brackets
+                      SizedBox(
+                        width: 190,
+                        height: 120,
+                        child: CustomPaint(
+                          painter: _CornerBracketsPainter(
+                            color: const Color(0xFF38BDF8),
+                          ),
+                        ),
+                      ),
+                      // Center laser line
+                      Positioned(
+                        top: 59,
+                        left: 10,
+                        right: 10,
+                        child: Container(
+                          height: 1.5,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.transparent,
+                                NpColors.red,
+                                NpColors.redHover,
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Center QR icon
+                      isScanning
+                          ? const SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: CircularProgressIndicator(
+                                color: NpColors.red,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.qr_code_scanner_rounded,
+                                  color: Colors.white,
+                                  size: 38,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'AIM AT PHYSICAL NAMEPLATE',
+                                  style: NpType.mono.copyWith(
+                                    fontSize: 8.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF94A3B8),
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Camera action button
+                NpButton.primary(
+                  icon: Icons.camera_alt_rounded,
+                  label: isScanning ? 'Opening camera…' : 'Scan with camera',
+                  isLoading: isScanning,
+                  size: NpButtonSize.lg,
+                  isExpanded: true,
+                  onPressed: isScanning ? null : onOpenScanner,
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+}
+
+class _GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 0.5;
+    const step = 20.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _CornerBracketsPainter extends CustomPainter {
+  final Color color;
+  const _CornerBracketsPainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    const len = 14.0;
+
+    // Top-left
+    canvas.drawLine(const Offset(0, 0), const Offset(len, 0), paint);
+    canvas.drawLine(const Offset(0, 0), const Offset(0, len), paint);
+
+    // Top-right
+    canvas.drawLine(Offset(size.width, 0), Offset(size.width - len, 0), paint);
+    canvas.drawLine(Offset(size.width, 0), Offset(size.width, len), paint);
+
+    // Bottom-left
+    canvas.drawLine(Offset(0, size.height), Offset(len, size.height), paint);
+    canvas.drawLine(Offset(0, size.height), Offset(0, size.height - len), paint);
+
+    // Bottom-right
+    canvas.drawLine(Offset(size.width, size.height), Offset(size.width - len, size.height), paint);
+    canvas.drawLine(Offset(size.width, size.height), Offset(size.width, size.height - len), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
