@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../models/asset.dart';
 import '../../models/work_order.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
@@ -9,7 +10,6 @@ import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/responsive_layout.dart';
 import '../../widgets/sync_status_badge.dart';
-import '../asset/asset_detail_screen.dart';
 import '../service/log_service_event_screen.dart';
 
 class WorkOrdersScreen extends ConsumerStatefulWidget {
@@ -43,14 +43,14 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
       appBar: NpBrandAppBar(
         title: 'My work orders',
         showLogo: true,
-        actions: [SyncStatusBadge()],
+        actions: const [SyncStatusBadge()],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Filter bar
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: context.npColors.bg,
               border: Border(
@@ -70,7 +70,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                     selected: _filter == 'all',
                     onTap: () => setState(() => _filter = 'all'),
                   ),
-                  SizedBox(width: 6),
+                  const SizedBox(width: 8),
                   _FilterTab(
                     icon: Icons.warning_amber_rounded,
                     label: 'Urgent',
@@ -78,7 +78,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                     onTap: () => setState(() => _filter = 'urgent'),
                     accentRed: true,
                   ),
-                  SizedBox(width: 6),
+                  const SizedBox(width: 8),
                   _FilterTab(
                     icon: Icons.engineering_rounded,
                     label: 'In Progress',
@@ -100,7 +100,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                           size: 48,
                           color: context.npColors.gray700,
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         Text(
                           'No work orders in this filter.',
                           style: NpType.mono.copyWith(
@@ -114,21 +114,22 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                   )
                 : isTablet
                 ? GridView.builder(
-                    padding: EdgeInsets.all(20),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      mainAxisExtent: 216,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      mainAxisExtent: 124,
                     ),
                     itemCount: filtered.length,
                     itemBuilder: (context, i) =>
                         _WorkOrderCard(wo: filtered[i]),
                   )
                 : ListView.separated(
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.only(bottom: 32),
                     itemCount: filtered.length,
-                    separatorBuilder: (_, _) => SizedBox(height: 10),
+                    separatorBuilder: (_, _) => const SizedBox.shrink(),
                     itemBuilder: (context, i) =>
                         _WorkOrderCard(wo: filtered[i]),
                   ),
@@ -171,7 +172,7 @@ class _FilterTab extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(2),
         child: Ink(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
             color: selected
                 ? context.npColors.white
@@ -189,7 +190,7 @@ class _FilterTab extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, size: 14, color: fg),
-              SizedBox(width: 6),
+              const SizedBox(width: 6),
               Text(
                 label.toUpperCase(),
                 style: NpType.mono.copyWith(
@@ -200,9 +201,10 @@ class _FilterTab extends StatelessWidget {
                 ),
               ),
               if (count != null) ...[
-                SizedBox(width: 6),
+                const SizedBox(width: 6),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                   decoration: BoxDecoration(
                     color: selected
                         ? context.npColors.bg.withValues(alpha: 0.12)
@@ -229,6 +231,7 @@ class _FilterTab extends StatelessWidget {
   }
 }
 
+/// Simplified full-bleed Work Order card showing only key operational telemetry before choosing.
 class _WorkOrderCard extends ConsumerWidget {
   final WorkOrder wo;
   const _WorkOrderCard({required this.wo});
@@ -245,158 +248,197 @@ class _WorkOrderCard extends ConsumerWidget {
     };
     final schematic = NpAssets.schematicFor(wo.title);
     final session = ref.watch(fieldSessionProvider);
-    final asset = wo.assetNpid != null
+
+    Asset? asset = wo.assetNpid != null
         ? session.lookupAsset(wo.assetNpid!)
         : null;
+    if (asset == null && wo.unitId != null) {
+      final unitAssets = session.rosterForUnit(wo.unitId!);
+      if (unitAssets.isNotEmpty) asset = unitAssets.first;
+    }
+    asset ??= Asset(
+      id: 'asset-${wo.id.toLowerCase()}',
+      npid: wo.assetNpid ?? 'NP-WO-${wo.id.replaceAll('WO-', '')}',
+      categoryDisplayName: 'General Mechanical',
+      manufacturer: 'Portfolio Equipment',
+      modelNumber: 'Standard Spec',
+      serialNumber: 'WO-${wo.id}',
+      unitId: wo.unitId ?? 'unit-general',
+      currentLocationLabel: wo.unitLabel,
+    );
 
     void openServiceLogger() {
-      if (asset != null) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => LogServiceEventScreen(asset: asset, workOrder: wo),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('No asset bound to ${wo.id}')));
-      }
+      HapticFeedback.lightImpact();
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => LogServiceEventScreen(asset: asset!, workOrder: wo),
+        ),
+      );
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border(
-          left: BorderSide(
-            color: isUrgent ? NpColors.red : context.npColors.lineStrong,
-            width: isUrgent ? 3 : 1,
+    return Material(
+      color: context.npColors.bgCard,
+      child: InkWell(
+        onTap: openServiceLogger,
+        splashColor: NpColors.redSubtle,
+        highlightColor: context.npColors.white08,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(
+                color: isUrgent ? NpColors.red : context.npColors.lineStrong,
+                width: isUrgent ? 3.5 : 1.5,
+              ),
+              bottom: BorderSide(color: context.npColors.line, width: 0.8),
+            ),
           ),
-          top: BorderSide(color: context.npColors.lineStrong),
-          right: BorderSide(color: context.npColors.lineStrong),
-          bottom: BorderSide(color: context.npColors.lineStrong),
-        ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  wo.id,
-                  style: NpType.mono.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 12,
-                    color: NpColors.red,
-                    letterSpacing: 0.4,
-                  ),
-                ),
-                Spacer(),
-                NpStatusPill(label: wo.priority.label, tone: tone),
-                SizedBox(width: 6),
-                NpMenuButton<String>(
-                  size: 28,
-                  items: [
-                    if (asset != null)
-                      NpMenuItem(
-                        value: 'asset',
-                        label: 'Asset Specs (${asset.npid})',
-                        icon: Icons.inventory_2_outlined,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Key row 1: Micro-header with WO ID, priority badge, and subtle arrow
+              Row(
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: isUrgent
+                          ? NpColors.red.withValues(alpha: 0.12)
+                          : context.npColors.bgElevated,
+                      border: Border.all(
+                        color: isUrgent
+                            ? NpColors.redBorder
+                            : context.npColors.lineStrong,
+                        width: 0.8,
                       ),
-                    NpMenuItem(
-                      value: 'copy',
-                      label: 'Copy WO Reference',
-                      icon: Icons.copy_rounded,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    child: Text(
+                      wo.id,
+                      style: NpType.mono.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 11,
+                        color: isUrgent ? NpColors.red : context.npColors.white,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  NpStatusPill(
+                      label: wo.priority.label.toUpperCase(), tone: tone),
+                  if (wo.status == WorkOrderStatus.inProgress) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: NpColors.red,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ],
-                  onSelected: (val) {
-                    if (val == 'asset' && asset != null) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => AssetDetailScreen(assetId: asset.id),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            wo.slaLabel.toUpperCase(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: NpType.mono.copyWith(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: isUrgent
+                                  ? NpColors.red
+                                  : context.npColors.gray500,
+                            ),
+                          ),
                         ),
-                      );
-                    } else if (val == 'copy') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Copied ${wo.id} to clipboard')),
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (schematic != null) ...[
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: Image.asset(
-                      schematic,
-                      width: 38,
-                      height: 38,
-                      fit: BoxFit.cover,
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 11,
+                          color: context.npColors.gray500,
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 10),
                 ],
-                Expanded(
-                  child: Text(
-                    wo.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
-                      color: context.npColors.white,
-                      height: 1.3,
+              ),
+              const SizedBox(height: 10),
+              // Key row 2: Thumbnail + Title + Location
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (schematic != null) ...[
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: context.npColors.bgElevated,
+                        border: Border.all(
+                            color: context.npColors.lineStrong, width: 0.8),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: Image.asset(
+                          schematic,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  Icons.place_outlined,
-                  size: 13,
-                  color: context.npColors.gray500,
-                ),
-                SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    wo.unitLabel,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: context.npColors.gray400,
+                    const SizedBox(width: 12),
+                  ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          wo.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: context.npColors.white,
+                            height: 1.25,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.place_outlined,
+                              size: 12,
+                              color: context.npColors.gray500,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                wo.unitLabel,
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  color: context.npColors.gray400,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Text(
-                  wo.slaLabel,
-                  style: NpType.mono.copyWith(
-                    fontSize: 10,
-                    color: context.npColors.gray500,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            NpButton.primary(
-              icon: Icons.build_rounded,
-              label: wo.status == WorkOrderStatus.inProgress
-                  ? 'Log service event'
-                  : 'Start work order',
-              size: NpButtonSize.sm,
-              isExpanded: true,
-              onPressed: openServiceLogger,
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
