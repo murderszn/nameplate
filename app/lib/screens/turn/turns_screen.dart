@@ -355,12 +355,27 @@ class _UnitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final indicatorColor = switch (unit.occupancyStatus) {
+    final tileBg = switch (unit.occupancyStatus) {
+      OccupancyStatus.turning => const Color(0x33F59E0B),
+      OccupancyStatus.vacant => const Color(0x3310B981),
+      _ => context.npColors.white08,
+    };
+
+    final tileFg = switch (unit.occupancyStatus) {
       OccupancyStatus.turning => const Color(0xFFF59E0B),
       OccupancyStatus.vacant => const Color(0xFF10B981),
-      OccupancyStatus.occupied => const Color(0xFF2563EB),
-      _ => const Color(0xFF64748B),
+      _ => context.npColors.white,
     };
+
+    final monogram = () {
+      final name = unit.displayName.trim();
+      if (name.isEmpty) return 'U';
+      final parts = name.split(RegExp(r'\s+'));
+      if (parts.length > 1 && parts.last.isNotEmpty) {
+        return parts.last.length <= 3 ? parts.last.toUpperCase() : parts.last[0].toUpperCase();
+      }
+      return name[0].toUpperCase();
+    }();
 
     final tone = switch (unit.occupancyStatus) {
       OccupancyStatus.turning => NpPillTone.caution,
@@ -369,91 +384,132 @@ class _UnitCard extends StatelessWidget {
       _ => NpPillTone.neutral,
     };
 
-    return Material(
-      color: context.npColors.bgCard,
-      child: InkWell(
-        onTap: onStart,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              left: BorderSide(color: indicatorColor, width: 3.5),
-              bottom: BorderSide(color: context.npColors.line, width: 0.8),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: context.npColors.bgCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.npColors.lineStrong),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onStart,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // 48px rounded icon tile left of unit.displayName with tinted fill by occupancyStatus + monogram letter
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: tileBg,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: tileFg.withValues(alpha: 0.35),
+                          width: 1,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        monogram,
+                        style: NpType.mono.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: tileFg,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  unit.displayName,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 15,
+                                    color: context.npColors.white,
+                                    letterSpacing: -0.2,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              NpStatusPill(
+                                label: unit.occupancyStatus.label,
+                                tone: tone,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.apartment_outlined,
+                                size: 13,
+                                color: context.npColors.gray500,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  '${unit.propertyName} · $assetCount assets on roster',
+                                  style: TextStyle(
+                                    color: context.npColors.gray400,
+                                    fontSize: 12,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: context.npColors.bgElevated,
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: context.npColors.lineStrong),
+                      ),
+                      child: Text(
+                        '$assetCount ITEMS ROSTERED',
+                        style: NpType.mono.copyWith(
+                          fontSize: 9.5,
+                          color: context.npColors.gray400,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    NpButton.primary(
+                      icon: Icons.play_arrow_rounded,
+                      label: 'Start turn',
+                      size: NpButtonSize.sm,
+                      onPressed: onStart,
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      unit.displayName,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: context.npColors.white,
-                        letterSpacing: -0.2,
-                      ),
-                    ),
-                  ),
-                  NpStatusPill(
-                    label: unit.occupancyStatus.label,
-                    tone: tone,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  Icon(
-                    Icons.apartment_outlined,
-                    size: 12,
-                    color: context.npColors.gray500,
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      '${unit.propertyName} · $assetCount assets on roster',
-                      style: TextStyle(
-                        color: context.npColors.gray400,
-                        fontSize: 12,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: context.npColors.bgElevated,
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(color: context.npColors.lineStrong),
-                    ),
-                    child: Text(
-                      '$assetCount ITEMS ROSTERED',
-                      style: NpType.mono.copyWith(
-                        fontSize: 9.5,
-                        color: context.npColors.gray400,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.6,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  NpButton.primary(
-                    icon: Icons.play_arrow_rounded,
-                    label: 'Start turn',
-                    size: NpButtonSize.sm,
-                    onPressed: onStart,
-                  ),
-                ],
-              ),
-            ],
           ),
         ),
       ),
@@ -478,99 +534,116 @@ class _TurnCard extends StatelessWidget {
         : turn.inspectedCount / turn.items.length;
 
     final isDone = turn.status == TurnStatus.completed;
-    final indicatorColor = isDone ? const Color(0xFF10B981) : const Color(0xFFF59E0B);
+    final stripeColor = isDone ? const Color(0xFF10B981) : const Color(0xFFEB2B2B);
 
-    return Material(
-      color: context.npColors.bgCard,
-      child: InkWell(
-        onTap: onOpen,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              left: BorderSide(color: indicatorColor, width: 3.5),
-              bottom: BorderSide(color: context.npColors.line, width: 0.8),
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: context.npColors.bgCard,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.npColors.lineStrong),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onOpen,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: indicatorColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(color: indicatorColor.withValues(alpha: 0.4), width: 0.8),
+              // Header stripe Container(height: 4) in same color (red active / emerald completed)
+              Container(
+                height: 4,
+                width: double.infinity,
+                color: stripeColor,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: stripeColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(2),
+                            border: Border.all(
+                              color: stripeColor.withValues(alpha: 0.4),
+                              width: 0.8,
+                            ),
+                          ),
+                          child: Text(
+                            turn.type.label.toUpperCase(),
+                            style: NpType.mono.copyWith(
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w800,
+                              color: stripeColor,
+                              letterSpacing: 0.6,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            turn.unitLabel,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15,
+                              color: context.npColors.white,
+                              letterSpacing: -0.2,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        NpStatusPill(
+                          label: turn.status.label,
+                          tone: isDone ? NpPillTone.verified : NpPillTone.caution,
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 11,
+                          color: context.npColors.gray500,
+                        ),
+                      ],
                     ),
-                    child: Text(
-                      turn.type.label.toUpperCase(),
-                      style: NpType.mono.copyWith(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w800,
-                        color: indicatorColor,
-                        letterSpacing: 0.6,
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${turn.inspectedCount}/${turn.items.length} APPLIANCES INSPECTED',
+                          style: NpType.mono.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: context.npColors.gray400,
+                            letterSpacing: 0.6,
+                          ),
+                        ),
+                        Text(
+                          '${(progress * 100).round()}%',
+                          style: NpType.mono.copyWith(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: stripeColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Progress bar: 8px rounded, track white08, fill red active / emerald completed
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: progress.clamp(0.0, 1.0),
+                        minHeight: 8,
+                        color: stripeColor,
+                        backgroundColor: context.npColors.white08,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      turn.unitLabel,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                        color: context.npColors.white,
-                        letterSpacing: -0.2,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  NpStatusPill(
-                    label: turn.status.label,
-                    tone: isDone ? NpPillTone.verified : NpPillTone.caution,
-                  ),
-                  const SizedBox(width: 6),
-                  Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 11,
-                    color: context.npColors.gray500,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${turn.inspectedCount}/${turn.items.length} APPLIANCES INSPECTED',
-                    style: NpType.mono.copyWith(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: context.npColors.gray400,
-                      letterSpacing: 0.6,
-                    ),
-                  ),
-                  Text(
-                    '${(progress * 100).round()}%',
-                    style: NpType.mono.copyWith(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      color: indicatorColor,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              // Sleek progress bar
-              ClipRRect(
-                borderRadius: BorderRadius.circular(1),
-                child: LinearProgressIndicator(
-                  value: progress.clamp(0.0, 1.0),
-                  minHeight: 3,
-                  color: indicatorColor,
-                  backgroundColor: context.npColors.white08,
+                  ],
                 ),
               ),
             ],

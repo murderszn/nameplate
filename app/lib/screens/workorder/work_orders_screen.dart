@@ -119,7 +119,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      mainAxisExtent: 124,
+                      mainAxisExtent: 148,
                     ),
                     itemCount: filtered.length,
                     itemBuilder: (context, i) =>
@@ -275,6 +275,24 @@ class _WorkOrderCard extends ConsumerWidget {
       );
     }
 
+    final blockColor = switch (wo.priority) {
+      WorkOrderPriority.emergency =>
+        const Color(0xFFEB2B2B).withValues(alpha: 0.15),
+      WorkOrderPriority.urgent =>
+        const Color(0xFFF59E0B).withValues(alpha: 0.15),
+      _ => context.npColors.bgElevated,
+    };
+    final blockIcon = switch (wo.priority) {
+      WorkOrderPriority.emergency => Icons.warning_amber_rounded,
+      WorkOrderPriority.urgent => Icons.priority_high_rounded,
+      _ => Icons.build_outlined,
+    };
+    final blockIconColor = switch (wo.priority) {
+      WorkOrderPriority.emergency => const Color(0xFFEB2B2B),
+      WorkOrderPriority.urgent => const Color(0xFFF59E0B),
+      _ => context.npColors.gray400,
+    };
+
     return Material(
       color: context.npColors.bgCard,
       child: InkWell(
@@ -284,162 +302,189 @@ class _WorkOrderCard extends ConsumerWidget {
         child: Container(
           decoration: BoxDecoration(
             border: Border(
-              left: BorderSide(
-                color: isUrgent ? NpColors.red : context.npColors.lineStrong,
-                width: isUrgent ? 3.5 : 1.5,
-              ),
               bottom: BorderSide(color: context.npColors.line, width: 0.8),
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+          child: Stack(
             children: [
-              // Key row 1: Micro-header with WO ID, priority badge, and subtle arrow
-              Row(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isUrgent
-                          ? NpColors.red.withValues(alpha: 0.12)
-                          : context.npColors.bgElevated,
-                      border: Border.all(
-                        color: isUrgent
-                            ? NpColors.redBorder
-                            : context.npColors.lineStrong,
-                        width: 0.8,
-                      ),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: Text(
-                      wo.id,
-                      style: NpType.mono.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 11,
-                        color: isUrgent ? NpColors.red : context.npColors.white,
-                        letterSpacing: 0.6,
-                      ),
+              // 64px left priority color-block
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: 64,
+                child: Container(
+                  color: blockColor,
+                  child: Center(
+                    child: Icon(
+                      blockIcon,
+                      color: blockIconColor,
+                      size: 24,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  NpStatusPill(
-                      label: wo.priority.label.toUpperCase(), tone: tone),
-                  if (wo.status == WorkOrderStatus.inProgress) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: NpColors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            wo.slaLabel.toUpperCase(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: NpType.mono.copyWith(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: isUrgent
-                                  ? NpColors.red
-                                  : context.npColors.gray500,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 11,
-                          color: context.npColors.gray500,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(height: 10),
-              // Key row 2: Thumbnail + Title + Location
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (schematic != null) ...[
+              // Right content
+              Padding(
+                padding: const EdgeInsets.only(left: 64),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Key row 1: Micro-header with soft tinted background
                     Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.npColors.bgElevated,
-                        border: Border.all(
-                            color: context.npColors.lineStrong, width: 0.8),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(2),
-                        child: Image.asset(
-                          schematic,
-                          fit: BoxFit.cover,
-                        ),
+                      color: isUrgent
+                          ? NpColors.redSubtle
+                          : context.npColors.bgCard,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isUrgent
+                                  ? NpColors.red.withValues(alpha: 0.12)
+                                  : context.npColors.bgElevated,
+                              border: Border.all(
+                                color: isUrgent
+                                    ? NpColors.redBorder
+                                    : context.npColors.lineStrong,
+                                width: 0.8,
+                              ),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            child: Text(
+                              wo.id,
+                              style: NpType.mono.copyWith(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11,
+                                color: isUrgent
+                                    ? NpColors.red
+                                    : context.npColors.white,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          NpStatusPill(
+                              label: wo.priority.label.toUpperCase(),
+                              tone: tone),
+                          if (wo.status == WorkOrderStatus.inProgress) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: NpColors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          Flexible(
+                            child: Text(
+                              wo.slaLabel.toUpperCase(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.end,
+                              style: NpType.mono.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: isUrgent
+                                    ? NpColors.red
+                                    : context.npColors.gray500,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 10,
+                            color: context.npColors.gray500,
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          wo.title,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: context.npColors.white,
-                            height: 1.25,
-                            letterSpacing: -0.2,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
+                      // Key row 2: 68px Thumbnail with borderRadius 12 + Title + Location
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.place_outlined,
-                              size: 12,
-                              color: context.npColors.gray500,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                wo.unitLabel,
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  color: context.npColors.gray400,
-                                  fontWeight: FontWeight.w500,
+                            if (schematic != null) ...[
+                              Container(
+                                width: 68,
+                                height: 68,
+                                decoration: BoxDecoration(
+                                  color: context.npColors.bgElevated,
+                                  border: Border.all(
+                                      color: context.npColors.lineStrong,
+                                      width: 0.8),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                overflow: TextOverflow.ellipsis,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    schematic,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                            ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    wo.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                      color: context.npColors.white,
+                                      height: 1.25,
+                                      letterSpacing: -0.2,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.place_outlined,
+                                        size: 12,
+                                        color: context.npColors.gray500,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Expanded(
+                                        child: Text(
+                                          wo.unitLabel,
+                                          style: TextStyle(
+                                            fontSize: 11.5,
+                                            color: context.npColors.gray400,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
   }
 }

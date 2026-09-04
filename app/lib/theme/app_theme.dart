@@ -26,6 +26,23 @@ class NpColors {
 
   /// Offline / pending — not a fault color (branding.md §6).
   static const pending = Color(0xFF7A5AA8);
+
+  // Category tints and backgrounds (12% opacity variants)
+  static const hvacBlue = Color(0xFF0EA5E9);
+  static const hvacBlueBgLight = Color(0x1F0EA5E9);
+  static const hvacBlueBgDark = Color(0x1F0EA5E9);
+
+  static const laundryAmber = Color(0xFFF59E0B);
+  static const laundryAmberBgLight = Color(0x1FF59E0B);
+  static const laundryAmberBgDark = Color(0x1FF59E0B);
+
+  static const kitchenEmerald = Color(0xFF10B981);
+  static const kitchenEmeraldBgLight = Color(0x1F10B981);
+  static const kitchenEmeraldBgDark = Color(0x1F10B981);
+
+  static const infoViolet = Color(0xFF7A5AA8);
+  static const infoVioletBgLight = Color(0x1F7A5AA8);
+  static const infoVioletBgDark = Color(0x1F7A5AA8);
 }
 
 @immutable
@@ -310,7 +327,7 @@ class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: radius,
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
           side: BorderSide(color: c.line),
         ),
       ),
