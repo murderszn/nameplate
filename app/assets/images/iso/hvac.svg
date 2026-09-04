@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="Carrier air handler isometric">
+<style>
+.ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red{fill:none;stroke:#EB2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red-thin{fill:none;stroke:#EB2B2B;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.red-fill{fill:#EB2B2B;stroke:none}
+@media (prefers-color-scheme:dark){
+.ln,.thin{stroke:#F2F2F2}
+.face{stroke:#F2F2F2}
+}
+</style>
+<!-- tall cabinet, shared corners (dx 70, dy -40) -->
+<path class="face" d="M136 84 L336 84 L336 444 L136 444 Z"/>
+<path class="face" d="M336 84 L406 44 L406 404 L336 444 Z"/>
+<path class="face" d="M136 84 L206 44 L406 44 L336 84 Z"/>
+<!-- top supply duct collar -->
+<path class="ln" d="M136 116 H336"/>
+<path class="thin" d="M336 116 L406 76"/>
+<path class="thin" d="M156 100 H220"/>
+<!-- upper filter grille compartment -->
+<rect class="ln" x="154" y="132" width="164" height="124" rx="4"/>
+<!-- filter grille louvers -->
+<path class="thin" d="M164 150 H308 M164 166 H308 M164 182 H308 M164 198 H308 M164 214 H308 M164 230 H308 M164 246 H308"/>
+<!-- red filter access pull tab -->
+<rect class="red" x="222" y="136" width="28" height="6" rx="1"/>
+<!-- cabinet center divider -->
+<path class="ln" d="M136 270 H336"/>
+<path class="thin" d="M336 270 L406 230"/>
+<!-- lower blower door -->
+<rect class="ln" x="154" y="284" width="164" height="136" rx="4"/>
+<!-- safety interlock switch / handle (red) -->
+<circle class="red" cx="298" cy="352" r="7"/>
+<circle cx="298" cy="352" r="2.5" class="red-fill"/>
+<!-- centrifugal blower wheel internal view -->
+<circle class="thin" cx="236" cy="352" r="34"/>
+<circle class="red-thin" cx="236" cy="352" r="16"/>
+<!-- spec badge -->
+<rect class="thin" x="168" y="300" width="52" height="24" rx="2"/>
+<!-- refrigerant line set (copper suction + liquid lines) -->
+<path class="red" d="M336 340 L376 317 V250"/>
+<path class="ln" d="M336 360 L388 330 V260"/>
+<!-- condensate drain P-trap -->
+<path class="thin" d="M136 414 L112 428 V444 H124"/>
+<!-- base rails -->
+<path class="thin" d="M136 432 H336"/>
+<path class="thin" d="M336 432 L406 392"/>
+</svg>

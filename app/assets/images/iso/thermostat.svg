@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="Smart thermostat isometric">
+<style>
+.ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red{fill:none;stroke:#EB2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red-thin{fill:none;stroke:#EB2B2B;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.red-fill{fill:#EB2B2B;stroke:none}
+@media (prefers-color-scheme:dark){
+.ln,.thin{stroke:#F2F2F2}
+.face{stroke:#F2F2F2}
+}
+</style>
+<!-- wall mounting plate, shared corners (dx 35, dy -20) -->
+<path class="face" d="M146 146 L336 146 L336 386 L146 386 Z"/>
+<path class="face" d="M336 146 L371 126 L371 366 L336 386 Z"/>
+<path class="face" d="M146 146 L181 126 L371 126 L336 146 Z"/>
+<!-- sensor window atop wall plate -->
+<circle class="thin" cx="241" cy="164" r="4"/>
+<!-- smart circular thermostat body (centered cx 241 cy 266) -->
+<circle class="ln" cx="241" cy="266" r="88"/>
+<circle class="thin" cx="241" cy="266" r="76"/>
+<!-- active heating setpoint arc (red) -->
+<path class="red-thin" d="M184 233 A70 70 0 0 1 298 233"/>
+<circle cx="241" cy="196" r="5" class="red-fill"/>
+<!-- dark glass screen face -->
+<circle class="face" cx="241" cy="266" r="54"/>
+<!-- bold 72° temperature readout (red) -->
+<text x="241" y="276" text-anchor="middle" font-family="'JetBrains Mono', Menlo, Monaco, monospace" font-size="36" font-weight="800" fill="#EB2B2B" letter-spacing="-1">72°</text>
+<!-- heating flame icon beneath setpoint -->
+<path class="red-fill" d="M241 288 C243 291 245 293 245 296 C245 298.5 243.2 300.5 241 300.5 C238.8 300.5 237 298.5 237 296 C237 294 239 292 241 288 Z"/>
+<!-- side plate bevel line -->
+<path class="thin" d="M346 160 L365 149"/>
+</svg>

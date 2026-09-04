@@ -82,6 +82,7 @@ flutter:
     - assets/images/schematics/microwave.png
     - assets/images/schematics/dishwasher.png
     - assets/images/schematics/thermostat.png
+    - assets/images/iso/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

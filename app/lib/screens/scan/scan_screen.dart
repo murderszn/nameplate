@@ -230,10 +230,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           const SizedBox(height: 4),
           Text(
             'Type a Nameplate ID or paste a tag link.',
-            style: TextStyle(
-              color: context.npColors.gray400,
-              fontSize: 13,
-            ),
+            style: TextStyle(color: context.npColors.gray400, fontSize: 13),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -248,7 +245,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
             decoration: InputDecoration(
               hintText: 'NP-7K2M4QX9',
               errorText: _error,
-              prefixIcon: Icon(Icons.tag_rounded, color: context.npColors.gray400),
+              prefixIcon: Icon(
+                Icons.tag_rounded,
+                color: context.npColors.gray400,
+              ),
               filled: true,
               fillColor: context.npColors.bgElevated,
               border: OutlineInputBorder(
@@ -313,7 +313,11 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
           // Fast test plates ticker
           Row(
             children: [
-              Icon(Icons.flash_on_rounded, size: 13, color: const Color(0xFFF59E0B)),
+              Icon(
+                Icons.flash_on_rounded,
+                size: 13,
+                color: const Color(0xFFF59E0B),
+              ),
               const SizedBox(width: 5),
               Text(
                 'QUICK DISPATCH TAGS',
@@ -438,10 +442,7 @@ class _QuickTagChip extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 11,
-                color: context.npColors.gray400,
-              ),
+              style: TextStyle(fontSize: 11, color: context.npColors.gray400),
             ),
           ],
         ),
@@ -529,7 +530,7 @@ class _VerificationBanner extends StatelessWidget {
   }
 }
 
-// ── Full-Bleed Scanner viewfinder ──────────────────────────────────────────────
+// ── Square Scanner viewfinder ──────────────────────────────────────────────────
 
 class _ScannerViewfinder extends StatelessWidget {
   final bool isScanning;
@@ -539,172 +540,145 @@ class _ScannerViewfinder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: const Color(0xFF080A0F),
-        border: Border(
-          bottom: BorderSide(color: context.npColors.lineStrong, width: 0.8),
+    return AspectRatio(
+      aspectRatio: 1,
+      child: ColoredBox(
+        color: Colors.black,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            const IgnorePointer(
+              child: CustomPaint(painter: _CrosshairPainter()),
+            ),
+            Center(
+              child: _CenterScanButton(
+                isScanning: isScanning,
+                onPressed: isScanning ? null : onOpenScanner,
+              ),
+            ),
+          ],
         ),
-      ),
-      child: Stack(
-        children: [
-          // Background technical grid texture
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.08,
-              child: CustomPaint(painter: _GridPainter()),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Optical Targeting Reticle Frame
-                Center(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Outer bracket container
-                      Container(
-                        width: 190,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: const Color(0xFF1E293B),
-                            width: 1,
-                          ),
-                        ),
-                      ),
-                      // Corner brackets
-                      SizedBox(
-                        width: 190,
-                        height: 120,
-                        child: CustomPaint(
-                          painter: _CornerBracketsPainter(
-                            color: const Color(0xFF38BDF8),
-                          ),
-                        ),
-                      ),
-                      // Center laser line
-                      Positioned(
-                        top: 59,
-                        left: 10,
-                        right: 10,
-                        child: Container(
-                          height: 1.5,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                NpColors.red,
-                                NpColors.redHover,
-                                Colors.transparent,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Center QR icon
-                      isScanning
-                          ? const SizedBox(
-                              width: 32,
-                              height: 32,
-                              child: CircularProgressIndicator(
-                                color: NpColors.red,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.qr_code_scanner_rounded,
-                                  color: Colors.white,
-                                  size: 38,
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  'AIM AT PHYSICAL NAMEPLATE',
-                                  style: NpType.mono.copyWith(
-                                    fontSize: 8.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: const Color(0xFF94A3B8),
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Camera action button
-                NpButton.primary(
-                  icon: Icons.camera_alt_rounded,
-                  label: isScanning ? 'Opening camera…' : 'Scan with camera',
-                  isLoading: isScanning,
-                  size: NpButtonSize.lg,
-                  isExpanded: true,
-                  onPressed: isScanning ? null : onOpenScanner,
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
 }
 
-class _GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 0.5;
-    const step = 20.0;
-    for (double x = 0; x < size.width; x += step) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
-    }
-    for (double y = 0; y < size.height; y += step) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
-    }
-  }
+class _CenterScanButton extends StatelessWidget {
+  final bool isScanning;
+  final VoidCallback? onPressed;
+
+  const _CenterScanButton({required this.isScanning, required this.onPressed});
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Scan with camera',
+      child: Material(
+        color: onPressed == null ? const Color(0xFF6B6B6B) : NpColors.red,
+        borderRadius: BorderRadius.circular(3),
+        elevation: 6,
+        shadowColor: Colors.black.withValues(alpha: 0.45),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(3),
+          child: SizedBox(
+            width: 168,
+            height: 56,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (isScanning)
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                else
+                  const Icon(
+                    Icons.camera_alt_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                const SizedBox(width: 10),
+                Text(
+                  isScanning ? 'Opening camera…' : 'Scan with camera',
+                  style: NpType.mono.copyWith(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.7,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _CornerBracketsPainter extends CustomPainter {
-  final Color color;
-  const _CornerBracketsPainter({required this.color});
+class _CrosshairPainter extends CustomPainter {
+  const _CrosshairPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
+    final framePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.72)
       ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.square;
+    final guidePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.28)
+      ..strokeWidth = 1;
 
-    const len = 14.0;
+    final inset = size.width * 0.09;
+    final frame = Rect.fromLTWH(
+      inset,
+      inset,
+      size.width - inset * 2,
+      size.height - inset * 2,
+    );
+    const cornerLength = 42.0;
 
-    // Top-left
-    canvas.drawLine(const Offset(0, 0), const Offset(len, 0), paint);
-    canvas.drawLine(const Offset(0, 0), const Offset(0, len), paint);
+    final corners = <Path>[
+      Path()
+        ..moveTo(frame.left, frame.top + cornerLength)
+        ..lineTo(frame.left, frame.top)
+        ..lineTo(frame.left + cornerLength, frame.top),
+      Path()
+        ..moveTo(frame.right - cornerLength, frame.top)
+        ..lineTo(frame.right, frame.top)
+        ..lineTo(frame.right, frame.top + cornerLength),
+      Path()
+        ..moveTo(frame.left, frame.bottom - cornerLength)
+        ..lineTo(frame.left, frame.bottom)
+        ..lineTo(frame.left + cornerLength, frame.bottom),
+      Path()
+        ..moveTo(frame.right - cornerLength, frame.bottom)
+        ..lineTo(frame.right, frame.bottom)
+        ..lineTo(frame.right, frame.bottom - cornerLength),
+    ];
+    for (final path in corners) {
+      canvas.drawPath(path, framePaint);
+    }
 
-    // Top-right
-    canvas.drawLine(Offset(size.width, 0), Offset(size.width - len, 0), paint);
-    canvas.drawLine(Offset(size.width, 0), Offset(size.width, len), paint);
-
-    // Bottom-left
-    canvas.drawLine(Offset(0, size.height), Offset(len, size.height), paint);
-    canvas.drawLine(Offset(0, size.height), Offset(0, size.height - len), paint);
-
-    // Bottom-right
-    canvas.drawLine(Offset(size.width, size.height), Offset(size.width - len, size.height), paint);
-    canvas.drawLine(Offset(size.width, size.height), Offset(size.width, size.height - len), paint);
+    final center = Offset(size.width / 2, size.height / 2);
+    const crosshairLength = 32.0;
+    canvas.drawLine(
+      Offset(center.dx - crosshairLength, center.dy),
+      Offset(center.dx + crosshairLength, center.dy),
+      guidePaint,
+    );
+    canvas.drawLine(
+      Offset(center.dx, center.dy - crosshairLength),
+      Offset(center.dx, center.dy + crosshairLength),
+      guidePaint,
+    );
   }
 
   @override
