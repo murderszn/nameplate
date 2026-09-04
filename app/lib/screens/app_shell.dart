@@ -234,7 +234,7 @@ class _RailItem extends StatelessWidget {
 }
 
 /// Phone bottom bar — high-precision hardware dock with OLED frosted glass blur,
-/// tactile capsule active state, red micro-dot LED, and haptic feedback.
+/// tactile capsule active state, and haptic feedback.
 class _BottomBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -361,17 +361,6 @@ class _BottomBarItem extends StatelessWidget {
                       letterSpacing: 0.7,
                     ),
                   ),
-                  if (selected) ...[
-                    const SizedBox(width: 4),
-                    Container(
-                      width: 4,
-                      height: 4,
-                      decoration: const BoxDecoration(
-                        color: NpColors.red,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ],

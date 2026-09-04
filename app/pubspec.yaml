@@ -84,6 +84,7 @@ flutter:
     - assets/images/schematics/thermostat.png
     - assets/images/iso/
     - assets/images/properties/
+    - assets/images/triptych/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

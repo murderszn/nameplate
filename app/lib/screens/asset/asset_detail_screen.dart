@@ -187,8 +187,6 @@ class AssetDetailScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               _Header(asset: asset),
-                              const SizedBox(height: 16),
-                              _PrimaryActionCard(asset: asset),
                             ],
                           ),
                         ),
@@ -207,8 +205,6 @@ class AssetDetailScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                   children: [
                     _Header(asset: asset),
-                    const SizedBox(height: 16),
-                    _PrimaryActionCard(asset: asset),
                     const SizedBox(height: 20),
                     _buildHistorySection(context, ref, asset),
                   ],
@@ -493,41 +489,6 @@ class _StatusChip extends StatelessWidget {
       AssetStatus.salvage => ('Salvage', NpPillTone.neutral),
     };
     return NpStatusPill(label: label, tone: tone);
-  }
-}
-
-class _PrimaryActionCard extends StatelessWidget {
-  final Asset asset;
-  const _PrimaryActionCard({required this.asset});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.npColors.lineStrong),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const NpSectionLabel('Primary field action'),
-          SizedBox(height: 12),
-          NpButton.primary(
-            icon: Icons.build_rounded,
-            label: 'Log Service Event',
-            size: NpButtonSize.lg,
-            isExpanded: true,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => LogServiceEventScreen(asset: asset),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

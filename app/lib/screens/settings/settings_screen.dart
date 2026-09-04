@@ -8,6 +8,7 @@ import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
 import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
+import '../../widgets/field_workflow_triptych.dart';
 import 'tag_studio_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -138,6 +139,12 @@ class SettingsScreen extends ConsumerWidget {
             ...session.outbox.take(8).map((op) => _OutboxTile(op: op)),
           ],
 
+          // ── Field Operating Standard ──────────────────────────────────────
+          const _FullBleedSectionHeader(
+            title: 'Field operating standard',
+          ),
+          const FieldMissionBanner(),
+
           // ── Device & App Diagnostics ───────────────────────────────────────
           const _FullBleedSectionHeader(
             title: 'Device telemetry & app runtime',
@@ -152,9 +159,10 @@ class SettingsScreen extends ConsumerWidget {
           Divider(height: 1, color: context.npColors.lineStrong),
           _FullBleedTile(
             icon: Icons.shield_outlined,
-            accentColor: context.npColors.gray400,
+            accentColor: NpColors.red,
             title: 'About Nameplate Field',
-            subtitle: 'v0.1.0 · Offline-first appliance registry engine',
+            subtitle: 'Scan it. Trace it. Account for it.',
+            onTap: () => showFieldWorkflowSheet(context),
           ),
         ],
       ),
@@ -537,56 +545,67 @@ class _FullBleedTile extends StatelessWidget {
   final Color accentColor;
   final String title;
   final String? subtitle;
+  final VoidCallback? onTap;
 
   const _FullBleedTile({
     required this.icon,
     required this.accentColor,
     required this.title,
     this.subtitle,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: context.npColors.bgCard,
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            left: BorderSide(color: accentColor, width: 3.5),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              left: BorderSide(color: accentColor, width: 3.5),
+            ),
           ),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Icon(icon, color: accentColor, size: 20),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: context.npColors.white,
-                    ),
-                  ),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Icon(icon, color: accentColor, size: 20),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      subtitle!,
+                      title,
                       style: TextStyle(
-                        fontSize: 12,
-                        color: context.npColors.gray400,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: context.npColors.white,
                       ),
                     ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: context.npColors.gray400,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-          ],
+              if (onTap != null)
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 12,
+                  color: context.npColors.gray400,
+                ),
+            ],
+          ),
         ),
       ),
     );

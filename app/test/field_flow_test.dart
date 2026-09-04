@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,9 +19,9 @@ void main() {
     await tester.tap(find.text('TURNS'));
     await tester.pump();
     expect(find.text('Unit turns'), findsOneWidget);
-    expect(find.text('Start turn'), findsWidgets);
+    expect(find.byIcon(Icons.play_arrow_rounded), findsWidgets);
 
-    await tester.tap(find.text('Start turn').first);
+    await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('Move-out'), findsOneWidget);
