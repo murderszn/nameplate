@@ -43,63 +43,9 @@ class TurnsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 40),
         children: [
-          // Top Telemetry Ribbon
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F172A),
-              border: Border(
-                top: const BorderSide(color: Color(0xFF1E3A8A), width: 1),
-                bottom: BorderSide(color: context.npColors.lineStrong),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF59E0B),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${inProgress.length} ACTIVE WALKS',
-                  style: NpType.mono.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFFBBF24),
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  '${ready.length} VACANT READY',
-                  style: NpType.mono.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF34D399),
-                    letterSpacing: 0.6,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  '98.4% RECOVERY',
-                  style: NpType.mono.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF93C5FD),
-                    letterSpacing: 0.6,
-                  ),
-                ),
-              ],
-            ),
-          ),
           if (inProgress.isNotEmpty) ...[
             _SectionHeader(
-              code: '01',
-              title: 'IN PROGRESS (${inProgress.length})',
+              title: 'In progress (${inProgress.length})',
               accentColor: const Color(0xFFF59E0B),
             ),
             ...inProgress.map(
@@ -111,15 +57,14 @@ class TurnsScreen extends ConsumerWidget {
             ),
           ],
           _SectionHeader(
-            code: '02',
-            title: 'READY FOR TURN (${ready.length})',
+            title: 'Units (${ready.length})',
             accentColor: const Color(0xFF10B981),
           ),
           if (ready.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
               child: Text(
-                'No vacant or turning units in your property scope.',
+                'No units in your property scope.',
                 style: NpType.mono.copyWith(
                   color: context.npColors.gray500,
                   fontSize: 12,
@@ -134,22 +79,22 @@ class TurnsScreen extends ConsumerWidget {
                 onStart: () => _start(context, ref, u),
               ),
             ),
-          _SectionHeader(
-            code: '03',
-            title: 'OCCUPIED SPOT AUDIT (${occupied.length})',
-            accentColor: const Color(0xFF3B82F6),
-          ),
-          ...occupied.map(
-            (u) => _UnitCard(
-              unit: u,
-              assetCount: session.rosterForUnit(u.id).length,
-              onStart: () => _start(context, ref, u),
+          if (occupied.isNotEmpty) ...[
+            _SectionHeader(
+              title: 'Occupied (${occupied.length})',
+              accentColor: const Color(0xFF3B82F6),
             ),
-          ),
+            ...occupied.map(
+              (u) => _UnitCard(
+                unit: u,
+                assetCount: session.rosterForUnit(u.id).length,
+                onStart: () => _start(context, ref, u),
+              ),
+            ),
+          ],
           if (completed.isNotEmpty) ...[
             _SectionHeader(
-              code: '04',
-              title: 'COMPLETED THIS SHIFT (${completed.length})',
+              title: 'Completed (${completed.length})',
               accentColor: const Color(0xFF64748B),
             ),
             ...completed.map(
@@ -295,12 +240,10 @@ class TurnsScreen extends ConsumerWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  final String code;
   final String title;
   final Color accentColor;
 
   const _SectionHeader({
-    required this.code,
     required this.title,
     required this.accentColor,
   });
@@ -308,36 +251,16 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 20, 18, 8),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(2),
-              border: Border.all(color: accentColor.withValues(alpha: 0.35), width: 0.8),
-            ),
-            child: Text(
-              code,
-              style: NpType.mono.copyWith(
-                fontSize: 9.5,
-                fontWeight: FontWeight.w800,
-                color: accentColor,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: NpType.mono.copyWith(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w800,
-              color: context.npColors.gray400,
-              letterSpacing: 1.1,
-            ),
-          ),
-        ],
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Text(
+        title.toUpperCase(),
+        style: NpType.mono.copyWith(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w800,
+          color: accentColor,
+          letterSpacing: 1.1,
+        ),
       ),
     );
   }
@@ -345,11 +268,11 @@ class _SectionHeader extends StatelessWidget {
 
 class _UnitCard extends StatelessWidget {
   final Unit unit;
-  final int assetCount;
+  final int? assetCount;
   final VoidCallback onStart;
   const _UnitCard({
     required this.unit,
-    required this.assetCount,
+    this.assetCount,
     required this.onStart,
   });
 
@@ -377,136 +300,90 @@ class _UnitCard extends StatelessWidget {
       return name[0].toUpperCase();
     }();
 
-    final tone = switch (unit.occupancyStatus) {
-      OccupancyStatus.turning => NpPillTone.caution,
-      OccupancyStatus.vacant => NpPillTone.neutral,
-      OccupancyStatus.occupied => NpPillTone.verified,
-      _ => NpPillTone.neutral,
-    };
-
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: context.npColors.bgCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.npColors.lineStrong),
+        border: Border(
+          bottom: BorderSide(color: context.npColors.lineStrong, width: 0.8),
+        ),
       ),
-      clipBehavior: Clip.antiAlias,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onStart,
           child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // 48px rounded icon tile left of unit.displayName with tinted fill by occupancyStatus + monogram letter
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: tileBg,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: tileFg.withValues(alpha: 0.35),
-                          width: 1,
-                        ),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        monogram,
-                        style: NpType.mono.copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: tileFg,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
+                // 48px rounded icon tile left of unit.displayName with tinted fill by occupancyStatus + monogram letter
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: tileBg,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: tileFg.withValues(alpha: 0.35),
+                      width: 1,
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    monogram,
+                    style: NpType.mono.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: tileFg,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        unit.displayName,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          color: context.npColors.white,
+                          letterSpacing: -0.2,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  unit.displayName,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                    color: context.npColors.white,
-                                    letterSpacing: -0.2,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              NpStatusPill(
-                                label: unit.occupancyStatus.label,
-                                tone: tone,
-                              ),
-                            ],
+                          Icon(
+                            Icons.apartment_outlined,
+                            size: 13,
+                            color: context.npColors.gray500,
                           ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.apartment_outlined,
-                                size: 13,
-                                color: context.npColors.gray500,
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              unit.propertyName,
+                              style: TextStyle(
+                                color: context.npColors.gray400,
+                                fontSize: 12,
                               ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  '${unit.propertyName} · $assetCount assets on roster',
-                                  style: TextStyle(
-                                    color: context.npColors.gray400,
-                                    fontSize: 12,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: context.npColors.bgElevated,
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(color: context.npColors.lineStrong),
-                      ),
-                      child: Text(
-                        '$assetCount ITEMS ROSTERED',
-                        style: NpType.mono.copyWith(
-                          fontSize: 9.5,
-                          color: context.npColors.gray400,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.6,
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
-                    NpButton.primary(
-                      icon: Icons.play_arrow_rounded,
-                      label: 'Start turn',
-                      size: NpButtonSize.sm,
-                      onPressed: onStart,
-                    ),
-                  ],
+                const SizedBox(width: 12),
+                NpButton.primary(
+                  icon: Icons.play_arrow_rounded,
+                  label: 'Start turn',
+                  size: NpButtonSize.sm,
+                  onPressed: onStart,
                 ),
               ],
             ),
@@ -537,13 +414,12 @@ class _TurnCard extends StatelessWidget {
     final stripeColor = isDone ? const Color(0xFF10B981) : const Color(0xFFEB2B2B);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: context.npColors.bgCard,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: context.npColors.lineStrong),
+        border: Border(
+          bottom: BorderSide(color: context.npColors.lineStrong, width: 0.8),
+        ),
       ),
-      clipBehavior: Clip.antiAlias,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -551,14 +427,14 @@ class _TurnCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header stripe Container(height: 4) in same color (red active / emerald completed)
+              // Header stripe Container(height: 3.5) in same color (red active / emerald completed)
               Container(
-                height: 4,
+                height: 3.5,
                 width: double.infinity,
                 color: stripeColor,
               ),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

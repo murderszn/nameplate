@@ -59,10 +59,9 @@ class SettingsScreen extends ConsumerWidget {
                   },
           ),
 
-          // ── 01 // Appearance ───────────────────────────────────────────────
+          // ── Appearance ─────────────────────────────────────────────────────
           const _FullBleedSectionHeader(
-            code: '01',
-            title: 'SYSTEM APPEARANCE',
+            title: 'System appearance',
           ),
           _FullBleedSwitchTile(
             icon: darkMode
@@ -78,12 +77,11 @@ class SettingsScreen extends ConsumerWidget {
                 ref.read(themeModeProvider.notifier).setDarkMode(enabled),
           ),
 
-          const Divider(height: 1, color: Color(0xFF1E293B)),
+          Divider(height: 1, color: context.npColors.lineStrong),
 
-          // ── 02 // Sync & Network Data ──────────────────────────────────────
+          // ── Sync & Network Data ────────────────────────────────────────────
           const _FullBleedSectionHeader(
-            code: '02',
-            title: 'DATA TRANSPORT & OFFLINE BUFFER',
+            title: 'Data transport & offline buffer',
           ),
           _FullBleedSwitchTile(
             icon: Icons.cloud_off_rounded,
@@ -94,7 +92,7 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: (v) =>
                 ref.read(fieldSessionProvider).setOfflineMode(v),
           ),
-          const Divider(height: 1, color: Color(0xFF1E293B)),
+          Divider(height: 1, color: context.npColors.lineStrong),
           _FullBleedSwitchTile(
             icon: Icons.wifi_tethering_rounded,
             accentColor: const Color(0xFF10B981),
@@ -105,10 +103,9 @@ class SettingsScreen extends ConsumerWidget {
                 ref.read(fieldSessionProvider).setPhotoWifiOnly(v),
           ),
 
-          // ── 03 // Hardware Minting Studio ──────────────────────────────────
+          // ── Hardware Minting Studio ────────────────────────────────────────
           const _FullBleedSectionHeader(
-            code: '03',
-            title: 'HARDWARE & TAG COMMISSIONING',
+            title: 'Hardware & tag commissioning',
           ),
           _TagStudioBanner(
             offlineRemainingCount: session.remainingOfflinePoolCount,
@@ -117,11 +114,10 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── 04 // Waiting to Upload (Outbox) ───────────────────────────────
+          // ── Waiting to Upload (Outbox) ─────────────────────────────────────
           if (session.outbox.isNotEmpty) ...[
             _FullBleedSectionHeader(
-              code: '04',
-              title: 'UPLOAD QUEUE BUFFER',
+              title: 'Upload queue buffer',
               trailing: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
@@ -142,10 +138,9 @@ class SettingsScreen extends ConsumerWidget {
             ...session.outbox.take(8).map((op) => _OutboxTile(op: op)),
           ],
 
-          // ── 05 // Device & App Diagnostics ─────────────────────────────────
+          // ── Device & App Diagnostics ───────────────────────────────────────
           const _FullBleedSectionHeader(
-            code: '05',
-            title: 'DEVICE TELEMETRY & APP RUNTIME',
+            title: 'Device telemetry & app runtime',
           ),
           _FullBleedTile(
             icon: Icons.devices_rounded,
@@ -154,7 +149,7 @@ class SettingsScreen extends ConsumerWidget {
             subtitle:
                 '${session.deviceId} · ${MediaQuery.sizeOf(context).shortestSide >= 640 ? 'Tablet' : 'Phone'} layout',
           ),
-          const Divider(height: 1, color: Color(0xFF1E293B)),
+          Divider(height: 1, color: context.npColors.lineStrong),
           _FullBleedTile(
             icon: Icons.shield_outlined,
             accentColor: const Color(0xFF64748B),
@@ -330,14 +325,14 @@ class _TechnicianHeroStage extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 7),
+              const SizedBox(width: 8),
               Text(
-                'OPERATIVE // ${session.tech.name}',
-                style: NpType.mono.copyWith(
-                  fontSize: 11,
+                session.tech.name,
+                style: const TextStyle(
+                  fontSize: 15,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF38BDF8),
-                  letterSpacing: 0.8,
+                  color: Colors.white,
+                  letterSpacing: -0.2,
                 ),
               ),
               const Spacer(),
@@ -461,9 +456,9 @@ class _SyncTelemetryRibbon extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'SYNC ENGINE // ${isOffline ? 'OFFLINE BUFFER' : 'ONLINE LIVE'}',
+                  isOffline ? 'OFFLINE BUFFER' : 'SYNC LIVE',
                   style: NpType.mono.copyWith(
-                    fontSize: 9,
+                    fontSize: 9.5,
                     fontWeight: FontWeight.w800,
                     color: isOffline
                         ? const Color(0xFFF59E0B)
@@ -501,12 +496,10 @@ class _SyncTelemetryRibbon extends StatelessWidget {
 // ── Full-Bleed Section Header ─────────────────────────────────────────────────
 
 class _FullBleedSectionHeader extends StatelessWidget {
-  final String code;
   final String title;
   final Widget? trailing;
 
   const _FullBleedSectionHeader({
-    required this.code,
     required this.title,
     this.trailing,
   });
@@ -515,26 +508,16 @@ class _FullBleedSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(18, 20, 18, 8),
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
       child: Row(
         children: [
           Text(
-            '$code //',
-            style: NpType.mono.copyWith(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF38BDF8),
-              letterSpacing: 1.0,
-            ),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            title,
+            title.toUpperCase(),
             style: NpType.mono.copyWith(
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF64748B),
-              letterSpacing: 1.2,
+              color: context.npColors.gray400,
+              letterSpacing: 1.1,
             ),
           ),
           if (trailing != null) ...[

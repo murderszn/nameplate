@@ -218,37 +218,6 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Text(
-                '02 // IDENTIFICATION',
-                style: NpType.mono.copyWith(
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w800,
-                  color: context.npColors.gray400,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: context.npColors.bgElevated,
-                  borderRadius: BorderRadius.circular(2),
-                  border: Border.all(color: context.npColors.lineStrong),
-                ),
-                child: Text(
-                  'CROCKFORD BASE32',
-                  style: NpType.mono.copyWith(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: context.npColors.gray500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
           Text(
             'Enter a tag ID',
             style: TextStyle(
@@ -410,65 +379,10 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
-          // 01: Optical viewfinder stage
           _ScannerViewfinder(
             isScanning: _isScanning,
             onOpenScanner: _openCameraScanner,
           ),
-          // Telemetry strip color block
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF0F172A),
-              border: Border(
-                top: const BorderSide(color: Color(0xFF1E3A8A), width: 1),
-                bottom: BorderSide(color: context.npColors.lineStrong),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF10B981),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'ZERO-SIGNAL READY',
-                  style: NpType.mono.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF93C5FD),
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  'POOL: 48 TOKENS',
-                  style: NpType.mono.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFFFBBF24),
-                    letterSpacing: 0.6,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  'SYNC: LIVE',
-                  style: NpType.mono.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF6EE7B7),
-                    letterSpacing: 0.6,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // 02: Manual tag identification section
           _buildManualEntrySection(),
         ],
       ),
@@ -627,8 +541,11 @@ class _ScannerViewfinder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF080A0F),
+      decoration: BoxDecoration(
+        color: const Color(0xFF080A0F),
+        border: Border(
+          bottom: BorderSide(color: context.npColors.lineStrong, width: 0.8),
+        ),
       ),
       child: Stack(
         children: [
@@ -640,57 +557,10 @@ class _ScannerViewfinder extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Top registration header
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B),
-                        border: Border.all(color: const Color(0xFF334155)),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF10B981),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'OPTICAL SCANNER // ACTIVE',
-                            style: NpType.mono.copyWith(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF38BDF8),
-                              letterSpacing: 1.1,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      'ED25519 VERIFIED',
-                      style: NpType.mono.copyWith(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF64748B),
-                        letterSpacing: 0.8,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
                 // Optical Targeting Reticle Frame
                 Center(
                   child: Stack(
