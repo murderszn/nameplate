@@ -199,7 +199,6 @@ export function Users() {
     <div className="np-users-page">
       <section className="np-users-command">
         <div>
-          <span className="np-kicker">06 / Workforce access</span>
           <h2>Maintenance Users</h2>
           <p>Invite field staff, control property scope, and manage operational access.</p>
         </div>

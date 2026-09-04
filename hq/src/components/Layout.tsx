@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/sync', label: 'Sync & Tag Ops', index: '05', icon: 'sync' },
   { to: '/users', label: 'Users', index: '06', icon: 'users' },
   { to: '/settings', label: 'Settings', index: '07', icon: 'settings' },
+  { to: '/architecture', label: 'Data Architecture', index: '08', icon: 'analytics' },
 ];
 
 const PROPERTY_NAMES: Record<string, string> = {
@@ -261,6 +262,13 @@ export function Layout() {
       return {
         title: 'Maintenance Users',
         breadcrumbs: [{ label: 'Workforce' }, { label: 'Access & Assignments' }],
+      };
+    }
+
+    if (segments[0] === 'architecture') {
+      return {
+        title: 'Data Architecture',
+        breadcrumbs: [{ label: 'System Design' }, { label: 'Table Relationships' }],
       };
     }
 

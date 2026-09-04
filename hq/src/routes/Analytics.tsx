@@ -109,7 +109,6 @@ export function Analytics() {
     <div className="np-analytics-page" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div className="np-settings-header">
         <div>
-          <span className="np-kicker">04 / Fleet Intelligence</span>
           <h2 style={{ margin: '4px 0 8px', fontSize: '1.4rem' }}>Appliance Reliability, Shrinkage & CapEx</h2>
           <p className="np-muted" style={{ margin: 0, fontSize: '0.9rem' }}>
             Portfolio-wide failure rate benchmarks, property health scorecards, and shrinkage risk audit.

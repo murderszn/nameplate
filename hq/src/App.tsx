@@ -11,6 +11,7 @@ import { Analytics } from './routes/Analytics';
 import { SyncOperations } from './routes/SyncOperations';
 import { Settings } from './routes/Settings';
 import { Users } from './routes/Users';
+import { Architecture } from './routes/Architecture';
 
 /**
  * Nameplate HQ — route tree with HashRouter for universal static hosting.
@@ -31,6 +32,7 @@ function App() {
           <Route path="/sync" element={<SyncOperations />} />
           <Route path="/users" element={<Users />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/architecture" element={<Architecture />} />
         </Route>
       </Routes>
     </HashRouter>

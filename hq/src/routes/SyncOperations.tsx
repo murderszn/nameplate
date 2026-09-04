@@ -155,7 +155,6 @@ export function SyncOperations() {
       {/* Header */}
       <div className="np-sync-header">
         <div>
-          <span className="np-kicker">05 / Fleet Sync & Hardware Ops</span>
           <h2 style={{ margin: '4px 0 6px', fontSize: '1.4rem' }}>Sync Engine & Tag Studio</h2>
           <p className="np-muted" style={{ margin: 0, fontSize: '0.88rem' }}>
             Monotonic Sequence Watermark: <span className="mono" style={{ color: 'var(--white)', fontWeight: 700 }}>#{logs[0]?.seq || 10483}</span> · Zero-Signal Offline Outbox Router

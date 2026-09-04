@@ -61,7 +61,6 @@ export function Settings() {
     <div className="np-settings-page">
       <div className="np-settings-header">
         <div>
-          <span className="np-kicker">05 / Configuration</span>
           <h2 style={{ margin: '4px 0 8px', fontSize: '1.4rem' }}>Portfolio Governance & Field Rules</h2>
           <p className="np-muted" style={{ margin: 0, fontSize: '0.9rem' }}>
             Configure organization SLAs, field technician verification policies, and integration endpoints.

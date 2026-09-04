@@ -1,0 +1,18 @@
+/* Interactive node canvas controls */
+.np-schema-table__head { cursor: grab; user-select: none; touch-action: none; }
+.np-schema-table__head:active { cursor: grabbing; }
+.np-schema-zoom { position: fixed; top: 148px; right: 24px; z-index: 6; display: flex; align-items: center; gap: 5px; padding: 5px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 94%, transparent); font: .65rem var(--font-mono); }
+.np-schema-zoom button { min-width: 27px; height: 26px; border: 0; background: var(--bg-subtle); color: var(--white); cursor: pointer; font: inherit; }
+.np-schema-zoom button:hover { background: var(--red); color: #fff; }
+.np-schema-zoom span { min-width: 42px; text-align: center; color: var(--gray-500); }
+.np-schema-dictionary { position: fixed; top: 132px; right: 24px; bottom: 72px; width: 320px; padding: 18px; z-index: 5; background: color-mix(in srgb, var(--bg) 97%, transparent); border: 1px solid var(--line); box-shadow: 0 16px 45px rgba(var(--overlay-rgb), .16); overflow: auto; }
+.np-schema-dictionary__head { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.np-schema-dictionary__head h3 { margin: 4px 0; font: 700 1rem var(--font-mono); }
+.np-schema-dictionary__head small, .np-schema-dictionary p { color: var(--gray-500); font-size: .7rem; }
+.np-schema-dictionary__head button { width: 26px; height: 26px; border: 1px solid var(--line); color: var(--gray-500); background: transparent; cursor: pointer; font-size: 1.1rem; }
+.np-schema-dictionary__head button:hover { color: var(--red); border-color: var(--red); }
+.np-schema-dictionary p { line-height: 1.55; margin: 15px 0; }
+.np-dictionary-list { border-top: 1px solid var(--line); }
+.np-dictionary-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 9px 0; border-bottom: 1px solid var(--line-light); font: .68rem var(--font-mono); }
+.np-dictionary-row strong { font-weight: 600; }.np-dictionary-row span { color: var(--gray-500); }.np-dictionary-row small { grid-column: 1 / -1; color: var(--red); font-size: .55rem; letter-spacing: .05em; }
+@media (max-width: 900px) { .np-schema-dictionary { right: 16px; width: min(320px, calc(100vw - 32px)); }.np-schema-zoom { right: 16px; top: 220px; } }
