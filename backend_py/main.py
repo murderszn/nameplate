@@ -1,29 +1,34 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 
-from .db import engine, Base
-from .seed import seed_database
-from .routers import properties, assets, work_orders, service, users, sync, qr
+from .database import Base, SessionLocal, engine
+from .routers import assets, properties, qr, service, sync, users, work_orders
+from .seed_data import seed_database
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize SQLite database and seed initial data
+    # Create tables if not exist
     Base.metadata.create_all(bind=engine)
-    seed_database()
+    # Seed database
+    db = SessionLocal()
+    try:
+        seed_database(db)
+    finally:
+        db.close()
     yield
 
 
 app = FastAPI(
-    title="Nameplate Asset Infrastructure API",
-    description="Offline-first backend and portfolio ledger for property management, equipment tracking, and work orders.",
+    title="Nameplate REST API",
+    description="Backend API and offline sync engine for Nameplate asset intelligence platform.",
     version="1.0.0",
     lifespan=lifespan,
 )
 
-# Cross-Origin Resource Sharing (CORS) for Vite localhost, Flutter Web, and production
+# CORS middleware for local Vite / Flutter / Mobile dev
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,7 +37,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register API Routers
+# Register API routers with /api prefix
 app.include_router(properties.router, prefix="/api")
 app.include_router(assets.router, prefix="/api")
 app.include_router(work_orders.router, prefix="/api")
@@ -41,22 +46,40 @@ app.include_router(users.router, prefix="/api")
 app.include_router(sync.router, prefix="/api")
 app.include_router(qr.router, prefix="/api")
 
+# Also include /v1 prefix for users compatibility if needed
+app.include_router(users.router, prefix="/v1")
+
 
 @app.get("/")
 def root():
     return {
-        "name": "Nameplate Asset Infrastructure API",
+        "service": "Nameplate REST API",
         "status": "online",
-        "docsUrl": "/docs",
+        "docs": "/docs",
         "version": "1.0.0",
-        "database": "SQLite 3 WAL Engine",
     }
 
 
 @app.get("/api/health")
+@app.get("/health")
 def health_check():
     return {
         "status": "healthy",
-        "service": "Nameplate Backend",
+        "timestamp": "2026-09-02T12:00:00Z",
         "database": "connected",
     }
+
+
+@app.get("/api/org")
+def get_default_org():
+    return {
+        "id": "org_sonoran",
+        "name": "Sonoran Portfolio Partners LLC",
+        "slug": "sonoran-partners",
+        "plan": "Enterprise Portfolio Tier",
+    }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("backend_py.main:app", host="0.0.0.0", port=8000, reload=True)

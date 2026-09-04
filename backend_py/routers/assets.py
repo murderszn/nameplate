@@ -1,198 +1,203 @@
-import json
+import datetime
 from typing import List, Optional
-from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy import or_
+from sqlalchemy.orm import Session, joinedload
 
-from ..db import get_db
-from ..models import Asset, AssetCategory, AssetModel, Property, Unit, ServiceEvent, PartRecord
-from ..schemas import AssetSchema, AssetCreate, AssetUpdate, AssetCategorySchema, AssetModelSchema
+from ..database import get_db
+from .. import models, schemas
+from ..qr_utils import mint_npid, normalize_crockford
 
-router = APIRouter(tags=["assets"])
-
-
-def format_asset_response(asset: Asset) -> dict:
-    return {
-        "id": asset.id,
-        "npid": asset.npid,
-        "categoryId": asset.category_id,
-        "assetModelId": asset.asset_model_id,
-        "manufacturerRaw": asset.manufacturer_raw,
-        "modelRaw": asset.model_raw,
-        "serialNumber": asset.serial_number,
-        "serialConfidence": asset.serial_confidence,
-        "status": asset.status,
-        "condition": asset.condition,
-        "currentPropertyId": asset.current_property_id,
-        "currentUnitId": asset.current_unit_id,
-        "currentLocationConfirmedAt": asset.current_location_confirmed_at,
-        "installDate": asset.install_date,
-        "manufactureDate": asset.manufacture_date,
-        "warrantyExpiresOn": asset.warranty_expires_on,
-        "purchaseCost": asset.purchase_cost,
-        "expectedLifeMonths": asset.expected_life_months,
-        "lifetimeServiceCost": asset.lifetime_service_cost,
-        "serviceEventCount": asset.service_event_count,
-        "lastServiceAt": asset.last_service_at,
-        "notes": asset.notes,
-        "customFields": asset.custom_fields,
-        "category": {
-            "id": asset.category.id,
-            "key": asset.category.key,
-            "displayName": asset.category.display_name,
-            "defaultUsefulLifeMonths": asset.category.default_useful_life_months,
-            "defaultReplacementCost": asset.category.default_replacement_cost,
-        } if asset.category else None,
-        "currentProperty": {
-            "id": asset.current_property.id,
-            "name": asset.current_property.name,
-            "code": asset.current_property.code,
-            "city": asset.current_property.city,
-            "state": asset.current_property.state,
-        } if asset.current_property else None,
-        "currentUnit": {
-            "id": asset.unit.id,
-            "propertyId": asset.unit.property_id,
-            "label": asset.unit.label,
-            "occupancyStatus": asset.unit.occupancy_status,
-        } if asset.unit else None,
-        "serviceEvents": [
-            {
-                "id": se.id,
-                "assetId": se.asset_id,
-                "workOrderId": se.work_order_id,
-                "propertyId": se.property_id,
-                "unitId": se.unit_id,
-                "technicianId": se.technician_id,
-                "eventType": se.event_type,
-                "findings": se.findings,
-                "symptomCodes": se.symptom_codes,
-                "resolutionCode": se.resolution_code,
-                "laborMinutes": se.labor_minutes,
-                "laborRate": se.labor_rate,
-                "laborCost": se.labor_cost,
-                "partsCost": se.parts_cost,
-                "otherCost": se.other_cost,
-                "totalCost": se.total_cost,
-                "costBorneBy": se.cost_borne_by,
-                "isWarrantyClaim": se.is_warranty_claim,
-                "occurredAt": se.occurred_at,
-            }
-            for se in asset.service_events
-        ] if asset.service_events else [],
-    }
+router = APIRouter(prefix="", tags=["Assets"])
 
 
-@router.get("/categories", response_model=List[AssetCategorySchema])
+def get_asset_query(db: Session):
+    return db.query(models.Asset).options(
+        joinedload(models.Asset.category),
+        joinedload(models.Asset.asset_model),
+        joinedload(models.Asset.current_property),
+        joinedload(models.Asset.unit).joinedload(models.Unit.building),
+        joinedload(models.Asset.parts_installed),
+        joinedload(models.Asset.parts_sourced),
+        joinedload(models.Asset.service_events),
+    )
+
+
+@router.get("/categories", response_model=List[schemas.AssetCategory])
 def list_categories(db: Session = Depends(get_db)):
-    return db.query(AssetCategory).all()
+    return db.query(models.AssetCategory).all()
 
 
-@router.get("/assets")
+@router.get("/assets", response_model=List[schemas.Asset])
 def list_assets(
-    propertyId: Optional[str] = None,
-    categoryId: Optional[str] = None,
+    property_id: Optional[str] = Query(None, alias="propertyId"),
+    unit_id: Optional[str] = Query(None, alias="unitId"),
     status: Optional[str] = None,
+    category_id: Optional[str] = Query(None, alias="categoryId"),
     search: Optional[str] = None,
     db: Session = Depends(get_db),
 ):
-    query = db.query(Asset)
-    if propertyId:
-        query = query.filter(Asset.current_property_id == propertyId)
-    if categoryId:
-        query = query.filter(Asset.category_id == categoryId)
+    query = get_asset_query(db).filter(models.Asset.deleted_at.is_(None))
+
+    if property_id:
+        query = query.filter(models.Asset.current_property_id == property_id)
+    if unit_id:
+        query = query.filter(models.Asset.current_unit_id == unit_id)
     if status:
-        query = query.filter(Asset.status == status)
-    
-    assets = query.all()
+        query = query.filter(models.Asset.status == status)
+    if category_id:
+        query = query.filter(models.Asset.category_id == category_id)
     if search:
-        s = search.lower().strip()
-        assets = [
-            a for a in assets
-            if s in a.npid.lower()
-            or (a.manufacturer_raw and s in a.manufacturer_raw.lower())
-            or (a.model_raw and s in a.model_raw.lower())
-            or (a.serial_number and s in a.serial_number.lower())
-            or (a.category and s in a.category.display_name.lower())
-            or (a.unit and s in a.unit.label.lower())
-        ]
-    return [format_asset_response(a) for a in assets]
+        s = f"%{search.lower()}%"
+        query = query.filter(
+            or_(
+                models.Asset.npid.ilike(s),
+                models.Asset.manufacturer_raw.ilike(s),
+                models.Asset.model_raw.ilike(s),
+                models.Asset.serial_number.ilike(s),
+                models.Asset.notes.ilike(s),
+            )
+        )
+
+    return query.all()
 
 
-@router.get("/assets/{asset_id}")
-def get_asset(asset_id: str, db: Session = Depends(get_db)):
-    asset = db.query(Asset).filter(Asset.id == asset_id).first()
+@router.get("/assets/{id}", response_model=schemas.Asset)
+def get_asset(id: str, db: Session = Depends(get_db)):
+    asset = (
+        get_asset_query(db)
+        .filter(
+            or_(models.Asset.id == id, models.Asset.npid == id),
+            models.Asset.deleted_at.is_(None),
+        )
+        .first()
+    )
     if not asset:
-        # Fallback to check if ID passed was NPID
-        asset = db.query(Asset).filter(Asset.npid == asset_id).first()
-    if not asset:
-        raise HTTPException(status_code=404, detail="Asset not found")
-    return format_asset_response(asset)
+        raise HTTPException(status_code=404, detail=f"Asset not found: {id}")
+    return asset
 
 
-@router.get("/assets/lookup/{npid}")
-def lookup_asset_by_npid(npid: str, db: Session = Depends(get_db)):
-    normalized = npid.strip().upper()
-    asset = db.query(Asset).filter(Asset.npid == normalized).first()
+@router.get("/assets/lookup/{npid}", response_model=schemas.Asset)
+def lookup_asset(npid: str, db: Session = Depends(get_db)):
+    clean_target = normalize_crockford(npid)
+    
+    # Try exact match first
+    asset = (
+        get_asset_query(db)
+        .filter(
+            or_(models.Asset.npid == npid, models.Asset.npid == f"NP-{clean_target}"),
+            models.Asset.deleted_at.is_(None),
+        )
+        .first()
+    )
+
     if not asset:
-        # Try stripped dashes
-        for a in db.query(Asset).all():
-            if a.npid.replace("-", "") == normalized.replace("-", ""):
+        # Check all assets for normalized crockford comparison
+        all_assets = get_asset_query(db).filter(models.Asset.deleted_at.is_(None)).all()
+        for a in all_assets:
+            if normalize_crockford(a.npid) == clean_target:
                 asset = a
                 break
+
     if not asset:
-        raise HTTPException(status_code=404, detail=f"No asset tag registered for '{npid}'")
-    return format_asset_response(asset)
+        raise HTTPException(status_code=404, detail=f"Asset not found with code: {npid}")
+
+    return asset
 
 
-@router.post("/assets")
-def create_asset(payload: AssetCreate, db: Session = Depends(get_db)):
-    existing = db.query(Asset).filter(Asset.npid == payload.npid).first()
+@router.post("/assets", response_model=schemas.Asset, status_code=201)
+def create_asset(payload: schemas.AssetCreate, db: Session = Depends(get_db)):
+    npid = payload.npid or mint_npid()
+
+    # Check for duplicate NPID
+    existing = db.query(models.Asset).filter(models.Asset.npid == npid).first()
     if existing:
-        raise HTTPException(status_code=400, detail=f"Asset tag {payload.npid} is already registered.")
-    
-    asset_id = f"asset_{payload.npid.lower().replace('-', '_')}"
-    new_asset = Asset(
-        id=asset_id,
-        npid=payload.npid,
-        category_id=payload.categoryId,
-        manufacturer_raw=payload.manufacturerRaw,
-        model_raw=payload.modelRaw,
-        serial_number=payload.serialNumber,
-        current_property_id=payload.currentPropertyId,
-        current_unit_id=payload.currentUnitId,
-        purchase_cost=payload.purchaseCost or 0.0,
+        raise HTTPException(status_code=400, detail=f"Asset with NPID {npid} already exists")
+
+    install_date = None
+    if payload.install_date:
+        try:
+            install_date = datetime.datetime.fromisoformat(payload.install_date.replace("Z", "+00:00"))
+        except Exception:
+            pass
+
+    manufacture_date = None
+    if payload.manufacture_date:
+        try:
+            manufacture_date = datetime.datetime.fromisoformat(payload.manufacture_date.replace("Z", "+00:00"))
+        except Exception:
+            pass
+
+    warranty_expires_on = None
+    if payload.warranty_expires_on:
+        try:
+            warranty_expires_on = datetime.datetime.fromisoformat(payload.warranty_expires_on.replace("Z", "+00:00"))
+        except Exception:
+            pass
+
+    asset = models.Asset(
+        npid=npid,
+        category_id=payload.category_id,
+        asset_model_id=payload.asset_model_id,
+        manufacturer_raw=payload.manufacturer_raw,
+        model_raw=payload.model_raw,
+        serial_number=payload.serial_number,
+        serial_confidence=payload.serial_confidence or "verified",
+        status=payload.status or "active",
+        condition=payload.condition or "good",
+        current_property_id=payload.current_property_id,
+        current_unit_id=payload.current_unit_id,
+        current_location_confirmed_at=datetime.datetime.now(datetime.timezone.utc),
+        install_date=install_date,
+        manufacture_date=manufacture_date,
+        warranty_expires_on=warranty_expires_on,
+        purchase_cost=payload.purchase_cost or 0.0,
+        expected_life_months=payload.expected_life_months or 120,
         notes=payload.notes,
-        custom_fields_json=json.dumps(payload.customFields or {}),
-        current_location_confirmed_at=datetime.now(timezone.utc),
     )
-    db.add(new_asset)
+    if payload.custom_fields:
+        asset.custom_fields = payload.custom_fields
+
+    db.add(asset)
     db.commit()
-    db.refresh(new_asset)
-    return format_asset_response(new_asset)
+
+    return get_asset_query(db).filter(models.Asset.id == asset.id).first()
 
 
-@router.put("/assets/{asset_id}")
-def update_asset(asset_id: str, payload: AssetUpdate, db: Session = Depends(get_db)):
-    asset = db.query(Asset).filter(Asset.id == asset_id).first()
+@router.put("/assets/{id}", response_model=schemas.Asset)
+def update_asset(id: str, payload: schemas.AssetUpdate, db: Session = Depends(get_db)):
+    asset = db.query(models.Asset).filter(models.Asset.id == id, models.Asset.deleted_at.is_(None)).first()
     if not asset:
-        raise HTTPException(status_code=404, detail="Asset not found")
-    
-    if payload.status is not None:
-        asset.status = payload.status
-    if payload.condition is not None:
-        asset.condition = payload.condition
-    if payload.currentPropertyId is not None:
-        asset.current_property_id = payload.currentPropertyId
-    if payload.currentUnitId is not None:
-        asset.current_unit_id = payload.currentUnitId
-        asset.current_location_confirmed_at = datetime.now(timezone.utc)
-    if payload.notes is not None:
-        asset.notes = payload.notes
-    if payload.customFields is not None:
-        merged = {**asset.custom_fields, **payload.customFields}
-        asset.custom_fields = merged
+        raise HTTPException(status_code=404, detail=f"Asset not found: {id}")
 
+    data = payload.model_dump(exclude_unset=True, by_alias=False)
+
+    for field, val in data.items():
+        if val is not None:
+            if field in ("install_date", "manufacture_date", "warranty_expires_on", "current_location_confirmed_at"):
+                if isinstance(val, str):
+                    try:
+                        val = datetime.datetime.fromisoformat(val.replace("Z", "+00:00"))
+                    except Exception:
+                        continue
+            if field == "custom_fields":
+                asset.custom_fields = val
+            elif hasattr(asset, field):
+                setattr(asset, field, val)
+
+    asset.updated_at = datetime.datetime.now(datetime.timezone.utc)
     db.commit()
-    db.refresh(asset)
-    return format_asset_response(asset)
+
+    return get_asset_query(db).filter(models.Asset.id == asset.id).first()
+
+
+@router.delete("/assets/{id}")
+def delete_asset(id: str, db: Session = Depends(get_db)):
+    asset = db.query(models.Asset).filter(models.Asset.id == id).first()
+    if not asset:
+        raise HTTPException(status_code=404, detail=f"Asset not found: {id}")
+
+    asset.deleted_at = datetime.datetime.now(datetime.timezone.utc)
+    asset.status = "disposed"
+    db.commit()
+    return {"status": "success", "message": f"Asset {id} marked as disposed/deleted"}

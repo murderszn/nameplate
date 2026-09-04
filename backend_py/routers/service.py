@@ -1,120 +1,164 @@
-import json
+import datetime
 from typing import List, Optional
-from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, joinedload
 
-from ..db import get_db
-from ..models import ServiceEvent, Asset, WorkOrder, PartRecord
-from ..schemas import ServiceEventSchema, ServiceEventCreate
+from ..database import get_db
+from .. import models, schemas
 
-router = APIRouter(tags=["service"])
+router = APIRouter(prefix="", tags=["Service Events"])
 
 
-@router.get("/service-events")
+def hydrate_service_event(ev: models.ServiceEvent) -> schemas.ServiceEvent:
+    tech = ev.technician_info or {"id": ev.technician_id, "user": {"fullName": "J. Morales"}}
+    wo_info = ev.work_order_info
+    if not wo_info and ev.work_order:
+        wo_info = {
+            "id": ev.work_order.id,
+            "number": ev.work_order.number,
+            "title": ev.work_order.title,
+        }
+
+    return schemas.ServiceEvent(
+        id=ev.id,
+        asset_id=ev.asset_id,
+        work_order_id=ev.work_order_id,
+        property_id=ev.property_id,
+        unit_id=ev.unit_id,
+        technician_id=ev.technician_id,
+        event_type=ev.event_type,
+        findings=ev.findings,
+        symptom_codes=ev.symptom_codes or [],
+        resolution_code=ev.resolution_code,
+        labor_minutes=ev.labor_minutes,
+        labor_rate=ev.labor_rate,
+        labor_cost=ev.labor_cost,
+        parts_cost=ev.parts_cost,
+        other_cost=ev.other_cost,
+        total_cost=ev.total_cost,
+        cost_borne_by=ev.cost_borne_by,
+        is_warranty_claim=ev.is_warranty_claim,
+        occurred_at=ev.occurred_at,
+        technician=tech,
+        work_order=wo_info,
+        part_usages=ev.part_usages or [],
+    )
+
+
+@router.get("/service-events", response_model=List[schemas.ServiceEvent])
 def list_service_events(
-    assetId: Optional[str] = None,
-    propertyId: Optional[str] = None,
+    asset_id: Optional[str] = Query(None, alias="assetId"),
+    work_order_id: Optional[str] = Query(None, alias="workOrderId"),
+    property_id: Optional[str] = Query(None, alias="propertyId"),
+    unit_id: Optional[str] = Query(None, alias="unitId"),
+    technician_id: Optional[str] = Query(None, alias="technicianId"),
     db: Session = Depends(get_db),
 ):
-    query = db.query(ServiceEvent)
-    if assetId:
-        query = query.filter(ServiceEvent.asset_id == assetId)
-    if propertyId:
-        query = query.filter(ServiceEvent.property_id == propertyId)
-    
-    events = query.order_by(ServiceEvent.occurred_at.desc()).all()
-    return [
-        {
-            "id": se.id,
-            "assetId": se.asset_id,
-            "workOrderId": se.work_order_id,
-            "propertyId": se.property_id,
-            "unitId": se.unit_id,
-            "technicianId": se.technician_id,
-            "eventType": se.event_type,
-            "findings": se.findings,
-            "symptomCodes": se.symptom_codes,
-            "resolutionCode": se.resolution_code,
-            "laborMinutes": se.labor_minutes,
-            "laborRate": se.labor_rate,
-            "laborCost": se.labor_cost,
-            "partsCost": se.parts_cost,
-            "otherCost": se.other_cost,
-            "totalCost": se.total_cost,
-            "costBorneBy": se.cost_borne_by,
-            "isWarrantyClaim": se.is_warranty_claim,
-            "occurredAt": se.occurred_at,
-        }
-        for se in events
-    ]
+    query = db.query(models.ServiceEvent).options(
+        joinedload(models.ServiceEvent.work_order),
+        joinedload(models.ServiceEvent.asset),
+    )
+
+    if asset_id:
+        query = query.filter(models.ServiceEvent.asset_id == asset_id)
+    if work_order_id:
+        query = query.filter(models.ServiceEvent.work_order_id == work_order_id)
+    if property_id:
+        query = query.filter(models.ServiceEvent.property_id == property_id)
+    if unit_id:
+        query = query.filter(models.ServiceEvent.unit_id == unit_id)
+    if technician_id:
+        query = query.filter(models.ServiceEvent.technician_id == technician_id)
+
+    events = query.order_by(models.ServiceEvent.occurred_at.desc()).all()
+    return [hydrate_service_event(e) for e in events]
 
 
-@router.post("/service-events")
-def create_service_event(payload: ServiceEventCreate, db: Session = Depends(get_db)):
-    asset = db.query(Asset).filter(Asset.id == payload.assetId).first()
+@router.get("/service-events/{id}", response_model=schemas.ServiceEvent)
+def get_service_event(id: str, db: Session = Depends(get_db)):
+    event = (
+        db.query(models.ServiceEvent)
+        .options(
+            joinedload(models.ServiceEvent.work_order),
+            joinedload(models.ServiceEvent.asset),
+        )
+        .filter(models.ServiceEvent.id == id)
+        .first()
+    )
+    if not event:
+        raise HTTPException(status_code=404, detail=f"Service event not found: {id}")
+    return hydrate_service_event(event)
+
+
+@router.post("/service-events", response_model=schemas.ServiceEvent, status_code=201)
+def create_service_event(
+    payload: schemas.ServiceEventCreate,
+    db: Session = Depends(get_db),
+):
+    asset = db.query(models.Asset).filter(models.Asset.id == payload.asset_id).first()
     if not asset:
-        raise HTTPException(status_code=404, detail="Asset not found")
+        raise HTTPException(status_code=404, detail=f"Asset not found: {payload.asset_id}")
 
-    labor_rate = payload.laborRate or 85.0
-    labor_mins = payload.laborMinutes or 45
-    labor_cost = (labor_mins / 60.0) * labor_rate
-    parts_cost = payload.partsCost or 0.0
-    other_cost = payload.otherCost or 0.0
-    total_cost = labor_cost + parts_cost + other_cost
+    prop_id = payload.property_id or asset.current_property_id
+    unit_id = payload.unit_id or asset.current_unit_id
 
-    event_id = f"se-{int(datetime.now(timezone.utc).timestamp() * 1000)}"
-    now = datetime.now(timezone.utc)
+    labor_mins = payload.labor_minutes or 0
+    labor_rate = payload.labor_rate or 65.0
+    labor_cost = round((labor_mins / 60.0) * labor_rate, 2)
+    parts_cost = round(payload.parts_cost or 0.0, 2)
+    other_cost = round(payload.other_cost or 0.0, 2)
+    total_cost = round(labor_cost + parts_cost + other_cost, 2)
 
-    new_event = ServiceEvent(
-        id=event_id,
-        asset_id=payload.assetId,
-        work_order_id=payload.workOrderId,
-        property_id=payload.propertyId or asset.current_property_id,
-        unit_id=payload.unitId or asset.current_unit_id,
-        technician_id=payload.technicianId,
-        event_type=payload.eventType,
+    occurred_at = datetime.datetime.now(datetime.timezone.utc)
+    if payload.occurred_at:
+        try:
+            occurred_at = datetime.datetime.fromisoformat(payload.occurred_at.replace("Z", "+00:00"))
+        except Exception:
+            pass
+
+    event = models.ServiceEvent(
+        asset_id=payload.asset_id,
+        work_order_id=payload.work_order_id,
+        property_id=prop_id,
+        unit_id=unit_id,
+        technician_id=payload.technician_id,
+        event_type=payload.event_type,
         findings=payload.findings,
-        symptom_codes_json=json.dumps(payload.symptomCodes or []),
-        resolution_code=payload.resolutionCode,
+        resolution_code=payload.resolution_code,
         labor_minutes=labor_mins,
         labor_rate=labor_rate,
         labor_cost=labor_cost,
         parts_cost=parts_cost,
         other_cost=other_cost,
         total_cost=total_cost,
-        cost_borne_by=payload.costBorneBy,
-        is_warranty_claim=payload.isWarrantyClaim,
-        occurred_at=now,
+        cost_borne_by=payload.cost_borne_by or "owner",
+        is_warranty_claim=payload.is_warranty_claim,
+        occurred_at=occurred_at,
     )
-    db.add(new_event)
+    if payload.symptom_codes:
+        event.symptom_codes = payload.symptom_codes
+    if payload.part_usages:
+        event.part_usages = payload.part_usages
+    event.technician_info = {"id": payload.technician_id, "user": {"fullName": "J. Morales"}}
 
-    # Update Asset Lifetime Maintenance Stats
-    asset.last_service_at = now
-    asset.lifetime_service_cost = (asset.lifetime_service_cost or 0.0) + total_cost
+    db.add(event)
+
+    # Roll up onto asset
     asset.service_event_count = (asset.service_event_count or 0) + 1
-    if payload.resolutionCode in ["fixed", "part_replaced"]:
+    asset.lifetime_service_cost = round((asset.lifetime_service_cost or 0) + total_cost, 2)
+    asset.last_service_at = occurred_at
+    if payload.resolution_code == "fixed" and asset.status in ("needs_repair", "in_repair"):
         asset.status = "active"
-        asset.condition = "good"
-
-    # Close Work Order if provided
-    if payload.workOrderId:
-        wo = db.query(WorkOrder).filter(WorkOrder.id == payload.workOrderId).first()
-        if wo:
-            wo.status = "completed"
-            wo.completed_at = now
-            wo.actual_cost = total_cost
-            if payload.findings:
-                wo.resolution = payload.findings
 
     db.commit()
-    db.refresh(new_event)
 
-    return {
-        "id": new_event.id,
-        "assetId": new_event.asset_id,
-        "workOrderId": new_event.work_order_id,
-        "totalCost": new_event.total_cost,
-        "occurredAt": new_event.occurred_at,
-        "status": "recorded",
-    }
+    reloaded = (
+        db.query(models.ServiceEvent)
+        .options(
+            joinedload(models.ServiceEvent.work_order),
+            joinedload(models.ServiceEvent.asset),
+        )
+        .filter(models.ServiceEvent.id == event.id)
+        .first()
+    )
+    return hydrate_service_event(reloaded)

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { mintNpid, buildQrPayload, generateQrSvg, normalizeCrockford, calculateCrockfordChecksum } from '../lib/qr';
+import { TagSheetModal } from '../components/TagSheetModal';
+import { printTagSheet } from '../lib/tagPrint';
 
 interface SyncEventLog {
   id: string;
@@ -68,6 +70,7 @@ export function SyncOperations() {
   // Batch Studio State
   const [batchId, setBatchId] = useState('BATCH-2026-08C');
   const [tagCount, setTagCount] = useState(30);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [generatedBatch, setGeneratedBatch] = useState(() => {
     return Array.from({ length: 30 }, () => buildQrPayload(mintNpid(), 'org_sonoran_fund4', 'BATCH-2026-08C'));
   });
@@ -339,7 +342,35 @@ export function SyncOperations() {
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', fontWeight: 800, color: 'var(--white)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Print Sheet Preview ({generatedBatch.length} Tags · {batchId})
               </div>
-              <div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsPrintModalOpen(true)}
+                  className="np-btn np-btn--primary"
+                  style={{ fontSize: '0.78rem', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 6 }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <polyline points="6 9 6 2 18 2 18 9" />
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                    <rect x="6" y="14" width="12" height="8" />
+                  </svg>
+                  Print 30-Up Sheet (PDF)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    printTagSheet(generatedBatch, {
+                      sheetLayout: 'avery-5160',
+                      batchId,
+                      sheetTitle: 'SONORAN RIDGE',
+                    });
+                  }}
+                  className="np-btn"
+                  style={{ background: 'var(--bg-elevated)', color: 'var(--white)', border: '1px solid rgba(var(--overlay-rgb), 0.12)', fontSize: '0.76rem', padding: '6px 12px' }}
+                  title="Direct 1-click print Avery 5160 template"
+                >
+                  Quick Print
+                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -447,6 +478,15 @@ export function SyncOperations() {
           )}
         </div>
       )}
+
+      {/* 30-Up Label Sheet Print Modal */}
+      <TagSheetModal
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        tags={generatedBatch}
+        batchId={batchId}
+        defaultPropertyName="SONORAN RIDGE"
+      />
     </div>
   );
 }

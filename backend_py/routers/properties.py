@@ -1,123 +1,127 @@
-from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, joinedload
 
-from ..db import get_db
-from ..models import Property, Unit, Building, Organization
-from ..schemas import PropertySchema, PropertyCreate, UnitSchema, UnitCreate, BuildingSchema, OrganizationSchema
+from ..database import get_db
+from .. import models, schemas
 
-router = APIRouter(tags=["properties"])
-
-
-def format_property(p: Property) -> dict:
-    return {
-        "id": p.id,
-        "name": p.name,
-        "code": p.code,
-        "addressLine1": p.address_line1,
-        "city": p.city,
-        "state": p.state,
-        "postalCode": p.postal_code,
-        "status": p.status,
-        "unitCountDeclared": p.unit_count_declared,
-        "latitude": p.latitude,
-        "longitude": p.longitude,
-        "yearBuilt": p.year_built,
-        "timezone": p.timezone,
-    }
+router = APIRouter(prefix="", tags=["Properties"])
 
 
-def format_unit(u: Unit) -> dict:
-    return {
-        "id": u.id,
-        "propertyId": u.property_id,
-        "buildingId": u.building_id,
-        "label": u.label,
-        "floor": u.floor,
-        "bedrooms": u.bedrooms,
-        "bathrooms": u.bathrooms,
-        "squareFeet": u.square_feet,
-        "occupancyStatus": u.occupancy_status,
-    }
+@router.get("/properties", response_model=List[schemas.Property])
+def list_properties(
+    org_id: Optional[str] = Query(None, alias="orgId"),
+    status: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    query = db.query(models.Property)
+    if org_id:
+        query = query.filter(models.Property.organization_id == org_id)
+    if status:
+        query = query.filter(models.Property.status == status)
+    return query.all()
 
 
-@router.get("/org", response_model=OrganizationSchema)
-def get_organization(db: Session = Depends(get_db)):
-    org = db.query(Organization).first()
-    if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
-    return org
-
-
-@router.get("/properties")
-def list_properties(db: Session = Depends(get_db)):
-    props = db.query(Property).all()
-    return [format_property(p) for p in props]
-
-
-@router.get("/properties/{property_id}")
-def get_property(property_id: str, db: Session = Depends(get_db)):
-    prop = db.query(Property).filter(Property.id == property_id).first()
+@router.get("/properties/{id}", response_model=schemas.Property)
+def get_property(id: str, db: Session = Depends(get_db)):
+    prop = db.query(models.Property).filter(models.Property.id == id).first()
     if not prop:
-        raise HTTPException(status_code=404, detail="Property not found")
-    return format_property(prop)
+        raise HTTPException(status_code=404, detail=f"Property not found: {id}")
+    return prop
 
 
-@router.get("/properties/{property_id}/units")
-def list_property_units(property_id: str, db: Session = Depends(get_db)):
-    units = db.query(Unit).filter(Unit.property_id == property_id).all()
-    return [format_unit(u) for u in units]
-
-
-@router.get("/properties/{property_id}/buildings")
-def list_property_buildings(property_id: str, db: Session = Depends(get_db)):
-    buildings = db.query(Building).filter(Building.property_id == property_id).all()
-    return [
-        {"id": b.id, "propertyId": b.property_id, "name": b.name, "code": b.code, "floors": b.floors}
-        for b in buildings
-    ]
-
-
-@router.post("/properties", response_model=PropertySchema)
-def create_property(payload: PropertyCreate, db: Session = Depends(get_db)):
-    prop_id = payload.id or f"prop_{payload.name.lower().replace(' ', '_')}"
-    new_prop = Property(
-        id=prop_id,
+@router.post("/properties", response_model=schemas.Property, status_code=201)
+def create_property(payload: schemas.PropertyCreate, db: Session = Depends(get_db)):
+    org_id = payload.org_id or "org_sonoran"
+    prop = models.Property(
+        organization_id=org_id,
         name=payload.name,
         code=payload.code,
-        address_line1=payload.addressLine1,
+        address_line1=payload.address_line1,
+        address_line2=payload.address_line2,
         city=payload.city,
         state=payload.state,
-        postal_code=payload.postalCode,
-        unit_count_declared=payload.unitCountDeclared,
+        postal_code=payload.postal_code,
+        status=payload.status,
+        unit_count_declared=payload.unit_count_declared,
         latitude=payload.latitude,
         longitude=payload.longitude,
-        year_built=payload.yearBuilt,
+        year_built=payload.year_built,
+        timezone=payload.timezone or "America/Phoenix",
     )
-    db.add(new_prop)
+    db.add(prop)
     db.commit()
-    db.refresh(new_prop)
-    return new_prop
+    db.refresh(prop)
+    return prop
 
 
-@router.post("/properties/{property_id}/units", response_model=UnitSchema)
-def create_unit(property_id: str, payload: UnitCreate, db: Session = Depends(get_db)):
-    prop = db.query(Property).filter(Property.id == property_id).first()
+@router.get("/properties/{id}/units", response_model=List[schemas.Unit])
+def list_property_units(
+    id: str,
+    building_id: Optional[str] = Query(None, alias="buildingId"),
+    db: Session = Depends(get_db),
+):
+    prop = db.query(models.Property).filter(models.Property.id == id).first()
     if not prop:
-        raise HTTPException(status_code=404, detail="Property not found")
-    
-    unit_id = payload.id or f"unit_{property_id}_{payload.label.lower().replace(' ', '_')}"
-    new_unit = Unit(
-        id=unit_id,
-        property_id=property_id,
+        raise HTTPException(status_code=404, detail=f"Property not found: {id}")
+
+    query = (
+        db.query(models.Unit)
+        .options(joinedload(models.Unit.building))
+        .filter(models.Unit.property_id == id)
+    )
+    if building_id:
+        query = query.filter(models.Unit.building_id == building_id)
+
+    return query.all()
+
+
+@router.post("/properties/{id}/units", response_model=schemas.Unit, status_code=201)
+def create_property_unit(
+    id: str,
+    payload: schemas.UnitCreate,
+    db: Session = Depends(get_db),
+):
+    prop = db.query(models.Property).filter(models.Property.id == id).first()
+    if not prop:
+        raise HTTPException(status_code=404, detail=f"Property not found: {id}")
+
+    unit = models.Unit(
+        property_id=id,
+        building_id=payload.building_id,
         label=payload.label,
         floor=payload.floor,
         bedrooms=payload.bedrooms,
         bathrooms=payload.bathrooms,
-        square_feet=payload.squareFeet,
-        occupancy_status=payload.occupancyStatus,
+        square_feet=payload.square_feet,
+        occupancy_status=payload.occupancy_status or "occupied",
+        notes=payload.notes,
     )
-    db.add(new_unit)
+    db.add(unit)
     db.commit()
-    db.refresh(new_unit)
-    return new_unit
+    db.refresh(unit)
+    return unit
+
+
+@router.get("/buildings", response_model=List[schemas.Building])
+def list_buildings(
+    property_id: Optional[str] = Query(None, alias="propertyId"),
+    db: Session = Depends(get_db),
+):
+    query = db.query(models.Building)
+    if property_id:
+        query = query.filter(models.Building.property_id == property_id)
+    return query.all()
+
+
+@router.get("/units/{id}", response_model=schemas.Unit)
+def get_unit(id: str, db: Session = Depends(get_db)):
+    unit = (
+        db.query(models.Unit)
+        .options(joinedload(models.Unit.building))
+        .filter(models.Unit.id == id)
+        .first()
+    )
+    if not unit:
+        raise HTTPException(status_code=404, detail=f"Unit not found: {id}")
+    return unit

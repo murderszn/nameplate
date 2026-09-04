@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { api, type Asset } from '../api/client';
+import { api, type Asset, type Property, type AssetCategory } from '../api/client';
 import { money, num, yearsLabel, yearsOld } from '../lib/format';
+import { CsvImporterModal } from '../components/CsvImporterModal';
 
 type SortKey =
   | 'npid'
@@ -22,6 +23,8 @@ export function Assets() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [propertiesList, setPropertiesList] = useState<Property[]>([]);
+  const [categoriesList, setCategoriesList] = useState<AssetCategory[]>([]);
   const [search, setSearch] = useState(() => searchParams.get('search') ?? '');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProperty, setSelectedProperty] = useState('all');
@@ -29,15 +32,23 @@ export function Assets() {
   const [sortKey, setSortKey] = useState<SortKey>('npid');
   const [sortAsc, setSortAsc] = useState(true);
   const [lookupError, setLookupError] = useState<string | null>(null);
+  const [isImporterOpen, setIsImporterOpen] = useState(false);
+  const [importSuccessNotice, setImportSuccessNotice] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const org = await api.getOrg();
-        const assetRows = await api.listAssets(org.id);
+        const [assetRows, props, cats] = await Promise.all([
+          api.listAssets(org.id),
+          api.listProperties(org.id),
+          api.listCategories(),
+        ]);
         if (cancelled) return;
         setAssets(assetRows);
+        setPropertiesList(props);
+        setCategoriesList(cats);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       } finally {
@@ -193,8 +204,59 @@ export function Assets() {
     selectedProperty !== 'all' ||
     selectedStatus !== 'all';
 
+  const handleExportCsv = () => {
+    const headers = ['NPID', 'Category', 'Manufacturer', 'Model', 'Serial Number', 'Property', 'Unit', 'Install Date', 'Purchase Cost', 'Condition', 'Status'];
+    const rows = filteredAndSorted.map((a) => [
+      a.npid,
+      a.category?.displayName || 'HVAC',
+      `"${(a.manufacturerRaw || '').replace(/"/g, '""')}"`,
+      `"${(a.modelRaw || '').replace(/"/g, '""')}"`,
+      `"${(a.serialNumber || '').replace(/"/g, '""')}"`,
+      `"${(a.currentProperty?.name || '').replace(/"/g, '""')}"`,
+      `"${(a.currentUnit?.label || '').replace(/"/g, '""')}"`,
+      a.installDate ? a.installDate.split('T')[0] : '',
+      a.purchaseCost ?? '',
+      a.condition || 'good',
+      a.status,
+    ]);
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `nameplate-assets-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {importSuccessNotice && (
+        <div
+          style={{
+            padding: '12px 16px',
+            background: 'rgba(34, 197, 94, 0.12)',
+            border: '1px solid rgba(34, 197, 94, 0.4)',
+            color: '#22c55e',
+            borderRadius: 2,
+            fontSize: '0.82rem',
+            fontWeight: 600,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <span>✓ {importSuccessNotice}</span>
+          <button
+            type="button"
+            onClick={() => setImportSuccessNotice(null)}
+            style={{ background: 'transparent', border: 'none', color: '#22c55e', cursor: 'pointer', fontSize: '1rem' }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Filtering & Search Toolbar */}
       <div
         style={{
@@ -223,6 +285,49 @@ export function Assets() {
 
           <button className="np-btn" onClick={() => void onLookup()} style={{ flexShrink: 0 }}>
             Scan / Lookup
+          </button>
+
+          <button
+            type="button"
+            className="np-btn np-btn--primary"
+            onClick={() => setIsImporterOpen(true)}
+            style={{
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: '0.78rem',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            Import CSV Roster
+          </button>
+
+          <button
+            type="button"
+            className="np-btn"
+            onClick={handleExportCsv}
+            style={{
+              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              background: 'var(--bg-elevated)',
+              color: 'var(--white)',
+              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
+              fontSize: '0.78rem',
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            Export CSV
           </button>
         </div>
 
@@ -454,6 +559,18 @@ export function Assets() {
           </tbody>
         </table>
       </div>
+
+      {/* Bulk CSV Importer Modal */}
+      <CsvImporterModal
+        isOpen={isImporterOpen}
+        onClose={() => setIsImporterOpen(false)}
+        properties={propertiesList}
+        categories={categoriesList}
+        onImportComplete={(newAssets) => {
+          setAssets((prev) => [...newAssets, ...prev]);
+          setImportSuccessNotice(`Successfully imported ${newAssets.length} equipment assets into the portfolio registry.`);
+        }}
+      />
     </div>
   );
 }

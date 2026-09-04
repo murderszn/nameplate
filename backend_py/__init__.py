@@ -1,1 +1,3 @@
-# Nameplate Python Backend
+"""
+Nameplate Backend Package
+"""

@@ -1,1 +1,3 @@
-# Nameplate API Routers
+"""
+Routers for Nameplate REST API
+"""

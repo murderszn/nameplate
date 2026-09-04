@@ -1,29 +1,40 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api, type Asset, type Property, type ServiceEvent } from '../api/client';
+import { api, type Asset, type Property, type ServiceEvent, type WorkOrder } from '../api/client';
 import { money, num } from '../lib/format';
 import { ChartCard, DonutChart, HBarChart } from '../components/charts';
+import {
+  exportDepreciationCsv,
+  printDepreciationReport,
+  exportFailureRatesCsv,
+  printFailureRateReport,
+  exportSlaMetricsCsv,
+  printSlaMetricsReport,
+} from '../lib/reports';
 
 export function Analytics() {
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState<Property[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [events, setEvents] = useState<ServiceEvent[]>([]);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const org = await api.getOrg();
-        const [props, assetList, eventList] = await Promise.all([
+        const [props, assetList, eventList, woList] = await Promise.all([
           api.listProperties(org.id),
           api.listAssets(org.id),
           api.listServiceEvents(org.id),
+          api.listWorkOrders(org.id),
         ]);
         if (cancelled) return;
         setProperties(props);
         setAssets(assetList);
         setEvents(eventList);
+        setWorkOrders(woList);
       } catch {
         // demo fallback
       } finally {
@@ -122,6 +133,225 @@ export function Analytics() {
         <div className="np-kpi-tile">
           <div className="np-kpi-tile__label">Shrinkage Risk Assets</div>
           <div className="np-kpi-tile__value" style={{ color: '#eb2b2b' }}>{unconfirmedAssets.length}</div>
+        </div>
+      </div>
+
+      {/* Executive Report & Data Export Center */}
+      <div
+        className="np-card"
+        style={{
+          background: 'var(--bg-card)',
+          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
+          borderRadius: 2,
+          padding: 20,
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, marginBottom: 16 }}>
+          <div>
+            <div className="mono red-accent" style={{ fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.12em' }}>
+              EXECUTIVE REPORT & DATA EXPORT CENTER
+            </div>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '2px 0 0', color: 'var(--white)' }}>
+              1-Click Operations & Financial Audit Exports
+            </h3>
+          </div>
+          <span className="mono" style={{ fontSize: '0.72rem', color: 'var(--gray-500)' }}>
+            FORMATS: CSV SPREADSHEET · PDF PRINT AUDIT
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: 14 }}>
+          {/* Report 1: Depreciation & CapEx */}
+          <div
+            style={{
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--line)',
+              borderRadius: 2,
+              padding: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: 14,
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                <span className="mono" style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--white)' }}>
+                  01 / DEPRECIATION & CAPEX
+                </span>
+                <span className="np-badge" style={{ fontSize: '0.65rem' }}>GAAP St-Line</span>
+              </div>
+              <p className="np-muted" style={{ fontSize: '0.78rem', margin: 0 }}>
+                Straight-line carrying valuation, useful life consumed (%), and 12–36 month equipment replacement pipeline.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="np-btn"
+                onClick={() => exportDepreciationCsv(assets)}
+                style={{
+                  flex: 1,
+                  fontSize: '0.74rem',
+                  background: 'var(--bg-elevated)',
+                  color: 'var(--white)',
+                  border: '1px solid var(--line)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+              </button>
+              <button
+                type="button"
+                className="np-btn np-btn--primary"
+                onClick={() => printDepreciationReport(assets, 'Sonoran Portfolio Management')}
+                style={{
+                  flex: 1,
+                  fontSize: '0.74rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                PDF Report
+              </button>
+            </div>
+          </div>
+
+          {/* Report 2: Brand Failure Rates */}
+          <div
+            style={{
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--line)',
+              borderRadius: 2,
+              padding: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: 14,
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                <span className="mono" style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--white)' }}>
+                  02 / BRAND FAILURE MATRIX
+                </span>
+                <span className="np-badge" style={{ fontSize: '0.65rem' }}>MTBF Telemetry</span>
+              </div>
+              <p className="np-muted" style={{ fontSize: '0.78rem', margin: 0 }}>
+                Manufacturer failure rates, repair frequencies, cost per incident, and component breakdown (elements, boards, pumps).
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="np-btn"
+                onClick={() => exportFailureRatesCsv(assets, events)}
+                style={{
+                  flex: 1,
+                  fontSize: '0.74rem',
+                  background: 'var(--bg-elevated)',
+                  color: 'var(--white)',
+                  border: '1px solid var(--line)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+              </button>
+              <button
+                type="button"
+                className="np-btn np-btn--primary"
+                onClick={() => printFailureRateReport(assets, events, 'Sonoran Portfolio Management')}
+                style={{
+                  flex: 1,
+                  fontSize: '0.74rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                PDF Report
+              </button>
+            </div>
+          </div>
+
+          {/* Report 3: Work Order SLA */}
+          <div
+            style={{
+              background: 'var(--bg-subtle)',
+              border: '1px solid var(--line)',
+              borderRadius: 2,
+              padding: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              gap: 14,
+            }}
+          >
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                <span className="mono" style={{ fontSize: '0.74rem', fontWeight: 800, color: 'var(--white)' }}>
+                  03 / WORK ORDER SLA AUDIT
+                </span>
+                <span className="np-badge" style={{ fontSize: '0.65rem' }}>Field Velocity</span>
+              </div>
+              <p className="np-muted" style={{ fontSize: '0.78rem', margin: 0 }}>
+                SLA compliance by priority tier (Emergency 4h, Urgent 24h, Normal 72h), breach rates, and resolution durations.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="np-btn"
+                onClick={() => exportSlaMetricsCsv(workOrders)}
+                style={{
+                  flex: 1,
+                  fontSize: '0.74rem',
+                  background: 'var(--bg-elevated)',
+                  color: 'var(--white)',
+                  border: '1px solid var(--line)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export CSV
+              </button>
+              <button
+                type="button"
+                className="np-btn np-btn--primary"
+                onClick={() => printSlaMetricsReport(workOrders, 'Sonoran Portfolio Management')}
+                style={{
+                  flex: 1,
+                  fontSize: '0.74rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                PDF Report
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

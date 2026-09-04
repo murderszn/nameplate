@@ -4,6 +4,8 @@
  * Jira-style status updates, comments/notes, and full asset registry.
  */
 
+import { mintNpid } from '../lib/qr';
+
 export interface Organization {
   id: string;
   name: string;
@@ -1375,6 +1377,63 @@ export const api = {
     const found = DEMO_ASSETS.find((a) => a.npid.replace(/[^A-Za-z0-9]/g, '').toUpperCase() === clean);
     if (!found) throw new Error('Asset not found with code: ' + code);
     return found;
+  },
+
+  createAsset: async (newAsset: Partial<Asset>): Promise<Asset> => {
+    const remote = await fastApiFetch<Asset>('/assets', {
+      method: 'POST',
+      body: JSON.stringify(newAsset),
+    });
+    if (remote) {
+      DEMO_ASSETS.unshift(remote);
+      return remote;
+    }
+
+    const npid = newAsset.npid || mintNpid();
+    const id = newAsset.id || `asset_${npid.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+    const category = DEMO_CATEGORIES.find((c) => c.id === newAsset.categoryId) || {
+      id: newAsset.categoryId || 'cat_hvac',
+      key: 'hvac',
+      displayName: 'HVAC Equipment',
+      defaultUsefulLifeMonths: 120,
+      defaultReplacementCost: 4500,
+    };
+    const prop = DEMO_PROPERTIES.find((p) => p.id === newAsset.currentPropertyId) || null;
+    const rawUnit = DEMO_UNITS.find((u) => u.id === newAsset.currentUnitId);
+    const unit = rawUnit ? hydrateUnit(rawUnit) : null;
+
+    const item: Asset = {
+      id,
+      npid,
+      categoryId: newAsset.categoryId || 'cat_hvac',
+      assetModelId: newAsset.assetModelId || null,
+      manufacturerRaw: newAsset.manufacturerRaw || null,
+      modelRaw: newAsset.modelRaw || null,
+      serialNumber: newAsset.serialNumber || null,
+      serialConfidence: newAsset.serialConfidence || 'verified',
+      status: newAsset.status || 'active',
+      condition: newAsset.condition || 'good',
+      currentPropertyId: newAsset.currentPropertyId || null,
+      currentUnitId: newAsset.currentUnitId || null,
+      currentLocationConfirmedAt: new Date().toISOString(),
+      installDate: newAsset.installDate || null,
+      manufactureDate: newAsset.manufactureDate || null,
+      warrantyExpiresOn: newAsset.warrantyExpiresOn || null,
+      purchaseCost: Number(newAsset.purchaseCost || 0),
+      expectedLifeMonths: Number(newAsset.expectedLifeMonths || 120),
+      lifetimeServiceCost: 0,
+      serviceEventCount: 0,
+      lastServiceAt: null,
+      notes: newAsset.notes || null,
+      customFields: newAsset.customFields || {},
+      category,
+      currentProperty: prop,
+      currentUnit: unit,
+      partsInstalled: [],
+      serviceEvents: [],
+    };
+    DEMO_ASSETS.unshift(item);
+    return item;
   },
 
   listWorkOrders: async (_orgId?: string, params: Record<string, string> = {}): Promise<WorkOrder[]> => {
