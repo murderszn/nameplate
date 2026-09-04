@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/turn.dart';
 import '../../models/unit.dart';
 import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/sync_status_badge.dart';
 import 'turn_walkthrough_screen.dart';
@@ -82,7 +82,7 @@ class TurnsScreen extends ConsumerWidget {
           if (occupied.isNotEmpty) ...[
             _SectionHeader(
               title: 'Occupied (${occupied.length})',
-              accentColor: const Color(0xFF3B82F6),
+              accentColor: context.npColors.gray400,
             ),
             ...occupied.map(
               (u) => _UnitCard(
@@ -95,7 +95,7 @@ class TurnsScreen extends ConsumerWidget {
           if (completed.isNotEmpty) ...[
             _SectionHeader(
               title: 'Completed (${completed.length})',
-              accentColor: const Color(0xFF64748B),
+              accentColor: const Color(0xFF10B981),
             ),
             ...completed.map(
               (t) => _TurnCard(
@@ -278,115 +278,264 @@ class _UnitCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tileBg = switch (unit.occupancyStatus) {
-      OccupancyStatus.turning => const Color(0x33F59E0B),
-      OccupancyStatus.vacant => const Color(0x3310B981),
-      _ => context.npColors.white08,
-    };
+    final isTurning = unit.occupancyStatus == OccupancyStatus.turning;
+    final isVacant = unit.occupancyStatus == OccupancyStatus.vacant;
 
-    final tileFg = switch (unit.occupancyStatus) {
+    final blockColor = switch (unit.occupancyStatus) {
+      OccupancyStatus.turning =>
+        const Color(0xFFF59E0B).withValues(alpha: 0.15),
+      OccupancyStatus.vacant =>
+        const Color(0xFF10B981).withValues(alpha: 0.15),
+      _ => context.npColors.bgElevated,
+    };
+    final blockIcon = switch (unit.occupancyStatus) {
+      OccupancyStatus.turning => Icons.sync_rounded,
+      OccupancyStatus.vacant => Icons.key_rounded,
+      _ => Icons.home_work_outlined,
+    };
+    final blockIconColor = switch (unit.occupancyStatus) {
       OccupancyStatus.turning => const Color(0xFFF59E0B),
       OccupancyStatus.vacant => const Color(0xFF10B981),
-      _ => context.npColors.white,
+      _ => context.npColors.gray400,
     };
+    final tone = switch (unit.occupancyStatus) {
+      OccupancyStatus.turning => NpPillTone.caution,
+      OccupancyStatus.vacant => NpPillTone.verified,
+      _ => NpPillTone.neutral,
+    };
+    final microHeaderBg = isTurning
+        ? const Color(0xFFF59E0B).withValues(alpha: 0.08)
+        : (isVacant
+            ? const Color(0xFF10B981).withValues(alpha: 0.08)
+            : context.npColors.bgCard);
 
-    final monogram = () {
-      final name = unit.displayName.trim();
-      if (name.isEmpty) return 'U';
-      final parts = name.split(RegExp(r'\s+'));
-      if (parts.length > 1 && parts.last.isNotEmpty) {
-        return parts.last.length <= 3 ? parts.last.toUpperCase() : parts.last[0].toUpperCase();
-      }
-      return name[0].toUpperCase();
-    }();
+    final propertyImage = NpAssets.propertyImageFor(unit.propertyName);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border(
-          bottom: BorderSide(color: context.npColors.lineStrong, width: 0.8),
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onStart,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              children: [
-                // 48px rounded icon tile left of unit.displayName with tinted fill by occupancyStatus + monogram letter
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: tileBg,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: tileFg.withValues(alpha: 0.35),
-                      width: 1,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    monogram,
-                    style: NpType.mono.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: tileFg,
-                      letterSpacing: -0.5,
+    return Material(
+      color: context.npColors.bgCard,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onStart();
+        },
+        splashColor: NpColors.redSubtle,
+        highlightColor: context.npColors.white08,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: context.npColors.line, width: 0.8),
+            ),
+          ),
+          child: Stack(
+            children: [
+              // 64px left priority / occupancy color block
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: 64,
+                child: Container(
+                  color: blockColor,
+                  child: Center(
+                    child: Icon(
+                      blockIcon,
+                      color: blockIconColor,
+                      size: 24,
                     ),
                   ),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        unit.displayName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 15,
-                          color: context.npColors.white,
-                          letterSpacing: -0.2,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
+              ),
+              // Right content
+              Padding(
+                padding: const EdgeInsets.only(left: 64),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Key row 1: Micro-header with soft tinted background
+                    Container(
+                      color: microHeaderBg,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      child: Row(
                         children: [
-                          Icon(
-                            Icons.apartment_outlined,
-                            size: 13,
-                            color: context.npColors.gray500,
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isTurning
+                                  ? const Color(0xFFF59E0B).withValues(alpha: 0.12)
+                                  : (isVacant
+                                      ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                                      : context.npColors.bgElevated),
+                              border: Border.all(
+                                color: isTurning
+                                    ? const Color(0xFFF59E0B).withValues(alpha: 0.4)
+                                    : (isVacant
+                                        ? const Color(0xFF10B981).withValues(alpha: 0.4)
+                                        : context.npColors.lineStrong),
+                                width: 0.8,
+                              ),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            child: Text(
+                              unit.label.toUpperCase(),
+                              style: NpType.mono.copyWith(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11,
+                                color: isTurning
+                                    ? const Color(0xFFF59E0B)
+                                    : (isVacant
+                                        ? const Color(0xFF10B981)
+                                        : context.npColors.white),
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          NpStatusPill(
+                            label: unit.occupancyStatus.label.toUpperCase(),
+                            tone: tone,
+                          ),
+                          const Spacer(),
+                          Flexible(
+                            child: Text(
+                              '${unit.buildingName.toUpperCase()} · ${unit.propertyName.toUpperCase()}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.end,
+                              style: NpType.mono.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: context.npColors.gray500,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              unit.propertyName,
-                              style: TextStyle(
-                                color: context.npColors.gray400,
-                                fontSize: 12,
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 10,
+                            color: context.npColors.gray500,
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Key row 2: 68px Property Image + Details + Icon Action Button
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 68,
+                            height: 68,
+                            decoration: BoxDecoration(
+                              color: context.npColors.bgElevated,
+                              border: Border.all(
+                                color: context.npColors.lineStrong,
+                                width: 0.8,
                               ),
-                              overflow: TextOverflow.ellipsis,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                propertyImage,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  unit.displayName,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14.5,
+                                    color: context.npColors.white,
+                                    height: 1.25,
+                                    letterSpacing: -0.2,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  '${unit.propertyName}${assetCount != null ? ' · $assetCount appliances' : ''}',
+                                  style: TextStyle(
+                                    color: context.npColors.gray400,
+                                    fontSize: 12,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  isTurning
+                                      ? 'READY FOR TURNOVER AUDIT'
+                                      : (isVacant
+                                          ? 'VACANT // PRE-LEASE AUDIT'
+                                          : 'ACTIVE LEASE // AUDIT READY'),
+                                  style: NpType.mono.copyWith(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                    color: isTurning
+                                        ? const Color(0xFFF59E0B)
+                                        : (isVacant
+                                            ? const Color(0xFF10B981)
+                                            : context.npColors.gray500),
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          // Icon-only start button replacing the old text button
+                          Material(
+                            color: isTurning || isVacant
+                                ? NpColors.red
+                                : context.npColors.bgElevated,
+                            borderRadius: BorderRadius.circular(12),
+                            child: InkWell(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                onStart();
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isTurning || isVacant
+                                        ? NpColors.redBorder
+                                        : context.npColors.lineStrong,
+                                    width: 0.8,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.play_arrow_rounded,
+                                  color: isTurning || isVacant
+                                      ? Colors.white
+                                      : context.npColors.white,
+                                  size: 24,
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                NpButton.primary(
-                  icon: Icons.play_arrow_rounded,
-                  label: 'Start turn',
-                  size: NpButtonSize.sm,
-                  onPressed: onStart,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -411,112 +560,257 @@ class _TurnCard extends StatelessWidget {
         : turn.inspectedCount / turn.items.length;
 
     final isDone = turn.status == TurnStatus.completed;
-    final stripeColor = isDone ? const Color(0xFF10B981) : const Color(0xFFEB2B2B);
+    final blockColor = isDone
+        ? const Color(0xFF10B981).withValues(alpha: 0.15)
+        : const Color(0xFFEB2B2B).withValues(alpha: 0.15);
+    final blockIcon = isDone
+        ? Icons.task_alt_rounded
+        : Icons.pending_actions_rounded;
+    final blockIconColor = isDone
+        ? const Color(0xFF10B981)
+        : const Color(0xFFEB2B2B);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border(
-          bottom: BorderSide(color: context.npColors.lineStrong, width: 0.8),
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onOpen,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final propertyImage = NpAssets.propertyImageFor(turn.unitLabel);
+
+    return Material(
+      color: context.npColors.bgCard,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onOpen();
+        },
+        splashColor: NpColors.redSubtle,
+        highlightColor: context.npColors.white08,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: context.npColors.line, width: 0.8),
+            ),
+          ),
+          child: Stack(
             children: [
-              // Header stripe Container(height: 3.5) in same color (red active / emerald completed)
-              Container(
-                height: 3.5,
-                width: double.infinity,
-                color: stripeColor,
+              // 64px left status color block
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: 64,
+                child: Container(
+                  color: blockColor,
+                  child: Center(
+                    child: Icon(
+                      blockIcon,
+                      color: blockIconColor,
+                      size: 24,
+                    ),
+                  ),
+                ),
               ),
+              // Right content
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.only(left: 64),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: stripeColor.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(2),
-                            border: Border.all(
-                              color: stripeColor.withValues(alpha: 0.4),
-                              width: 0.8,
+                    // Key row 1: Micro-header
+                    Container(
+                      color: isActive
+                          ? NpColors.redSubtle
+                          : context.npColors.bgCard,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isActive
+                                  ? NpColors.red.withValues(alpha: 0.12)
+                                  : context.npColors.bgElevated,
+                              border: Border.all(
+                                color: isActive
+                                    ? NpColors.redBorder
+                                    : context.npColors.lineStrong,
+                                width: 0.8,
+                              ),
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                            child: Text(
+                              turn.type.label.toUpperCase(),
+                              style: NpType.mono.copyWith(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11,
+                                color: isActive
+                                    ? NpColors.red
+                                    : context.npColors.white,
+                                letterSpacing: 0.6,
+                              ),
                             ),
                           ),
-                          child: Text(
-                            turn.type.label.toUpperCase(),
-                            style: NpType.mono.copyWith(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w800,
-                              color: stripeColor,
-                              letterSpacing: 0.6,
+                          const SizedBox(width: 8),
+                          NpStatusPill(
+                            label: turn.status.label.toUpperCase(),
+                            tone: isDone ? NpPillTone.verified : NpPillTone.caution,
+                          ),
+                          if (isActive) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: NpColors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          Flexible(
+                            child: Text(
+                              turn.unitLabel.toUpperCase(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.end,
+                              style: NpType.mono.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: isActive
+                                    ? NpColors.red
+                                    : context.npColors.gray500,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            turn.unitLabel,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15,
-                              color: context.npColors.white,
-                              letterSpacing: -0.2,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 10,
+                            color: context.npColors.gray500,
                           ),
-                        ),
-                        NpStatusPill(
-                          label: turn.status.label,
-                          tone: isDone ? NpPillTone.verified : NpPillTone.caution,
-                        ),
-                        const SizedBox(width: 6),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 11,
-                          color: context.npColors.gray500,
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${turn.inspectedCount}/${turn.items.length} APPLIANCES INSPECTED',
-                          style: NpType.mono.copyWith(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: context.npColors.gray400,
-                            letterSpacing: 0.6,
+                    // Key row 2: 68px Property Image + Progress details + Action Icon Button
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 68,
+                            height: 68,
+                            decoration: BoxDecoration(
+                              color: context.npColors.bgElevated,
+                              border: Border.all(
+                                color: context.npColors.lineStrong,
+                                width: 0.8,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                propertyImage,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                        ),
-                        Text(
-                          '${(progress * 100).round()}%',
-                          style: NpType.mono.copyWith(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: stripeColor,
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  turn.unitLabel,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14.5,
+                                    color: context.npColors.white,
+                                    height: 1.25,
+                                    letterSpacing: -0.2,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      '${turn.inspectedCount}/${turn.items.length} INSPECTED',
+                                      style: NpType.mono.copyWith(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: context.npColors.gray400,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${(progress * 100).round()}%',
+                                      style: NpType.mono.copyWith(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w800,
+                                        color: isDone
+                                            ? const Color(0xFF10B981)
+                                            : NpColors.red,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(3),
+                                  child: LinearProgressIndicator(
+                                    value: progress.clamp(0.0, 1.0),
+                                    minHeight: 5,
+                                    color: isDone
+                                        ? const Color(0xFF10B981)
+                                        : NpColors.red,
+                                    backgroundColor: context.npColors.white08,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    // Progress bar: 8px rounded, track white08, fill red active / emerald completed
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: progress.clamp(0.0, 1.0),
-                        minHeight: 8,
-                        color: stripeColor,
-                        backgroundColor: context.npColors.white08,
+                          const SizedBox(width: 10),
+                          Material(
+                            color: isActive
+                                ? NpColors.red
+                                : context.npColors.bgElevated,
+                            borderRadius: BorderRadius.circular(12),
+                            child: InkWell(
+                              onTap: () {
+                                HapticFeedback.lightImpact();
+                                onOpen();
+                              },
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isActive
+                                        ? NpColors.redBorder
+                                        : context.npColors.lineStrong,
+                                    width: 0.8,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  isActive
+                                      ? Icons.arrow_forward_rounded
+                                      : Icons.visibility_outlined,
+                                  color: isActive
+                                      ? Colors.white
+                                      : context.npColors.white,
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

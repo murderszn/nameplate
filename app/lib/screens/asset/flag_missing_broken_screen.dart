@@ -47,9 +47,9 @@ class _FlagMissingBrokenScreenState
           : _notesController.text.trim(),
     );
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Issue saved. Queued to upload.')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Issue saved. Queued to upload.')),
+    );
     Navigator.of(context).pop();
   }
 
@@ -63,18 +63,15 @@ class _FlagMissingBrokenScreenState
           // ── 00 // Full-Bleed Incident Hero Stage ───────────────────────────
           Container(
             width: double.infinity,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF1F0A0E),
-                  Color(0xFF0C080A),
-                ],
+                colors: [Color(0xFF1F0A0E), Color(0xFF0C080A)],
               ),
               border: Border(
-                bottom: BorderSide(color: Color(0xFF1E293B)),
-                left: BorderSide(color: Color(0xFFEF4444), width: 3.5),
+                bottom: BorderSide(color: context.npColors.lineStrong),
+                left: const BorderSide(color: NpColors.red, width: 3.5),
               ),
             ),
             padding: const EdgeInsets.fromLTRB(18, 20, 18, 20),
@@ -84,7 +81,10 @@ class _FlagMissingBrokenScreenState
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 2.5,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEF4444).withValues(alpha: 0.18),
                         borderRadius: BorderRadius.circular(2),
@@ -117,7 +117,7 @@ class _FlagMissingBrokenScreenState
                       style: NpType.mono.copyWith(
                         fontSize: 12,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF38BDF8),
+                        color: NpColors.red,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -136,9 +136,9 @@ class _FlagMissingBrokenScreenState
                 const SizedBox(height: 3),
                 Text(
                   '${widget.asset.currentLocationLabel ?? 'Unknown location'} · Serial: ${widget.asset.serialNumber ?? 'UNSPECIFIED'}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12.5,
-                    color: Color(0xFF94A3B8),
+                    color: context.npColors.gray400,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -150,10 +150,10 @@ class _FlagMissingBrokenScreenState
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-            decoration: const BoxDecoration(
-              color: Color(0xFF0F172A),
+            decoration: BoxDecoration(
+              color: context.npColors.bgCard,
               border: Border(
-                bottom: BorderSide(color: Color(0xFF1E293B)),
+                bottom: BorderSide(color: context.npColors.lineStrong),
               ),
             ),
             child: Row(
@@ -163,17 +163,17 @@ class _FlagMissingBrokenScreenState
                   style: NpType.mono.copyWith(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF38BDF8),
+                    color: NpColors.red,
                     letterSpacing: 0.8,
                   ),
                 ),
                 const SizedBox(width: 6),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Audit discrepancy flagged for operations supervisor',
                     style: TextStyle(
                       fontSize: 11.5,
-                      color: Color(0xFF94A3B8),
+                      color: context.npColors.gray400,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -212,7 +212,8 @@ class _FlagMissingBrokenScreenState
                   subtitle: 'Not found at its recorded location.',
                   isSelected: _reason == _FlagReason.unaccountedFor,
                   accentColor: const Color(0xFFEF4444),
-                  onTap: () => setState(() => _reason = _FlagReason.unaccountedFor),
+                  onTap: () =>
+                      setState(() => _reason = _FlagReason.unaccountedFor),
                 ),
                 const SizedBox(height: 10),
                 _FlagReasonTile(
@@ -229,7 +230,7 @@ class _FlagMissingBrokenScreenState
                   style: NpType.mono.copyWith(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF64748B),
+                    color: context.npColors.gray500,
                     letterSpacing: 0.8,
                   ),
                 ),
@@ -340,7 +341,9 @@ class _FlagReasonTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: isSelected ? Colors.white : context.npColors.white,
+                        color: isSelected
+                            ? Colors.white
+                            : context.npColors.white,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -369,4 +372,3 @@ class _FlagReasonTile extends StatelessWidget {
     );
   }
 }
-

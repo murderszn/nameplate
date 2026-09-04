@@ -67,7 +67,7 @@ class SettingsScreen extends ConsumerWidget {
             icon: darkMode
                 ? Icons.dark_mode_rounded
                 : Icons.light_mode_rounded,
-            accentColor: const Color(0xFF38BDF8),
+            accentColor: NpColors.red,
             title: 'Dark mode',
             subtitle: darkMode
                 ? 'Dark Nameplate theme'
@@ -144,7 +144,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           _FullBleedTile(
             icon: Icons.devices_rounded,
-            accentColor: const Color(0xFF64748B),
+            accentColor: context.npColors.gray400,
             title: 'Device identifier',
             subtitle:
                 '${session.deviceId} · ${MediaQuery.sizeOf(context).shortestSide >= 640 ? 'Tablet' : 'Phone'} layout',
@@ -152,7 +152,7 @@ class SettingsScreen extends ConsumerWidget {
           Divider(height: 1, color: context.npColors.lineStrong),
           _FullBleedTile(
             icon: Icons.shield_outlined,
-            accentColor: const Color(0xFF64748B),
+            accentColor: context.npColors.gray400,
             title: 'About Nameplate Field',
             subtitle: 'v0.1.0 · Offline-first appliance registry engine',
           ),
@@ -305,10 +305,10 @@ class _TechnicianHeroStage extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF080A0F),
+      decoration: BoxDecoration(
+        color: context.npColors.bgCard,
         border: Border(
-          bottom: BorderSide(color: Color(0xFF1E293B)),
+          bottom: BorderSide(color: context.npColors.lineStrong),
         ),
       ),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -341,16 +341,16 @@ class _TechnicianHeroStage extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
+                    color: context.npColors.bgElevated,
                     borderRadius: BorderRadius.circular(2),
-                    border: Border.all(color: const Color(0xFF334155)),
+                    border: Border.all(color: context.npColors.lineStrong),
                   ),
                   child: Text(
                     'SWITCH',
                     style: NpType.mono.copyWith(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF94A3B8),
+                      color: context.npColors.white,
                     ),
                   ),
                 ),
@@ -395,10 +395,10 @@ class _TechnicianHeroStage extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.chevron_right,
                   size: 14,
-                  color: Color(0xFF64748B),
+                  color: context.npColors.gray500,
                 ),
               ],
             ),
@@ -431,10 +431,10 @@ class _SyncTelemetryRibbon extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F172A),
+      decoration: BoxDecoration(
+        color: context.npColors.bgElevated,
         border: Border(
-          bottom: BorderSide(color: Color(0xFF1E293B)),
+          bottom: BorderSide(color: context.npColors.lineStrong),
         ),
       ),
       child: Row(
@@ -469,9 +469,9 @@ class _SyncTelemetryRibbon extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   statusText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF94A3B8),
+                    color: context.npColors.gray400,
                     fontWeight: FontWeight.w600,
                   ),
                   maxLines: 1,
@@ -622,7 +622,7 @@ class _FullBleedSwitchTile extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               left: BorderSide(
-                color: value ? accentColor : const Color(0xFF334155),
+                color: value ? accentColor : context.npColors.lineStrong,
                 width: 3.5,
               ),
             ),
@@ -632,7 +632,7 @@ class _FullBleedSwitchTile extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: value ? accentColor : const Color(0xFF64748B),
+                color: value ? accentColor : context.npColors.gray500,
                 size: 20,
               ),
               const SizedBox(width: 14),
@@ -692,19 +692,19 @@ class _TagStudioBanner extends StatelessWidget {
         onTap: onTap,
         child: Container(
           width: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFF131B2E),
-                Color(0xFF090D15),
+                Color(0xFF18181B),
+                Color(0xFF09090B),
               ],
             ),
             border: Border(
-              top: BorderSide(color: Color(0xFF1E293B)),
-              bottom: BorderSide(color: Color(0xFF1E293B)),
-              left: BorderSide(color: Color(0xFFEB2B2B), width: 3.5),
+              top: BorderSide(color: context.npColors.lineStrong),
+              bottom: BorderSide(color: context.npColors.lineStrong),
+              left: const BorderSide(color: NpColors.red, width: 3.5),
             ),
           ),
           padding: const EdgeInsets.all(18),
@@ -714,14 +714,14 @@ class _TagStudioBanner extends StatelessWidget {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  color: context.npColors.bgElevated,
+                  border: Border.all(color: context.npColors.lineStrong),
                   borderRadius: BorderRadius.circular(2),
                 ),
                 child: const Center(
                   child: Icon(
                     Icons.qr_code_2_rounded,
-                    color: Color(0xFFEB2B2B),
+                    color: NpColors.red,
                     size: 26,
                   ),
                 ),
@@ -748,36 +748,36 @@ class _TagStudioBanner extends StatelessWidget {
                             vertical: 1.5,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFEB2B2B).withValues(alpha: 0.15),
+                            color: NpColors.red.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(2),
-                            border: Border.all(color: const Color(0xFFEB2B2B)),
+                            border: Border.all(color: NpColors.red),
                           ),
                           child: Text(
                             '$offlineRemainingCount READY',
                             style: NpType.mono.copyWith(
                               fontSize: 9,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFFEB2B2B),
+                              color: NpColors.red,
                             ),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Mint NPID + QR payload for a physical plate',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF94A3B8),
+                        color: context.npColors.gray400,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Color(0xFF64748B),
+                color: context.npColors.gray500,
                 size: 16,
               ),
             ],
@@ -797,11 +797,11 @@ class _OutboxTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF0F172A),
+      decoration: BoxDecoration(
+        color: context.npColors.bgElevated,
         border: Border(
-          bottom: BorderSide(color: Color(0xFF1E293B)),
-          left: BorderSide(color: Color(0xFFF59E0B), width: 3.5),
+          bottom: BorderSide(color: context.npColors.lineStrong),
+          left: const BorderSide(color: Color(0xFFF59E0B), width: 3.5),
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -827,12 +827,11 @@ class _OutboxTile extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
                   op.type,
                   style: NpType.mono.copyWith(
                     fontSize: 10,
-                    color: const Color(0xFF64748B),
+                    color: context.npColors.gray500,
                   ),
                 ),
               ],

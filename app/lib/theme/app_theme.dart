@@ -28,9 +28,9 @@ class NpColors {
   static const pending = Color(0xFF7A5AA8);
 
   // Category tints and backgrounds (12% opacity variants)
-  static const hvacBlue = Color(0xFF0EA5E9);
-  static const hvacBlueBgLight = Color(0x1F0EA5E9);
-  static const hvacBlueBgDark = Color(0x1F0EA5E9);
+  static const hvacBlue = Color(0xFFD4D4D8);
+  static const hvacBlueBgLight = Color(0x1F111111);
+  static const hvacBlueBgDark = Color(0x1FFFFFFF);
 
   static const laundryAmber = Color(0xFFF59E0B);
   static const laundryAmberBgLight = Color(0x1FF59E0B);

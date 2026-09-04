@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_theme.dart';
 import '../widgets/np_brand.dart';
@@ -12,14 +15,21 @@ import 'workorder/work_orders_screen.dart';
 /// (v0-scope.md §1.1).
 /// On tablets, renders an HQ-style side rail. On phones, a bottom NavigationBar.
 class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+  final int initialIndex;
+  const AppShell({super.key, this.initialIndex = 0});
 
   @override
   State<AppShell> createState() => _AppShellState();
 }
 
 class _AppShellState extends State<AppShell> {
-  int _index = 0;
+  late int _index;
+
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.initialIndex;
+  }
 
   static const _screens = [
     ScanScreen(),
@@ -152,7 +162,10 @@ class _RailItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       hoverColor: context.npColors.bgCard.withValues(alpha: 0.5),
@@ -163,10 +176,11 @@ class _RailItem extends StatelessWidget {
           Positioned(
             left: 0,
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 180),
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
               width: 3,
               height: selected ? 32 : 0,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: NpColors.red,
                 borderRadius: BorderRadius.only(
                   topRight: Radius.circular(2),
@@ -177,21 +191,26 @@ class _RailItem extends StatelessWidget {
           ),
           // Centered Icon & Label
           Padding(
-            padding: EdgeInsets.symmetric(vertical: 14),
+            padding: const EdgeInsets.symmetric(vertical: 14),
             child: SizedBox(
               width: double.infinity,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    selected ? activeIcon : icon,
-                    size: 22,
-                    color: selected
-                        ? context.npColors.white
-                        : context.npColors.gray500,
+                  AnimatedScale(
+                    scale: selected ? 1.08 : 1.0,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutCubic,
+                    child: Icon(
+                      selected ? activeIcon : icon,
+                      size: 22,
+                      color: selected
+                          ? context.npColors.white
+                          : context.npColors.gray500,
+                    ),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Text(
                     label.toUpperCase(),
                     style: NpType.mono.copyWith(
@@ -214,7 +233,8 @@ class _RailItem extends StatelessWidget {
   }
 }
 
-/// Phone bottom bar — sharp editorial style with red top-line on selected item.
+/// Phone bottom bar — high-precision hardware dock with OLED frosted glass blur,
+/// tactile capsule active state, red micro-dot LED, and haptic feedback.
 class _BottomBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
@@ -228,65 +248,133 @@ class _BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bg,
-        border: Border(top: BorderSide(color: context.npColors.lineStrong)),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ui.ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        child: Container(
+          decoration: BoxDecoration(
+            color: context.npColors.bg.withValues(alpha: 0.85),
+            border: Border(
+              top: BorderSide(
+                color: context.npColors.lineStrong,
+                width: 0.8,
+              ),
+            ),
+          ),
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: 62,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: destinations.asMap().entries.map((entry) {
+                  final i = entry.key;
+                  final d = entry.value;
+                  final selected = selectedIndex == i;
+                  return Expanded(
+                    child: _BottomBarItem(
+                      icon: d.icon,
+                      activeIcon: d.activeIcon,
+                      label: d.label,
+                      selected: selected,
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        onDestinationSelected(i);
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
       ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 56,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: destinations.asMap().entries.map((entry) {
-              final i = entry.key;
-              final d = entry.value;
-              final selected = selectedIndex == i;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => onDestinationSelected(i),
-                  behavior: HitTestBehavior.opaque,
-                  child: Column(
-                    children: [
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 180),
-                        height: 2,
-                        color: selected ? NpColors.red : Colors.transparent,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              selected ? d.activeIcon : d.icon,
-                              size: 22,
-                              color: selected
-                                  ? context.npColors.white
-                                  : context.npColors.gray500,
-                            ),
-                            SizedBox(height: 3),
-                            Text(
-                              d.label.toUpperCase(),
-                              style: NpType.mono.copyWith(
-                                fontSize: 9,
-                                fontWeight: selected
-                                    ? FontWeight.w800
-                                    : FontWeight.w600,
-                                color: selected
-                                    ? context.npColors.white
-                                    : context.npColors.gray500,
-                                letterSpacing: 0.6,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+    );
+  }
+}
+
+class _BottomBarItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _BottomBarItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Center(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: BoxDecoration(
+            color: selected
+                ? context.npColors.bgElevated.withValues(alpha: 0.85)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected
+                  ? context.npColors.lineStrong.withValues(alpha: 0.9)
+                  : Colors.transparent,
+              width: 0.8,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedScale(
+                scale: selected ? 1.08 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutCubic,
+                child: Icon(
+                  selected ? activeIcon : icon,
+                  size: 21,
+                  color: selected
+                      ? context.npColors.white
+                      : context.npColors.gray500,
                 ),
-              );
-            }).toList(),
+              ),
+              const SizedBox(height: 3),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label.toUpperCase(),
+                    style: NpType.mono.copyWith(
+                      fontSize: 9.5,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                      color: selected
+                          ? context.npColors.white
+                          : context.npColors.gray500,
+                      letterSpacing: 0.7,
+                    ),
+                  ),
+                  if (selected) ...[
+                    const SizedBox(width: 4),
+                    Container(
+                      width: 4,
+                      height: 4,
+                      decoration: const BoxDecoration(
+                        color: NpColors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
           ),
         ),
       ),

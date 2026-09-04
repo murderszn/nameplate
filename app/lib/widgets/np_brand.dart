@@ -17,6 +17,22 @@ class NpAssets {
   static const schematicDishwasher = 'assets/images/schematics/dishwasher.png';
   static const schematicThermostat = 'assets/images/schematics/thermostat.png';
 
+  static const propertyScottsdale = 'assets/images/properties/scottsdale_vista.jpg';
+  static const propertyCamelback = 'assets/images/properties/camelback_vista.jpg';
+  static const propertyRidge = 'assets/images/properties/sonoran_ridge.jpg';
+  static const propertyDesert = 'assets/images/properties/desert_palm.jpg';
+
+  static String propertyImageFor(String? propertyNameOrId) {
+    if (propertyNameOrId == null) return propertyScottsdale;
+    final key = propertyNameOrId.toLowerCase();
+    if (key.contains('camelback') || key.contains('ct')) return propertyCamelback;
+    if (key.contains('ridge') || key.contains('commons') || key.contains('dr') || key.contains('sonoran')) {
+      return propertyRidge;
+    }
+    if (key.contains('palm') || key.contains('desert')) return propertyDesert;
+    return propertyScottsdale;
+  }
+
   static String? schematicFor(String categoryOrTitle) {
     final key = categoryOrTitle.toLowerCase();
     if (key.contains('fridge') || key.contains('refrigerator')) {

@@ -388,9 +388,9 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             decoration: BoxDecoration(
-              color: const Color(0xFF0F172A),
+              color: context.npColors.bgCard,
               border: Border(
-                top: const BorderSide(color: Color(0xFF1E3A8A), width: 1),
+                top: BorderSide(color: context.npColors.lineStrong, width: 1),
                 bottom: BorderSide(color: context.npColors.lineStrong),
               ),
             ),
@@ -402,16 +402,16 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B),
+                        color: context.npColors.bgElevated,
                         borderRadius: BorderRadius.circular(2),
-                        border: Border.all(color: const Color(0xFF334155)),
+                        border: Border.all(color: context.npColors.lineStrong),
                       ),
                       child: Text(
                         turn.type.label.toUpperCase(),
                         style: NpType.mono.copyWith(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF38BDF8),
+                          color: context.npColors.white,
                           letterSpacing: 0.8,
                         ),
                       ),
@@ -435,7 +435,7 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                       '${turn.missingCount > 0 ? ' · ${turn.missingCount} unaccounted' : ''}'
                       '${turn.damagedCount > 0 ? ' · ${turn.damagedCount} flagged' : ''}',
                       style: NpType.mono.copyWith(
-                        color: const Color(0xFF94A3B8),
+                        color: context.npColors.gray400,
                         fontSize: 11,
                         letterSpacing: 0.5,
                       ),
@@ -445,7 +445,7 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                       style: NpType.mono.copyWith(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF38BDF8),
+                        color: NpColors.red,
                       ),
                     ),
                   ],
@@ -457,7 +457,7 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                     value: items.isEmpty ? 0 : turn.inspectedCount / items.length,
                     minHeight: 3.5,
                     color: NpColors.red,
-                    backgroundColor: const Color(0xFF1E293B),
+                    backgroundColor: context.npColors.white08,
                   ),
                 ),
               ],

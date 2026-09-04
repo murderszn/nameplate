@@ -75,10 +75,10 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            decoration: const BoxDecoration(
-              color: Color(0xFF0F172A),
+            decoration: BoxDecoration(
+              color: context.npColors.bgElevated,
               border: Border(
-                bottom: BorderSide(color: Color(0xFF1E293B)),
+                bottom: BorderSide(color: context.npColors.lineStrong),
               ),
             ),
             child: Row(
@@ -109,9 +109,9 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
                       const SizedBox(height: 2),
                       Text(
                         '${session.remainingOfflinePoolCount} tags available offline · Ed25519 verified',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF94A3B8),
+                          color: context.npColors.gray400,
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
@@ -123,16 +123,16 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1E293B),
+                    color: context.npColors.bgCard,
                     borderRadius: BorderRadius.circular(2),
-                    border: Border.all(color: const Color(0xFF334155)),
+                    border: Border.all(color: context.npColors.lineStrong),
                   ),
                   child: Text(
                     'CROCKFORD B32',
                     style: NpType.mono.copyWith(
                       fontSize: 9,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF38BDF8),
+                      color: context.npColors.white,
                     ),
                   ),
                 ),
@@ -205,7 +205,7 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
                     style: NpType.mono.copyWith(
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF38BDF8),
+                      color: NpColors.red,
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -215,7 +215,7 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
                     style: NpType.mono.copyWith(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF64748B),
+                      color: context.npColors.gray500,
                       letterSpacing: 1.2,
                     ),
                   ),
@@ -251,10 +251,10 @@ class _TagStagingBay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF07090E),
+      decoration: BoxDecoration(
+        color: context.npColors.bg,
         border: Border(
-          bottom: BorderSide(color: Color(0xFF1E293B)),
+          bottom: BorderSide(color: context.npColors.lineStrong),
         ),
       ),
       child: Stack(
@@ -270,47 +270,52 @@ class _TagStagingBay extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
             child: Column(
               children: [
-                // Top staging status pips
+                // Top staging status pips (Fixed flex overflow)
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B),
-                        borderRadius: BorderRadius.circular(2),
-                        border: Border.all(color: const Color(0xFF334155)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 6,
-                            height: 6,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFEB2B2B),
-                              shape: BoxShape.circle,
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                        decoration: BoxDecoration(
+                          color: context.npColors.bgElevated,
+                          borderRadius: BorderRadius.circular(2),
+                          border: Border.all(color: context.npColors.lineStrong),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                color: NpColors.red,
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'SPEC // 30-UP ADHESIVE PHYSICAL PLATE',
-                            style: NpType.mono.copyWith(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF94A3B8),
-                              letterSpacing: 0.8,
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                'SPEC // 30-UP PHYSICAL PLATE',
+                                style: NpType.mono.copyWith(
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: context.npColors.gray400,
+                                  letterSpacing: 0.8,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: 10),
                     Text(
-                      '1:1 PHYSICAL STAGE',
+                      '1:1 STAGE',
                       style: NpType.mono.copyWith(
                         fontSize: 9,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF38BDF8),
+                        color: context.npColors.white,
                         letterSpacing: 0.8,
                       ),
                     ),
@@ -339,16 +344,16 @@ class _TagStagingBay extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0F172A),
+                    color: context.npColors.bgElevated,
                     borderRadius: BorderRadius.circular(2),
-                    border: Border.all(color: const Color(0xFF1E293B)),
+                    border: Border.all(color: context.npColors.lineStrong),
                   ),
                   child: Text(
                     'NPID // $npid',
                     style: NpType.mono.copyWith(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF38BDF8),
+                      color: NpColors.red,
                       letterSpacing: 1.4,
                     ),
                   ),
@@ -379,16 +384,16 @@ class _MintedTagTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: isSelected
-          ? const Color(0xFF0F172A)
+          ? context.npColors.bgElevated
           : context.npColors.bgCard,
       child: InkWell(
         onTap: onSelect,
         child: Container(
           decoration: BoxDecoration(
             border: Border(
-              bottom: const BorderSide(color: Color(0xFF1E293B)),
+              bottom: BorderSide(color: context.npColors.lineStrong),
               left: BorderSide(
-                color: isSelected ? const Color(0xFFEB2B2B) : Colors.transparent,
+                color: isSelected ? NpColors.red : Colors.transparent,
                 width: 3.5,
               ),
             ),
@@ -399,17 +404,17 @@ class _MintedTagTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: context.npColors.bgElevated,
                   borderRadius: BorderRadius.circular(2),
                   border: Border.all(
                     color: isSelected
-                        ? const Color(0xFFEB2B2B)
-                        : const Color(0xFF334155),
+                        ? NpColors.red
+                        : context.npColors.lineStrong,
                   ),
                 ),
                 child: const Icon(
                   Icons.qr_code_2_rounded,
-                  color: Color(0xFFEB2B2B),
+                  color: NpColors.red,
                   size: 16,
                 ),
               ),
@@ -424,8 +429,8 @@ class _MintedTagTile extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                         fontSize: 13,
                         color: isSelected
-                            ? const Color(0xFF38BDF8)
-                            : const Color(0xFFEB2B2B),
+                            ? Colors.white
+                            : NpColors.red,
                       ),
                     ),
                     const SizedBox(height: 2),

@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/services.dart';
+import '../../models/unit.dart';
 import '../../widgets/np_action_buttons.dart';
 import '../../services/npid.dart';
 import '../../services/providers.dart';
@@ -23,6 +26,8 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
   final _controller = TextEditingController();
   NpidScanResult? _liveResult;
   String? _error;
+  String? _selectedUnitId;
+  String? _lastScanSummary;
   bool _isScanning = false;
 
   @override
@@ -60,6 +65,9 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
     setState(() {
       _liveResult = scanRes;
+      _lastScanSummary = asset != null
+          ? '${asset.categoryDisplayName} · ${asset.npid}'
+          : 'Tag ${scanRes.npid} · Unassigned';
     });
 
     if (!mounted) return;
@@ -212,6 +220,82 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
     }
   }
 
+  void _openManualEntry() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.npColors.bgCard,
+      builder: (sheetContext) => SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
+          ),
+          child: _buildManualEntrySection(),
+        ),
+      ),
+    );
+  }
+
+  Unit? _selectedUnit(List<Unit> units) {
+    if (_selectedUnitId != null) {
+      for (final unit in units) {
+        if (unit.id == _selectedUnitId) return unit;
+      }
+    }
+    return units.isEmpty ? null : units.first;
+  }
+
+  void _chooseUnit(List<Unit> units) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: context.npColors.bgCard,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+              child: Text(
+                'Scan location',
+                style: NpType.mono.copyWith(
+                  color: context.npColors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ),
+            ...units.map(
+              (unit) => ListTile(
+                leading: Icon(
+                  Icons.location_on_outlined,
+                  color: context.npColors.gray400,
+                ),
+                title: Text(
+                  unit.displayName,
+                  style: TextStyle(color: context.npColors.white),
+                ),
+                subtitle: Text(
+                  unit.propertyName,
+                  style: TextStyle(color: context.npColors.gray500),
+                ),
+                trailing: unit.id == _selectedUnit(units)?.id
+                    ? const Icon(Icons.check_rounded, color: NpColors.red)
+                    : null,
+                onTap: () {
+                  setState(() => _selectedUnitId = unit.id);
+                  Navigator.of(sheetContext).pop();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildManualEntrySection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -358,7 +442,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
                 _QuickTagChip(
                   tag: 'NP-9P4T2WB1',
                   label: 'Washer Pump',
-                  toneColor: const Color(0xFF3B82F6),
+                  toneColor: context.npColors.white,
                   onTap: () {
                     _controller.text = 'NP-9P4T2WB1';
                     _lookup('NP-9P4T2WB1');
@@ -374,20 +458,262 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final session = ref.watch(fieldSessionProvider);
+    final units = session.visibleUnits;
+    final selectedUnit = _selectedUnit(units);
+
     return Scaffold(
       appBar: NpBrandAppBar(
         title: 'Scan the plate',
         showLogo: true,
         actions: const [SyncStatusBadge()],
       ),
-      body: ListView(
-        padding: EdgeInsets.zero,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          const contextHeight = 72.0;
+          const footerHeight = 72.0;
+          const activityMinimumHeight = 72.0;
+          final squareSize = math.max(
+            0.0,
+            math.min(
+              constraints.maxWidth,
+              constraints.maxHeight -
+                  contextHeight -
+                  footerHeight -
+                  activityMinimumHeight,
+            ),
+          );
+
+          return Column(
+            children: [
+              SizedBox(
+                height: contextHeight,
+                child: _ScanContextPanel(
+                  unit: selectedUnit,
+                  onChange: units.isEmpty ? null : () => _chooseUnit(units),
+                ),
+              ),
+              SizedBox.square(
+                dimension: squareSize,
+                child: _ScannerViewfinder(
+                  isScanning: _isScanning,
+                  onOpenScanner: _openCameraScanner,
+                ),
+              ),
+              Expanded(
+                child: _RecentScanPanel(
+                  lastScanSummary: _lastScanSummary,
+                  pendingCount: session.pendingCount,
+                ),
+              ),
+              SizedBox(
+                height: footerHeight,
+                child: _ManualEntryFooter(onPressed: _openManualEntry),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ScanContextPanel extends StatelessWidget {
+  final Unit? unit;
+  final VoidCallback? onChange;
+
+  const _ScanContextPanel({required this.unit, required this.onChange});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      decoration: BoxDecoration(
+        color: context.npColors.bg,
+        border: Border(bottom: BorderSide(color: context.npColors.lineStrong)),
+      ),
+      child: Row(
         children: [
-          _ScannerViewfinder(
-            isScanning: _isScanning,
-            onOpenScanner: _openCameraScanner,
+          Icon(
+            Icons.location_on_outlined,
+            size: 19,
+            color: unit == null ? context.npColors.gray500 : NpColors.red,
           ),
-          _buildManualEntrySection(),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  unit == null
+                      ? 'SCANNING INTO'
+                      : 'SCANNING INTO · ${unit!.propertyName.toUpperCase()}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: NpType.mono.copyWith(
+                    color: context.npColors.gray500,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  unit?.displayName ?? 'Choose a unit',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: NpType.mono.copyWith(
+                    color: context.npColors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          NpButton.outline(
+            size: NpButtonSize.sm,
+            label: unit == null ? 'Choose' : 'Change',
+            onPressed: onChange,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecentScanPanel extends StatelessWidget {
+  final String? lastScanSummary;
+  final int pendingCount;
+
+  const _RecentScanPanel({
+    required this.lastScanSummary,
+    required this.pendingCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final syncLabel = pendingCount == 0 ? 'SYNCED' : '$pendingCount PENDING';
+    final syncColor = pendingCount == 0
+        ? context.npColors.gray500
+        : NpColors.pending;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      decoration: BoxDecoration(
+        color: context.npColors.bg,
+        border: Border(bottom: BorderSide(color: context.npColors.lineStrong)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            lastScanSummary == null
+                ? Icons.center_focus_weak_rounded
+                : Icons.check_circle_outline_rounded,
+            size: 20,
+            color: lastScanSummary == null
+                ? context.npColors.gray400
+                : context.npSuccessFg,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'LAST SCAN',
+                  style: NpType.mono.copyWith(
+                    color: context.npColors.gray500,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  lastScanSummary ?? 'No scans yet · ready when you are',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: NpType.mono.copyWith(
+                    color: context.npColors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            syncLabel,
+            style: NpType.mono.copyWith(
+              color: syncColor,
+              fontSize: 9,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ManualEntryFooter extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const _ManualEntryFooter({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 9, 16, 12),
+      decoration: BoxDecoration(
+        color: context.npColors.bg,
+        border: Border(top: BorderSide(color: context.npColors.lineStrong)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.keyboard_rounded,
+            size: 17,
+            color: context.npColors.gray400,
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Enter a tag ID',
+                  style: NpType.mono.copyWith(
+                    color: context.npColors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.7,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Use a Nameplate ID or tag link',
+                  style: TextStyle(
+                    color: context.npColors.gray500,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          NpButton.outline(
+            size: NpButtonSize.sm,
+            label: 'Manual',
+            onPressed: onPressed,
+          ),
         ],
       ),
     );
@@ -583,7 +909,7 @@ class _CenterScanButton extends StatelessWidget {
           onTap: onPressed,
           borderRadius: BorderRadius.circular(3),
           child: SizedBox(
-            width: 168,
+            width: 236,
             height: 56,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
