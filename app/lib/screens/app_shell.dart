@@ -371,22 +371,19 @@ class _BottomBarItem extends StatelessWidget {
                       : context.npColors.gray500,
                 ),
               ),
-              const SizedBox(height: 3),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    label.toUpperCase(),
-                    style: NpType.mono.copyWith(
-                      fontSize: 9.5,
-                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                      color: selected
-                          ? context.npColors.white
-                          : context.npColors.gray500,
-                      letterSpacing: 0.7,
-                    ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label.toUpperCase(),
+                  style: NpType.mono.copyWith(
+                    fontSize: 9.5,
+                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                    color: selected
+                        ? context.npColors.white
+                        : context.npColors.gray500,
+                    letterSpacing: 0.7,
                   ),
-                ],
+                ),
               ),
             ],
           ),

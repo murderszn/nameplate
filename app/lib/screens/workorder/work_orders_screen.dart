@@ -240,7 +240,6 @@ class _WorkOrderCard extends ConsumerWidget {
     final isUrgent =
         wo.priority == WorkOrderPriority.urgent ||
         wo.priority == WorkOrderPriority.emergency;
-    final schematic = NpAssets.schematicFor(wo.title);
     final session = ref.watch(fieldSessionProvider);
 
     Asset? asset = wo.assetNpid != null
@@ -277,16 +276,6 @@ class _WorkOrderCard extends ConsumerWidget {
         const Color(0xFFF59E0B).withValues(alpha: 0.15),
       _ => context.npColors.bgElevated,
     };
-    final blockIcon = switch (wo.priority) {
-      WorkOrderPriority.emergency => Icons.warning_amber_rounded,
-      WorkOrderPriority.urgent => Icons.priority_high_rounded,
-      _ => Icons.build_outlined,
-    };
-    final blockIconColor = switch (wo.priority) {
-      WorkOrderPriority.emergency => const Color(0xFFC51F2D),
-      WorkOrderPriority.urgent => const Color(0xFFF59E0B),
-      _ => context.npColors.gray400,
-    };
 
     return Material(
       color: context.npColors.bgCard,
@@ -302,26 +291,45 @@ class _WorkOrderCard extends ConsumerWidget {
           ),
           child: Stack(
             children: [
-              // 64px left priority color-block
+              // 68px left priority & isometric appliance art tile
               Positioned(
                 left: 0,
                 top: 0,
                 bottom: 0,
-                width: 64,
+                width: 68,
                 child: Container(
                   color: blockColor,
-                  child: Center(
-                    child: Icon(
-                      blockIcon,
-                      color: blockIconColor,
-                      size: 24,
-                    ),
+                  child: Stack(
+                    children: [
+                      // Priority accent stripe on left edge
+                      if (isUrgent)
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: 3.5,
+                          child: Container(
+                            color: wo.priority == WorkOrderPriority.emergency
+                                ? const Color(0xFFC51F2D)
+                                : const Color(0xFFF59E0B),
+                          ),
+                        ),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: NpApplianceArt(
+                            categoryOrTitle: wo.title,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               // Right content
               Padding(
-                padding: const EdgeInsets.only(left: 64),
+                padding: const EdgeInsets.only(left: 68),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -384,74 +392,45 @@ class _WorkOrderCard extends ConsumerWidget {
                         ],
                       ),
                     ),
-                      // Key row 2: compact thumbnail + title + location
+                      // Key row 2: title + location (full width)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        padding: const EdgeInsets.fromLTRB(10, 8, 12, 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (schematic != null) ...[
-                              Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: context.npColors.bgElevated,
-                                  border: Border.all(color: context.npColors.lineStrong, width: 0.8),
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(2),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: NpApplianceArt(
-                                      categoryOrTitle: wo.title,
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                ),
+                            Text(
+                              wo.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13,
+                                color: context.npColors.white,
+                                height: 1.25,
+                                letterSpacing: -0.2,
                               ),
-                              const SizedBox(width: 8),
-                            ],
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    wo.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.place_outlined,
+                                  size: 12,
+                                  color: context.npColors.gray500,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    wo.unitLabel,
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 11,
-                                      color: context.npColors.white,
-                                      height: 1.25,
-                                      letterSpacing: -0.2,
+                                      fontSize: 11.5,
+                                      color: context.npColors.gray400,
+                                      fontWeight: FontWeight.w500,
                                     ),
-                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.place_outlined,
-                                        size: 12,
-                                        color: context.npColors.gray500,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Expanded(
-                                        child: Text(
-                                          wo.unitLabel,
-                                          style: TextStyle(
-                                            fontSize: 11.5,
-                                            color: context.npColors.gray400,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

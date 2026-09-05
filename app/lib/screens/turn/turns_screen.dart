@@ -288,16 +288,6 @@ class _UnitCard extends StatelessWidget {
         const Color(0xFF10B981).withValues(alpha: 0.15),
       _ => context.npColors.bgElevated,
     };
-    final blockIcon = switch (unit.occupancyStatus) {
-      OccupancyStatus.turning => Icons.sync_rounded,
-      OccupancyStatus.vacant => Icons.key_rounded,
-      _ => Icons.home_work_outlined,
-    };
-    final blockIconColor = switch (unit.occupancyStatus) {
-      OccupancyStatus.turning => const Color(0xFFF59E0B),
-      OccupancyStatus.vacant => const Color(0xFF10B981),
-      _ => context.npColors.gray400,
-    };
     final tone = switch (unit.occupancyStatus) {
       OccupancyStatus.turning => NpPillTone.caution,
       OccupancyStatus.vacant => NpPillTone.verified,
@@ -328,26 +318,44 @@ class _UnitCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // 64px left priority / occupancy color block
+              // 68px left property photo tile with occupancy tint
               Positioned(
                 left: 0,
                 top: 0,
                 bottom: 0,
-                width: 64,
-                child: Container(
-                  color: blockColor,
-                  child: Center(
-                    child: Icon(
-                      blockIcon,
-                      color: blockIconColor,
-                      size: 24,
+                width: 68,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      propertyImage,
+                      fit: BoxFit.cover,
                     ),
-                  ),
+                    Container(
+                      color: isTurning
+                          ? const Color(0xFFF59E0B).withValues(alpha: 0.28)
+                          : (isVacant
+                              ? const Color(0xFF10B981).withValues(alpha: 0.28)
+                              : const Color(0x3A000000)),
+                    ),
+                    if (isTurning || isVacant)
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: 3.5,
+                        child: Container(
+                          color: isTurning
+                              ? const Color(0xFFF59E0B)
+                              : const Color(0xFF10B981),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               // Right content
               Padding(
-                padding: const EdgeInsets.only(left: 64),
+                padding: const EdgeInsets.only(left: 68),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -420,32 +428,12 @@ class _UnitCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Key row 2: 68px Property Image + Details + Icon Action Button
+                    // Key row 2: Details (full width) + Icon Action Button
                     Padding(
                       padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 68,
-                            height: 68,
-                            decoration: BoxDecoration(
-                              color: context.npColors.bgElevated,
-                              border: Border.all(
-                                color: context.npColors.lineStrong,
-                                width: 0.8,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                propertyImage,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,15 +548,6 @@ class _TurnCard extends StatelessWidget {
         : turn.inspectedCount / turn.items.length;
 
     final isDone = turn.status == TurnStatus.completed;
-    final blockColor = isDone
-        ? const Color(0xFF10B981).withValues(alpha: 0.15)
-        : const Color(0xFFC51F2D).withValues(alpha: 0.15);
-    final blockIcon = isDone
-        ? Icons.task_alt_rounded
-        : Icons.pending_actions_rounded;
-    final blockIconColor = isDone
-        ? const Color(0xFF10B981)
-        : const Color(0xFFC51F2D);
 
     final propertyImage = NpAssets.propertyImageFor(turn.unitLabel);
 
@@ -589,26 +568,43 @@ class _TurnCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // 64px left status color block
+              // 68px left property photo tile with status tint
               Positioned(
                 left: 0,
                 top: 0,
                 bottom: 0,
-                width: 64,
-                child: Container(
-                  color: blockColor,
-                  child: Center(
-                    child: Icon(
-                      blockIcon,
-                      color: blockIconColor,
-                      size: 24,
+                width: 68,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(
+                      propertyImage,
+                      fit: BoxFit.cover,
                     ),
-                  ),
+                    Container(
+                      color: isDone
+                          ? const Color(0xFF10B981).withValues(alpha: 0.28)
+                          : (isActive
+                              ? const Color(0xFFC51F2D).withValues(alpha: 0.28)
+                              : const Color(0x3A000000)),
+                    ),
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: 3.5,
+                      child: Container(
+                        color: isDone
+                            ? const Color(0xFF10B981)
+                            : (isActive ? NpColors.red : context.npColors.lineStrong),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               // Right content
               Padding(
-                padding: const EdgeInsets.only(left: 64),
+                padding: const EdgeInsets.only(left: 68),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -690,32 +686,12 @@ class _TurnCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Key row 2: 68px Property Image + Progress details + Action Icon Button
+                    // Key row 2: Progress details (full width) + Action Icon Button
                     Padding(
                       padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            width: 68,
-                            height: 68,
-                            decoration: BoxDecoration(
-                              color: context.npColors.bgElevated,
-                              border: Border.all(
-                                color: context.npColors.lineStrong,
-                                width: 0.8,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                propertyImage,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
