@@ -1,6 +1,6 @@
 /* ===========================================================
    NAMEPLATE — Minimalist Luxury Editorial
-   Color Schema: Black (#000000), White (#FFFFFF), Red (#EB2B2B).
+   Color Schema: Black (#000000), White (#FFFFFF), Red (#c51f2d).
    Aesthetic: Bold oversized typography & hardware artifacts,
    architectural schematics, and responsive industrial design.
    =========================================================== */
@@ -19,12 +19,12 @@
   --white-15: rgba(255, 255, 255, 0.15);
   --white-08: rgba(255, 255, 255, 0.08);
 
-  --red: #EB2B2B;
-  --red-hover: #F44343;
-  --red-deep: #C91F1F;
+  --red: #c51f2d;
+  --red-hover: #ac1926;
+  --red-deep: #bd1f1f;
   --red-glow: none;
-  --red-subtle: rgba(235, 43, 43, 0.08);
-  --red-border: rgba(235, 43, 43, 0.4);
+  --red-subtle: rgba(197, 31, 45, 0.08);
+  --red-border: rgba(197, 31, 45, 0.35);
 
   --gray-900: #121212;
   --gray-800: #1F1F1F;
@@ -311,12 +311,12 @@ html[data-theme="light"] .site-header.nav-open {
   border-color: var(--red-hover);
   color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(235, 43, 43, 0.45);
+  box-shadow: 0 4px 16px rgba(197, 31, 45, 0.45);
 }
 
 .nav-contact-btn:active {
   transform: translateY(0);
-  box-shadow: 0 1px 4px rgba(235, 43, 43, 0.2);
+  box-shadow: 0 1px 4px rgba(197, 31, 45, 0.2);
 }
 
 .nav-contact-btn .btn-arrow {
@@ -1078,7 +1078,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .splash-status-dot.red {
   background: var(--red);
-  box-shadow: 0 0 8px rgba(235, 43, 43, 0.6);
+  box-shadow: 0 0 8px rgba(197, 31, 45, 0.6);
 }
 
 .splash-pillar-title {
@@ -1524,7 +1524,7 @@ html[data-theme="light"] .btn-ghost:hover {
   border-color: var(--red);
   box-shadow:
     0 0 0 1px var(--red),
-    0 0 16px rgba(235,43,43,0.22),
+    0 0 16px rgba(197, 31, 45, 0.22),
     0 22px 52px -12px rgba(0, 0, 0, 0.95);
 }
 
@@ -1535,7 +1535,7 @@ html[data-theme="light"] .btn-ghost:hover {
   height: 8px;
   border-radius: 50%;
   background: var(--red);
-  box-shadow: 0 0 0 2px #181818, 0 0 0 3px rgba(235, 43, 43, 0.4);
+  box-shadow: 0 0 0 2px #181818, 0 0 0 3px rgba(197, 31, 45, 0.4);
   transition: all 0.25s var(--ease);
   z-index: 7;
 }
@@ -1568,7 +1568,7 @@ html[data-theme="light"] .btn-ghost:hover {
 }
 
 .tag-qr-large-box.is-highlighted {
-  box-shadow: 0 0 0 3px var(--red), 0 0 20px rgba(235, 43, 43, 0.4);
+  box-shadow: 0 0 0 3px var(--red), 0 0 20px rgba(197, 31, 45, 0.4);
 }
 
 .tag-qr-large-box svg {
@@ -1652,7 +1652,7 @@ html[data-theme="light"] .btn-ghost:hover {
 }
 
 .tag-large-npid.is-highlighted {
-  text-shadow: 0 0 16px rgba(235, 43, 43, 0.85);
+  text-shadow: 0 0 16px rgba(197, 31, 45, 0.85);
   transform: scale(1.02);
 }
 
@@ -1777,7 +1777,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .studio-input-wrapper #btnRandomizeOversized:hover {
   background: var(--red-hover);
-  box-shadow: 0 4px 14px rgba(235, 43, 43, 0.4);
+  box-shadow: 0 4px 14px rgba(197, 31, 45, 0.4);
   transform: translateY(-1px);
 }
 
@@ -1936,7 +1936,7 @@ html[data-theme="light"] .btn-ghost:hover {
   background: var(--red);
   color: var(--white);
   border-color: var(--red);
-  box-shadow: 0 2px 8px rgba(235, 43, 43, 0.35);
+  box-shadow: 0 2px 8px rgba(197, 31, 45, 0.35);
 }
 
 .schematic-featured-frame {
@@ -2120,7 +2120,7 @@ html[data-theme="light"] .btn-ghost:hover {
   transition: all 0.2s var(--ease);
 }
 .problem-row:hover {
-  background: rgba(235, 43, 43, 0.02);
+  background: rgba(197, 31, 45, 0.02);
 }
 
 .problem-idx {
@@ -2177,7 +2177,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .comparison-table th.nameplate-col,
 .comparison-table td.nameplate-col {
-  background: rgba(235, 43, 43, 0.04);
+  background: rgba(197, 31, 45, 0.04);
   border-left: 1px solid var(--red-border);
   border-right: 1px solid var(--red-border);
 }
@@ -2455,7 +2455,7 @@ html[data-theme="light"] .btn-ghost:hover {
   border-right: none;
 }
 .arch-node:hover {
-  background: rgba(235, 43, 43, 0.02);
+  background: rgba(197, 31, 45, 0.02);
 }
 
 .arch-header-row {
@@ -2633,7 +2633,7 @@ html[data-theme="light"] .btn-ghost:hover {
 .ios-montage-card:hover {
   transform: translateY(-5px);
   border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.95), 0 0 20px rgba(235, 43, 43, 0.18);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.95), 0 0 20px rgba(197, 31, 45, 0.18);
 }
 
 .ios-montage-card img {
@@ -2906,7 +2906,7 @@ html[data-theme="light"] .btn-ghost:hover {
   color: var(--white);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(235, 43, 43, 0.12);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(197, 31, 45, 0.12);
   padding: 32px 34px;
   transform: translateY(16px) scale(0.98);
   transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s var(--ease), background 0.2s var(--ease);
@@ -3149,7 +3149,7 @@ textarea.form-control {
   background: #ffffff;
   color: #111111;
   border-color: rgba(0, 0, 0, 0.16);
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.2), 0 0 40px rgba(235, 43, 43, 0.08);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.2), 0 0 40px rgba(197, 31, 45, 0.08);
 }
 
 :root[data-theme="light"] .modal-title {
@@ -3465,7 +3465,7 @@ textarea.form-control {
   letter-spacing: 0.08em;
   padding: 3px 9px;
   border-radius: var(--radius);
-  background: rgba(235, 43, 43, 0.14);
+  background: rgba(197, 31, 45, 0.14);
   border: 1px solid var(--red-border);
   color: var(--red);
   text-transform: uppercase;
@@ -3647,8 +3647,8 @@ textarea.form-control {
 }
 
 .stage-metric-tile.stage-metric-alert {
-  background: rgba(235, 43, 43, 0.06);
-  border-color: rgba(235, 43, 43, 0.4);
+  background: rgba(197, 31, 45, 0.06);
+  border-color: rgba(197, 31, 45, 0.4);
 }
 
 .stage-metric-tile .metric-val {
@@ -3788,7 +3788,7 @@ textarea.form-control {
 
 .hq-yield-card.is-active {
   border-color: var(--red);
-  box-shadow: 0 0 0 1px var(--red), 0 12px 36px rgba(235, 43, 43, 0.18);
+  box-shadow: 0 0 0 1px var(--red), 0 12px 36px rgba(197, 31, 45, 0.18);
 }
 
 :root[data-theme="light"] .hq-yield-card {
@@ -3804,7 +3804,7 @@ textarea.form-control {
 
 :root[data-theme="light"] .hq-yield-card.is-active {
   border-color: var(--red);
-  box-shadow: 0 0 0 1px var(--red), 0 8px 24px rgba(235, 43, 43, 0.12);
+  box-shadow: 0 0 0 1px var(--red), 0 8px 24px rgba(197, 31, 45, 0.12);
 }
 
 .yield-card-thumb {
@@ -3845,7 +3845,7 @@ textarea.form-control {
   letter-spacing: 0.08em;
   padding: 3px 7px;
   background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(235, 43, 43, 0.4);
+  border: 1px solid rgba(197, 31, 45, 0.4);
   color: var(--red);
   border-radius: var(--radius);
   backdrop-filter: blur(4px);
@@ -4463,8 +4463,8 @@ textarea.form-control {
 }
 
 .chapter-item.is-active-chapter {
-  background: rgba(235, 43, 43, 0.08);
-  border-color: rgba(235, 43, 43, 0.3);
+  background: rgba(197, 31, 45, 0.08);
+  border-color: rgba(197, 31, 45, 0.3);
   color: var(--white);
 }
 
@@ -4531,7 +4531,7 @@ textarea.form-control {
 .btn-outline-deck:hover {
   border-color: var(--red);
   color: var(--red);
-  background: rgba(235, 43, 43, 0.05);
+  background: rgba(197, 31, 45, 0.05);
 }
 
 .btn-red-deck {
@@ -4711,6 +4711,9 @@ textarea.form-control {
   --bg-elevated: #141518;
   --gray-500: #92949c;
   --gray-400: #b0b2ba;
+  --red: #c51f2d;
+  --red-hover: #ac1926;
+  --red-subtle: rgba(197, 31, 45, .08);
   --card-shadow: 0 16px 40px -24px rgba(0, 0, 0, .6);
   --title-size: clamp(2rem, 4.2vw, 3.5rem);
   --sub-size: clamp(1rem, 1.4vw, 1.125rem);
