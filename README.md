@@ -10,7 +10,7 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 - **Technicians** use **Nameplate Field** (Flutter) to scan, inspect, harvest donor parts, and log service events even in signal-dead basements and utility closets.
 - **Portfolio Managers** use **Nameplate HQ** (React + TypeScript) to track asset lifecycle, dispatch work orders with SLA countdowns, prevent equipment shrinkage, and analyze repair-vs-replace economics across properties.
 - **Residents** use **Nameplate Portal** (React + TypeScript) to scan appliance tags, report maintenance requests with photos, and track repair appointments in real time.
-- **Backend API** (NestJS + Prisma + PostgreSQL) provides monotonic delta sync, idempotent UUIDv7 batch mutation reconciliation, and cryptographic pre-allocated tag pools.
+- **Backend Platform** (NestJS + Prisma + PostgreSQL production target / Python FastAPI bridge with live Supabase dual-write replication) provides monotonic delta sync, idempotent UUIDv7 batch mutation reconciliation, and cryptographic pre-allocated tag pools. Full visual schema catalog and live status are consolidated in [`website/backend.html`](website/backend.html).
 
 <p align="center">
   <img src="docs/images/appliance_asset_registry_overview.png" alt="Appliance Asset Registry Overview Architecture" width="100%" />
@@ -91,16 +91,18 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 - **My Appliances Roster**: In-unit equipment directory featuring high-resolution isometric schematics (`schematics/*.png`) and service timestamps.
 - **Safety Triage & Emergency Alerts**: Clear emergency instructions and urgent maintenance flags for active leaks, gas, or HVAC outages.
 
-### ⚙️ 4. Backend Sync Engine & API (NestJS + Prisma + PostgreSQL)
+### ⚙️ 4. Production Backend Platform (NestJS + Prisma + PostgreSQL)
 - **Monotonic Sync Delta Stream (`POST /v1/sync/pull`)**: Sequence-based pull endpoint returning all mutations since client watermark with tombstones.
 - **Idempotent Outbox Mutation Processor (`POST /v1/sync/push`)**: Batch mutation endpoint for offline service events, asset status updates, and turn checklists.
 - **Pre-Allocated Tag Block Allocator (`POST /v1/sync/allocate-block`)**: Allocates batches of 500 pre-signed cryptographic NPIDs to field devices for disconnected tagging.
-- **Relational Domain Schema**: Strict referential integrity for Organizations, Properties, Buildings, Units, Assets, Service Events, Part Usages, Parts, and Work Orders.
+- **28-Table Relational Domain Schema**: Complete schema with strict referential integrity for Organizations, Properties, Buildings, Units, Assets, Service Events, Part Usages, Parts, Turns, Custody, and Work Orders.
+- **Security & Multi-Tenancy**: Supabase JWT authentication, active membership context, permission and property-scope guards, tenant RLS, and private media storage policies.
 
-### 🐍 5. Python FastAPI Sync Engine & Supabase Bridge (`backend_py/`)
-- **Lightweight High-Throughput REST API**: FastAPI server running on Python 3 with SQLAlchemy models, Pydantic v2 schemas, and CORS middleware for local Flutter and web development.
-- **Bi-Directional Supabase Replication**: Real-time event propagation and batch sync hooks mirroring local mutations to Supabase PostgreSQL (`supabase_sync.py`).
-- **Offline Batch Processing**: Ingestion of offline technician service events, work orders, and asset status updates with conflict resolution and deterministic UUIDv5 mapping.
+### 🐍 5. Python FastAPI Sync Gateway & Live Supabase Bridge (`backend_py/`)
+- **High-Throughput REST API**: FastAPI server running on Python 3 with SQLAlchemy models, Pydantic v2 schemas, and CORS middleware for local Flutter and web development (`http://localhost:8080`).
+- **Live Supabase PostgreSQL Dual-Write**: Real-time event propagation and batch sync hooks mirroring local mutations to live Supabase PostgreSQL (`aifsfmvvcnxowmbuorbx.supabase.co`) via PostgREST with deterministic UUIDv5 mapping (`backend_py/supabase_sync.py`).
+- **Offline Batch Ingestion**: Ingestion of offline technician service events, work orders, and asset status updates with conflict resolution and deterministic state reconciliation.
+- **Automated Seeding & Cloud Sync**: Production-grade data synchronization scripts (`backend_py/seed_supabase.py`, `backend_py/sync_all_to_supabase.py`) populating the full portfolio and verifying live cloud tables.
 - **Comprehensive Test Suite**: Fully automated test coverage across API endpoints, database seeding, and models (**24/24 tests passing** with `pytest`).
 
 ### 🏷️ 6. Cryptographic Tag & QR Engine (Python CLI · `scripts/`)
@@ -111,10 +113,10 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 
 ### 🌐 7. Interactive Public Web, Tools & Launch Systems (`website/`)
 - **Marketing Platform ([`website/index.html`](website/index.html))**: High-impact brand experience with interactive 3D hardware tag visualizer, dual schematic/physical vinyl flipper, live tag minting demo, and CapEx leak breakdown.
-- **Commercial Launch Roadmap & Cost Model ([`website/launch-roadmap.html`](website/launch-roadmap.html))**: Interactive hardware tag cost calculator (Matte Industrial Vinyl 3M 300LSE, Tamper-Evident Void Polyester, Anodized Aluminum), multi-year Supabase/compute infrastructure estimates, Apple App Store submission runbook, and 30-day pilot deployment checklist.
+- **Consolidated Backend Architecture & Current State ([`website/backend.html`](website/backend.html))**: The unified master backend document. Consolidates the complete 28-table relational catalog across 7 domains, API endpoint maturity matrix, transactional write paths (atomic custody moves, service events), live Supabase cloud sync topology, and implementation roadmap. (*Note: `backend-blueprint.html` redirects here*).
+- **Commercial Launch Roadmap & Cost Model ([`website/launch-roadmap.html`](website/launch-roadmap.html))**: Interactive operational budget sizing engine (Apple $99/yr, Supabase Pro $25/mo, Cloud Run $8–$35/mo, 3M vinyl tags $0.18–$0.28/tag), per-unit ROI modeling, 4-week sprint Gantt timeline, and 26-task interactive launch checklist with `localStorage` persistence.
 - **Branded Appliance Screensaver ([`website/appliance-idle.html`](website/appliance-idle.html))**: 10-appliance rotating isometric visualizer with keyboard unit-cycling, pause/play, containerless Claude FM 24/7 Lo-Fi live radio telemetry strip, and PiP video monitor.
 - **Executive Printable Audit Dossiers ([`website/reports/`](website/reports/))**: Boardroom-ready, printable PDF reports including *Equipment Depreciation & CapEx Replacement Forecast* (`depreciation_audit.html`), *Brand Reliability & Failure Rate Matrix* (`failure_rate_matrix.html`), and *Make-Ready SLA Operations Audit* (`sla_operations_audit.html`).
-- **Interactive Schema Catalog & Architecture Explorer ([`website/backend.html`](website/backend.html) & [`website/backend-blueprint.html`](website/backend-blueprint.html))**: Visual database domain explorer, relational schema browser, and pipeline blueprints.
 - **Brand System & UI Spec Sheet ([`website/appliance-shrinkage/`](website/appliance-shrinkage/))**: Complete style guide (colors, typography, containers, appliance isometric line-art, rigid buttons, logo lockups).
 
 ---
@@ -158,9 +160,14 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 ```bash
 cd app
 flutter pub get
+
+# Run connected to local FastAPI server (default: http://localhost:8080/api)
 flutter run
+
+# Or point to custom/production backend gateway via compile-time flag
+flutter run --dart-define=API_BASE_URL=https://api.nameplate.io/api
 ```
-*Supports iOS Simulator, Android Emulator, and Web (`flutter run -d chrome`).*
+*Supports iOS Simulator, Android Emulator, and Web (`flutter run -d chrome`). Static analysis is 100% clean (`flutter analyze`).*
 
 ### 2. NestJS Backend Sync API
 ```bash
@@ -172,15 +179,19 @@ npm run start:dev
 ```
 *API runs at `http://localhost:3000`.*
 
-### 3. Python FastAPI Sync Engine
+### 3. Python FastAPI Sync Engine & Supabase Gateway
 ```bash
-# Run local FastAPI server with auto-reload
-python3 -m backend_py.run
+# Run local FastAPI server with auto-reload (port 8080)
+.venv/bin/uvicorn backend_py.main:app --host 127.0.0.1 --port 8080 --reload
+# or: python3 -m backend_py.run
 
-# Run full test suite
+# Sync all local seed data to live Supabase PostgreSQL (project: aifsfmvvcnxowmbuorbx)
+python3 backend_py/sync_all_to_supabase.py
+
+# Run full test suite (24/24 passing)
 pytest backend_py/
 ```
-*API runs at `http://localhost:8000` (interactive Swagger docs at `/docs`).*
+*API runs at `http://localhost:8080` (interactive Swagger docs at `/docs`). All mutations automatically dual-write to Supabase PostgreSQL.*
 
 ### 4. HQ Management Console
 ```bash
@@ -198,12 +209,12 @@ npm run dev
 ```
 *Resident portal runs at `http://localhost:5174` (builds to `website/portal/`).*
 
-### 6. Public Website & Launch Roadmap Preview
+### 6. Public Website, Backend Blueprint & Launch Roadmap Preview
 ```bash
-# Serve the marketing site, launch roadmap, and interactive audit dossiers
-python3 -m http.server 8080 --directory website
+# Serve marketing site, consolidated backend architecture, and launch roadmap
+python3 -m http.server 8001 --directory website
 ```
-*Open `http://localhost:8080` or `http://localhost:8080/launch-roadmap.html`.*
+*Open `http://localhost:8001` (marketing), `http://localhost:8001/backend.html` (consolidated backend blueprint), or `http://localhost:8001/launch-roadmap.html` (cost calculator & launch checklist).*
 
 ### 7. Cryptographic Tag & Sheet CLI
 ```bash
@@ -218,16 +229,21 @@ python3 scripts/nameplate_qr.py sheet --count 30 --out sheet_30.svg
 
 ## 📖 Deep-Dive Documentation
 
-Every architectural layer and design decision is documented in the [`docs/`](docs/) directory:
+Every architectural layer, relational schema, and operational workflow is comprehensively documented across the repository:
 
-- **[System Architecture](docs/architecture.md)** — Four product surfaces, offline sync protocol, backend design decisions, and data boundaries.
-- **[Data Model & Schema](docs/data-model.md)** — Complete 28-table schema, UUIDv7 conventions, ledger event types, and audit logging.
+### 🏛️ Consolidated Backend Architecture & Technical Reference
+- **[Backend Architecture & Current State](website/backend.html)** — **Primary Consolidated Backend Document**. Visual and architectural master reference containing the complete 28-table schema catalog across 7 domains, API endpoint status matrix, transactional write paths (custody transfers, service events, part harvesting), live Supabase PostgreSQL sync architecture, and phased roadmap. (*Replaces and consolidates `backend-blueprint.html`*).
+- **[Commercial Launch Roadmap & Cost Model](website/launch-roadmap.html)** — Sizing engine for Apple Developer Program, Supabase Pro, Cloud Run compute, and industrial 3M 300LSE vinyl tag manufacturing with a 26-task interactive checklist and `localStorage` persistence.
+- **[System Architecture Spec](docs/architecture.md)** — Four product surfaces, offline-first sync protocol (§4), NestJS/Prisma production stack decisions, and data boundaries.
+- **[Data Model & Schema Guide](docs/data-model.md)** — Complete 28-table relational schema, UUIDv7 conventions, ledger event types, and audit logging.
+- **[Supabase Backend Runbook](docs/supabase-backend-runbook.md)** — Production deployment path, forward migration chain, tenant RLS isolation, private media storage policies, and user activation.
+- **[Backend Architecture & POC Options](docs/backend-poc-options.md)** — Architectural evaluation matrix comparing Supabase Postgres against MongoDB, Firebase, and Cloudflare D1/Workers for relational asset ledgers.
+- **[Resident Portal Backend Plan](docs/resident-portal-backend-plan.md)** — Resident authentication boundaries, tenant isolation, and work-order pipeline.
+
+### 📐 Product, Hardware & Operational Specs
 - **[Product Overview & Thesis](docs/overview.md)** — The problem, the registry-as-a-product bet, two-tool system boundary, and field execution.
 - **[Asset Tagging Strategy](docs/asset-tagging-strategy.md)** — Physical substrate choices (3M 300LSE, Void Poly, Anodized Al), Crockford Base32 encoding, QR error correction, and HMAC validation.
 - **[Metrics & Analytics Guide](docs/metrics.md)** — Deterministic portfolio KPIs (spend T12M, unit costs, warranty leakage, Kaplan-Meier survival curves, brand reliability matrix).
-- **[Supabase Backend Runbook](docs/supabase-backend-runbook.md)** — Production deployment path, forward migration chain, tenant RLS isolation, private media storage policies, and user activation.
-- **[Backend Architecture & POC Options](docs/backend-poc-options.md)** — Trade-off matrix evaluating Supabase Postgres vs. MongoDB, Firebase, and Cloudflare D1/Workers for relational asset ledgers.
-- **[Resident Portal Backend Plan](docs/resident-portal-backend-plan.md)** — Resident authentication boundaries, tenant isolation, and work-order pipeline.
 - **[Product Scope & V0 Decisions](docs/v0-scope.md)** — Core scope, non-negotiable requirements, and operational workflows.
 - **[Brand & Design Standards](docs/branding.md)** — Typography, color tokens, voice guidelines, and logo specifications.
 

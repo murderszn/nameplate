@@ -14,6 +14,8 @@ slice remain roadmap work; a modeled table is not the same as a completed API.
 
 Deployment and recovery steps live in
 [`../docs/supabase-backend-runbook.md`](../docs/supabase-backend-runbook.md).
+For the consolidated visual schema catalog, endpoint status matrix, and roadmap,
+see [`../website/backend.html`](../website/backend.html).
 
 ## What's here
 
