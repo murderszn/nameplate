@@ -195,6 +195,9 @@ class FieldSession extends ChangeNotifier {
       _enqueue('identity', 'Signed in as Renter — ${tech.name}');
     } else {
       renterUnitId = null;
+      if (tech.id == 'renter-maya') {
+        tech = roster.first;
+      }
       _enqueue('identity', 'Switched to Technician mode');
     }
     notifyListeners();

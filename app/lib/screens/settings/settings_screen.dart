@@ -34,18 +34,18 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 40),
         children: [
-          // ── 00 // Full-Bleed Technician Credentials Stage ──────────────────
-          _TechnicianHeroStage(
+          // ── 00 // Unified Identity, Role & Scope Stage ─────────────────────
+          _AccountAndRoleHero(
             session: session,
             onPickTech: () => _pickTech(context, ref, session),
             onPickProperties: () => _pickProperties(context, ref, session),
+            onSelectRole: (role) {
+              ref.read(fieldSessionProvider).setRole(
+                role,
+                unitId: role == AppRole.renter ? 'unit-214' : null,
+              );
+            },
           ),
-
-          // ── Role — Renter vs Tech (same binary) ───────────────────────────
-          const _FullBleedSectionHeader(
-            title: 'Signed-in role — same app, different scope',
-          ),
-          _RoleSwitchTile(session: session),
 
           // ── Telemetry Ribbon: Sync & Network Status ────────────────────────
           _SyncTelemetryRibbon(
@@ -190,8 +190,11 @@ class SettingsScreen extends ConsumerWidget {
             children: [
               const ListTile(
                 title: Text(
-                  'Sign in as',
+                  'Switch Field Technician',
                   style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+                subtitle: Text(
+                  'Select active technician profile for service logs and sign-offs',
                 ),
               ),
               ...session.roster.map((t) {
@@ -296,21 +299,25 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-// ── Full-Bleed Technician Hero Stage ──────────────────────────────────────────
+// ── Unified Identity, Role & Scope Hero Stage ─────────────────────────────────
 
-class _TechnicianHeroStage extends StatelessWidget {
+class _AccountAndRoleHero extends StatelessWidget {
   final FieldSession session;
   final VoidCallback onPickTech;
   final VoidCallback onPickProperties;
+  final ValueChanged<AppRole> onSelectRole;
 
-  const _TechnicianHeroStage({
+  const _AccountAndRoleHero({
     required this.session,
     required this.onPickTech,
     required this.onPickProperties,
+    required this.onSelectRole,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isRenter = session.isRenter;
+    final accentColor = isRenter ? const Color(0xFF0EA5E9) : NpColors.red;
     final assignedProps = session.properties
         .where((p) => session.assignedPropertyIds.contains(p.id))
         .map((p) => p.name)
@@ -322,59 +329,225 @@ class _TechnicianHeroStage extends StatelessWidget {
         color: context.npColors.bgCard,
         border: Border(
           bottom: BorderSide(color: context.npColors.lineStrong),
+          left: BorderSide(color: accentColor, width: 3.5),
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // ── Role Segment Header & Selector ──────────────────────────────
           Row(
             children: [
-              Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF10B981),
-                  shape: BoxShape.circle,
+              Expanded(
+                child: Text(
+                  'APP ROLE & ACCESS SCOPE',
+                  style: NpType.mono.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: context.npColors.gray400,
+                    letterSpacing: 1.0,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                session.tech.name,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  letterSpacing: -0.2,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(color: accentColor),
                 ),
-              ),
-              const Spacer(),
-              InkWell(
-                onTap: onPickTech,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: context.npColors.bgElevated,
-                    borderRadius: BorderRadius.circular(2),
-                    border: Border.all(color: context.npColors.lineStrong),
-                  ),
-                  child: Text(
-                    'SWITCH',
-                    style: NpType.mono.copyWith(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                      color: context.npColors.white,
-                    ),
+                child: Text(
+                  isRenter ? 'RESIDENT' : 'FIELD OPS',
+                  style: NpType.mono.copyWith(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    color: accentColor,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 5),
-          InkWell(
-            onTap: onPickTech,
-            child: Text(
-              'Technician · ${session.tech.role} · ${FieldSession.orgName}',
+          const SizedBox(height: 10),
+          // Segmented switch between Technician mode and Resident mode
+          Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: context.npColors.bgElevated,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: context.npColors.lineStrong),
+            ),
+            child: Row(
+              children: [
+                // Technician Mode Tab
+                Expanded(
+                  child: InkWell(
+                    onTap: isRenter ? () => onSelectRole(AppRole.technician) : null,
+                    borderRadius: BorderRadius.circular(2),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 7),
+                      decoration: BoxDecoration(
+                        color: !isRenter
+                            ? NpColors.red.withValues(alpha: 0.16)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(
+                          color: !isRenter
+                              ? NpColors.red
+                              : Colors.transparent,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.engineering_outlined,
+                            size: 15,
+                            color: !isRenter ? NpColors.red : context.npColors.gray500,
+                          ),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                'Technician',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: !isRenter ? FontWeight.w800 : FontWeight.w600,
+                                  color: !isRenter ? context.npColors.white : context.npColors.gray400,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                // Resident / Renter Mode Tab
+                Expanded(
+                  child: InkWell(
+                    onTap: !isRenter ? () => onSelectRole(AppRole.renter) : null,
+                    borderRadius: BorderRadius.circular(2),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: isRenter
+                            ? const Color(0xFF0EA5E9).withValues(alpha: 0.16)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(2),
+                        border: Border.all(
+                          color: isRenter
+                              ? const Color(0xFF0EA5E9)
+                              : Colors.transparent,
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.home_outlined,
+                            size: 15,
+                            color: isRenter ? const Color(0xFF0EA5E9) : context.npColors.gray500,
+                          ),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                'Renter / Resident',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: isRenter ? FontWeight.w800 : FontWeight.w600,
+                                  color: isRenter ? context.npColors.white : context.npColors.gray400,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Divider(height: 1, color: context.npColors.lineStrong),
+          const SizedBox(height: 12),
+
+          // ── Active Identity Details ──────────────────────────────────────
+          if (!isRenter) ...[
+            // Technician Mode Card
+            Row(
+              children: [
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF10B981),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    session.tech.name,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  onTap: onPickTech,
+                  borderRadius: BorderRadius.circular(2),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+                    decoration: BoxDecoration(
+                      color: context.npColors.bgElevated,
+                      borderRadius: BorderRadius.circular(2),
+                      border: Border.all(color: context.npColors.lineStrong),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.swap_horiz_rounded,
+                          size: 13,
+                          color: context.npColors.gray400,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'SWITCH TECH',
+                          style: NpType.mono.copyWith(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            color: context.npColors.white,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${session.tech.role.toLowerCase() == 'technician' ? 'Field Technician' : '${session.tech.role} · Field Technician'} · ${FieldSession.orgName}',
               style: TextStyle(
                 fontSize: 12,
                 color: context.npColors.gray400,
@@ -383,39 +556,150 @@ class _TechnicianHeroStage extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-          ),
-          const SizedBox(height: 6),
-          InkWell(
-            onTap: onPickProperties,
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.apartment_rounded,
-                  size: 13,
-                  color: Color(0xFFF59E0B),
+            const SizedBox(height: 8),
+            InkWell(
+              onTap: onPickProperties,
+              borderRadius: BorderRadius.circular(2),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                decoration: BoxDecoration(
+                  color: context.npColors.bgElevated,
+                  borderRadius: BorderRadius.circular(2),
+                  border: Border.all(color: context.npColors.lineStrong, width: 0.8),
                 ),
-                const SizedBox(width: 5),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.apartment_rounded,
+                      size: 13,
+                      color: Color(0xFFF59E0B),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        assignedProps.isNotEmpty
+                            ? 'Scope: $assignedProps'
+                            : 'No assigned properties',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: context.npColors.gray300,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'EDIT',
+                      style: NpType.mono.copyWith(
+                        fontSize: 8.5,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFFF59E0B),
+                      ),
+                    ),
+                    const SizedBox(width: 2),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      size: 13,
+                      color: Color(0xFFF59E0B),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ] else ...[
+            // Resident Mode Card
+            Row(
+              children: [
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0EA5E9),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    assignedProps.isNotEmpty
-                        ? 'Scope: $assignedProps'
-                        : 'No assigned properties',
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      color: context.npColors.gray400,
+                    session.tech.name,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.2,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right,
-                  size: 14,
-                  color: context.npColors.gray500,
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0EA5E9).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(2),
+                    border: Border.all(color: const Color(0xFF0EA5E9)),
+                  ),
+                  child: Text(
+                    'UNIT 214',
+                    style: NpType.mono.copyWith(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0EA5E9),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 4),
+            Text(
+              'Resident · Sonoran Ridge · 4 Registered Appliances',
+              style: TextStyle(
+                fontSize: 12,
+                color: context.npColors.gray400,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0EA5E9).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(2),
+                border: Border.all(
+                  color: const Color(0xFF0EA5E9).withValues(alpha: 0.25),
+                  width: 0.8,
+                ),
+              ),
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 13,
+                    color: Color(0xFF0EA5E9),
+                  ),
+                  SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      'Resident scope: scan appliances in your unit or check work orders',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: Color(0xFF38BDF8),
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -524,17 +808,21 @@ class _FullBleedSectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 18, 16, 8),
       child: Row(
         children: [
-          Text(
-            title.toUpperCase(),
-            style: NpType.mono.copyWith(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w800,
-              color: context.npColors.gray400,
-              letterSpacing: 1.1,
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              style: NpType.mono.copyWith(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w800,
+                color: context.npColors.gray400,
+                letterSpacing: 1.1,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (trailing != null) ...[
-            const Spacer(),
+            const SizedBox(width: 8),
             trailing!,
           ],
         ],
@@ -746,12 +1034,17 @@ class _TagStudioBanner extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'Nameplate Tag studio',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
+                        const Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'Nameplate Tag studio',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -914,143 +1207,7 @@ class _FleetGalleryBanner extends StatelessWidget {
   }
 }
 
-// ── Role Switch — same binary for renters & techs ───────────────────────────
 
-class _RoleSwitchTile extends ConsumerWidget {
-  final FieldSession session;
-  const _RoleSwitchTile({required this.session});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isRenter = session.isRenter;
-    return Container(
-      decoration: BoxDecoration(
-        color: context.npColors.bgCard,
-        border: Border(
-          left: BorderSide(
-            color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
-            width: 3.5,
-          ),
-        ),
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                isRenter ? Icons.home_outlined : Icons.engineering_outlined,
-                color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
-                size: 20,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                isRenter ? 'Renter — Unit 214' : 'Technician',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: context.npColors.white,
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: (isRenter ? const Color(0xFF0EA5E9) : NpColors.red)
-                      .withValues(alpha: 0.12),
-                  border: Border.all(
-                    color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
-                  ),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                child: Text(
-                  isRenter ? 'RENTER' : 'TECH',
-                  style: NpType.mono.copyWith(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w800,
-                    color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isRenter
-                ? 'Scan tags already in your unit, check work-order status, or file a new request against an identified nameplate.'
-                : 'Full field toolkit — any tag, any unit, turns, harvest, and offline ledger.',
-            style: TextStyle(
-              fontSize: 12,
-              color: context.npColors.gray400,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: isRenter
-                      ? null
-                      : () {
-                          ref
-                              .read(fieldSessionProvider)
-                              .setRole(AppRole.renter, unitId: 'unit-214');
-                        },
-                  icon: const Icon(Icons.home_outlined, size: 16),
-                  label: const Text('I’m a renter'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: context.npColors.white,
-                    side: BorderSide(
-                      color: isRenter
-                          ? NpColors.red
-                          : context.npColors.lineStrong,
-                    ),
-                    backgroundColor: isRenter
-                        ? NpColors.red.withValues(alpha: 0.12)
-                        : Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: !isRenter
-                      ? null
-                      : () {
-                          ref
-                              .read(fieldSessionProvider)
-                              .setRole(AppRole.technician);
-                        },
-                  icon: const Icon(Icons.engineering_outlined, size: 16),
-                  label: const Text('I’m a tech'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: context.npColors.white,
-                    side: BorderSide(
-                      color: !isRenter
-                          ? NpColors.red
-                          : context.npColors.lineStrong,
-                    ),
-                    backgroundColor: !isRenter
-                        ? NpColors.red.withValues(alpha: 0.12)
-                        : Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 // ── Outbox Tile ───────────────────────────────────────────────────────────────
 
