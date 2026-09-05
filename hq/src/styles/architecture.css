@@ -11,9 +11,208 @@
 .np-architecture-actions select { border: 1px solid var(--line); border-radius: 6px; background: var(--bg-subtle); color: var(--white); padding: 8px 10px; font: 0.76rem var(--font-sans); }
 .np-architecture-canvas { flex: 1; position: relative; overflow: auto; background-color: var(--bg-subtle); background-image: radial-gradient(rgba(var(--overlay-rgb), .14) .75px, transparent .75px); background-size: 24px 24px; scroll-behavior: smooth; }
 .np-architecture-canvas::before { content: ''; position: absolute; inset: 0; width: 1680px; height: 1480px; background: radial-gradient(ellipse 900px 420px at 840px 560px, rgba(235,43,43,.06), transparent 58%); pointer-events: none; z-index: 0; }
-.np-architecture-lines { position: absolute; inset: 0; width: 1680px; height: 1480px; overflow: visible; pointer-events: none; z-index: 1; }
-.np-architecture-lines line { stroke: var(--line-strong); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
-.np-architecture-lines line.is-active { stroke: var(--red); stroke-width: 2; opacity: .75; }
+.np-architecture-lines { position: absolute; inset: 0; width: 1760px; height: 1640px; overflow: visible; pointer-events: none; z-index: 1; }
+.np-architecture-lines line,
+.np-architecture-lines path { stroke: var(--line-strong); stroke-width: 1.4; fill: none; vector-effect: non-scaling-stroke; transition: stroke .2s ease, stroke-width .2s ease, opacity .2s ease; }
+.np-architecture-lines path.is-active { stroke: var(--red); stroke-width: 2.5; opacity: .95; filter: drop-shadow(0 0 4px rgba(235, 43, 43, 0.45)); }
+.np-architecture-lines path.is-dimmed { opacity: .12; }
+
+/* Mode Switcher */
+.np-architecture-modes {
+  display: inline-flex;
+  gap: 3px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  padding: 3px;
+  border-radius: 6px;
+}
+
+.np-architecture-mode-btn {
+  padding: 5px 12px;
+  border-radius: 4px;
+  background: transparent;
+  border: 0;
+  color: var(--gray-400);
+  font-size: 0.74rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.np-architecture-mode-btn:hover {
+  color: var(--white);
+}
+
+.np-architecture-mode-btn.active {
+  background: var(--bg-card);
+  color: var(--white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--line);
+}
+
+.np-architecture-mode-btn.active svg {
+  color: var(--red);
+}
+
+/* System Topology Blueprint Canvas */
+.np-topology-canvas {
+  flex: 1;
+  overflow: auto;
+  padding: 28px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.np-topology-tier {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.np-topology-tier__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+.np-topology-tier__title {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--red);
+  text-transform: uppercase;
+}
+
+.np-topology-tier__sub {
+  font-size: 0.72rem;
+  color: var(--gray-500);
+}
+
+.np-topology-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.np-topology-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.np-topology-card:hover {
+  border-color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.np-topology-card.is-selected {
+  border-color: var(--red);
+  box-shadow: 0 0 0 1px var(--red), 0 10px 28px rgba(235, 43, 43, 0.18);
+}
+
+.np-topology-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.np-topology-card__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.np-topology-card__title {
+  font-size: 0.92rem;
+  font-weight: 750;
+  color: var(--white);
+  margin: 0;
+}
+
+.np-topology-card__desc {
+  font-size: 0.78rem;
+  color: var(--gray-400);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.np-topology-card__badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  color: var(--gray-400);
+}
+
+.np-topology-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--red);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 16px;
+  background: var(--bg-card);
+  border: 1px dashed rgba(235, 43, 43, 0.35);
+  border-radius: 999px;
+  margin: -10px auto;
+  z-index: 2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.np-schema-column.is-clickable-fk {
+  cursor: pointer;
+}
+
+.np-schema-column.is-clickable-fk:hover b {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+.np-dictionary-row.is-clickable-fk {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.np-dictionary-row.is-clickable-fk:hover {
+  background: rgba(235, 43, 43, 0.08);
+}
+
+.np-dictionary-row.is-clickable-fk:hover strong {
+  color: var(--red);
+}
 .np-schema-table { position: absolute; width: 260px; padding: 0; text-align: left; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--white); box-shadow: 0 4px 16px rgba(var(--overlay-rgb), .07), 0 1px 3px rgba(var(--overlay-rgb), .06); cursor: pointer; z-index: 2; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; overflow: hidden; }
 .np-schema-table:hover { border-color: var(--gray-500); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(var(--overlay-rgb), .10); }
 .np-schema-table.is-selected { border-color: var(--red); box-shadow: 0 0 0 1px var(--red), 0 10px 28px rgba(235,43,43,.14); }
