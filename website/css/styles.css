@@ -2356,6 +2356,42 @@ html[data-theme="light"] .btn-ghost:hover {
   line-height: 1.6;
 }
 
+/* ================= Problem Washer Graphic (Containerless) ================= */
+.problem-washer-stage {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+.problem-washer-img {
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45));
+  transition: transform 0.35s var(--ease);
+}
+
+.problem-washer-img:hover {
+  transform: scale(1.04);
+}
+
+/* Theme Switching for ISO SVGs */
+:root[data-theme="light"] .theme-iso--dark { display: none !important; }
+:root[data-theme="light"] .theme-iso--light { display: block !important; }
+:root:not([data-theme="light"]) .theme-iso--dark { display: block !important; }
+:root:not([data-theme="light"]) .theme-iso--light { display: none !important; }
+
+:root[data-theme="light"] .problem-washer-img {
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.1));
+}
+
 /* ================= Comparison Table ================= */
 .comparison-table-wrap {
   margin-top: 48px;
