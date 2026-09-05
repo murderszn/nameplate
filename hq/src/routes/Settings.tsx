@@ -29,7 +29,7 @@ export function Settings() {
   const [slaLow, setSlaLow] = useState(168);
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'general' | 'slas' | 'field' | 'integrations'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'slas' | 'field' | 'integrations' | 'easter-eggs'>('general');
 
   useEffect(() => {
     let cancelled = false;
@@ -163,10 +163,22 @@ export function Settings() {
             </svg>
             CMMS & Integrations
           </button>
+
+          <button
+            type="button"
+            className={`np-settings-v2__tab ${activeTab === 'easter-eggs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('easter-eggs')}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3v18" /><path d="M3 12h18" /><circle cx="12" cy="12" r="8" /><path d="m8 8 8 8" /><path d="m16 8-8 8" />
+            </svg>
+            Nameplate Easter Eggs
+          </button>
         </nav>
       </div>
 
       <form onSubmit={handleSave}>
+
         {/* TAB 1: General & Financial */}
         {activeTab === 'general' && (
           <div className="np-settings-v2__grid">
@@ -626,6 +638,43 @@ export function Settings() {
                 <span className="np-form-hint">
                   Never commit this secret key to client-side code or public repositories.
                 </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 5: Nameplate Easter Eggs */}
+        {activeTab === 'easter-eggs' && (
+          <div className="np-settings-v2__grid">
+            <div className="np-settings-v2__card">
+              <div className="np-settings-v2__card-head">
+                <div>
+                  <h3 className="np-settings-v2__card-title">Nameplate Easter Eggs</h3>
+                  <p className="np-settings-v2__card-sub">A small collection of Nameplate things to leave running when the work is done.</p>
+                </div>
+                <span className="np-badge np-badge--status-active">2 EXPERIENCES</span>
+              </div>
+              <div style={{ display: 'grid', gap: 14 }}>
+                <a className="np-settings-v2__integration-item" href="../appliance-idle.html" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+                  <div className="np-settings-v2__integration-info">
+                    <div className="np-settings-v2__integration-icon">◌</div>
+                    <div>
+                      <strong style={{ color: 'var(--white)', fontSize: '0.9rem', display: 'block' }}>Appliance Idle Screen</strong>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--gray-400)' }}>The living Nameplate appliance grid · fullscreen with F</span>
+                    </div>
+                  </div>
+                  <span className="mono" style={{ fontSize: '0.74rem', color: 'var(--red)', fontWeight: 700 }}>OPEN ↗</span>
+                </a>
+                <a className="np-settings-v2__integration-item" href="../home-invaders/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+                  <div className="np-settings-v2__integration-info">
+                    <div className="np-settings-v2__integration-icon">✦</div>
+                    <div>
+                      <strong style={{ color: 'var(--white)', fontSize: '0.9rem', display: 'block' }}>Home Invaders</strong>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--gray-400)' }}>Defend the home · arrows to move · space to blast</span>
+                    </div>
+                  </div>
+                  <span className="mono" style={{ fontSize: '0.74rem', color: 'var(--red)', fontWeight: 700 }}>PLAY ↗</span>
+                </a>
               </div>
             </div>
           </div>
