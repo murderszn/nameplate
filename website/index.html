@@ -16,7 +16,7 @@
     })();
   </script>
   <link rel="icon" href="images/nameplate-logo-transparent.png" type="image/png">
-  <link rel="stylesheet" href="css/styles.css?v=presentation-3">
+  <link rel="stylesheet" href="css/styles.css?v=presentation-5">
 </head>
 <body class="marketing-page">
 
@@ -316,37 +316,86 @@
 
         <!-- Center: Interactive Code-Generated Physical Tag & Integrated Mint Dock -->
         <div class="anatomy-center-frame">
-          <div class="oversized-tag-card" id="oversizedTagCard">
-            <!-- 4 Hex Rivets — no hash/slash incisions -->
-            <span class="hex-rivet tl" title="Corner fiducial benchmark"></span>
-            <span class="hex-rivet tr" title="Corner fiducial benchmark"></span>
-            <span class="hex-rivet bl" title="Corner fiducial benchmark"></span>
-            <span class="hex-rivet br" title="Corner fiducial benchmark"></span>
-
-            <!-- Giant QR Container -->
-            <div class="tag-qr-large-box" id="giantQrBox">
-              <div class="laser-scanline is-active"></div>
-              <div id="liveOversizedQrContainer" style="width: 100%; height: 100%;">
-                <!-- Vector SVG QR rendered via pure JS -->
-              </div>
+          <!-- Tag Stage Header / Rotation Controls -->
+          <div class="tag-stage-header">
+            <div class="tag-stage-toggle" role="tablist" aria-label="Tag view mode">
+              <button type="button" class="tag-toggle-btn is-active" id="btnViewSchematic" role="tab" aria-selected="true" aria-controls="tagFaceFront">
+                <span class="toggle-dot" aria-hidden="true"></span>
+                <span>Vector Schematic</span>
+              </button>
+              <button type="button" class="tag-toggle-btn" id="btnViewPhysical" role="tab" aria-selected="false" aria-controls="tagFaceBack">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>Real Black Vinyl</span>
+              </button>
             </div>
+            <button type="button" class="tag-rotate-btn mono" id="btnTagRotate" aria-label="Rotate plate between schematic and real black vinyl" title="Click to rotate plate 360°">
+              <svg class="rotate-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              <span id="btnTagRotateLabel">ROTATE 3D ⟲</span>
+            </button>
+          </div>
 
-            <!-- Plate Typography Column -->
-            <div class="tag-large-info">
-              <div class="tag-large-brand">
-                <img loading="lazy" decoding="async" width="814" height="804" src="images/nameplate-logo-transparent.png" alt="Nameplate Mark" class="tag-brand-logo-icon">
-                <span>NAMEPLATE</span>
+          <!-- 3D Card Flipper Stage -->
+          <div class="tag-flipper-scene" id="tagFlipperScene">
+            <div class="tag-flipper-card" id="tagFlipperCard" role="region" aria-label="Physical Nameplate Tag 3D Specimen" tabindex="0">
+              
+              <!-- Front Face: Vector Interactive Tag Card -->
+              <div class="tag-face tag-face--front" id="tagFaceFront">
+                <div class="oversized-tag-card" id="oversizedTagCard">
+                  <!-- 4 Hex Rivets — no hash/slash incisions -->
+                  <span class="hex-rivet tl" title="Corner fiducial benchmark"></span>
+                  <span class="hex-rivet tr" title="Corner fiducial benchmark"></span>
+                  <span class="hex-rivet bl" title="Corner fiducial benchmark"></span>
+                  <span class="hex-rivet br" title="Corner fiducial benchmark"></span>
+
+                  <!-- Flip Hint Badge -->
+                  <button type="button" class="tag-card-flip-cue mono" id="btnFrontCardFlipCue" aria-label="Rotate to real black vinyl version">
+                    <span>REAL BLACK VINYL</span>
+                    <span class="flip-cue-arrow" aria-hidden="true">⟲</span>
+                  </button>
+
+                  <!-- Giant QR Container -->
+                  <div class="tag-qr-large-box" id="giantQrBox">
+                    <div class="laser-scanline is-active"></div>
+                    <div id="liveOversizedQrContainer" style="width: 100%; height: 100%;">
+                      <!-- Vector SVG QR rendered via pure JS -->
+                    </div>
+                  </div>
+
+                  <!-- Plate Typography Column -->
+                  <div class="tag-large-info">
+                    <div class="tag-large-brand">
+                      <img loading="lazy" decoding="async" width="814" height="804" src="images/nameplate-logo-transparent.png" alt="Nameplate Mark" class="tag-brand-logo-icon">
+                      <span>NAMEPLATE</span>
+                    </div>
+
+                    <div class="tag-large-npid-wrap">
+                      <div class="tag-npid-label mono">NAMEPLATE ID</div>
+                      <div class="tag-large-npid" id="liveOversizedNpid">NP-7K2M4QX9</div>
+                    </div>
+
+                    <div class="tag-large-fineprint mono">
+                      PROPERTY ASSET RECORD · DO NOT REMOVE<br>
+                      SCAN WITH NATIVE CAMERA TO RESOLVE TELEMETRY
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div class="tag-large-npid-wrap">
-                <div class="tag-npid-label mono">NAMEPLATE ID</div>
-                <div class="tag-large-npid" id="liveOversizedNpid">NP-7K2M4QX9</div>
+              <!-- Back Face: Real Physical Black Vinyl Plate -->
+              <div class="tag-face tag-face--back" id="tagFaceBack">
+                <div class="oversized-tag-card oversized-tag-card--physical" id="oversizedTagCardPhysical">
+                  <img src="images/qr-reference-tampered.png" alt="Real 3M-7881 tamper-destructible black vinyl Nameplate tag specimen" class="tag-photo-img" loading="eager" width="1024" height="541">
+                  
+                  <!-- Gloss light reflection sheen -->
+                  <div class="tag-photo-sheen" aria-hidden="true"></div>
+
+                  <!-- Rotate to Vector Button -->
+                  <div class="tag-photo-bottom-bar">
+                    <button type="button" class="tag-photo-flip-back mono" id="btnBackCardFlipCue" aria-label="Rotate back to vector schematic">ROTATE TO VECTOR ⟲</button>
+                  </div>
+                </div>
               </div>
 
-              <div class="tag-large-fineprint mono">
-                PROPERTY ASSET RECORD · DO NOT REMOVE<br>
-                SCAN WITH NATIVE CAMERA TO RESOLVE TELEMETRY
-              </div>
             </div>
           </div>
 
@@ -360,7 +409,7 @@
               <input type="text" id="liveStudioNpidInput" class="studio-large-input mono" value="NP-7K2M4QX9" maxlength="12" spellcheck="false" placeholder="NP-7K2M4QX9" aria-label="Nameplate ID">
               <button class="btn btn-red" id="btnRandomizeOversized">Mint New ID →</button>
             </div>
-            <p class="studio-subtext mono">Live Crockford Base32 generator · Updates vector QR matrix in real-time</p>
+            <p class="studio-subtext mono" id="studioSubtext">Live Crockford Base32 generator · Updates vector QR matrix in real-time</p>
           </div>
         </div>
 
@@ -1048,6 +1097,9 @@
 </div>
 
 <script src="js/qrcode.js"></script>
-<script src="js/main.js?v=presentation-1"></script>
-<script id="urlScrollParam">if(location.search.includes("scroll=schematics")){window.scrollTo({top: document.getElementById("schematics").offsetTop, behavior: "instant"});}</script></body>
+<script src="js/main.js?v=presentation-2"></script>
+<script id="urlScrollParam">
+  if(location.search.includes("scroll=schematics")){window.scrollTo({top: document.getElementById("schematics").offsetTop, behavior: "instant"});}
+  if(location.search.includes("scroll=qr-studio")){document.getElementById("qr-studio").scrollIntoView();}
+</script></body>
 </html>

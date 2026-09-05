@@ -776,6 +776,95 @@
     var tagCard = document.getElementById('oversizedTagCard');
     var chips = document.querySelectorAll('.anatomy-callout-chip');
 
+    var flipperCard = document.getElementById('tagFlipperCard');
+    var flipperScene = document.getElementById('tagFlipperScene');
+    var btnViewSchematic = document.getElementById('btnViewSchematic');
+    var btnViewPhysical = document.getElementById('btnViewPhysical');
+    var btnTagRotate = document.getElementById('btnTagRotate');
+    var btnTagRotateLabel = document.getElementById('btnTagRotateLabel');
+    var btnFrontCardFlipCue = document.getElementById('btnFrontCardFlipCue');
+    var btnBackCardFlipCue = document.getElementById('btnBackCardFlipCue');
+    var studioSubtext = document.getElementById('studioSubtext');
+    var physicalCard = document.getElementById('oversizedTagCardPhysical');
+    var isFlipped = false;
+
+    function setTagFlipped(flipped) {
+      isFlipped = Boolean(flipped);
+      if (flipperCard) {
+        flipperCard.style.transform = '';
+        flipperCard.classList.toggle('is-flipped', isFlipped);
+      }
+      if (btnViewSchematic) {
+        btnViewSchematic.classList.toggle('is-active', !isFlipped);
+        btnViewSchematic.setAttribute('aria-selected', !isFlipped ? 'true' : 'false');
+      }
+      if (btnViewPhysical) {
+        btnViewPhysical.classList.toggle('is-active', isFlipped);
+        btnViewPhysical.setAttribute('aria-selected', isFlipped ? 'true' : 'false');
+      }
+      if (btnTagRotateLabel) {
+        btnTagRotateLabel.textContent = isFlipped ? 'ROTATE TO VECTOR ⟲' : 'ROTATE 3D ⟲';
+      }
+      if (studioSubtext) {
+        studioSubtext.textContent = isFlipped
+          ? 'Physical specimen NP-7K2M4QX9 · Real 3M-7881 tamper-destructible cast vinyl with VOID layer'
+          : 'Live Crockford Base32 generator · Updates vector QR matrix in real-time';
+      }
+    }
+
+    if (btnViewSchematic) {
+      btnViewSchematic.addEventListener('click', function () { setTagFlipped(false); });
+    }
+    if (btnViewPhysical) {
+      btnViewPhysical.addEventListener('click', function () { setTagFlipped(true); });
+    }
+    if (btnTagRotate) {
+      btnTagRotate.addEventListener('click', function () { setTagFlipped(!isFlipped); });
+    }
+    if (btnFrontCardFlipCue) {
+      btnFrontCardFlipCue.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setTagFlipped(true);
+      });
+    }
+    if (btnBackCardFlipCue) {
+      btnBackCardFlipCue.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setTagFlipped(false);
+      });
+    }
+
+    if (flipperCard) {
+      flipperCard.addEventListener('click', function (e) {
+        if (e.target.closest('button') || e.target.closest('input') || e.target.closest('a')) return;
+        setTagFlipped(!isFlipped);
+      });
+
+      flipperCard.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setTagFlipped(!isFlipped);
+        }
+      });
+    }
+
+    // Interactive 3D Perspective Tilt on Hover
+    if (flipperScene && flipperCard) {
+      flipperScene.addEventListener('mousemove', function (e) {
+        if (window.matchMedia('(hover: none)').matches) return;
+        var rect = flipperScene.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top) / rect.height - 0.5;
+        var rotX = -y * 9;
+        var rotY = (isFlipped ? 180 : 0) + x * 12;
+        flipperCard.style.transform = 'rotateX(' + rotX.toFixed(2) + 'deg) rotateY(' + rotY.toFixed(2) + 'deg)';
+      });
+
+      flipperScene.addEventListener('mouseleave', function () {
+        flipperCard.style.transform = '';
+      });
+    }
+
     function triggerMintFlash() {
       if (npidDisplay) {
         npidDisplay.classList.remove('mint-flash');
@@ -791,6 +880,7 @@
 
     if (input) {
       input.addEventListener('input', function () {
+        if (isFlipped) setTagFlipped(false);
         var val = input.value.trim().toUpperCase();
         renderOversizedQr(val);
       });
@@ -798,6 +888,7 @@
 
     if (btnRand) {
       btnRand.addEventListener('click', function () {
+        if (isFlipped) setTagFlipped(false);
         var newId = generateBase32Npid();
         if (input) input.value = newId;
         renderOversizedQr(newId);
@@ -815,6 +906,7 @@
           if (qrBox) qrBox.classList.add('is-highlighted');
         } else if (pointer === 'slits') {
           if (tagCard) tagCard.classList.add('is-highlighted');
+          if (physicalCard) physicalCard.classList.add('is-highlighted');
           slits.forEach(function (s) { s.classList.add('is-highlighted'); });
         } else if (pointer === 'rivets') {
           rivets.forEach(function (r) { r.classList.add('is-highlighted'); });
@@ -829,6 +921,7 @@
         chip.classList.remove('is-active');
         if (qrBox) qrBox.classList.remove('is-highlighted');
         if (tagCard) tagCard.classList.remove('is-highlighted');
+        if (physicalCard) physicalCard.classList.remove('is-highlighted');
         slits.forEach(function (s) { s.classList.remove('is-highlighted'); });
         rivets.forEach(function (r) { r.classList.remove('is-highlighted'); });
         if (npidDisplay) npidDisplay.classList.remove('is-highlighted');
