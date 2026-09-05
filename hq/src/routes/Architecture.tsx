@@ -3,39 +3,41 @@ import { useMemo, useRef, useState, type PointerEvent } from 'react';
 type Column = { name: string; type: string; key?: 'pk' | 'fk' };
 type Table = { name: string; group: string; columns: Column[]; x: number; y: number };
 
+// Aligned grid — 5 columns (320px pitch), 4 rows with generous vertical gaps to prevent overlap.
+// Canvas 1680×1480. Row 0 y 48, Row 1 (hub) y 480, Row 2 y 900, Row 3 y 1200.
 const tables: Table[] = [
-  { name: 'service_event', group: 'Operations', x: 650, y: 330, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'asset_id', type: 'uuid', key: 'fk' }, { name: 'work_order_id', type: 'uuid', key: 'fk' }, { name: 'unit_id', type: 'uuid', key: 'fk' }, { name: 'property_id', type: 'uuid', key: 'fk' }, { name: 'technician_id', type: 'uuid', key: 'fk' }, { name: 'event_type', type: 'service_event_type_t' }, { name: 'findings', type: 'text' }, { name: 'total_cost', type: 'numeric' }, { name: 'occurred_at', type: 'timestamp' }, { name: 'change_seq', type: 'int8' },
-  ] },
-  { name: 'asset', group: 'Asset registry', x: 210, y: 110, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'npid', type: 'text' }, { name: 'category_id', type: 'uuid', key: 'fk' }, { name: 'asset_model_id', type: 'uuid', key: 'fk' }, { name: 'serial_number', type: 'text' }, { name: 'status', type: 'asset_status_t' }, { name: 'condition', type: 'asset_condition_t' }, { name: 'current_unit_id', type: 'uuid', key: 'fk' }, { name: 'purchase_cost', type: 'numeric' }, { name: 'last_service_at', type: 'timestamp' }, { name: 'change_seq', type: 'int8' },
-  ] },
-  { name: 'work_order', group: 'Operations', x: 1040, y: 130, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'property_id', type: 'uuid', key: 'fk' }, { name: 'number', type: 'int4' }, { name: 'unit_id', type: 'uuid', key: 'fk' }, { name: 'asset_id', type: 'uuid', key: 'fk' }, { name: 'title', type: 'text' }, { name: 'priority', type: 'work_order_priority_t' }, { name: 'status', type: 'work_order_status_t' }, { name: 'assigned_to', type: 'uuid', key: 'fk' }, { name: 'actual_cost', type: 'numeric' }, { name: 'change_seq', type: 'int8' },
-  ] },
-  { name: 'property', group: 'Locations', x: 70, y: 610, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'name', type: 'text' }, { name: 'city', type: 'text' }, { name: 'status', type: 'property_status_t' }, { name: 'unit_count_declared', type: 'int4' }, { name: 'change_seq', type: 'int8' },
-  ] },
-  { name: 'unit', group: 'Locations', x: 420, y: 780, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'property_id', type: 'uuid', key: 'fk' }, { name: 'building_id', type: 'uuid', key: 'fk' }, { name: 'label', type: 'text' }, { name: 'occupancy_status', type: 'text' }, { name: 'current_turn_id', type: 'uuid', key: 'fk' }, { name: 'change_seq', type: 'int8' },
-  ] },
-  { name: 'asset_model', group: 'Asset registry', x: 1050, y: 650, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'manufacturer', type: 'text' }, { name: 'model_number', type: 'text' }, { name: 'category_id', type: 'uuid', key: 'fk' }, { name: 'display_name', type: 'text' }, { name: 'msrp', type: 'numeric' }, { name: 'expected_life_months', type: 'int4' }, { name: 'verification_status', type: 'text' },
-  ] },
-  { name: 'part', group: 'Parts & lineage', x: 720, y: 800, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'part_catalog_id', type: 'uuid', key: 'fk' }, { name: 'source_asset_id', type: 'uuid', key: 'fk' }, { name: 'component_type', type: 'component_type_t' }, { name: 'status', type: 'part_status_t' }, { name: 'installed_in_asset_id', type: 'uuid', key: 'fk' },
-  ] },
-  { name: 'organization', group: 'Identity', x: 45, y: 260, columns: [
+  { name: 'organization', group: 'Identity', x: 40, y: 48, columns: [
     { name: 'id', type: 'uuid', key: 'pk' }, { name: 'name', type: 'text' }, { name: 'slug', type: 'text' }, { name: 'plan', type: 'text' }, { name: 'timezone', type: 'text' },
   ] },
-  { name: 'membership', group: 'Identity', x: 1110, y: 390, columns: [
+  { name: 'asset', group: 'Asset registry', x: 360, y: 48, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'npid', type: 'text' }, { name: 'category_id', type: 'uuid', key: 'fk' }, { name: 'asset_model_id', type: 'uuid', key: 'fk' }, { name: 'serial_number', type: 'text' }, { name: 'status', type: 'asset_status_t' }, { name: 'condition', type: 'asset_condition_t' }, { name: 'current_unit_id', type: 'uuid', key: 'fk' }, { name: 'purchase_cost', type: 'numeric' }, { name: 'last_service_at', type: 'timestamp' }, { name: 'change_seq', type: 'int8' },
+  ] },
+  { name: 'asset_model', group: 'Asset registry', x: 680, y: 48, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'manufacturer', type: 'text' }, { name: 'model_number', type: 'text' }, { name: 'category_id', type: 'uuid', key: 'fk' }, { name: 'display_name', type: 'text' }, { name: 'msrp', type: 'numeric' }, { name: 'expected_life_months', type: 'int4' }, { name: 'verification_status', type: 'text' },
+  ] },
+  { name: 'work_order', group: 'Operations', x: 1000, y: 48, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'property_id', type: 'uuid', key: 'fk' }, { name: 'number', type: 'int4' }, { name: 'unit_id', type: 'uuid', key: 'fk' }, { name: 'asset_id', type: 'uuid', key: 'fk' }, { name: 'title', type: 'text' }, { name: 'priority', type: 'work_order_priority_t' }, { name: 'status', type: 'work_order_status_t' }, { name: 'assigned_to', type: 'uuid', key: 'fk' }, { name: 'actual_cost', type: 'numeric' }, { name: 'change_seq', type: 'int8' },
+  ] },
+  { name: 'membership', group: 'Identity', x: 1320, y: 48, columns: [
     { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'user_id', type: 'uuid', key: 'fk' }, { name: 'role', type: 'role_t' }, { name: 'status', type: 'membership_status_t' },
   ] },
-  { name: 'part_usage', group: 'Parts & lineage', x: 420, y: 1030, columns: [
-    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'service_event_id', type: 'uuid', key: 'fk' }, { name: 'asset_id', type: 'uuid', key: 'fk' }, { name: 'part_id', type: 'uuid', key: 'fk' }, { name: 'action', type: 'text' }, { name: 'total_cost', type: 'numeric' },
+  { name: 'service_event', group: 'Operations', x: 680, y: 480, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'asset_id', type: 'uuid', key: 'fk' }, { name: 'work_order_id', type: 'uuid', key: 'fk' }, { name: 'unit_id', type: 'uuid', key: 'fk' }, { name: 'property_id', type: 'uuid', key: 'fk' }, { name: 'technician_id', type: 'uuid', key: 'fk' }, { name: 'event_type', type: 'service_event_type_t' }, { name: 'findings', type: 'text' }, { name: 'total_cost', type: 'numeric' }, { name: 'occurred_at', type: 'timestamp' }, { name: 'change_seq', type: 'int8' },
   ] },
-  { name: 'turn', group: 'Operations', x: 1370, y: 800, columns: [
+  { name: 'property', group: 'Locations', x: 40, y: 900, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'name', type: 'text' }, { name: 'city', type: 'text' }, { name: 'status', type: 'property_status_t' }, { name: 'unit_count_declared', type: 'int4' }, { name: 'change_seq', type: 'int8' },
+  ] },
+  { name: 'unit', group: 'Locations', x: 360, y: 900, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'property_id', type: 'uuid', key: 'fk' }, { name: 'building_id', type: 'uuid', key: 'fk' }, { name: 'label', type: 'text' }, { name: 'occupancy_status', type: 'text' }, { name: 'current_turn_id', type: 'uuid', key: 'fk' }, { name: 'change_seq', type: 'int8' },
+  ] },
+  { name: 'part', group: 'Parts & lineage', x: 1000, y: 900, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'part_catalog_id', type: 'uuid', key: 'fk' }, { name: 'source_asset_id', type: 'uuid', key: 'fk' }, { name: 'component_type', type: 'component_type_t' }, { name: 'status', type: 'part_status_t' }, { name: 'installed_in_asset_id', type: 'uuid', key: 'fk' },
+  ] },
+  { name: 'turn', group: 'Operations', x: 1320, y: 900, columns: [
     { name: 'id', type: 'uuid', key: 'pk' }, { name: 'org_id', type: 'uuid', key: 'fk' }, { name: 'property_id', type: 'uuid', key: 'fk' }, { name: 'unit_id', type: 'uuid', key: 'fk' }, { name: 'status', type: 'turn_status_t' }, { name: 'completed_at', type: 'timestamp' },
+  ] },
+  { name: 'part_usage', group: 'Parts & lineage', x: 680, y: 1200, columns: [
+    { name: 'id', type: 'uuid', key: 'pk' }, { name: 'service_event_id', type: 'uuid', key: 'fk' }, { name: 'asset_id', type: 'uuid', key: 'fk' }, { name: 'part_id', type: 'uuid', key: 'fk' }, { name: 'action', type: 'text' }, { name: 'total_cost', type: 'numeric' },
   ] },
 ];
 
@@ -45,7 +47,7 @@ const relations = [
 ];
 
 const cardWidth = 260;
-const cardHeight = (table: Table) => 66 + table.columns.length * 24;
+const cardHeight = (table: Table) => 46 + table.columns.length * 24; // 46px header + 24px per row
 
 export function Architecture() {
   const [query, setQuery] = useState('');
@@ -77,14 +79,11 @@ export function Architecture() {
   };
   const stopDragging = () => { dragRef.current = null; };
   const autoLayout = () => {
-    const next: Record<string, { x: number; y: number }> = {
-      organization: { x: 40, y: 90 }, asset: { x: 340, y: 90 }, asset_model: { x: 670, y: 90 }, work_order: { x: 1000, y: 90 }, membership: { x: 1330, y: 90 },
-      property: { x: 40, y: 650 }, unit: { x: 340, y: 760 }, service_event: { x: 670, y: 470 }, part: { x: 1000, y: 700 }, turn: { x: 1330, y: 690 }, part_usage: { x: 670, y: 980 },
-    };
+    const next: Record<string, { x: number; y: number }> = Object.fromEntries(tables.map((table) => [table.name, { x: table.x, y: table.y }]));
     setPositions(next);
     setSelected('service_event');
     setDrawerOpen(false);
-    requestAnimationFrame(() => canvasRef.current?.scrollTo({ left: 550, top: 260, behavior: 'smooth' }));
+    requestAnimationFrame(() => canvasRef.current?.scrollTo({ left: 560, top: 220, behavior: 'smooth' }));
   };
 
   return (
@@ -94,7 +93,7 @@ export function Architecture() {
         <div className="np-architecture-actions"><label className="np-architecture-search"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Find table or column…" /></label><select value={group} onChange={(event) => setGroup(event.target.value)}>{groups.map((item) => <option key={item}>{item}</option>)}</select><button type="button" className="np-topbar-btn" onClick={autoLayout}>Auto layout</button><button type="button" className="np-topbar-btn" onClick={() => setDrawerOpen((open) => !open)}>{drawerOpen ? 'Hide dictionary' : 'Show dictionary'}</button></div>
       </div>
       <div className="np-architecture-canvas" ref={canvasRef}>
-        <svg className="np-architecture-lines" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }} viewBox="0 0 1700 1250" preserveAspectRatio="none" aria-hidden="true">
+        <svg className="np-architecture-lines" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }} viewBox="0 0 1680 1480" preserveAspectRatio="none" aria-hidden="true">
           {relations.map(([from, to]) => { const a = byName.get(from); const b = byName.get(to); if (!a || !b || !visibleNames.has(from) || !visibleNames.has(to)) return null; const ap = positions[from]; const bp = positions[to]; const ax = ap.x + cardWidth / 2; const ay = ap.y + cardHeight(a) / 2; const bx = bp.x + cardWidth / 2; const by = bp.y + cardHeight(b) / 2; return <line key={`${from}-${to}`} x1={ax} y1={ay} x2={bx} y2={by} className={from === selected || to === selected ? 'is-active' : ''} />; })}
         </svg>
         {visible.map((table) => <button type="button" key={table.name} className={`np-schema-table ${selected === table.name ? 'is-selected' : ''} ${table.name === 'service_event' ? 'is-hub' : ''}`} style={{ left: positions[table.name].x, top: positions[table.name].y, transform: `scale(${zoom})`, transformOrigin: 'top left' }} onClick={() => { setSelected(table.name); setDrawerOpen(true); }} onPointerMove={dragTable} onPointerUp={stopDragging}>

@@ -1,11 +1,11 @@
 /* Interactive node canvas controls */
 .np-schema-table__head { cursor: grab; user-select: none; touch-action: none; }
 .np-schema-table__head:active { cursor: grabbing; }
-.np-schema-zoom { position: fixed; top: 148px; right: 24px; z-index: 6; display: flex; align-items: center; gap: 5px; padding: 5px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 94%, transparent); font: .65rem var(--font-mono); }
-.np-schema-zoom button { min-width: 27px; height: 26px; border: 0; background: var(--bg-subtle); color: var(--white); cursor: pointer; font: inherit; }
+.np-schema-zoom { position: absolute; top: 14px; right: 16px; z-index: 6; display: flex; align-items: center; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: blur(10px); font: .65rem var(--font-mono); box-shadow: 0 4px 12px rgba(var(--overlay-rgb), .08); }
+.np-schema-zoom button { min-width: 28px; height: 28px; border: 0; border-radius: 4px; background: var(--bg-subtle); color: var(--white); cursor: pointer; font: inherit; transition: background .15s ease, color .15s ease; }
 .np-schema-zoom button:hover { background: var(--red); color: #fff; }
-.np-schema-zoom span { min-width: 42px; text-align: center; color: var(--gray-500); }
-.np-schema-dictionary { position: fixed; top: 132px; right: 24px; bottom: 72px; width: 320px; padding: 18px; z-index: 5; background: color-mix(in srgb, var(--bg) 97%, transparent); border: 1px solid var(--line); box-shadow: 0 16px 45px rgba(var(--overlay-rgb), .16); overflow: auto; }
+.np-schema-zoom span { min-width: 44px; text-align: center; color: var(--gray-500); font-variant-numeric: tabular-nums; }
+.np-schema-dictionary { position: absolute; top: 14px; right: 16px; bottom: 16px; width: 340px; padding: 18px; z-index: 5; background: color-mix(in srgb, var(--bg) 98%, transparent); backdrop-filter: blur(12px); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 16px 45px rgba(var(--overlay-rgb), .16); overflow: auto; }
 .np-schema-dictionary__head { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
 .np-schema-dictionary__head h3 { margin: 4px 0; font: 700 1rem var(--font-mono); }
 .np-schema-dictionary__head small, .np-schema-dictionary p { color: var(--gray-500); font-size: .7rem; }

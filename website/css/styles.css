@@ -331,69 +331,50 @@ html[data-theme="light"] .site-header.is-scrolled {
   border-color: var(--red-hover);
 }
 
-.theme-toggle {
-  position: relative;
-  width: 58px;
-  height: 30px;
+/* Flat Light / Dark theme button */
+.theme-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  flex: 0 0 auto;
-  gap: 8px;
-  padding: 0 7px;
-  margin-left: 2px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  background: transparent;
+  justify-content: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--radius, 6px);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--gray-500);
+  background: transparent;
+  border: 1px solid var(--line-strong);
   cursor: pointer;
-  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  transition: all 0.2s var(--ease);
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
-.theme-toggle::before {
-  content: "";
-  position: absolute;
-  left: 3px;
-  top: 3px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
-  transition: transform 0.28s var(--ease), background 0.2s var(--ease);
-}
-
-:root[data-theme="light"] .theme-toggle::before {
-  background: #111;
-  transform: translateX(28px);
-}
-
-.theme-toggle:hover {
+.theme-btn:hover {
+  color: var(--white);
   border-color: var(--white-40);
   background: var(--white-08);
 }
 
-.theme-toggle:focus-visible {
+:root[data-theme="light"] .theme-btn {
+  color: #666666;
+  border-color: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+:root[data-theme="light"] .theme-btn:hover {
+  color: #111111;
+  border-color: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.theme-btn:focus-visible {
   outline: 2px solid var(--red);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
-
-.theme-icon {
-  position: relative;
-  z-index: 1;
-  width: 13px;
-  height: 13px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.theme-icon--moon { color: #111; }
-.theme-icon--sun { color: var(--gray-500); }
-:root[data-theme="light"] .theme-icon--moon { color: var(--gray-500); }
-:root[data-theme="light"] .theme-icon--sun { color: #fff; }
 
 .nav-ghost {
   color: var(--gray-400);

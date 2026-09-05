@@ -424,69 +424,30 @@ code,
   flex-shrink: 0;
 }
 
-.np-theme-toggle {
-  position: relative;
-  width: 58px;
-  height: 30px;
+.np-theme-btn {
+  height: 36px;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  flex: 0 0 auto;
-  gap: 8px;
-  padding: 0 7px;
-  border: 1px solid var(--line-strong);
-  border-radius: 999px;
-  background: transparent;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-card);
   color: var(--gray-500);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
-
-.np-theme-toggle::before {
-  content: '';
-  position: absolute;
-  left: 3px;
-  top: 3px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #111;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-  transform: translateX(28px);
-  transition: transform 0.28s var(--ease), background 0.2s var(--ease);
+.np-theme-btn:hover {
+  color: var(--white);
+  border-color: rgba(var(--overlay-rgb), 0.25);
+  background: var(--bg-elevated);
 }
-
-:root[data-theme='dark'] .np-theme-toggle::before {
-  background: #fff;
-  transform: translateX(0);
-}
-
-.np-theme-toggle:hover {
-  border-color: var(--white-40);
-  background: var(--white-08);
-}
-
-.np-theme-toggle:focus-visible {
-  outline: 2px solid var(--red);
-  outline-offset: 3px;
-}
-
-.np-theme-toggle__icon {
-  position: relative;
-  z-index: 1;
-  width: 13px;
-  height: 13px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.np-theme-toggle__icon--moon { color: var(--gray-500); }
-.np-theme-toggle__icon--sun { color: #fff; }
-:root[data-theme='dark'] .np-theme-toggle__icon--moon { color: #111; }
-:root[data-theme='dark'] .np-theme-toggle__icon--sun { color: var(--gray-500); }
 
 .np-command-search {
   display: flex;
