@@ -11,7 +11,6 @@ import '../../services/providers.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/np_brand.dart';
 import '../../widgets/sync_status_badge.dart';
-import '../../widgets/field_workflow_triptych.dart';
 import '../asset/asset_detail_screen.dart';
 import 'camera_scanner_screen.dart';
 
@@ -467,14 +466,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       appBar: NpBrandAppBar(
         title: 'Scan the plate',
         showLogo: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline_rounded, size: 20),
-            tooltip: 'Field standard',
-            onPressed: () => showFieldWorkflowSheet(context),
-          ),
-          const SyncStatusBadge(),
-        ],
+        actions: [const SyncStatusBadge()],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {

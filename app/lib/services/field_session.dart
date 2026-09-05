@@ -10,6 +10,8 @@ import '../models/work_order.dart';
 import 'npid.dart';
 import 'sync_status_service.dart';
 
+enum AppRole { technician, renter }
+
 class FieldTech {
   final String id;
   final String name;
@@ -70,6 +72,13 @@ class FieldSession extends ChangeNotifier {
   final List<MintedTag> mintedTags = [];
   final List<String> offlinePreAllocatedPool = [];
 
+  // Role — renter vs technician. Shared binary (same app, different scope).
+  AppRole? selectedRole;
+  String? renterUnitId; // e.g. 'unit-214' for resident
+  bool get isRenter => selectedRole == AppRole.renter;
+  bool get isTechnician => selectedRole == AppRole.technician;
+  bool get hasSelectedRole => selectedRole != null;
+
   bool photoWifiOnly = true;
   bool offlineMode = false;
   bool syncing = false;
@@ -78,15 +87,25 @@ class FieldSession extends ChangeNotifier {
 
   int get remainingOfflinePoolCount => offlinePreAllocatedPool.length;
 
-  List<Unit> get visibleUnits =>
-      units.where((u) => assignedPropertyIds.contains(u.propertyId)).toList();
+  List<Unit> get visibleUnits {
+    if (isRenter && renterUnitId != null) {
+      return units.where((u) => u.id == renterUnitId).toList();
+    }
+    return units.where((u) => assignedPropertyIds.contains(u.propertyId)).toList();
+  }
 
   List<Turn> get visibleTurns =>
       turns.where((t) => visibleUnits.any((u) => u.id == t.unitId)).toList();
 
   List<WorkOrder> get visibleWorkOrders {
+    if (isRenter) return renterWorkOrders;
     final ids = visibleUnits.map((u) => u.id).toSet();
     return workOrders.where((wo) => wo.unitId == null || ids.contains(wo.unitId)).toList();
+  }
+
+  List<Asset> get visibleAssets {
+    if (isRenter) return renterAssets;
+    return assets.where((a) => visibleUnits.any((u) => u.id == a.unitId)).toList();
   }
 
   int get pendingCount => outbox.where((o) => !o.synced).length;
@@ -165,6 +184,46 @@ class FieldSession extends ChangeNotifier {
     tech = next;
     _enqueue('identity', 'Signed in as ${next.name}');
     notifyListeners();
+  }
+
+  void setRole(AppRole role, {String? unitId}) {
+    selectedRole = role;
+    if (role == AppRole.renter) {
+      renterUnitId = unitId ?? 'unit-214';
+      // Ensure renter tech identity is distinct
+      tech = const FieldTech(id: 'renter-maya', name: 'Maya Johnson', email: 'maya.johnson@resident.example', role: 'Resident');
+      _enqueue('identity', 'Signed in as Renter — ${tech.name}');
+    } else {
+      renterUnitId = null;
+      _enqueue('identity', 'Switched to Technician mode');
+    }
+    notifyListeners();
+  }
+
+  void clearRole() {
+    selectedRole = null;
+    renterUnitId = null;
+    notifyListeners();
+  }
+
+  List<Asset> get renterAssets {
+    if (renterUnitId == null) return [];
+    return assets.where((a) => a.unitId == renterUnitId).toList();
+  }
+
+  List<WorkOrder> get renterWorkOrders {
+    if (renterUnitId == null) return [];
+    return workOrders.where((w) => w.unitId == renterUnitId).toList();
+  }
+
+  bool canCreateWorkOrderForAsset(String assetId) {
+    // Renters may only file against already-identified nameplates in their unit.
+    if (isRenter) {
+      final asset = _assetById(assetId);
+      if (asset == null) return false;
+      return asset.unitId == renterUnitId;
+    }
+    return true;
   }
 
   void setAssignedProperties(Set<String> ids) {
@@ -533,6 +592,15 @@ class FieldSession extends ChangeNotifier {
         label: 'Unit 204',
         occupancyStatus: OccupancyStatus.occupied,
       ),
+      // Renter home — used when selectedRole == renter
+      Unit(
+        id: 'unit-214',
+        propertyId: 'prop-scottsdale',
+        propertyName: 'Scottsdale Vista',
+        buildingName: 'Building C',
+        label: 'Unit 214',
+        occupancyStatus: OccupancyStatus.occupied,
+      ),
     ];
 
     assets = [
@@ -831,6 +899,64 @@ class FieldSession extends ChangeNotifier {
         currentLocationType: LocationType.unit,
         currentLocationLabel: 'Building B — Unit 204',
       ),
+      // Renter unit — already-identified nameplates (scan-to-report only)
+      Asset(
+        id: 'asset-fridge-214',
+        npid: 'NP-4K8D2M7Q',
+        categoryDisplayName: 'Refrigerator',
+        manufacturer: 'GE',
+        modelNumber: 'GNE27JYMFS',
+        serialNumber: 'GE-994821',
+        status: AssetStatus.active,
+        condition: AssetCondition.good,
+        unitId: 'unit-214',
+        currentLocationType: LocationType.unit,
+        currentLocationLabel: 'Building C — Unit 214',
+        installDate: DateTime(2024, 10, 5),
+        lastServiceAt: DateTime(2026, 8, 18),
+      ),
+      Asset(
+        id: 'asset-dish-214',
+        npid: 'NP-7H3P9X2C',
+        categoryDisplayName: 'Dishwasher',
+        manufacturer: 'Whirlpool',
+        modelNumber: 'WDT730HAMZ',
+        serialNumber: 'WP-772109',
+        status: AssetStatus.active,
+        condition: AssetCondition.good,
+        unitId: 'unit-214',
+        currentLocationType: LocationType.unit,
+        currentLocationLabel: 'Building C — Unit 214',
+        installDate: DateTime(2025, 1, 12),
+      ),
+      Asset(
+        id: 'asset-wash-214',
+        npid: 'NP-2N6R4T8W',
+        categoryDisplayName: 'Washer',
+        manufacturer: 'Samsung',
+        modelNumber: 'WF45T6000AW',
+        serialNumber: 'SM-551044',
+        status: AssetStatus.active,
+        condition: AssetCondition.good,
+        unitId: 'unit-214',
+        currentLocationType: LocationType.unit,
+        currentLocationLabel: 'Building C — Unit 214',
+        installDate: DateTime(2024, 11, 8),
+      ),
+      Asset(
+        id: 'asset-hvac-214',
+        npid: 'NP-9V5B1L6S',
+        categoryDisplayName: 'HVAC',
+        manufacturer: 'Trane',
+        modelNumber: 'XR14',
+        serialNumber: 'TR-339012',
+        status: AssetStatus.active,
+        condition: AssetCondition.good,
+        unitId: 'unit-214',
+        currentLocationType: LocationType.unit,
+        currentLocationLabel: 'Building C — Unit 214',
+        installDate: DateTime(2023, 3, 14),
+      ),
     ];
 
     workOrders = [
@@ -863,6 +989,27 @@ class FieldSession extends ChangeNotifier {
         priority: WorkOrderPriority.standard,
         status: WorkOrderStatus.assigned,
         slaLabel: '28h remaining',
+      ),
+      // Renter-visible work orders — status updates for Unit 214
+      WorkOrder(
+        id: 'WO-214-01',
+        title: 'Dishwasher not draining',
+        assetNpid: 'NP-7H3P9X2C',
+        unitLabel: 'Building C — Unit 214',
+        unitId: 'unit-214',
+        priority: WorkOrderPriority.standard,
+        status: WorkOrderStatus.assigned,
+        slaLabel: 'Scheduled — Tue 10am',
+      ),
+      WorkOrder(
+        id: 'WO-214-02',
+        title: 'Fridge ice maker slow',
+        assetNpid: 'NP-4K8D2M7Q',
+        unitLabel: 'Building C — Unit 214',
+        unitId: 'unit-214',
+        priority: WorkOrderPriority.standard,
+        status: WorkOrderStatus.inProgress,
+        slaLabel: 'In progress',
       ),
     ];
 

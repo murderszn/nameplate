@@ -11,7 +11,7 @@
 .hq-overview-toolbar, .hq-updated, .hq-spend-total, .hq-chart-footer, .hq-chart-footer > span, .hq-chart-footer label { display: flex; align-items: center; }
 .hq-overview-toolbar { justify-content: space-between; gap: 16px; }
 .hq-updated { color: var(--gray-400); font-size: 12px; gap: 8px; }
-.hq-updated button { border: 0; background: none; cursor: pointer; color: var(--gray-400); font-size: 21px; padding: 3px 8px; border-radius: 6px; }
+.hq-updated button { border: 0; background: none; cursor: pointer; color: var(--gray-400); font-size: 21px; padding: 3px 8px; border-radius: var(--np-radius); }
 .hq-updated button:hover { background: var(--bg-elevated); }
 .hq-overview .hq-metric-label { display: flex; justify-content: space-between; align-items: center; gap: 6px; font-size: 12px; }
 .hq-overview .hq-metric-label svg { opacity: .55; width: 15px; flex-shrink: 0; }
@@ -37,7 +37,7 @@
 .hq-spend-plot { display: flex; flex: 1; min-width: 0; gap: 12px; position: relative; background: repeating-linear-gradient(to top, transparent 0, transparent calc(50% - 1px), var(--line-light) calc(50% - 1px), var(--line-light) 50%); background-size: 100% calc(100% - 28px); background-repeat: no-repeat; padding-top: 4px; }
 .hq-month { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; border: 0; background: transparent; cursor: pointer; position: relative; padding: 0; color: var(--gray-400); font: inherit; }
 .hq-month-track { width: 100%; display: flex; align-items: flex-end; justify-content: center; height: calc(100% - 26px); position: relative; }
-.hq-month-bar { width: 100%; max-width: 32px; background: rgba(128, 128, 128, 0.25); border-radius: 4px 4px 0 0; min-height: 2px; transition: background .15s ease, transform .15s ease; }
+.hq-month-bar { width: 100%; max-width: 32px; background: rgba(128, 128, 128, 0.25); border-radius: 2px 4px 0 0; min-height: 2px; transition: background .15s ease, transform .15s ease; }
 .hq-month:nth-last-child(1) .hq-month-bar { background: var(--red); }
 .hq-month:hover .hq-month-bar, .hq-month:focus-visible .hq-month-bar { background: var(--red); }
 .hq-month-bar--empty { background: var(--line) !important; }
@@ -49,10 +49,10 @@
 .hq-chart-footer > span { gap: 7px; }
 .hq-chart-footer label { gap: 6px; cursor: pointer; }
 .hq-chart-footer input { accent-color: var(--red); }
-.hq-chart-dot { width: 7px; height: 7px; border-radius: 2px; display: inline-block; background: var(--red); }
+.hq-chart-dot { width: 7px; height: 7px; border-radius: var(--np-radius); display: inline-block; background: var(--red); }
 .hq-attention-card .hq-card-header { padding-bottom: 18px; }
 .hq-attention-card .hq-eyebrow { font-size: 10px; margin-bottom: 6px; color: var(--red); }
-.hq-attention-heading-icon { padding: 7px; background: rgba(235, 43, 43, 0.1); color: var(--red); border-radius: 8px; }
+.hq-attention-heading-icon { padding: 7px; background: rgba(235, 43, 43, 0.1); color: var(--red); border-radius: var(--np-radius); }
 .hq-overview .hq-attention-item { padding: 19px 22px; gap: 12px; margin: 0; border-bottom: 1px solid var(--line-light); }
 .hq-overview .hq-attention-item:hover { background: var(--bg-subtle); }
 .hq-overview .hq-attention-icon { width: 35px; height: 35px; flex-shrink: 0; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: rgba(235, 43, 43, 0.1); color: var(--red); }
@@ -103,7 +103,7 @@
 .hq-coverage-row small { font-size: 10px; color: var(--gray-400); font-weight: 400; margin-left: 8px; }
 .hq-overview .hq-data-note { padding: 1px 0 8px; font-size: 10px; line-height: 1.7; }
 .hq-data-note a { color: var(--red); }
-.hq-event-dialog { margin: auto; width: min(760px, calc(100% - 32px)); max-height: 80vh; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-card); color: var(--white); padding: 0; box-shadow: 0 24px 90px rgba(0, 0, 0, 0.4); }
+.hq-event-dialog { margin: auto; width: min(760px, calc(100% - 32px)); max-height: 80vh; border: 1px solid var(--line); border-radius: var(--np-radius); background: var(--bg-card); color: var(--white); padding: 0; box-shadow: 0 24px 90px rgba(0, 0, 0, 0.4); }
 .hq-event-dialog::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
 .hq-event-dialog .hq-card-header { padding: 24px; }
 .hq-event-dialog .hq-table-wrap { overflow: auto; max-height: 52vh; }

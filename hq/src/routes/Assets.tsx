@@ -405,7 +405,7 @@ export function Assets() {
                     background: 'transparent',
                     border: '1px solid rgba(235, 43, 43, 0.4)',
                     color: '#ff6666',
-                    borderRadius: 4,
+                    borderRadius: 2,
                     padding: '6px 10px',
                     fontSize: '0.76rem',
                     cursor: 'pointer',

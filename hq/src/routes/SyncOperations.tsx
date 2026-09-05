@@ -187,7 +187,7 @@ export function SyncOperations() {
           <div className="np-sync-metric-lbl">Active Field Tablets</div>
           <div className="np-sync-metric-val">14</div>
           <div className="np-sync-metric-sub">
-            <span style={{ width: 8, height: 8, borderRadius: 1, background: '#22c55e', display: 'inline-block' }} />
+            <span style={{ width: 8, height: 8, borderRadius: 2, background: '#22c55e', display: 'inline-block' }} />
             Subterranean Sync Ready
           </div>
         </div>

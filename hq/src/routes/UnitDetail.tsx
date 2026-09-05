@@ -8,6 +8,7 @@ import {
   type WorkOrder,
 } from '../api/client';
 import { money, yearsLabel } from '../lib/format';
+import { NameplateTag } from '../components/NameplateTag';
 
 const OPEN = ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_approval'];
 
@@ -133,53 +134,36 @@ export function UnitDetail() {
       {assets.length === 0 ? (
         <div className="np-empty-state">No tagged assets in this unit.</div>
       ) : (
-        <div className="np-unit-plate-v2-grid">
-          {assets.map((a) => {
-            const expectedLifeMonths = a.expectedLifeMonths ?? a.assetModel?.expectedLifeMonths ?? a.category?.defaultUsefulLifeMonths ?? 0;
-            const ageMonths = (a.installDate ? ((Date.now() - new Date(a.installDate).getTime()) / (365.25 * 86400000)) * 12 : 0);
-            let ratio = expectedLifeMonths > 0 ? ageMonths / expectedLifeMonths : 0;
-            ratio = Math.max(0, Math.min(ratio, 1));
-            
-            const lifeColor = ratio > 0.8 ? 'var(--red)' : ratio > 0.6 ? '#f5a623' : '#22c55e';
-            
-            return (
-              <button
-                key={a.id}
-                className="np-unit-plate-v2"
-                onClick={() => navigate(`/assets/${a.id}`)}
-              >
-                <div className="np-unit-plate-v2__head">
-                  <span className="np-unit-plate-v2__npid">{a.npid}</span>
-                  <span className="np-badge">{a.category?.displayName ?? 'Asset'}</span>
-                </div>
-                <div>
-                  <div className="np-unit-plate-v2__title">
-                    {[a.manufacturerRaw, a.modelRaw].filter(Boolean).join(' ') || a.notes || 'Asset'}
-                  </div>
-                  <div className="np-unit-plate-v2__sub">
-                    {a.customFields?.room ?? a.category?.displayName ?? '—'}
-                  </div>
-                </div>
-                <div className="np-unit-plate-v2__stats">
-                  <span className="np-unit-plate-v2__age">{yearsLabel(a.installDate)}</span>
-                  <span className={`np-badge np-badge--status-${a.status}`}>
-                    {a.status.replaceAll('_', ' ')}
-                  </span>
-                  <span className="np-unit-plate-v2__cost">{money(a.purchaseCost)}</span>
-                </div>
-                {expectedLifeMonths > 0 && (
-                  <div className="np-unit-plate-v2__lifebar">
-                    <div className="np-unit-plate-v2__lifebar-fill" style={{ width: `${ratio * 100}%`, background: lifeColor }} />
-                  </div>
-                )}
-                {a.serviceEvents && a.serviceEvents.length > 0 && (
-                  <div className="np-unit-plate-v2__last-svc">
-                    Last service: {new Date(a.serviceEvents[0].occurredAt).toLocaleDateString()}
-                  </div>
-                )}
-              </button>
-            );
-          })}
+        <div className="np-unit-plate-grid">
+          {assets.map((a) => (
+            <button
+              key={a.id}
+              type="button"
+              className="np-plate-card"
+              onClick={() => navigate(`/assets/${a.id}`)}
+              title={`Open ledger for ${a.npid}`}
+            >
+              <NameplateTag asset={a} />
+              <div className="np-plate-card__meta">
+                <span className="np-plate-card__title">
+                  {[a.manufacturerRaw, a.modelRaw].filter(Boolean).join(' ') ||
+                    a.assetModel?.displayName ||
+                    a.category?.displayName ||
+                    'Asset'}
+                </span>
+                <span className="np-plate-card__sub">
+                  {a.customFields?.room ?? a.category?.displayName ?? '—'}
+                </span>
+              </div>
+              <div className="np-plate-card__foot">
+                <span className={`np-badge np-badge--status-${a.status}`}>
+                  {a.status.replaceAll('_', ' ')}
+                </span>
+                <span className="np-plate-card__age">{yearsLabel(a.installDate)}</span>
+                <span className="np-plate-card__open">Open ledger →</span>
+              </div>
+            </button>
+          ))}
         </div>
       )}
 

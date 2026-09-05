@@ -5,11 +5,14 @@
 .np-architecture-title h2 { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.02em; }
 .np-architecture-title .np-kicker { color: var(--red); }
 .np-architecture-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.np-architecture-search { width: 240px; min-width: 180px; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-subtle); color: var(--gray-500); transition: border-color .15s ease, box-shadow .15s ease; }
+.np-architecture-search { width: 240px; min-width: 180px; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--line); border-radius: var(--np-radius); background: var(--bg-subtle); color: var(--gray-500); transition: border-color .15s ease, box-shadow .15s ease; }
 .np-architecture-search:focus-within { border-color: var(--red); box-shadow: 0 0 0 3px rgba(235,43,43,.10); }
 .np-architecture-search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--white); font: 0.78rem var(--font-sans); }
-.np-architecture-actions select { border: 1px solid var(--line); border-radius: 6px; background: var(--bg-subtle); color: var(--white); padding: 8px 10px; font: 0.76rem var(--font-sans); }
-.np-architecture-canvas { flex: 1; position: relative; overflow: auto; background-color: var(--bg-subtle); background-image: radial-gradient(rgba(var(--overlay-rgb), .14) .75px, transparent .75px); background-size: 24px 24px; scroll-behavior: smooth; }
+.np-architecture-actions select { border: 1px solid var(--line); border-radius: var(--np-radius); background: var(--bg-subtle); color: var(--white); padding: 8px 10px; font: 0.76rem var(--font-sans); }
+.np-architecture-canvas { flex: 1; position: relative; overflow: hidden; background-color: var(--bg-subtle); background-image: radial-gradient(rgba(var(--overlay-rgb), .14) .75px, transparent .75px); background-size: 24px 24px; cursor: grab; touch-action: none; user-select: none; }
+.np-architecture-canvas.is-panning { cursor: grabbing; }
+.np-architecture-canvas.is-panning * { user-select: none !important; }
+.np-architecture-world { position: absolute; top: 0; left: 0; width: 1760px; height: 1640px; transform-origin: 0 0; will-change: transform; }
 .np-architecture-canvas::before { content: ''; position: absolute; inset: 0; width: 1680px; height: 1480px; background: radial-gradient(ellipse 900px 420px at 840px 560px, rgba(235,43,43,.06), transparent 58%); pointer-events: none; z-index: 0; }
 .np-architecture-lines { position: absolute; inset: 0; width: 1760px; height: 1640px; overflow: visible; pointer-events: none; z-index: 1; }
 .np-architecture-lines line,
@@ -24,12 +27,12 @@
   background: var(--bg-subtle);
   border: 1px solid var(--line);
   padding: 3px;
-  border-radius: 6px;
+  border-radius: var(--np-radius);
 }
 
 .np-architecture-mode-btn {
   padding: 5px 12px;
-  border-radius: 4px;
+  border-radius: var(--np-radius);
   background: transparent;
   border: 0;
   color: var(--gray-400);
@@ -109,7 +112,7 @@
 .np-topology-card {
   background: var(--bg-card);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--np-radius);
   padding: 18px;
   display: flex;
   flex-direction: column;
@@ -140,7 +143,7 @@
 .np-topology-card__icon {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: var(--np-radius);
   background: var(--bg-elevated);
   border: 1px solid var(--line);
   display: flex;
@@ -167,7 +170,7 @@
   font-family: var(--font-mono);
   font-size: 0.65rem;
   padding: 3px 6px;
-  border-radius: 4px;
+  border-radius: var(--np-radius);
   background: var(--bg-subtle);
   border: 1px solid var(--line);
   color: var(--gray-400);
@@ -186,7 +189,7 @@
   padding: 6px 16px;
   background: var(--bg-card);
   border: 1px dashed rgba(235, 43, 43, 0.35);
-  border-radius: 999px;
+  border-radius: var(--np-radius);
   margin: -10px auto;
   z-index: 2;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
@@ -213,7 +216,7 @@
 .np-dictionary-row.is-clickable-fk:hover strong {
   color: var(--red);
 }
-.np-schema-table { position: absolute; width: 260px; padding: 0; text-align: left; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--white); box-shadow: 0 4px 16px rgba(var(--overlay-rgb), .07), 0 1px 3px rgba(var(--overlay-rgb), .06); cursor: pointer; z-index: 2; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; overflow: hidden; }
+.np-schema-table { position: absolute; width: 260px; padding: 0; text-align: left; border: 1px solid var(--line); border-radius: var(--np-radius); background: var(--bg); color: var(--white); box-shadow: 0 4px 16px rgba(var(--overlay-rgb), .07), 0 1px 3px rgba(var(--overlay-rgb), .06); cursor: pointer; z-index: 2; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; overflow: hidden; }
 .np-schema-table:hover { border-color: var(--gray-500); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(var(--overlay-rgb), .10); }
 .np-schema-table.is-selected { border-color: var(--red); box-shadow: 0 0 0 1px var(--red), 0 10px 28px rgba(235,43,43,.14); }
 .np-schema-table.is-hub { border-color: rgba(235,43,43,.35); }
@@ -229,9 +232,11 @@
 .np-schema-column i { width: 12px; text-align: center; color: var(--red); font-style: normal; font-size: .58rem; line-height: 1; }
 .np-schema-column b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; letter-spacing: -.01em; }
 .np-schema-column em { max-width: 105px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gray-500); font-style: normal; font-size: .61rem; }
-.np-schema-legend { position: absolute; bottom: 16px; left: 16px; display: flex; gap: 14px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); font: .62rem var(--font-mono); color: var(--gray-500); z-index: 5; box-shadow: 0 4px 12px rgba(var(--overlay-rgb), .08); }
+.np-schema-legend { position: absolute; bottom: 16px; left: 16px; display: flex; gap: 14px; padding: 8px 11px; border: 1px solid var(--line); border-radius: var(--np-radius); background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); font: .62rem var(--font-mono); color: var(--gray-500); z-index: 5; box-shadow: 0 4px 12px rgba(var(--overlay-rgb), .08); }
 .np-schema-legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray-500); }.legend-hub { background: var(--red); }.legend-key { border: 1px solid var(--red); background: transparent; }.legend-line { width: 16px; border-top: 1.5px solid var(--gray-500); }
-.np-schema-minimap { position: absolute; right: 16px; bottom: 16px; width: 168px; padding: 10px 11px; border: 1px solid var(--line); border-radius: 6px; background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: blur(10px); font: .6rem var(--font-mono); color: var(--gray-500); z-index: 5; box-shadow: 0 4px 12px rgba(var(--overlay-rgb), .08); }
-.np-schema-minimap b { display: block; color: var(--white); font-size: .62rem; margin-bottom: 4px; letter-spacing: .06em; }.np-minimap-bars { margin-top: 8px; display: grid; gap: 3px; }.np-minimap-bars i { height: 4px; display: block; border-radius: 2px; background: var(--line-strong); }.np-minimap-bars i:first-child { background: var(--red); }
+.np-schema-minimap { position: absolute; right: 16px; bottom: 16px; width: 168px; padding: 10px 11px; border: 1px solid var(--line); border-radius: var(--np-radius); background: color-mix(in srgb, var(--bg) 96%, transparent); backdrop-filter: blur(10px); font: .6rem var(--font-mono); color: var(--gray-500); z-index: 5; box-shadow: 0 4px 12px rgba(var(--overlay-rgb), .08); }
+.np-schema-minimap b { display: block; color: var(--white); font-size: .62rem; margin-bottom: 4px; letter-spacing: .06em; }.np-minimap-bars { margin-top: 8px; display: grid; gap: 3px; }.np-minimap-bars i { height: 4px; display: block; border-radius: var(--np-radius); background: var(--line-strong); }.np-minimap-bars i:first-child { background: var(--red); }
+.np-schema-pan-hint { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); padding: 6px 12px; border: 1px solid var(--line); border-radius: var(--np-radius); background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); font: .62rem var(--font-mono); color: var(--gray-500); z-index: 5; white-space: nowrap; pointer-events: none; }
+@media (max-width: 900px) { .np-schema-pan-hint { display: none; } }
 @media (max-width: 900px) { .np-architecture-toolbar { align-items: flex-start; flex-direction: column; }.np-architecture-actions { width: 100%; }.np-architecture-search { flex: 1; min-width: 0; } }

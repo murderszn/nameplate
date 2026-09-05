@@ -119,7 +119,7 @@ class _WorkOrdersScreenState extends ConsumerState<WorkOrdersScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      mainAxisExtent: 148,
+                      mainAxisExtent: 210,
                     ),
                     itemCount: filtered.length,
                     itemBuilder: (context, i) =>
@@ -333,106 +333,85 @@ class _WorkOrderCard extends ConsumerWidget {
                   children: [
                     // Key row 1: Micro-header with soft tinted background
                     Container(
-                      color: isUrgent
-                          ? NpColors.redSubtle
-                          : context.npColors.bgCard,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
+                      color: isUrgent ? NpColors.redSubtle : context.npColors.bgCard,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       child: Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: isUrgent
-                                  ? NpColors.red.withValues(alpha: 0.12)
-                                  : context.npColors.bgElevated,
-                              border: Border.all(
-                                color: isUrgent
-                                    ? NpColors.redBorder
-                                    : context.npColors.lineStrong,
-                                width: 0.8,
-                              ),
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                            child: Text(
-                              wo.id,
-                              style: NpType.mono.copyWith(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 11,
-                                color: isUrgent
-                                    ? NpColors.red
-                                    : context.npColors.white,
-                                letterSpacing: 0.6,
-                              ),
+                          Flexible(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: isUrgent ? NpColors.red.withValues(alpha: 0.12) : context.npColors.bgElevated,
+                                      border: Border.all(color: isUrgent ? NpColors.redBorder : context.npColors.lineStrong, width: 0.8),
+                                      borderRadius: BorderRadius.circular(2),
+                                    ),
+                                    child: Text(
+                                      wo.id,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: NpType.mono.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 10,
+                                        color: isUrgent ? NpColors.red : context.npColors.white,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Flexible(child: NpStatusPill(label: wo.priority.label.toUpperCase(), tone: tone)),
+                                if (wo.status == WorkOrderStatus.inProgress) ...[
+                                  const SizedBox(width: 5),
+                                  Container(width: 6, height: 6, decoration: const BoxDecoration(color: NpColors.red, shape: BoxShape.circle)),
+                                ],
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          NpStatusPill(
-                              label: wo.priority.label.toUpperCase(),
-                              tone: tone),
-                          if (wo.status == WorkOrderStatus.inProgress) ...[
-                            const SizedBox(width: 6),
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                color: NpColors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ],
-                          const Spacer(),
+                          const SizedBox(width: 6),
                           Flexible(
+                            flex: 2,
                             child: Text(
                               wo.slaLabel.toUpperCase(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.end,
                               style: NpType.mono.copyWith(
-                                fontSize: 10,
+                                fontSize: 9,
                                 fontWeight: FontWeight.w600,
-                                color: isUrgent
-                                    ? NpColors.red
-                                    : context.npColors.gray500,
+                                color: isUrgent ? NpColors.red : context.npColors.gray500,
                               ),
                             ),
                           ),
                           const SizedBox(width: 4),
-                          Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 10,
-                            color: context.npColors.gray500,
-                          ),
+                          Icon(Icons.arrow_forward_ios_rounded, size: 10, color: context.npColors.gray500),
                         ],
                       ),
                     ),
-                      // Key row 2: 68px Thumbnail with borderRadius 12 + Title + Location
+                      // Key row 2: compact thumbnail + title + location
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                        padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             if (schematic != null) ...[
                               Container(
-                                width: 68,
-                                height: 68,
+                                width: 40,
+                                height: 40,
                                 decoration: BoxDecoration(
                                   color: context.npColors.bgElevated,
-                                  border: Border.all(
-                                      color: context.npColors.lineStrong,
-                                      width: 0.8),
-                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: context.npColors.lineStrong, width: 0.8),
+                                  borderRadius: BorderRadius.circular(2),
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.asset(
-                                    schematic,
-                                    fit: BoxFit.cover,
-                                  ),
+                                  borderRadius: BorderRadius.circular(2),
+                                  child: Image.asset(schematic, fit: BoxFit.cover),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 8),
                             ],
                             Expanded(
                               child: Column(
@@ -442,7 +421,7 @@ class _WorkOrderCard extends ConsumerWidget {
                                     wo.title,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w700,
-                                      fontSize: 14,
+                                      fontSize: 11,
                                       color: context.npColors.white,
                                       height: 1.25,
                                       letterSpacing: -0.2,

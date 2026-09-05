@@ -6,10 +6,17 @@ import 'package:nameplate_field/main.dart';
 import 'package:nameplate_field/models/turn.dart';
 import 'package:nameplate_field/services/field_session.dart';
 import 'package:nameplate_field/services/npid.dart';
+import 'package:nameplate_field/services/providers.dart';
 
 void main() {
   Future<void> pumpApp(WidgetTester tester) async {
-    await tester.pumpWidget(const ProviderScope(child: NameplateFieldApp()));
+    final techSession = FieldSession.demo()..setRole(AppRole.technician);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [fieldSessionProvider.overrideWith((ref) => techSession)],
+        child: const NameplateFieldApp(),
+      ),
+    );
     await tester.pump();
   }
 
@@ -41,13 +48,17 @@ void main() {
 
     await tester.tap(find.text('SETTINGS'));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
     expect(find.text('Settings'), findsWidgets);
-    expect(find.textContaining('J. Morales'), findsOneWidget);
-    expect(find.text('Nameplate Tag studio'), findsOneWidget);
-
-    await tester.tap(find.text('Work offline'));
+    expect(find.textContaining('J. Morales'), findsWidgets);
+    await tester.scrollUntilVisible(find.text('Work offline'), 120);
     await tester.pump();
-    expect(find.textContaining('Offline'), findsWidgets);
+    await tester.tap(find.byType(Switch).at(1));
+    await tester.pump();
+    expect(find.textContaining(RegExp('offline', caseSensitive: false)), findsWidgets);
+    await tester.scrollUntilVisible(find.text('Nameplate Tag studio'), 120);
+    await tester.pump();
+    expect(find.text('Nameplate Tag studio'), findsOneWidget);
 
     final studio = find.text('Nameplate Tag studio');
     await tester.ensureVisible(studio);

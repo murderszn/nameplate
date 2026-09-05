@@ -22,11 +22,6 @@ class NpAssets {
   static const propertyRidge = 'assets/images/properties/sonoran_ridge.jpg';
   static const propertyDesert = 'assets/images/properties/desert_palm.jpg';
 
-  static const triptychPanorama = 'assets/images/triptych/nameplate_redblack_panorama.jpg';
-  static const triptychScan = 'assets/images/triptych/01_scan_it_redblack.jpg';
-  static const triptychTrace = 'assets/images/triptych/02_trace_it_redblack.jpg';
-  static const triptychAccount = 'assets/images/triptych/03_account_for_it_redblack.jpg';
-
   static String propertyImageFor(String? propertyNameOrId) {
     if (propertyNameOrId == null) return propertyScottsdale;
     final key = propertyNameOrId.toLowerCase();

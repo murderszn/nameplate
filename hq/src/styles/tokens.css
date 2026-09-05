@@ -16,10 +16,10 @@
   --white-15: rgba(17, 17, 17, 0.15);
   --white-08: rgba(17, 17, 17, 0.08);
 
-  --red: #eb2b2b;
-  --red-hover: #f44343;
+  --red: #c51f2d;
+  --red-hover: #ac1926;
   --red-deep: #c91f1f;
-  --red-subtle: rgba(235, 43, 43, 0.08);
+  --red-subtle: rgba(197, 31, 45, 0.06);
   --red-border: rgba(235, 43, 43, 0.35);
 
   --gray-900: #111111;
@@ -47,20 +47,20 @@
   --np-mist-100: #f1f3f5;
   --np-paper: #ffffff;
 
-  --np-plate-600: #eb2b2b;
-  --np-plate-700: #c91f1f;
-  --np-plate-100: rgba(235, 43, 43, 0.08);
-  --np-signal-500: #eb2b2b;
-  --np-signal-100: rgba(235, 43, 43, 0.08);
+  --np-plate-600: #c51f2d;
+  --np-plate-700: #ac1926;
+  --np-plate-100: rgba(197, 31, 45, 0.06);
+  --np-signal-500: #c51f2d;
+  --np-signal-100: rgba(197, 31, 45, 0.06);
 
   --np-verified-600: #16a34a;
   --np-verified-100: rgba(22, 163, 74, 0.1);
   --np-caution-600: #d97706;
-  --np-fault-600: #eb2b2b;
-  --np-fault-100: rgba(235, 43, 43, 0.1);
+  --np-fault-600: #c51f2d;
+  --np-fault-100: rgba(197, 31, 45, 0.1);
   --np-offline-500: #888888;
 
-  --np-viz-1: #eb2b2b;
+  --np-viz-1: #c51f2d;
   --np-viz-2: #111111;
   --np-viz-3: #555555;
   --np-viz-4: #888888;
@@ -68,10 +68,10 @@
   --np-viz-6: #e2e4e8;
 
   --np-radius: 8px;
-  --np-radius-sm: 4px;
+  --np-radius-sm: 8px;
   --np-radius-none: 0px;
   --np-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.03);
-  --np-sidebar-width: 256px;
+  --np-sidebar-width: 272px;
   --np-sidebar-collapsed-width: 72px;
   --np-font-sans: var(--font-sans);
   --np-font-mono: var(--font-mono);

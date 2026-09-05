@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 
-type View = 'home' | 'request' | 'orders' | 'appliances';
+type View = 'home' | 'request' | 'orders';
 type Theme = 'light' | 'dark';
-type IconName = View | 'scan' | 'chevron' | 'clock' | 'calendar' | 'check' | 'close' | 'camera' | 'upload' | 'help' | 'shield' | 'user' | 'bell' | 'more' | 'info' | 'copy';
+type IconName = View | 'appliances' | 'scan' | 'chevron' | 'clock' | 'calendar' | 'check' | 'close' | 'camera' | 'upload' | 'help' | 'shield' | 'user' | 'bell' | 'more' | 'info' | 'copy' | 'chat' | 'send';
 
 export type Appliance = {
   id: string;
@@ -41,6 +41,36 @@ const seededOrders: WorkOrder[] = [
 
 const statusSteps = ['Submitted', 'Scheduled', 'In progress', 'Completed'] as const;
 
+/* Isometric line-art illustrations (portal/public/iso). Same set the
+   marketing site uses; strokes are dark so they sit on a light tile. */
+const APPLIANCE_ISO_BY_ID: Record<string, string> = {
+  fridge: 'fridge.svg',
+  dishwasher: 'dishwasher.svg',
+  washer: 'washer.svg',
+  dryer: 'dryer.svg',
+  hvac: 'hvac.svg',
+  microwave: 'microwave.svg',
+  thermostat: 'thermostat.svg',
+};
+
+function applianceIsoSrc(id: string, name: string): string | null {
+  if (APPLIANCE_ISO_BY_ID[id]) return APPLIANCE_ISO_BY_ID[id];
+  const key = `${id} ${name}`.toLowerCase();
+  if (key.includes('fridge') || key.includes('refrigerat')) return 'fridge.svg';
+  if (key.includes('dish')) return 'dishwasher.svg';
+  if (key.includes('dryer')) return 'dryer.svg';
+  if (key.includes('wash')) return 'washer.svg';
+  if (key.includes('micro')) return 'microwave.svg';
+  if (key.includes('thermo')) return 'thermostat.svg';
+  if (key.includes('range') || key.includes('stove') || key.includes('oven')) return 'range.svg';
+  if (key.includes('water') || key.includes('heater')) return 'water-heater.svg';
+  if (key.includes('condens')) return 'condenser.svg';
+  const words = key.split(/[^a-z]+/);
+  if (key.includes('hvac') || words.includes('air') || key.includes('cool') || key.includes('heat') || key.includes('a/c')) return 'hvac.svg';
+  if (words.includes('ac')) return 'hvac.svg';
+  return null;
+}
+
 function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
   const common = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
   const paths: Record<IconName, React.ReactNode> = {
@@ -63,6 +93,8 @@ function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
     more: <><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/></>,
     info: <><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></>,
     copy: <><rect width="13" height="13" x="9" y="9" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></>,
+    chat: <><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></>,
+    send: <><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></>,
   };
   return <svg {...common} aria-hidden="true">{paths[name]}</svg>;
 }
@@ -101,7 +133,7 @@ function App() {
   });
   const [selectedAsset, setSelectedAsset] = useState('');
   const [scannerOpen, setScannerOpen] = useState(false);
-  const [specModalAsset, setSpecModalAsset] = useState<Appliance | null>(null);
+  const [chatOpen, setChatOpen] = useState(false);
   const [toast, setToast] = useState('');
 
   // Initial load from live backend if available
@@ -172,10 +204,10 @@ function App() {
       <aside className="np-sidebar">
         <Brand />
         <nav className="np-nav" aria-label="Nameplate Portal">
-          {(['home', 'request', 'orders', 'appliances'] as View[]).map((item, index) => (
+          {(['home', 'request', 'orders'] as View[]).map((item, index) => (
             <button key={item} className={view === item ? 'active' : ''} onClick={() => navigate(item)}>
               <Icon name={item}/>
-              <span>{item === 'home' ? 'Home' : item === 'request' ? 'Report issue' : item === 'orders' ? 'Work orders' : 'My appliances'}</span>
+              <span>{item === 'home' ? 'Home' : item === 'request' ? 'Report issue' : 'Work orders'}</span>
               <small>0{index}</small>
             </button>
           ))}
@@ -186,6 +218,9 @@ function App() {
           <span>Sonoran Ridge Residences</span>
           <span>4820 E Camelback Rd</span>
         </div>
+        <button className="np-dispatch" onClick={() => setChatOpen(true)}>
+          <Icon name="chat"/> Message dispatch
+        </button>
         <button className="np-help" onClick={() => notify('Property office: (602) 555-0148')}>
           <Icon name="help"/> Need help?
         </button>
@@ -195,23 +230,22 @@ function App() {
         <header className="np-topbar">
           <div className="np-topbar__context">
             <div className="np-breadcrumbs"><span>Sonoran Ridge</span><i>/</i><strong>Unit 214</strong></div>
-            <h1>{view === 'home' ? 'Resident overview' : view === 'request' ? 'Report an issue' : view === 'orders' ? 'Work orders' : 'My appliances'}</h1>
+            <h1>{view === 'home' ? 'Resident overview' : view === 'request' ? 'Report an issue' : 'Work orders'}</h1>
           </div>
           <div className="np-topbar__actions">
             <button
-              className="np-theme-toggle"
+              className="np-theme-btn"
               type="button"
               aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
               aria-pressed={theme === 'dark'}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             >
-              <span className="np-theme-toggle__thumb">
-                {theme === 'light' ? (
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.1A8.5 8.5 0 0 1 8.9 4a8.5 8.5 0 1 0 11.1 11.1Z"/></svg>
-                )}
-              </span>
+              {theme === 'light' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
+              )}
             </button>
             <button className="np-notification" aria-label="Notifications" onClick={() => notify('You have no new notifications.')}><Icon name="bell"/></button>
             <div className="np-avatar">MJ</div>
@@ -232,25 +266,17 @@ function App() {
               navigate('orders');
             }}
             onCancel={() => navigate('home')}
-          />
-        )}
-        {view === 'orders' && <Orders orders={orders} onNotify={notify} onNewRequest={() => navigate('request')} />}
-        {view === 'appliances' && (
-          <Appliances
-            appliancesList={myAppliances}
-            onReport={(id) => { setSelectedAsset(id); navigate('request'); }}
-            onScan={() => setScannerOpen(true)}
-            onViewSpecs={(appliance) => setSpecModalAsset(appliance)}
             onNotify={notify}
           />
         )}
+        {view === 'orders' && <Orders orders={orders} onNotify={notify} onNewRequest={() => navigate('request')} />}
       </main>
 
       <nav className="np-mobile-nav" aria-label="Mobile navigation">
-        {(['home', 'request', 'orders', 'appliances'] as View[]).map((item) => (
+        {(['home', 'request', 'orders'] as View[]).map((item) => (
           <button key={item} className={view === item ? 'active' : ''} onClick={() => navigate(item)}>
             <Icon name={item}/>
-            <span>{item === 'home' ? 'Home' : item === 'request' ? 'Report' : item === 'orders' ? 'Orders' : 'Appliances'}</span>
+            <span>{item === 'home' ? 'Home' : item === 'request' ? 'Report' : 'Orders'}</span>
           </button>
         ))}
       </nav>
@@ -267,16 +293,14 @@ function App() {
         />
       )}
 
-      {specModalAsset && (
-        <ApplianceSpecModal
-          appliance={specModalAsset}
-          onClose={() => setSpecModalAsset(null)}
-          onReport={() => {
-            setSelectedAsset(specModalAsset.id);
-            setSpecModalAsset(null);
+      {chatOpen && (
+        <DispatchChat
+          orders={orders}
+          onClose={() => setChatOpen(false)}
+          onNewRequest={() => {
+            setChatOpen(false);
             navigate('request');
           }}
-          onNotify={notify}
         />
       )}
 
@@ -316,7 +340,7 @@ function Home({ openOrders, onNavigate, onScan, onNotify }: { openOrders: WorkOr
           <div><span className="np-kicker">AT A GLANCE</span><h2>Your home</h2></div>
         </div>
         <div className="np-stat-grid">
-          <article onClick={() => onNavigate('appliances')} style={{ cursor: 'pointer' }}>
+          <article onClick={() => onNavigate('request')} style={{ cursor: 'pointer' }}>
             <Icon name="appliances"/>
             <div><strong>4</strong><span>Registered appliances</span></div>
           </article>
@@ -362,6 +386,7 @@ function RequestWizard({
   onScan,
   onSubmit,
   onCancel,
+  onNotify,
 }: {
   appliancesList: Appliance[];
   selectedAsset: string;
@@ -369,12 +394,20 @@ function RequestWizard({
   onScan: () => void;
   onSubmit: (order: WorkOrder) => void;
   onCancel: () => void;
+  onNotify: (msg: string) => void;
 }) {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState('');
   const [urgent, setUrgent] = useState(false);
   const [photo, setPhoto] = useState('');
+  const [specAsset, setSpecAsset] = useState<Appliance | null>(null);
+
+  const selectAndContinue = (id: string) => {
+    setSelectedAsset(id);
+    setStep(2);
+    window.scrollTo({ top: 0 });
+  };
 
   const activeAppliance = appliancesList.find((a) => a.id === selectedAsset);
 
@@ -439,40 +472,33 @@ function RequestWizard({
       {step === 1 && (
         <div className="np-wizard-step">
           <p className="np-wizard-prompt">Select the registered appliance from your home, scan the physical tag, or choose other.</p>
-          <div className="np-appliance-picker">
-            {appliances.map((item) => (
-              <div
+          <div className="np-appliance-grid">
+            {appliancesList.map((item, index) => (
+              <ApplianceCard
                 key={item.id}
-                className={`np-picker-card ${selectedAsset === item.id ? 'is-selected' : ''}`}
-                onClick={() => setSelectedAsset(item.id)}
-              >
-                <div className="np-picker-card__radio">
-                  {selectedAsset === item.id && <Icon name="check" size={14} />}
-                </div>
-                <div className="np-picker-card__icon">
-                  <Icon name="appliances" size={24} />
-                </div>
-                <div className="np-picker-card__content">
-                  <strong>{item.name}</strong>
-                  <span>{item.brand} {item.model} · {item.location}</span>
-                  <code>{item.npid}</code>
-                </div>
-              </div>
+                appliance={item}
+                index={index}
+                onReport={selectAndContinue}
+                onViewSpecs={setSpecAsset}
+                onNotify={onNotify}
+              />
             ))}
-            <div
-              className={`np-picker-card ${selectedAsset === 'other' ? 'is-selected' : ''}`}
-              onClick={() => setSelectedAsset('other')}
-            >
-              <div className="np-picker-card__radio">
-                {selectedAsset === 'other' && <Icon name="check" size={14} />}
-              </div>
-              <div className="np-picker-card__icon">
-                <Icon name="home" size={24} />
-              </div>
-              <div className="np-picker-card__content">
-                <strong>Something else in my home</strong>
-                <span>Plumbing, electrical, doors, fixtures</span>
-              </div>
+          </div>
+
+          <div
+            className={`np-picker-card ${selectedAsset === 'other' ? 'is-selected' : ''}`}
+            onClick={() => setSelectedAsset('other')}
+            style={{ marginTop: '10px' }}
+          >
+            <div className="np-picker-card__radio">
+              {selectedAsset === 'other' && <Icon name="check" size={14} />}
+            </div>
+            <div className="np-picker-card__icon">
+              <Icon name="home" size={24} />
+            </div>
+            <div className="np-picker-card__content">
+              <strong>Something else in my home</strong>
+              <span>Plumbing, electrical, doors, fixtures</span>
             </div>
           </div>
 
@@ -593,11 +619,103 @@ function RequestWizard({
           </div>
         </form>
       )}
+
+      {specAsset && (
+        <ApplianceSpecModal
+          appliance={specAsset}
+          onClose={() => setSpecAsset(null)}
+          onReport={() => {
+            const id = specAsset.id;
+            setSpecAsset(null);
+            selectAndContinue(id);
+          }}
+          onNotify={onNotify}
+        />
+      )}
     </div>
   );
 }
 
 /* ================= Work Orders View ================= */
+const TRACK_STEPS = [
+  { key: 'Submitted', blurb: 'Request received. The property team has your ticket.' },
+  { key: 'Scheduled', blurb: 'A visit window is set. We’ll notify you of any change.' },
+  { key: 'In progress', blurb: 'A technician is actively working on it.' },
+  { key: 'Completed', blurb: 'Fixed and signed off.' },
+] as const;
+
+function StatusChain({ order }: { order: WorkOrder }) {
+  const currentStep = statusSteps.indexOf(order.status);
+  const settled = order.status === 'Completed';
+
+  return (
+    <ol className="np-timeline">
+      {TRACK_STEPS.map((step, index) => {
+        const state = settled || index < currentStep ? 'done' : index === currentStep ? 'current' : 'next';
+        return (
+          <li key={step.key} className={`np-timeline__step is-${state}`}>
+            <span className="np-timeline__marker">
+              {state === 'done' ? <Icon name="check" size={12} /> : state === 'current' ? <i /> : null}
+            </span>
+            <div className="np-timeline__body">
+              <strong>{step.key}{state === 'current' && <em> · Current</em>}</strong>
+              <span>
+                {step.key === 'Scheduled' && !order.appointment
+                  ? 'Waiting on a visit window — we’ll notify you as soon as one is set.'
+                  : step.blurb}
+              </span>
+              {step.key === 'Scheduled' && order.appointment && (
+                <div className="np-appointment">
+                  <Icon name="calendar" />
+                  <div>
+                    <span>MAINTENANCE VISIT</span>
+                    <strong>{order.appointment}</strong>
+                  </div>
+                </div>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function TrackingHero({ order, onNotify }: { order: WorkOrder; onNotify?: (msg: string) => void }) {
+  return (
+    <article className="np-track">
+      <div className="np-track__head">
+        <div>
+          <span className="np-kicker np-kicker--red">NOW TRACKING</span>
+          <span className="np-order__id">{order.id} · {order.appliance}</span>
+          <h2>{order.title}</h2>
+          {order.description && <p>{order.description}</p>}
+        </div>
+        <span className={`np-status np-status--${order.status.toLowerCase().replace(' ', '-')}`}>
+          <i />{order.status}
+        </span>
+      </div>
+
+      <StatusChain order={order} />
+
+      <div className="np-order__footer">
+        <span>Opened {order.opened}</span>
+        <span className={order.priority === 'Urgent' ? 'np-kicker--red' : ''}>{order.priority} priority</span>
+        <button
+          type="button"
+          className="np-link"
+          onClick={() => {
+            navigator.clipboard?.writeText(order.id);
+            onNotify?.(`Copied ${order.id} to clipboard`);
+          }}
+        >
+          Copy ticket ref <Icon name="copy" size={14} />
+        </button>
+      </div>
+    </article>
+  );
+}
+
 function Orders({ orders, onNotify, onNewRequest }: { orders: WorkOrder[]; onNotify: (msg: string) => void; onNewRequest: () => void }) {
   const [filter, setFilter] = useState<'Open' | 'Completed'>('Open');
   const visible = orders.filter((order) => filter === 'Completed' ? order.status === 'Completed' : order.status !== 'Completed');
@@ -618,20 +736,33 @@ function Orders({ orders, onNotify, onNewRequest }: { orders: WorkOrder[]; onNot
         </button>
       </div>
 
-      <div className="np-order-list" style={{ marginTop: '20px' }}>
-        {visible.length ? (
-          visible.map((order) => <OrderCard key={order.id} order={order} onNotify={onNotify} />)
-        ) : (
-          <div className="np-empty">No {filter.toLowerCase()} work orders found.</div>
-        )}
-      </div>
+      {filter === 'Open' && visible.length > 0 ? (
+        <>
+          <TrackingHero order={visible[0]} onNotify={onNotify} />
+          {visible.length > 1 && (
+            <section className="np-section">
+              <div className="np-section__head">
+                <div><span className="np-kicker">QUEUED</span><h2>Also in progress</h2></div>
+              </div>
+              {visible.slice(1).map((order) => <OrderCard key={order.id} order={order} compact onNotify={onNotify} />)}
+            </section>
+          )}
+        </>
+      ) : (
+        <div className="np-order-list" style={{ marginTop: '20px' }}>
+          {visible.length ? (
+            visible.map((order) => <OrderCard key={order.id} order={order} onNotify={onNotify} />)
+          ) : (
+            <div className="np-empty">No {filter.toLowerCase()} work orders found.</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 function OrderCard({ order, compact = false, onNotify }: { order: WorkOrder; compact?: boolean; onNotify?: (msg: string) => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const currentStep = statusSteps.indexOf(order.status);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -702,63 +833,13 @@ function OrderCard({ order, compact = false, onNotify }: { order: WorkOrder; com
         </div>
       )}
 
-      <div className="np-progress">
-        {statusSteps.map((step, index) => (
-          <div className={index <= currentStep ? 'done' : ''} key={step}>
-            <span>{index < currentStep || order.status === 'Completed' ? <Icon name="check" size={12}/> : index + 1}</span>
-            <small>{step}</small>
-          </div>
-        ))}
-      </div>
+      {!compact && <StatusChain order={order} />}
 
       <div className="np-order__footer">
         <span>Opened {order.opened}</span>
         <span className={order.priority === 'Urgent' ? 'np-kicker--red' : ''}>{order.priority} priority</span>
       </div>
     </article>
-  );
-}
-
-/* ================= Appliances View ================= */
-function Appliances({
-  appliancesList = appliances,
-  onReport,
-  onScan,
-  onViewSpecs,
-  onNotify,
-}: {
-  appliancesList?: Appliance[];
-  onReport: (id: string) => void;
-  onScan: () => void;
-  onViewSpecs: (appliance: Appliance) => void;
-  onNotify: (msg: string) => void;
-}) {
-  return (
-    <div className="np-page">
-      <div className="np-appliance-lead">
-        <div>
-          <span className="np-kicker np-kicker--red">YOUR HOME’S EQUIPMENT</span>
-          <h2>{appliancesList.length} appliances registered.</h2>
-          <p>Every major appliance in Unit 214 has a verified digital service ledger.</p>
-        </div>
-        <button className="np-btn np-btn--outline" onClick={onScan}>
-          <Icon name="scan"/> Scan tag
-        </button>
-      </div>
-
-      <div className="np-appliance-grid">
-        {appliancesList.map((item, index) => (
-          <ApplianceCard
-            key={item.id}
-            appliance={item}
-            index={index}
-            onReport={onReport}
-            onViewSpecs={onViewSpecs}
-            onNotify={onNotify}
-          />
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -788,16 +869,22 @@ function ApplianceCard({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [menuOpen]);
 
+  const isoSrc = applianceIsoSrc(appliance.id, appliance.name);
+
   return (
     <article className="np-appliance">
       <div className="np-appliance__visual">
         <span>0{index + 1}</span>
-        <img
-          src={`./schematics/${appliance.id}.png`}
-          alt={appliance.name}
-          className="np-appliance__schematic"
-          onError={(e) => { (e.currentTarget as HTMLElement).style.display = 'none'; }}
-        />
+        {isoSrc && (
+          <img
+            src={`./iso/${isoSrc}`}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="np-appliance__schematic"
+            onError={(e) => { e.currentTarget.remove(); }}
+          />
+        )}
         <Icon name="appliances" size={42}/>
       </div>
 
@@ -882,10 +969,22 @@ function ApplianceSpecModal({
   onReport: () => void;
   onNotify: (msg: string) => void;
 }) {
+  const isoSrc = applianceIsoSrc(appliance.id, appliance.name);
+
   return (
     <div className="np-modal" role="dialog" aria-modal="true" aria-label="Equipment Specifications">
       <div className="np-spec-modal">
         <div className="np-spec-modal__head">
+          {isoSrc && (
+            <img
+              src={`./iso/${isoSrc}`}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              className="np-spec-modal__iso"
+              onError={(e) => { e.currentTarget.remove(); }}
+            />
+          )}
           <div>
             <span className="np-kicker np-kicker--red">EQUIPMENT LEDGER</span>
             <h2>{appliance.name}</h2>
@@ -1009,6 +1108,155 @@ function Scanner({ onClose, onFound }: { onClose: () => void; onFound: (assetId:
             <button onClick={matchManual} disabled={!manual.trim()}>Use tag</button>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ================= Dispatch Help-Desk Chat ================= */
+type ChatMessage = { id: number; from: 'dispatch' | 'me'; text: string };
+
+const DISPATCH_PHONE = '(602) 555-0148';
+const DISPATCH_EMERGENCY = '(602) 555-0199';
+
+export function dispatchReply(text: string, orders: WorkOrder[]): { text: string; action?: 'report' } {
+  const raw = text.toLowerCase();
+  const open = orders.filter((o) => o.status !== 'Completed');
+  const refMatch = text.toUpperCase().match(/WO-\d+/);
+  const referenced = refMatch ? orders.find((o) => o.id.toUpperCase() === refMatch[0]) : undefined;
+
+  const describe = (o: WorkOrder) => {
+    const appt = o.appointment ? ` Visit: ${o.appointment}.` : ' No visit window set yet — we’ll notify you.';
+    return `${o.id} (${o.appliance}) is ${o.status.toLowerCase()}.${appt} Opened ${o.opened}.`;
+  };
+
+  if (/(^|\W)(hi|hey|hello|yo|good (morning|afternoon|evening))(\W|$)/.test(raw)) {
+    return {
+      text: open.length
+        ? `Hi Maya — dispatch here. You have ${open.length} open request${open.length === 1 ? '' : 's'} right now. Ask me for a status update, your next visit, or to report something new.`
+        : 'Hi Maya — dispatch here. No open requests on your home right now. Anything I can help with?',
+    };
+  }
+  if (/(gas|smoke|fire|flood|burst|spark|shock|leak|urgent|emergency|no heat|no cool|carbon)/.test(raw)) {
+    if (/(gas|smoke|fire|carbon)/.test(raw)) {
+      return { text: `If anyone is unsafe, evacuate and call 911 first. Then reach our 24/7 emergency line at ${DISPATCH_EMERGENCY}.` };
+    }
+    return { text: `That sounds urgent — call our 24/7 emergency dispatch at ${DISPATCH_EMERGENCY} so a tech can be sent right away. Anything non-urgent can go to ${DISPATCH_PHONE}.` };
+  }
+  if (/(human|agent|person|someone|real|call|phone|number|talk)/.test(raw)) {
+    return { text: `You can reach the dispatch office at ${DISPATCH_PHONE}, or 24/7 emergencies at ${DISPATCH_EMERGENCY}. A dispatcher also reviews every message here.` };
+  }
+  if (refMatch) {
+    return {
+      text: referenced
+        ? describe(referenced)
+        : `I can’t find ${refMatch[0]} on your home. Your open request${open.length === 1 ? ' is' : 's are'}${open.length ? ` ${open.map((o) => o.id).join(', ')}` : ' none — everything is closed out'}.`,
+    };
+  }
+  if (/(appointment|schedule|visit|reschedul|when.*(come|visit|arrive|tech|fix))/i.test(text)) {
+    const withAppt = open.filter((o) => o.appointment);
+    if (withAppt.length) {
+      return { text: `Next visit: ${withAppt[0].appointment} for ${withAppt[0].id} (${withAppt[0].title}). Reply here if you need to move it.` };
+    }
+    return { text: open.length ? 'No visit window is set on your open requests yet — we’ll notify you as soon as one is scheduled.' : 'No open requests, so nothing is scheduled. Want to report an issue?' };
+  }
+  if (/(status|where|update|progress|track)/.test(raw)) {
+    if (!open.length) return { text: 'Nothing open right now — all of your requests are completed. Want to report something new?' };
+    if (open.length === 1) return { text: describe(open[0]) };
+    return { text: `Here’s where everything stands: ${open.map(describe).join(' ')}` };
+  }
+  if (/(report|new issue|broken|broke|fix|not working|won't|doesn't|noise|rattle|drip)/.test(raw)) {
+    return { text: 'I can start that now — opening the report form for you.', action: 'report' };
+  }
+  if (/(thank|thx|great|perfect|awesome|appreciated)/.test(raw)) {
+    return { text: 'You’re welcome — that’s what we’re here for. Anything else on your home?' };
+  }
+  return { text: 'Thanks — I’ve logged that for the dispatch team, and they’ll follow up here if they need anything. Meanwhile I can check a request status, your next visit, or start a new report.' };
+}
+
+function DispatchChat({ orders, onClose, onNewRequest }: { orders: WorkOrder[]; onClose: () => void; onNewRequest: () => void }) {
+  const openCount = orders.filter((o) => o.status !== 'Completed').length;
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: 0,
+      from: 'dispatch',
+      text: openCount
+        ? `Hi Maya — dispatch here. You have ${openCount} open request${openCount === 1 ? '' : 's'}. Ask me for a status update or your next visit.`
+        : 'Hi Maya — dispatch here. No open requests right now. How can I help?',
+    },
+  ]);
+  const [draft, setDraft] = useState('');
+  const [typing, setTyping] = useState(false);
+  const idRef = useRef(1);
+  const timerRef = useRef<number | null>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bodyRef.current?.scrollTo({ top: bodyRef.current.scrollHeight });
+  }, [messages, typing]);
+
+  useEffect(() => () => { if (timerRef.current !== null) window.clearTimeout(timerRef.current); }, []);
+
+  const send = (raw: string) => {
+    const text = raw.trim();
+    if (!text || typing) return;
+    setMessages((prev) => [...prev, { id: idRef.current++, from: 'me', text }]);
+    setDraft('');
+    setTyping(true);
+    timerRef.current = window.setTimeout(() => {
+      const reply = dispatchReply(text, orders);
+      setMessages((prev) => [...prev, { id: idRef.current++, from: 'dispatch', text: reply.text }]);
+      setTyping(false);
+      if (reply.action === 'report') {
+        timerRef.current = window.setTimeout(() => onNewRequest(), 650);
+      }
+    }, 900);
+  };
+
+  const chips = ["Where's my request?", 'When is my visit?', 'Report a new issue', 'Call dispatch'];
+
+  return (
+    <div className="np-modal" role="dialog" aria-modal="true" aria-label="Message property dispatch">
+      <div className="np-chat">
+        <div className="np-chat__head">
+          <span className="np-chat__avatar"><Icon name="chat" size={18} /></span>
+          <div className="np-chat__meta">
+            <strong>Property Dispatch</strong>
+            <span className="np-chat__status"><i />Online · typically replies in minutes</span>
+          </div>
+          <a className="np-chat__call" href="tel:+16025550148">Call</a>
+          <button type="button" className="np-icon-btn" aria-label="Close chat" onClick={onClose}>
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+
+        <div className="np-chat__body" ref={bodyRef}>
+          {messages.map((m) => (
+            <div key={m.id} className={`np-bubble np-bubble--${m.from === 'me' ? 'out' : 'in'}`}>{m.text}</div>
+          ))}
+          {typing && (
+            <div className="np-bubble np-bubble--in np-typing" aria-label="Dispatch is typing"><span /><span /><span /></div>
+          )}
+        </div>
+
+        <div className="np-chips">
+          {chips.map((c) => (
+            <button key={c} type="button" className="np-chip" onClick={() => send(c)}>{c}</button>
+          ))}
+        </div>
+
+        <form className="np-chat__composer" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="Message dispatch…"
+            aria-label="Message dispatch"
+            autoFocus
+          />
+          <button type="submit" className="np-chat__send" aria-label="Send message" disabled={!draft.trim()}>
+            <Icon name="send" size={16} />
+          </button>
+        </form>
       </div>
     </div>
   );

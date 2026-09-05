@@ -10,13 +10,21 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:nameplate_field/main.dart';
 import 'package:nameplate_field/screens/splash_screen.dart';
+import 'package:nameplate_field/services/field_session.dart';
+import 'package:nameplate_field/services/providers.dart';
 import 'package:nameplate_field/theme/theme_controller.dart';
 
 void main() {
   testWidgets('App shell renders navigation destinations on standard screen', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const ProviderScope(child: NameplateFieldApp()));
+    final techSession = FieldSession.demo()..setRole(AppRole.technician);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [fieldSessionProvider.overrideWith((ref) => techSession)],
+        child: const NameplateFieldApp(),
+      ),
+    );
     await tester.pump();
 
     expect(find.text('SCAN'), findsOneWidget);
@@ -42,7 +50,13 @@ void main() {
   testWidgets('App defaults to light mode and can switch to dark mode', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const ProviderScope(child: NameplateFieldApp()));
+    final techSession = FieldSession.demo()..setRole(AppRole.technician);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [fieldSessionProvider.overrideWith((ref) => techSession)],
+        child: const NameplateFieldApp(),
+      ),
+    );
     await tester.pump();
 
     final container = ProviderScope.containerOf(
@@ -69,7 +83,13 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(const ProviderScope(child: NameplateFieldApp()));
+      final techSession2 = FieldSession.demo()..setRole(AppRole.technician);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [fieldSessionProvider.overrideWith((ref) => techSession2)],
+          child: const NameplateFieldApp(),
+        ),
+      );
       await tester.pump();
 
       expect(find.text('SCAN'), findsOneWidget);
@@ -97,6 +117,9 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 150));
     await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('Scan the plate'), findsOneWidget);
+    // No role yet → splash routes to role selector, not directly to scan.
+    expect(find.text('Who are you signing in as?'), findsOneWidget);
+    expect(find.text('I’m a tech'), findsOneWidget);
+    expect(find.text('I’m a renter'), findsOneWidget);
   });
 }

@@ -66,7 +66,7 @@ export const TagSheetModal: React.FC<TagSheetModalProps> = ({
         style={{
           background: 'var(--bg-card)',
           border: '1px solid var(--line-strong)',
-          borderRadius: 4,
+          borderRadius: 2,
           width: 'min(1100px, 96vw)',
           maxHeight: '92vh',
           display: 'flex',
@@ -409,7 +409,7 @@ export const TagSheetModal: React.FC<TagSheetModalProps> = ({
                           flexShrink: 0,
                           background: '#000',
                           padding: 2,
-                          borderRadius: 1,
+                          borderRadius: 2,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',

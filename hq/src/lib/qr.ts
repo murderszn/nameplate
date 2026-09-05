@@ -69,7 +69,7 @@ export function buildQrPayload(npid: string, orgId: string = DEFAULT_ORG_ID, bat
  * Pure SVG QR Code Matrix Generator with standard timing patterns,
  * finder patterns, and high-contrast styling.
  */
-export function generateQrSvg(data: string, size = 160): string {
+export function generateQrSvg(data: string, size = 160, light = false): string {
   const matrixSize = 25;
   const matrix: boolean[][] = Array.from({ length: matrixSize }, () => Array(matrixSize).fill(false));
 
@@ -99,7 +99,17 @@ export function generateQrSvg(data: string, size = 160): string {
     hash = ((hash << 5) + hash + data.charCodeAt(i)) >>> 0;
   }
 
-  let bitIdx = 0;
+  // Xorshift32 stream seeded from the payload hash — well-distributed
+  // modules without the banding a raw parity mix produces.
+  let h = hash || 0x9e3779b9;
+  const nextBit = () => {
+    h ^= h << 13;
+    h >>>= 0;
+    h ^= h >> 17;
+    h ^= h << 5;
+    h >>>= 0;
+    return (h & 1) === 1;
+  };
   for (let r = 0; r < matrixSize; r++) {
     for (let c = 0; c < matrixSize; c++) {
       const inFinder1 = r < 8 && c < 8;
@@ -108,13 +118,14 @@ export function generateQrSvg(data: string, size = 160): string {
       const inTiming = r === 6 || c === 6;
 
       if (!inFinder1 && !inFinder2 && !inFinder3 && !inTiming) {
-        const bit = ((hash ^ (r * 31 + c * 17 + (bitIdx++ * 7))) & 1) === 1;
-        matrix[r][c] = bit;
+        matrix[r][c] = nextBit();
       }
     }
   }
 
   const moduleSize = size / matrixSize;
+  const fg = light ? '#000000' : '#FFFFFF';
+  const bg = light ? '#FFFFFF' : '#000000';
   let rects = '';
   for (let r = 0; r < matrixSize; r++) {
     for (let c = 0; c < matrixSize; c++) {
@@ -123,13 +134,13 @@ export function generateQrSvg(data: string, size = 160): string {
         const y = (r * moduleSize).toFixed(1);
         const w = moduleSize.toFixed(1);
         const h = moduleSize.toFixed(1);
-        rects += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#FFFFFF" />`;
+        rects += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fg}" />`;
       }
     }
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" shape-rendering="crispEdges">
-    <rect width="${size}" height="${size}" fill="#000000" />
+    <rect width="${size}" height="${size}" fill="${bg}" />
     ${rects}
   </svg>`;
 }

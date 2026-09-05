@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react';
 
 type Column = { name: string; type: string; key?: 'pk' | 'fk'; desc?: string };
 type Table = { name: string; group: string; columns: Column[]; x: number; y: number };
@@ -436,8 +436,15 @@ export function Architecture() {
   );
   const [zoom, setZoom] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
   const dragRef = useRef<{ name: string; dx: number; dy: number } | null>(null);
+  const panRef = useRef<{ startX: number; startY: number; panX: number; panY: number; moved: boolean } | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const panStateRef = useRef(pan);
+  panStateRef.current = pan;
+  const zoomStateRef = useRef(zoom);
+  zoomStateRef.current = zoom;
 
   const groups = ['All domains', ...Array.from(new Set(tables.map((table) => table.group)))];
 
@@ -457,48 +464,132 @@ export function Architecture() {
   const byName = useMemo(() => new Map(tables.map((table) => [table.name, table])), []);
   const selectedTable = byName.get(selected);
 
-  // Smooth jump-to-table navigation
+  const clampPan = (x: number, y: number) => ({
+    x: Math.min(800, Math.max(-2000, x)),
+    y: Math.min(600, Math.max(-2000, y)),
+  });
+
+  const centerOnWorldPoint = (worldX: number, worldY: number, nextZoom?: number) => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const z = nextZoom ?? zoomStateRef.current;
+    const rect = el.getBoundingClientRect();
+    setPan(clampPan(rect.width / 2 - worldX * z, rect.height / 2 - worldY * z));
+  };
+
+  const zoomAroundCenter = (nextZoom: number) => {
+    const el = canvasRef.current;
+    const prevZoom = zoomStateRef.current;
+    const clamped = Math.min(1.5, Math.max(0.55, nextZoom));
+    if (!el || clamped === prevZoom) {
+      setZoom(clamped);
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    const centerWorldX = (rect.width / 2 - panStateRef.current.x) / prevZoom;
+    const centerWorldY = (rect.height / 2 - panStateRef.current.y) / prevZoom;
+    setZoom(clamped);
+    setPan(clampPan(rect.width / 2 - centerWorldX * clamped, rect.height / 2 - centerWorldY * clamped));
+  };
+
+  // Smooth jump-to-table navigation (pan the world so the table lands centered)
   const jumpToTable = (targetName: string) => {
     if (!byName.has(targetName)) return;
     setSelected(targetName);
     setDrawerOpen(true);
+    const table = byName.get(targetName);
     const pos = positions[targetName];
-    if (pos && canvasRef.current) {
-      const targetX = Math.max(0, pos.x * zoom - 240);
-      const targetY = Math.max(0, pos.y * zoom - 160);
-      canvasRef.current.scrollTo({ left: targetX, top: targetY, behavior: 'smooth' });
+    if (pos && table) {
+      centerOnWorldPoint(pos.x + cardWidth / 2, pos.y + cardHeight(table) / 2);
     }
   };
 
-  const moveTable = (event: PointerEvent, name: string) => {
-    const current = positions[name];
+  // --- Node dragging (per-table, via header handle) ---
+  const toWorld = (clientX: number, clientY: number) => {
     const bounds = canvasRef.current?.getBoundingClientRect();
-    if (!bounds) return;
-    dragRef.current = {
-      name,
-      dx: (event.clientX - bounds.left) / zoom - current.x,
-      dy: (event.clientY - bounds.top) / zoom - current.y,
-    };
+    if (!bounds) return null;
+    const p = panStateRef.current;
+    const z = zoomStateRef.current;
+    return { x: (clientX - bounds.left - p.x) / z, y: (clientY - bounds.top - p.y) / z, bounds };
+  };
+
+  const moveTable = (event: PointerEvent, name: string) => {
+    event.stopPropagation();
+    const current = positions[name];
+    if (!current) return;
+    const w = toWorld(event.clientX, event.clientY);
+    if (!w) return;
+    dragRef.current = { name, dx: w.x - current.x, dy: w.y - current.y };
     (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
   };
 
   const dragTable = (event: PointerEvent) => {
     if (!dragRef.current) return;
+    const w = toWorld(event.clientX, event.clientY);
+    if (!w) return;
     const { name, dx, dy } = dragRef.current;
-    const bounds = canvasRef.current?.getBoundingClientRect();
-    if (!bounds) return;
     setPositions((current) => ({
       ...current,
-      [name]: {
-        x: Math.max(10, (event.clientX - bounds.left) / zoom - dx),
-        y: Math.max(10, (event.clientY - bounds.top) / zoom - dy),
-      },
+      [name]: { x: Math.max(0, w.x - dx), y: Math.max(0, w.y - dy) },
     }));
   };
 
   const stopDragging = () => {
     dragRef.current = null;
   };
+
+  // --- Background grab-to-pan (node-tool style) ---
+  const startPan = (event: PointerEvent) => {
+    if (dragRef.current) return;
+    if (event.button !== 0 && event.pointerType === 'mouse') return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('.np-schema-table, .np-schema-zoom, .np-schema-dictionary, .np-schema-legend, .np-schema-minimap, button, input, select, a')) {
+      return;
+    }
+    panRef.current = {
+      startX: event.clientX,
+      startY: event.clientY,
+      panX: panStateRef.current.x,
+      panY: panStateRef.current.y,
+      moved: false,
+    };
+    setIsPanning(true);
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  };
+
+  const handlePanMove = (event: PointerEvent) => {
+    if (dragRef.current) return;
+    const ref = panRef.current;
+    if (!ref) return;
+    const dx = event.clientX - ref.startX;
+    const dy = event.clientY - ref.startY;
+    if (Math.abs(dx) + Math.abs(dy) > 3) ref.moved = true;
+    setPan(clampPan(ref.panX + dx, ref.panY + dy));
+  };
+
+  const endPan = () => {
+    panRef.current = null;
+    setIsPanning(false);
+  };
+
+  const handleWheelNative = (event: globalThis.WheelEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      const z = zoomStateRef.current;
+      zoomAroundCenter(z - event.deltaY * 0.0015);
+    } else {
+      event.preventDefault();
+      const p = panStateRef.current;
+      setPan(clampPan(p.x - event.deltaX, p.y - event.deltaY));
+    }
+  };
+
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    el.addEventListener('wheel', handleWheelNative, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheelNative);
+  }, []);
 
   const autoLayout = () => {
     const next: Record<string, { x: number; y: number }> = Object.fromEntries(
@@ -507,9 +598,20 @@ export function Architecture() {
     setPositions(next);
     setSelected('service_event');
     setDrawerOpen(false);
-    requestAnimationFrame(() =>
-      canvasRef.current?.scrollTo({ left: 560, top: 220, behavior: 'smooth' }),
-    );
+    setZoom(1);
+    zoomStateRef.current = 1;
+    requestAnimationFrame(() => {
+      const table = byName.get('service_event');
+      const pos = next['service_event'];
+      if (table && pos) centerOnWorldPoint(pos.x + cardWidth / 2, pos.y + cardHeight(table) / 2, 1);
+      else centerOnWorldPoint(880, 820, 1);
+    });
+  };
+
+  const resetView = () => {
+    setZoom(1);
+    zoomStateRef.current = 1;
+    requestAnimationFrame(() => centerOnWorldPoint(880, 820, 1));
   };
 
   // Cubic Bezier curve path generator connecting table edges
@@ -620,6 +722,9 @@ export function Architecture() {
             <button type="button" className="np-topbar-btn" onClick={autoLayout}>
               Auto layout
             </button>
+            <button type="button" className="np-topbar-btn" onClick={resetView}>
+              Reset view
+            </button>
             <button
               type="button"
               className="np-topbar-btn"
@@ -639,10 +744,21 @@ export function Architecture() {
 
       {/* VIEW 1: RELATIONAL SCHEMA CANVAS (ERD) */}
       {mode === 'schema' && (
-        <div className="np-architecture-canvas" ref={canvasRef}>
+        <div
+          className={`np-architecture-canvas${isPanning ? ' is-panning' : ''}`}
+          ref={canvasRef}
+          onPointerDown={startPan}
+          onPointerMove={handlePanMove}
+          onPointerUp={endPan}
+          onPointerCancel={endPan}
+          style={{ backgroundPosition: `${pan.x % 24}px ${pan.y % 24}px` }}
+        >
+          <div
+            className="np-architecture-world"
+            style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
+          >
           <svg
             className="np-architecture-lines"
-            style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}
             viewBox="0 0 1760 1640"
             preserveAspectRatio="none"
             aria-hidden="true"
@@ -670,8 +786,6 @@ export function Architecture() {
               style={{
                 left: positions[table.name]?.x ?? 40,
                 top: positions[table.name]?.y ?? 48,
-                transform: `scale(${zoom})`,
-                transformOrigin: 'top left',
               }}
               onClick={() => {
                 setSelected(table.name);
@@ -716,16 +830,22 @@ export function Architecture() {
             </button>
           ))}
 
+          </div>
+
+          <div className="np-schema-pan-hint">
+            <span>✥ Drag background to pan · Scroll to move · Ctrl + scroll to zoom · Drag a table header to move it</span>
+          </div>
+
           {/* Canvas Zoom Controls */}
           <div className="np-schema-zoom">
-            <button type="button" onClick={() => setZoom((value) => Math.min(1.5, value + 0.1))}>
+            <button type="button" onClick={() => zoomAroundCenter(zoom + 0.1)}>
               +
             </button>
             <span>{Math.round(zoom * 100)}%</span>
-            <button type="button" onClick={() => setZoom((value) => Math.max(0.55, value - 0.1))}>
+            <button type="button" onClick={() => zoomAroundCenter(zoom - 0.1)}>
               −
             </button>
-            <button type="button" onClick={() => setZoom(1)}>
+            <button type="button" onClick={resetView}>
               Reset
             </button>
           </div>
@@ -964,7 +1084,7 @@ export function Architecture() {
                     gap: 12,
                     background: 'var(--bg-subtle)',
                     padding: 14,
-                    borderRadius: 6,
+                    borderRadius: 2,
                     border: '1px solid var(--line)',
                   }}
                 >

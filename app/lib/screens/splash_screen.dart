@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/np_brand.dart';
 import 'app_shell.dart';
+import 'role_selector_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/providers.dart';
 
-/// Nameplate Field splash/loading screen.
-class SplashScreen extends StatefulWidget {
+/// Nameplate Field splash/loading screen — gates on role selection.
+class SplashScreen extends ConsumerStatefulWidget {
   final Widget nextScreen;
   final Duration duration;
 
@@ -17,10 +20,10 @@ class SplashScreen extends StatefulWidget {
   });
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _SplashScreenState extends ConsumerState<SplashScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
@@ -52,10 +55,11 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _navigateNext() {
     if (!mounted) return;
+    final session = ref.read(fieldSessionProvider);
+    final target = session.hasSelectedRole ? widget.nextScreen : const RoleSelectorScreen();
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            widget.nextScreen,
+        pageBuilder: (context, animation, secondaryAnimation) => target,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: CurvedAnimation(

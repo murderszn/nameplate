@@ -8,7 +8,6 @@ import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
 import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
-import '../../widgets/field_workflow_triptych.dart';
 import 'tag_studio_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -40,6 +39,12 @@ class SettingsScreen extends ConsumerWidget {
             onPickTech: () => _pickTech(context, ref, session),
             onPickProperties: () => _pickProperties(context, ref, session),
           ),
+
+          // ── Role — Renter vs Tech (same binary) ───────────────────────────
+          const _FullBleedSectionHeader(
+            title: 'Signed-in role — same app, different scope',
+          ),
+          _RoleSwitchTile(session: session),
 
           // ── Telemetry Ribbon: Sync & Network Status ────────────────────────
           _SyncTelemetryRibbon(
@@ -139,12 +144,6 @@ class SettingsScreen extends ConsumerWidget {
             ...session.outbox.take(8).map((op) => _OutboxTile(op: op)),
           ],
 
-          // ── Field Operating Standard ──────────────────────────────────────
-          const _FullBleedSectionHeader(
-            title: 'Field operating standard',
-          ),
-          const FieldMissionBanner(),
-
           // ── Device & App Diagnostics ───────────────────────────────────────
           const _FullBleedSectionHeader(
             title: 'Device telemetry & app runtime',
@@ -162,7 +161,6 @@ class SettingsScreen extends ConsumerWidget {
             accentColor: NpColors.red,
             title: 'About Nameplate Field',
             subtitle: 'Scan it. Trace it. Account for it.',
-            onTap: () => showFieldWorkflowSheet(context),
           ),
         ],
       ),
@@ -545,67 +543,56 @@ class _FullBleedTile extends StatelessWidget {
   final Color accentColor;
   final String title;
   final String? subtitle;
-  final VoidCallback? onTap;
 
   const _FullBleedTile({
     required this.icon,
     required this.accentColor,
     required this.title,
     this.subtitle,
-    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: context.npColors.bgCard,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border(
-              left: BorderSide(color: accentColor, width: 3.5),
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(color: accentColor, width: 3.5),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              Icon(icon, color: accentColor, size: 20),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Icon(icon, color: accentColor, size: 20),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: context.npColors.white,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 3),
                     Text(
-                      title,
+                      subtitle!,
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: context.npColors.white,
+                        fontSize: 12,
+                        color: context.npColors.gray400,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    if (subtitle != null) ...[
-                      const SizedBox(height: 3),
-                      Text(
-                        subtitle!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: context.npColors.gray400,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
-              if (onTap != null)
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 12,
-                  color: context.npColors.gray400,
-                ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -802,6 +789,144 @@ class _TagStudioBanner extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── Role Switch — same binary for renters & techs ───────────────────────────
+
+class _RoleSwitchTile extends ConsumerWidget {
+  final FieldSession session;
+  const _RoleSwitchTile({required this.session});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isRenter = session.isRenter;
+    return Container(
+      decoration: BoxDecoration(
+        color: context.npColors.bgCard,
+        border: Border(
+          left: BorderSide(
+            color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
+            width: 3.5,
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isRenter ? Icons.home_outlined : Icons.engineering_outlined,
+                color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
+                size: 20,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                isRenter ? 'Renter — Unit 214' : 'Technician',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: context.npColors.white,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: (isRenter ? const Color(0xFF0EA5E9) : NpColors.red)
+                      .withValues(alpha: 0.12),
+                  border: Border.all(
+                    color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
+                  ),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                child: Text(
+                  isRenter ? 'RENTER' : 'TECH',
+                  style: NpType.mono.copyWith(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    color: isRenter ? const Color(0xFF0EA5E9) : NpColors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            isRenter
+                ? 'Scan tags already in your unit, check work-order status, or file a new request against an identified nameplate.'
+                : 'Full field toolkit — any tag, any unit, turns, harvest, and offline ledger.',
+            style: TextStyle(
+              fontSize: 12,
+              color: context.npColors.gray400,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: isRenter
+                      ? null
+                      : () {
+                          ref
+                              .read(fieldSessionProvider)
+                              .setRole(AppRole.renter, unitId: 'unit-214');
+                        },
+                  icon: const Icon(Icons.home_outlined, size: 16),
+                  label: const Text('I’m a renter'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: context.npColors.white,
+                    side: BorderSide(
+                      color: isRenter
+                          ? NpColors.red
+                          : context.npColors.lineStrong,
+                    ),
+                    backgroundColor: isRenter
+                        ? NpColors.red.withValues(alpha: 0.12)
+                        : Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: !isRenter
+                      ? null
+                      : () {
+                          ref
+                              .read(fieldSessionProvider)
+                              .setRole(AppRole.technician);
+                        },
+                  icon: const Icon(Icons.engineering_outlined, size: 16),
+                  label: const Text('I’m a tech'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: context.npColors.white,
+                    side: BorderSide(
+                      color: !isRenter
+                          ? NpColors.red
+                          : context.npColors.lineStrong,
+                    ),
+                    backgroundColor: !isRenter
+                        ? NpColors.red.withValues(alpha: 0.12)
+                        : Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

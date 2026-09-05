@@ -289,7 +289,7 @@ export function Settings() {
                 </div>
 
                 {/* Visual Progress Bar */}
-                <div style={{ height: 6, background: 'var(--bg-elevated)', borderRadius: 999, overflow: 'hidden', marginTop: 8 }}>
+                <div style={{ height: 6, background: 'var(--bg-elevated)', borderRadius: 2, overflow: 'hidden', marginTop: 8 }}>
                   <div
                     style={{
                       height: '100%',

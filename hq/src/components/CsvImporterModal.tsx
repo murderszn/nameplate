@@ -313,7 +313,7 @@ export const CsvImporterModal: React.FC<CsvImporterModalProps> = ({
         style={{
           background: 'var(--bg-card)',
           border: '1px solid var(--line-strong)',
-          borderRadius: 4,
+          borderRadius: 2,
           width: 'min(980px, 96vw)',
           maxHeight: '92vh',
           display: 'flex',
@@ -404,7 +404,7 @@ export const CsvImporterModal: React.FC<CsvImporterModalProps> = ({
           <div
             style={{
               border: '2px dashed var(--line-strong)',
-              borderRadius: 4,
+              borderRadius: 2,
               padding: '28px 20px',
               textAlign: 'center',
               background: 'var(--bg-subtle)',

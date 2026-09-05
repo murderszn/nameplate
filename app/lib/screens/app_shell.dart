@@ -10,19 +10,21 @@ import 'scan/scan_screen.dart';
 import 'settings/settings_screen.dart';
 import 'turn/turns_screen.dart';
 import 'workorder/work_orders_screen.dart';
+import 'role_selector_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/providers.dart';
 
 /// Root shell: adaptive navigation across the field app's core V0 flows
-/// (v0-scope.md §1.1).
-/// On tablets, renders an HQ-style side rail. On phones, a bottom NavigationBar.
-class AppShell extends StatefulWidget {
+/// (v0-scope.md §1.1). Now role-aware: tech → full toolkit, renter → scan + status + report.
+class AppShell extends ConsumerStatefulWidget {
   final int initialIndex;
   const AppShell({super.key, this.initialIndex = 0});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends ConsumerState<AppShell> {
   late int _index;
 
   @override
@@ -31,35 +33,58 @@ class _AppShellState extends State<AppShell> {
     _index = widget.initialIndex;
   }
 
-  static const _screens = [
-    ScanScreen(),
-    WorkOrdersScreen(),
-    TurnsScreen(),
-    SettingsScreen(),
-  ];
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // If no role chosen yet, push selector (web direct launch bypasses splash).
+    final session = ref.read(fieldSessionProvider);
+    if (!session.hasSelectedRole) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !session.hasSelectedRole) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const RoleSelectorScreen()),
+          );
+        }
+      });
+    }
+  }
 
-  static const _destinations = [
-    (
-      icon: Icons.qr_code_scanner_outlined,
-      activeIcon: Icons.qr_code_scanner,
-      label: 'Scan',
-    ),
-    (
-      icon: Icons.assignment_outlined,
-      activeIcon: Icons.assignment,
-      label: 'Orders',
-    ),
-    (
-      icon: Icons.checklist_outlined,
-      activeIcon: Icons.checklist,
-      label: 'Turns',
-    ),
-    (
-      icon: Icons.settings_outlined,
-      activeIcon: Icons.settings,
-      label: 'Settings',
-    ),
-  ];
+  // Tech: full field toolkit. Renter: scan + requests + appliances against identified nameplates.
+  List<Widget> get _screens {
+    final session = ref.watch(fieldSessionProvider);
+    if (session.isRenter) {
+      return const [
+        ScanScreen(),
+        WorkOrdersScreen(), // auto-filtered via visibleWorkOrders → renterWorkOrders
+        _RenterAppliancesScreen(),
+        SettingsScreen(),
+      ];
+    }
+    return const [
+      ScanScreen(),
+      WorkOrdersScreen(),
+      TurnsScreen(),
+      SettingsScreen(),
+    ];
+  }
+
+  List<({IconData icon, IconData activeIcon, String label})> get _destinations {
+    final session = ref.watch(fieldSessionProvider);
+    if (session.isRenter) {
+      return const [
+        (icon: Icons.qr_code_scanner_outlined, activeIcon: Icons.qr_code_scanner, label: 'Scan'),
+        (icon: Icons.receipt_long_outlined, activeIcon: Icons.receipt_long, label: 'Requests'),
+        (icon: Icons.kitchen_outlined, activeIcon: Icons.kitchen, label: 'Appliances'),
+        (icon: Icons.settings_outlined, activeIcon: Icons.settings, label: 'Settings'),
+      ];
+    }
+    return const [
+      (icon: Icons.qr_code_scanner_outlined, activeIcon: Icons.qr_code_scanner, label: 'Scan'),
+      (icon: Icons.assignment_outlined, activeIcon: Icons.assignment, label: 'Orders'),
+      (icon: Icons.checklist_outlined, activeIcon: Icons.checklist, label: 'Turns'),
+      (icon: Icons.settings_outlined, activeIcon: Icons.settings, label: 'Settings'),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -366,6 +391,103 @@ class _BottomBarItem extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RenterAppliancesScreen extends ConsumerWidget {
+  const _RenterAppliancesScreen();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final session = ref.watch(fieldSessionProvider);
+    final assets = session.renterAssets;
+    if (assets.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('My Appliances')),
+        body: Center(
+          child: Text('No appliances found for your unit.', style: TextStyle(color: context.npColors.gray400)),
+        ),
+      );
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Appliances'),
+        centerTitle: false,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(32),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'UNIT 214 · SCOTTSDALE VISTA — ${assets.length} NAMEPLATES',
+                style: NpType.mono.copyWith(fontSize: 10, color: context.npColors.gray500, fontWeight: FontWeight.w700, letterSpacing: 0.8),
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        itemCount: assets.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (context, i) {
+          final a = assets[i];
+          return Container(
+            decoration: BoxDecoration(
+              color: context.npColors.bgCard,
+              border: Border.all(color: context.npColors.line),
+              borderRadius: BorderRadius.circular(2),
+            ),
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: context.npColors.bgElevated,
+                    border: Border.all(color: context.npColors.lineLight),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: Icon(Icons.kitchen_outlined, size: 20, color: context.npColors.gray400),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(a.categoryDisplayName, style: TextStyle(color: context.npColors.white, fontSize: 14, fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 2),
+                      Text('${a.manufacturer ?? ''} ${a.modelNumber ?? ''}'.trim(), style: TextStyle(color: context.npColors.gray400, fontSize: 11)),
+                      const SizedBox(height: 4),
+                      Text(a.npid, style: NpType.mono.copyWith(fontSize: 11, color: NpColors.red, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: () {
+                    // File work order against already-identified nameplate.
+                    final woId = 'WO-RT-${DateTime.now().millisecondsSinceEpoch % 10000}';
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Request $woId filed for ${a.npid} — we’ll keep you updated.')),
+                    );
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: context.npColors.white,
+                    foregroundColor: context.npColors.bg,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+                  ),
+                  child: const Text('Report', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

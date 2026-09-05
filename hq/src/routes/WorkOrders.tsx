@@ -311,7 +311,7 @@ export function WorkOrders() {
                     style={{
                       width: 8,
                       height: 8,
-                      borderRadius: 1,
+                      borderRadius: 2,
                       background: col.color,
                       boxShadow: `0 0 6px ${col.color}`,
                     }}
@@ -349,7 +349,7 @@ export function WorkOrders() {
                       style={{
                         background: 'var(--bg-card)',
                         border: isUrgent ? '1px solid rgba(235, 43, 43, 0.45)' : '1px solid var(--line)',
-                        borderRadius: 6,
+                        borderRadius: 2,
                         padding: 12,
                         cursor: 'pointer',
                         display: 'flex',
@@ -382,7 +382,7 @@ export function WorkOrders() {
                                 background: 'var(--bg-subtle)',
                                 border: '1px solid var(--line)',
                                 padding: '2px 5px',
-                                borderRadius: 3,
+                                borderRadius: 2,
                                 color: 'var(--gray-500)',
                               }}
                             >
@@ -395,7 +395,7 @@ export function WorkOrders() {
                               fontWeight: 700,
                               textTransform: 'uppercase',
                               padding: '2px 6px',
-                              borderRadius: 3,
+                              borderRadius: 2,
                               background: isUrgent ? 'rgba(235, 43, 43, 0.12)' : 'var(--bg-subtle)',
                               color: isUrgent ? 'var(--red)' : 'var(--gray-500)',
                               border: isUrgent ? '1px solid rgba(235, 43, 43, 0.35)' : '1px solid var(--line)',
@@ -571,7 +571,7 @@ export function WorkOrders() {
                     fontSize: '0.72rem',
                     textTransform: 'uppercase',
                     padding: '2px 8px',
-                    borderRadius: 4,
+                    borderRadius: 2,
                     background: 'rgba(var(--overlay-rgb), 0.1)',
                     color: 'var(--white)',
                     fontWeight: 700,
@@ -703,7 +703,7 @@ export function WorkOrders() {
                   style={{
                     background: 'var(--bg-elevated)',
                     border: '1px solid var(--line)',
-                    borderRadius: 4,
+                    borderRadius: 2,
                     padding: 14,
                     fontSize: '0.88rem',
                     lineHeight: 1.5,
@@ -729,7 +729,7 @@ export function WorkOrders() {
                           border: '1px solid rgba(235, 43, 43, 0.3)',
                           color: 'var(--red)',
                           padding: '4px 10px',
-                          borderRadius: 3,
+                          borderRadius: 2,
                           fontSize: '0.78rem',
                           fontWeight: 600,
                         }}
@@ -757,7 +757,7 @@ export function WorkOrders() {
                       style={{
                         background: 'var(--bg-elevated)',
                         border: '1px solid var(--line)',
-                        borderRadius: 4,
+                        borderRadius: 2,
                         padding: '10px 14px',
                         display: 'flex',
                         flexDirection: 'column',
@@ -973,7 +973,7 @@ export function WorkOrders() {
                 <button
                   type="submit"
                   disabled={saving || !newProperty}
-                  style={{ background: 'var(--np-plate-600)', border: 'none', color: '#ffffff', borderRadius: 8, padding: '9px 20px', fontWeight: 700, cursor: 'pointer', opacity: saving || !newProperty ? 0.6 : 1 }}
+                  style={{ background: 'var(--np-plate-600)', border: 'none', color: '#ffffff', borderRadius: 2, padding: '9px 20px', fontWeight: 700, cursor: 'pointer', opacity: saving || !newProperty ? 0.6 : 1 }}
                 >
                   {saving ? 'Creating…' : 'Create Work Order'}
                 </button>
