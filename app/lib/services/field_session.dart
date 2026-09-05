@@ -10,6 +10,8 @@ import '../models/work_order.dart';
 import 'npid.dart';
 import 'sync_status_service.dart';
 
+const String apiBaseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:8080/api');
+
 enum AppRole { technician, renter }
 
 class FieldTech {
@@ -252,31 +254,49 @@ class FieldSession extends ChangeNotifier {
 
     try {
       final unsynced = outbox.where((o) => !o.synced).toList();
+      final batchId = 'batch_${DateTime.now().millisecondsSinceEpoch}';
+
+      final operations = unsynced.map((o) {
+        final isAsset = o.type == 'mint_tag' || o.type.contains('asset');
+        final isWo = o.type.contains('work_order');
+        final entityType = isAsset ? 'asset' : (isWo ? 'work_order' : 'service_event');
+
+        return {
+          'opId': o.id,
+          'entityType': entityType,
+          'entityId': o.id,
+          'opType': 'create',
+          'occurredAt': o.occurredAt.toUtc().toIso8601String(),
+          'payload': {
+            'id': o.id,
+            'type': o.type,
+            'summary': o.summary,
+            'deviceId': deviceId,
+          },
+        };
+      }).toList();
+
       final body = jsonEncode({
+        'batchId': batchId,
         'deviceId': deviceId,
-        'clientTimestamp': DateTime.now().toUtc().toIso8601String(),
-        'payloadHash': 'hash_${DateTime.now().microsecondsSinceEpoch}',
+        'operations': operations,
         'events': unsynced.map((o) => {'id': o.id, 'type': o.type, 'summary': o.summary}).toList(),
-        'assets': [],
       });
 
-      final uri = Uri.parse('http://localhost:8080/api/sync/push');
+      final uri = Uri.parse('$apiBaseUrl/sync/push');
       final response = await http.post(
         uri,
         headers: {'Content-Type': 'application/json'},
         body: body,
-      ).timeout(const Duration(seconds: 4));
+      ).timeout(const Duration(seconds: 5));
 
-      if (response.statusCode == 200) {
-        for (final op in outbox) {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        for (final op in unsynced) {
           op.synced = true;
         }
       }
     } catch (_) {
-      // Offline fallback: mark local batch processed
-      for (final op in outbox) {
-        op.synced = true;
-      }
+      // Offline fallback: keep unsynced items in outbox pending network reconnect
     }
 
     // Refill offline allocation pool to 500 tags on sync

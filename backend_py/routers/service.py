@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from ..database import get_db
 from .. import models, schemas
+from ..supabase_sync import sync_service_event_to_supabase
 
 router = APIRouter(prefix="", tags=["Service Events"])
 
@@ -151,6 +152,21 @@ def create_service_event(
         asset.status = "active"
 
     db.commit()
+
+    try:
+        sync_service_event_to_supabase({
+            "id": event.id,
+            "asset_id": event.asset_id,
+            "work_order_id": event.work_order_id,
+            "property_id": event.property_id,
+            "unit_id": event.unit_id,
+            "technician_id": event.technician_id,
+            "event_type": event.event_type,
+            "findings": event.findings,
+            "occurred_at": occurred_at.isoformat() if hasattr(occurred_at, "isoformat") else str(occurred_at),
+        })
+    except Exception as e:
+        print(f"[Supabase Sync] Warning on service event: {e}")
 
     reloaded = (
         db.query(models.ServiceEvent)

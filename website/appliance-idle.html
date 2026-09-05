@@ -72,6 +72,13 @@ main{
   align-items:flex-start;
 }
 
+.intro-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:12px;
+}
+
 .brand-mark{
   width:clamp(96px,10vw,140px);
   height:auto;
@@ -81,43 +88,43 @@ main{
   opacity:.94;
 }
 
-/* Claude FM Radio Deck */
+/* Claude FM Radio Deck (Containerless Telemetry Strip) */
 .radio-deck{
   display:flex;
   align-items:center;
-  gap:14px;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--hair);
-  padding:8px 14px;
-  border-radius:4px;
-  backdrop-filter:blur(6px);
-  transition:border-color .2s,background .2s,box-shadow .2s;
+  gap:12px;
+  background:none;
+  border:none;
+  padding:0;
+  border-radius:0;
+  backdrop-filter:none;
+  box-shadow:none;
 }
 .radio-deck.playing{
-  border-color:rgba(237,48,48,.45);
-  background:rgba(237,48,48,.06);
-  box-shadow:0 0 20px rgba(237,48,48,.15);
+  border:none;
+  background:none;
+  box-shadow:none;
 }
 .radio-meta{
   display:flex;
-  flex-direction:column;
-  gap:2px;
+  align-items:center;
+  gap:8px;
 }
 .radio-pill{
-  display:flex;
+  display:inline-flex;
   align-items:center;
   gap:6px;
-  font-size:8px;
-  letter-spacing:.16em;
+  font-size:9px;
+  letter-spacing:.15em;
   color:var(--muted);
   font-weight:700;
 }
 .radio-led{
-  width:6px;
-  height:6px;
+  width:5px;
+  height:5px;
   border-radius:50%;
   background:#444;
-  transition:background .2s;
+  transition:background .2s,box-shadow .2s;
 }
 .radio-deck.playing .radio-led{
   background:var(--red);
@@ -127,7 +134,16 @@ main{
 .radio-freq{
   font-size:9px;
   letter-spacing:.14em;
+  color:var(--muted);
+  transition:color .2s;
+}
+.radio-deck.playing .radio-freq{
   color:var(--paper);
+}
+.radio-sep{
+  color:rgba(255,255,255,.2);
+  font-size:9px;
+  user-select:none;
 }
 .radio-controls{
   display:flex;
@@ -135,45 +151,50 @@ main{
   align-items:center;
 }
 .radio-btn{
-  background:rgba(255,255,255,.08);
-  border:1px solid var(--hair);
+  background:none;
+  border:none;
   color:var(--paper);
   font-family:var(--mono);
   font-size:9px;
   letter-spacing:.14em;
-  padding:6px 12px;
-  border-radius:2px;
+  padding:2px 4px;
   cursor:pointer;
-  transition:all .18s;
+  transition:color .18s,text-shadow .18s;
   outline:none;
 }
 .radio-btn:hover{
-  background:rgba(255,255,255,.16);
-  border-color:rgba(255,255,255,.3);
+  color:var(--red);
 }
 .radio-deck.playing #radio-toggle{
-  background:var(--red);
-  border-color:var(--red);
-  color:#fff;
-  box-shadow:0 0 12px rgba(237,48,48,.4);
+  background:none;
+  border:none;
+  color:var(--red);
+  font-weight:700;
+  box-shadow:none;
+  text-shadow:0 0 10px rgba(237,48,48,.5);
 }
 .radio-btn--sub{
   color:var(--muted);
 }
+.radio-btn--sub:hover{
+  color:var(--paper);
+}
 .radio-btn--sub.active{
   color:var(--red);
-  border-color:var(--red);
+  border:none;
+  font-weight:700;
+  text-shadow:0 0 10px rgba(237,48,48,.5);
 }
 .radio-eq{
   display:flex;
-  gap:2.5px;
+  gap:2px;
   align-items:flex-end;
-  height:14px;
+  height:12px;
 }
 .radio-eq span{
-  width:2.5px;
+  width:2px;
   height:3px;
-  background:var(--muted);
+  background:#444;
   border-radius:1px;
   transition:height .2s,background .2s;
 }
@@ -402,6 +423,7 @@ main{
   body{overflow:auto}
   main{height:auto;min-height:100vh;padding:24px 16px}
   .intro{flex-direction:column;gap:18px;align-items:flex-start}
+  .intro-right{align-items:flex-start;width:100%;gap:14px}
   .intro h1{text-align:left;font-size:32px}
   .grid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(5,180px)}
   .cell{border-right:1px solid var(--hair)!important;border-bottom:1px solid var(--hair)!important}
@@ -416,7 +438,11 @@ main{
   <section class="intro">
     <div class="intro-left">
       <img class="brand-mark" src="images/nameplate-logo-transparent.png" alt="Nameplate">
-      
+    </div>
+
+    <div class="intro-right">
+      <h1>Everything working.<br><em>Nothing ordinary.</em></h1>
+
       <!-- Claude FM Radio Deck -->
       <div class="radio-deck" id="radio-deck">
         <div class="radio-meta">
@@ -424,20 +450,20 @@ main{
             <i class="radio-led"></i>
             <span id="radio-status">RADIO STANDBY</span>
           </span>
+          <span class="radio-sep" aria-hidden="true">·</span>
           <span class="radio-freq">CLAUDE FM // LIVE RADIO</span>
         </div>
-        <div class="radio-eq" id="radio-eq">
+        <span class="radio-sep" aria-hidden="true">·</span>
+        <div class="radio-eq" id="radio-eq" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span>
         </div>
+        <span class="radio-sep" aria-hidden="true">·</span>
         <div class="radio-controls">
           <button type="button" class="radio-btn" id="radio-toggle" title="Toggle Lo-Fi Radio (Key: M)">▶ TUNE IN</button>
+          <span class="radio-sep" aria-hidden="true">·</span>
           <button type="button" class="radio-btn radio-btn--sub" id="video-toggle" title="Toggle Mini Video Monitor (Key: V)">◰ VIDEO</button>
         </div>
       </div>
-    </div>
-
-    <div>
-      <h1>Everything working.<br><em>Nothing ordinary.</em></h1>
     </div>
   </section>
 

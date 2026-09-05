@@ -1813,11 +1813,10 @@ html[data-theme="light"] .btn-ghost:hover {
 .tag-stage-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
   width: 100%;
   max-width: 560px;
-  margin: 0 auto 14px;
+  margin: 0 auto 16px;
 }
 
 .tag-stage-toggle {
@@ -1838,11 +1837,11 @@ html[data-theme="light"] .btn-ghost:hover {
   border: 0;
   color: var(--gray-400);
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 6px 12px;
+  padding: 7px 16px;
   border-radius: var(--radius);
   cursor: pointer;
   transition: all 0.2s var(--ease);
@@ -1863,39 +1862,6 @@ html[data-theme="light"] .btn-ghost:hover {
   height: 6px;
   border-radius: 50%;
   background: currentColor;
-}
-
-.tag-rotate-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  color: var(--white);
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  padding: 7px 14px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.22s var(--ease);
-  box-sizing: border-box;
-}
-
-.tag-rotate-btn:hover {
-  border-color: var(--red);
-  color: var(--red);
-  background: var(--red-subtle);
-  transform: translateY(-1px);
-}
-
-.tag-rotate-btn .rotate-icon {
-  transition: transform 0.6s var(--ease);
-}
-
-.tag-rotate-btn:hover .rotate-icon {
-  transform: rotate(-180deg);
 }
 
 /* 3D Scene & Perspective Container */
@@ -1998,95 +1964,21 @@ html[data-theme="light"] .btn-ghost:hover {
   opacity: 1;
 }
 
-.tag-photo-bottom-bar {
-  position: absolute;
-  bottom: 12px;
-  right: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  z-index: 4;
-}
-
-.tag-photo-flip-back {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: 0.08em;
-  padding: 5px 12px;
-  background: var(--red);
-  border: 1px solid var(--red);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.2s var(--ease);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), 0 2px 8px rgba(197, 31, 45, 0.4);
-}
-
-.tag-photo-flip-back:hover {
-  background: var(--red-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8), 0 3px 10px rgba(197, 31, 45, 0.6);
-}
-
-/* Front card flip hint badge */
-.tag-card-flip-cue {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: var(--gray-300);
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  z-index: 6;
-  backdrop-filter: blur(4px);
-  transition: all 0.2s var(--ease);
-}
-
-.tag-card-flip-cue:hover {
-  border-color: var(--red);
-  color: #ffffff;
-  background: rgba(197, 31, 45, 0.25);
-  transform: translateY(-1px);
-}
-
-.tag-card-flip-cue .flip-cue-arrow {
-  color: var(--red);
-  font-size: 0.75rem;
-}
-
 @media (max-width: 600px) {
   .tag-stage-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    width: 100%;
+    margin-bottom: 12px;
   }
   .tag-stage-toggle {
     width: 100%;
-    justify-content: center;
+    display: flex;
+    justify-content: stretch;
   }
   .tag-toggle-btn {
     flex: 1;
     justify-content: center;
-    font-size: 0.62rem;
-    padding: 6px 8px;
-  }
-  .tag-rotate-btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .tag-photo-bottom-bar {
-    bottom: 10px;
-    right: 10px;
+    font-size: 0.64rem;
+    padding: 7px 10px;
   }
   .oversized-tag-card.oversized-tag-card--physical,
   .marketing-page .oversized-tag-card.oversized-tag-card--physical {

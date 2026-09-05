@@ -437,11 +437,12 @@ class SyncOpItem(CamelModel):
 
 
 class SyncPushRequest(CamelModel):
-    batch_id: str
+    batch_id: Optional[str] = None
     device_id: str
     user_id: Optional[str] = None
     org_id: Optional[str] = None
     operations: List[SyncOpItem] = Field(default_factory=list)
+    events: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
 
 
 class SyncOpResult(CamelModel):

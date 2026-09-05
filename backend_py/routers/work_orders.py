@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from ..database import get_db
 from .. import models, schemas
+from ..supabase_sync import sync_work_order_to_supabase
 
 router = APIRouter(prefix="", tags=["Work Orders"])
 
@@ -171,6 +172,21 @@ def create_work_order(payload: schemas.WorkOrderCreate, db: Session = Depends(ge
     db.commit()
 
     reloaded = get_work_order_query(db).filter(models.WorkOrder.id == wo.id).first()
+    try:
+        sync_work_order_to_supabase({
+            "id": wo.id,
+            "number": wo.number,
+            "title": wo.title,
+            "description": wo.description,
+            "status": wo.status,
+            "priority": wo.priority,
+            "property_id": wo.property_id,
+            "unit_id": wo.unit_id,
+            "asset_id": wo.asset_id,
+            "actual_cost": wo.actual_cost,
+        })
+    except Exception as e:
+        print(f"[Supabase Sync] Warning on work order create: {e}")
     return hydrate_work_order(reloaded)
 
 
@@ -200,6 +216,21 @@ def update_work_order(id: str, payload: schemas.WorkOrderUpdate, db: Session = D
     db.commit()
 
     reloaded = get_work_order_query(db).filter(models.WorkOrder.id == wo.id).first()
+    try:
+        sync_work_order_to_supabase({
+            "id": wo.id,
+            "number": wo.number,
+            "title": wo.title,
+            "description": wo.description,
+            "status": wo.status,
+            "priority": wo.priority,
+            "property_id": wo.property_id,
+            "unit_id": wo.unit_id,
+            "asset_id": wo.asset_id,
+            "actual_cost": wo.actual_cost,
+        })
+    except Exception as e:
+        print(f"[Supabase Sync] Warning on work order update: {e}")
     return hydrate_work_order(reloaded)
 
 
@@ -268,4 +299,19 @@ def update_work_order_status(
     db.commit()
 
     reloaded = get_work_order_query(db).filter(models.WorkOrder.id == wo.id).first()
+    try:
+        sync_work_order_to_supabase({
+            "id": wo.id,
+            "number": wo.number,
+            "title": wo.title,
+            "description": wo.description,
+            "status": wo.status,
+            "priority": wo.priority,
+            "property_id": wo.property_id,
+            "unit_id": wo.unit_id,
+            "asset_id": wo.asset_id,
+            "actual_cost": wo.actual_cost,
+        })
+    except Exception as e:
+        print(f"[Supabase Sync] Warning on status update: {e}")
     return hydrate_work_order(reloaded)

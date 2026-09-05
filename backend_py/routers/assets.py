@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from ..database import get_db
 from .. import models, schemas
 from ..qr_utils import mint_npid, normalize_crockford
+from ..supabase_sync import sync_asset_to_supabase
 
 router = APIRouter(prefix="", tags=["Assets"])
 
@@ -161,6 +162,23 @@ def create_asset(payload: schemas.AssetCreate, db: Session = Depends(get_db)):
     db.add(asset)
     db.commit()
 
+    try:
+        sync_asset_to_supabase({
+            "id": asset.id,
+            "npid": asset.npid,
+            "category_id": asset.category_id,
+            "manufacturer_raw": asset.manufacturer_raw,
+            "model_raw": asset.model_raw,
+            "serial_number": asset.serial_number,
+            "status": asset.status,
+            "condition": asset.condition,
+            "current_property_id": asset.current_property_id,
+            "current_unit_id": asset.current_unit_id,
+            "notes": asset.notes,
+        })
+    except Exception as e:
+        print(f"[Supabase Sync] Warning on asset create: {e}")
+
     return get_asset_query(db).filter(models.Asset.id == asset.id).first()
 
 
@@ -188,6 +206,23 @@ def update_asset(id: str, payload: schemas.AssetUpdate, db: Session = Depends(ge
     asset.updated_at = datetime.datetime.now(datetime.timezone.utc)
     db.commit()
 
+    try:
+        sync_asset_to_supabase({
+            "id": asset.id,
+            "npid": asset.npid,
+            "category_id": asset.category_id,
+            "manufacturer_raw": asset.manufacturer_raw,
+            "model_raw": asset.model_raw,
+            "serial_number": asset.serial_number,
+            "status": asset.status,
+            "condition": asset.condition,
+            "current_property_id": asset.current_property_id,
+            "current_unit_id": asset.current_unit_id,
+            "notes": asset.notes,
+        })
+    except Exception as e:
+        print(f"[Supabase Sync] Warning on asset update: {e}")
+
     return get_asset_query(db).filter(models.Asset.id == asset.id).first()
 
 
@@ -200,4 +235,17 @@ def delete_asset(id: str, db: Session = Depends(get_db)):
     asset.deleted_at = datetime.datetime.now(datetime.timezone.utc)
     asset.status = "disposed"
     db.commit()
+
+    try:
+        sync_asset_to_supabase({
+            "id": asset.id,
+            "npid": asset.npid,
+            "category_id": asset.category_id,
+            "status": "disposed",
+            "current_property_id": asset.current_property_id,
+            "current_unit_id": asset.current_unit_id,
+        })
+    except Exception as e:
+        print(f"[Supabase Sync] Warning on asset delete: {e}")
+
     return {"status": "success", "message": f"Asset {id} marked as disposed/deleted"}

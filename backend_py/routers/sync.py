@@ -5,6 +5,11 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from .. import models, schemas
+from ..supabase_sync import (
+    sync_asset_to_supabase,
+    sync_work_order_to_supabase,
+    sync_service_event_to_supabase,
+)
 
 router = APIRouter(prefix="", tags=["Sync"])
 
@@ -13,13 +18,31 @@ router = APIRouter(prefix="", tags=["Sync"])
 def push_sync_batch(payload: schemas.SyncPushRequest, db: Session = Depends(get_db)):
     device_id = payload.device_id
     user_id = payload.user_id
+    batch_id = payload.batch_id or f"batch_{int(datetime.datetime.now().timestamp() * 1000)}"
 
     applied_count = 0
     duplicate_count = 0
     rejected_count = 0
     results: List[schemas.SyncOpResult] = []
 
-    for op in payload.operations:
+    operations = list(payload.operations)
+    if not operations and payload.events:
+        for idx, evt in enumerate(payload.events):
+            evt_id = evt.get("id") or f"evt_{int(datetime.datetime.now().timestamp())}_{idx}"
+            evt_type = evt.get("type", "service_event")
+            entity_type = "asset" if evt_type == "mint_tag" else ("work_order" if "work_order" in evt_type else "service_event")
+            operations.append(
+                schemas.SyncOpItem(
+                    op_id=evt_id,
+                    entity_type=entity_type,
+                    entity_id=evt_id,
+                    op_type="create",
+                    payload=evt,
+                    occurred_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                )
+            )
+
+    for op in operations:
         # Check if already processed
         existing_op = db.query(models.SyncOp).filter(models.SyncOp.op_id == op.op_id).first()
         if existing_op:
@@ -55,12 +78,38 @@ def push_sync_batch(payload: schemas.SyncPushRequest, db: Session = Depends(get_
                         notes=p.get("notes"),
                     )
                     db.add(asset)
+                    sync_asset_to_supabase({
+                        "id": asset.id,
+                        "npid": asset.npid,
+                        "category_id": asset.category_id,
+                        "manufacturer_raw": asset.manufacturer_raw,
+                        "model_raw": asset.model_raw,
+                        "serial_number": asset.serial_number,
+                        "status": asset.status,
+                        "condition": asset.condition,
+                        "current_property_id": asset.current_property_id,
+                        "current_unit_id": asset.current_unit_id,
+                        "notes": asset.notes,
+                    })
                 elif op.op_type == "update" and op.entity_id:
                     asset = db.query(models.Asset).filter(models.Asset.id == op.entity_id).first()
                     if asset:
                         for k, v in p.items():
                             if hasattr(asset, k):
                                 setattr(asset, k, v)
+                        sync_asset_to_supabase({
+                            "id": asset.id,
+                            "npid": asset.npid,
+                            "category_id": asset.category_id,
+                            "manufacturer_raw": asset.manufacturer_raw,
+                            "model_raw": asset.model_raw,
+                            "serial_number": asset.serial_number,
+                            "status": asset.status,
+                            "condition": asset.condition,
+                            "current_property_id": asset.current_property_id,
+                            "current_unit_id": asset.current_unit_id,
+                            "notes": asset.notes,
+                        })
 
             elif op.entity_type == "service_event":
                 p = op.payload
@@ -72,17 +121,40 @@ def push_sync_batch(payload: schemas.SyncPushRequest, db: Session = Depends(get_
                     unit_id=p.get("unitId", p.get("unit_id")),
                     technician_id=p.get("technicianId", p.get("technician_id", "tech_morales")),
                     event_type=p.get("eventType", p.get("event_type", "maintenance")),
-                    findings=p.get("findings"),
+                    findings=p.get("findings") or p.get("summary") or "Field service activity",
                     labor_minutes=p.get("laborMinutes", p.get("labor_minutes", 30)),
                     labor_rate=p.get("laborRate", p.get("labor_rate", 65.0)),
                     total_cost=p.get("totalCost", p.get("total_cost", 0.0)),
                 )
                 db.add(event)
+                sync_service_event_to_supabase({
+                    "id": event.id,
+                    "asset_id": event.asset_id,
+                    "work_order_id": event.work_order_id,
+                    "property_id": event.property_id,
+                    "unit_id": event.unit_id,
+                    "technician_id": event.technician_id,
+                    "event_type": event.event_type,
+                    "findings": event.findings,
+                    "device_id": device_id,
+                })
+
+            elif op.entity_type == "work_order":
+                p = op.payload
+                sync_work_order_to_supabase({
+                    "id": op.entity_id or f"wo_{op.op_id[:8]}",
+                    "title": p.get("title") or p.get("summary") or "Field Work Order",
+                    "description": p.get("description"),
+                    "status": p.get("status", "open"),
+                    "property_id": p.get("propertyId", p.get("property_id", "prop_sonoran_ridge")),
+                    "unit_id": p.get("unitId", p.get("unit_id")),
+                    "asset_id": p.get("assetId", p.get("asset_id")),
+                })
 
             # Record sync operation
             sync_record = models.SyncOp(
                 op_id=op.op_id,
-                batch_id=payload.batch_id,
+                batch_id=batch_id,
                 device_id=device_id,
                 user_id=user_id,
                 entity_type=op.entity_type,
