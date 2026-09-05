@@ -476,3 +476,1103 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= View Toggle Buttons ================= */
+.hq-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.hq-view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 650;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--gray-400);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hq-view-toggle-btn:hover {
+  color: var(--white);
+}
+
+.hq-view-toggle-btn.is-active {
+  background: var(--bg-card);
+  color: var(--white);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--line);
+}
+
+/* ================= CapEx Summary KPI Tiles ================= */
+.hq-capex-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hq-capex-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  padding: 16px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.hq-capex-kpi-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.hq-capex-kpi-card__label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+
+.hq-capex-kpi-card__value {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.1;
+}
+
+.hq-capex-kpi-card__footnote {
+  font-size: 0.72rem;
+  color: var(--gray-400);
+  line-height: 1.35;
+}
+
+/* ================= CapEx Lifecycle & Age Band Scorecards ================= */
+.hq-lifecycle-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hq-lifecycle-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  padding: 18px 16px;
+  gap: 12px;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hq-lifecycle-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(var(--overlay-rgb), 0.06);
+}
+
+.hq-lifecycle-card--good {
+  border-top: 3px solid var(--np-verified-600);
+}
+.hq-lifecycle-card--good:hover {
+  border-color: rgba(22, 163, 74, 0.35);
+}
+
+.hq-lifecycle-card--warn {
+  border-top: 3px solid var(--np-caution-600);
+}
+.hq-lifecycle-card--warn:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.hq-lifecycle-card--danger {
+  border-top: 3px solid var(--red);
+}
+.hq-lifecycle-card--danger:hover {
+  border-color: rgba(235, 43, 43, 0.35);
+}
+
+.hq-lifecycle-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hq-lifecycle-card__tier {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+}
+
+.hq-lifecycle-card__badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hq-lifecycle-card__badge--good {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--np-verified-600);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+.hq-lifecycle-card__badge--warn {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--np-caution-600);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.hq-lifecycle-card__badge--danger {
+  background: rgba(235, 43, 43, 0.12);
+  color: var(--red);
+  border: 1px solid rgba(235, 43, 43, 0.25);
+}
+
+.hq-lifecycle-card__title {
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--white);
+  line-height: 1.25;
+}
+
+.hq-lifecycle-card__stat-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hq-lifecycle-card__value {
+  font-family: var(--font-mono);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+}
+
+.hq-lifecycle-card__pct {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gray-400);
+}
+
+.hq-lifecycle-card__desc {
+  font-size: 0.74rem;
+  color: var(--gray-400);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Unified Age Pipeline Bar */
+.hq-age-pipeline-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 14px;
+}
+
+.hq-age-pipeline-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.hq-age-pipeline-segment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.hq-age-pipeline-segment--good {
+  background: var(--np-verified-600);
+}
+.hq-age-pipeline-segment--subtle {
+  background: rgba(22, 163, 74, 0.55);
+}
+.hq-age-pipeline-segment--warn {
+  background: var(--np-caution-600);
+}
+.hq-age-pipeline-segment--danger {
+  background: var(--red);
+}
+
+.hq-age-pipeline-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--gray-400);
+}
+
+.hq-age-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hq-age-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ================= OEM Manufacturer Scorecards ================= */
+.hq-oem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 14px;
+}
+
+.hq-oem-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  padding: 16px;
+  gap: 12px;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hq-oem-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(var(--overlay-rgb), 0.06);
+}
+
+.hq-oem-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.hq-oem-card__brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hq-oem-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--white);
+  flex-shrink: 0;
+}
+
+.hq-oem-card__name {
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--white);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-oem-card__units-pill {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--gray-400);
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  padding: 4px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.hq-oem-card__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.hq-oem-card__bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--red);
+  transition: width 0.25s ease;
+}
+
+.hq-oem-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 10px;
+  margin: 0;
+}
+
+.hq-oem-card__metrics dt {
+  color: var(--gray-500);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.hq-oem-card__metrics dd {
+  color: var(--white);
+  font-size: 0.84rem;
+  font-weight: 650;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-oem-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  margin-top: auto;
+}
+
+/* ================= Lemon Appliance Scorecard Grid ================= */
+.hq-lemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.hq-lemon-scorecard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hq-lemon-scorecard:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(var(--overlay-rgb), 0.08);
+}
+
+.hq-lemon-scorecard--replace {
+  border-top: 3px solid var(--red);
+}
+
+.hq-lemon-scorecard--replace:hover {
+  border-color: rgba(235, 43, 43, 0.45);
+}
+
+.hq-lemon-scorecard--monitor {
+  border-top: 3px solid var(--np-caution-600);
+}
+
+.hq-lemon-scorecard--monitor:hover {
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.hq-lemon-scorecard__media {
+  position: relative;
+  height: 112px;
+  overflow: hidden;
+  background: var(--np-slate-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hq-lemon-scorecard__media img {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  opacity: 0.85;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+}
+
+.hq-lemon-scorecard__media-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.6) 100%);
+  pointer-events: none;
+}
+
+.hq-lemon-scorecard__verdict {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  text-transform: uppercase;
+}
+
+.hq-lemon-scorecard__verdict--replace {
+  background: var(--red);
+  color: #ffffff;
+}
+
+.hq-lemon-scorecard__verdict--monitor {
+  background: var(--np-caution-600);
+  color: #ffffff;
+}
+
+.hq-lemon-scorecard__npid {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.95);
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.hq-lemon-scorecard__npid:hover {
+  color: #ffffff;
+  border-color: var(--red);
+}
+
+.hq-lemon-scorecard__body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.hq-lemon-scorecard__head {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hq-lemon-scorecard__title {
+  color: var(--white);
+  font-size: 0.95rem;
+  font-weight: 750;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-lemon-scorecard__loc {
+  color: var(--gray-400);
+  font-size: 0.74rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-lemon-scorecard__repairs-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--red);
+  background: rgba(235, 43, 43, 0.08);
+  border: 1px solid rgba(235, 43, 43, 0.22);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.hq-lemon-scorecard__pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 2px rgba(235, 43, 43, 0.3);
+}
+
+.hq-lemon-scorecard__parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.hq-lemon-part-pill {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--gray-300);
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  padding: 2px 7px;
+  border-radius: 4px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-lemon-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.hq-lemon-meter__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-500);
+}
+
+.hq-lemon-meter__pct {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.hq-lemon-meter__pct--danger {
+  color: var(--red);
+}
+.hq-lemon-meter__pct--warn {
+  color: var(--np-caution-600);
+}
+
+.hq-lemon-meter__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.hq-lemon-meter__bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+.hq-lemon-meter__bar-fill--danger {
+  background: var(--red);
+}
+.hq-lemon-meter__bar-fill--warn {
+  background: var(--np-caution-600);
+}
+
+.hq-lemon-scorecard__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 10px;
+  margin: 0;
+}
+
+.hq-lemon-scorecard__metrics dt {
+  color: var(--gray-500);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.hq-lemon-scorecard__metrics dd {
+  color: var(--white);
+  font-size: 0.84rem;
+  font-weight: 650;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-lemon-scorecard__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-subtle);
+  margin-top: auto;
+}
+
+/* ================= OEM Reliability Matrix Cards ================= */
+.hq-oem-rel-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hq-oem-rel-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.hq-oem-rel-card:hover {
+  background: var(--bg-card);
+  border-color: var(--line-strong);
+  transform: translateX(2px);
+}
+
+.hq-oem-rel-card__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hq-grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 850;
+  flex-shrink: 0;
+}
+
+.hq-grade-badge--a {
+  background: rgba(22, 163, 74, 0.14);
+  color: var(--np-verified-600);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+}
+.hq-grade-badge--b {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--np-caution-600);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.hq-grade-badge--c {
+  background: rgba(235, 43, 43, 0.14);
+  color: var(--red);
+  border: 1px solid rgba(235, 43, 43, 0.3);
+}
+
+.hq-oem-rel-card__name {
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--white);
+  line-height: 1.2;
+}
+
+.hq-oem-rel-card__sub {
+  font-size: 0.72rem;
+  color: var(--gray-400);
+}
+
+.hq-oem-rel-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hq-oem-rel-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.hq-oem-rel-stat__lbl {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-500);
+}
+
+.hq-oem-rel-stat__val {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: var(--white);
+}
+
+/* ================= Audit & Telemetry Integrity Scorecards ================= */
+.hq-audit-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hq-audit-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  padding: 18px 16px;
+  gap: 12px;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hq-audit-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(var(--overlay-rgb), 0.06);
+}
+
+.hq-audit-card--good {
+  border-top: 3px solid var(--np-verified-600);
+}
+.hq-audit-card--good:hover {
+  border-color: rgba(22, 163, 74, 0.35);
+}
+
+.hq-audit-card--warn {
+  border-top: 3px solid var(--np-caution-600);
+}
+.hq-audit-card--warn:hover {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.hq-audit-card--danger {
+  border-top: 3px solid var(--red);
+}
+.hq-audit-card--danger:hover {
+  border-color: rgba(235, 43, 43, 0.35);
+}
+
+.hq-audit-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hq-audit-card__code {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+}
+
+.hq-audit-card__badge {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hq-audit-card__badge--good {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--np-verified-600);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+.hq-audit-card__badge--warn {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--np-caution-600);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.hq-audit-card__badge--danger {
+  background: rgba(235, 43, 43, 0.12);
+  color: var(--red);
+  border: 1px solid rgba(235, 43, 43, 0.25);
+}
+
+.hq-audit-card__value-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.hq-audit-card__value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 850;
+  color: var(--white);
+  line-height: 1;
+}
+
+.hq-audit-card__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.hq-audit-card__bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+.hq-audit-card__bar-fill--good {
+  background: var(--np-verified-600);
+}
+.hq-audit-card__bar-fill--warn {
+  background: var(--np-caution-600);
+}
+.hq-audit-card__bar-fill--danger {
+  background: var(--red);
+}
+
+.hq-audit-card__title {
+  font-size: 0.88rem;
+  font-weight: 750;
+  color: var(--white);
+  line-height: 1.25;
+}
+
+.hq-audit-card__desc {
+  font-size: 0.74rem;
+  color: var(--gray-400);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ================= Work Order SLA Velocity Scorecards ================= */
+.hq-sla-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hq-sla-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 14px;
+}
+
+.hq-sla-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  padding: 16px;
+  gap: 12px;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hq-sla-card:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(var(--overlay-rgb), 0.06);
+}
+
+.hq-sla-card--breached {
+  border-top: 3px solid var(--red);
+}
+.hq-sla-card--breached:hover {
+  border-color: rgba(235, 43, 43, 0.4);
+}
+
+.hq-sla-card--completed {
+  border-top: 3px solid var(--np-verified-600);
+}
+.hq-sla-card--completed:hover {
+  border-color: rgba(22, 163, 74, 0.4);
+}
+
+.hq-sla-card--active {
+  border-top: 3px solid var(--np-caution-600);
+}
+.hq-sla-card--active:hover {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.hq-sla-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hq-sla-card__wo-num {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.hq-sla-card__wo-num:hover {
+  color: var(--red);
+}
+
+.hq-priority-pill {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hq-priority-pill--emergency {
+  background: rgba(235, 43, 43, 0.15);
+  color: var(--red);
+  border: 1px solid rgba(235, 43, 43, 0.35);
+}
+.hq-priority-pill--urgent {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--np-caution-600);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+.hq-priority-pill--normal,
+.hq-priority-pill--low {
+  background: var(--bg-elevated);
+  color: var(--gray-400);
+  border: 1px solid var(--line);
+}
+
+.hq-sla-card__title {
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: var(--white);
+  line-height: 1.25;
+}
+
+.hq-sla-card__loc {
+  font-size: 0.74rem;
+  color: var(--gray-400);
+}
+
+.hq-sla-card__status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  gap: 8px;
+}
+
+.hq-sla-card__status-lbl {
+  font-size: 0.68rem;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.hq-sla-card__timeline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 10px;
+}
+
+.hq-sla-timeline-point {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hq-sla-timeline-point dt {
+  color: var(--gray-500);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.hq-sla-timeline-point dd {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--white);
+  margin: 0;
+}
+
+.hq-sla-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  margin-top: auto;
+}
+
+/* Responsive grid rules */
+@media (max-width: 1180px) {
+  .hq-lifecycle-grid,
+  .hq-audit-grid,
+  .hq-capex-kpi-grid,
+  .hq-sla-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hq-lifecycle-grid,
+  .hq-audit-grid,
+  .hq-capex-kpi-grid,
+  .hq-sla-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .hq-lemon-scorecard__media {
+    height: 120px;
+  }
+}
+

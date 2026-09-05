@@ -27,6 +27,24 @@ const csvCell = (value: unknown) => {
   return `"${safe.replaceAll('"', '""')}"`;
 };
 
+const getCategorySchematic = (cat?: string) => {
+  const c = (cat || '').toLowerCase();
+  if (c.includes('hvac') || c.includes('air') || c.includes('heat pump') || c.includes('condenser')) return './images/schematics/hvac.png';
+  if (c.includes('fridge') || c.includes('refrigerat')) return './images/schematics/fridge.png';
+  if (c.includes('wash') && !c.includes('dish')) return './images/schematics/washer.png';
+  if (c.includes('dryer')) return './images/schematics/dryer.png';
+  if (c.includes('dish')) return './images/schematics/dishwasher.png';
+  if (c.includes('micro')) return './images/schematics/microwave.png';
+  if (c.includes('thermo')) return './images/schematics/thermostat.png';
+  return './images/schematics/hvac.png';
+};
+
+const getInitials = (str: string) => {
+  const words = str.trim().split(/\s+/);
+  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return str.slice(0, 2).toUpperCase();
+};
+
 export function Analytics() {
   const [params, setParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -53,6 +71,9 @@ export function Analytics() {
   const [tab, setTab] = useState<Tab>(initialTab);
   const [propertyId, setPropertyId] = useState(params.get('property') || 'all');
   const [months, setMonths] = useState(MONTHS.includes(initialMonths || '') ? initialMonths! : '12');
+  const [lemonView, setLemonView] = useState<'cards' | 'table'>('cards');
+  const [oemView, setOemView] = useState<'cards' | 'table'>('cards');
+  const [slaView, setSlaView] = useState<'cards' | 'table'>('cards');
 
   useEffect(() => {
     let cancelled = false;
@@ -215,10 +236,19 @@ export function Analytics() {
     const openStatuses = new Set(['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_approval']);
     const openOrders = scope.scopedOrders.filter((w) => !w.completedAt && openStatuses.has(w.status));
 
+    const breachedOrders = scope.scopedOrders.filter((w) => {
+      return (
+        w.slaDueAt &&
+        ((w.completedAt && new Date(w.completedAt).getTime() > new Date(w.slaDueAt).getTime()) ||
+          (!w.completedAt && Date.now() > new Date(w.slaDueAt).getTime()))
+      );
+    });
+
     return {
       spend,
       slaRate,
       eligibleSlaCount: eligibleSla.length,
+      breachedOrdersCount: breachedOrders.length,
       unconfirmedCount: unconfirmed.length,
       pastLifeCount: pastLife.length,
       openOrdersCount: openOrders.length,
@@ -289,6 +319,10 @@ export function Analytics() {
       .map(([name, r]) => ({ name, ...r }))
       .sort((a, b) => b.spend - a.spend);
   }, [scope]);
+
+  const maxOemSpend = useMemo(() => {
+    return Math.max(...byManufacturer.map((m) => m.spend), 1);
+  }, [byManufacturer]);
 
   // Category mix for Donut chart
   const categoryMix = useMemo(() => {
@@ -776,6 +810,42 @@ export function Analytics() {
       {/* TAB 2: COST & CAPEX LIFECYCLE */}
       {tab === 'capex' && (
         <>
+          {/* CapEx Summary KPI Tiles */}
+          <div className="hq-capex-kpi-grid">
+            <div className="hq-capex-kpi-card">
+              <span className="hq-capex-kpi-card__label">Replacement Pipeline</span>
+              <span className="hq-capex-kpi-card__value mono">{metrics.pastLifeCount}</span>
+              <span className="hq-capex-kpi-card__footnote">
+                Assets exceeding OEM useful life benchmark
+              </span>
+            </div>
+            <div className="hq-capex-kpi-card">
+              <span className="hq-capex-kpi-card__label">Period Fleet Spend</span>
+              <span className="hq-capex-kpi-card__value mono">{money(metrics.spend)}</span>
+              <span className="hq-capex-kpi-card__footnote">
+                Last {months} months owner maintenance
+              </span>
+            </div>
+            <div className="hq-capex-kpi-card">
+              <span className="hq-capex-kpi-card__label">60-Day Bulk Savings</span>
+              <span className="hq-capex-kpi-card__value mono" style={{ color: 'var(--np-verified-600)' }}>
+                {money(metrics.pastLifeCount * 140)}
+              </span>
+              <span className="hq-capex-kpi-card__footnote">
+                18.5% bulk procurement savings vs emergency
+              </span>
+            </div>
+            <div className="hq-capex-kpi-card">
+              <span className="hq-capex-kpi-card__label">Avg Service Ticket</span>
+              <span className="hq-capex-kpi-card__value mono">
+                {money(scope.ownerEvents.length ? metrics.spend / scope.ownerEvents.length : 0)}
+              </span>
+              <span className="hq-capex-kpi-card__footnote">
+                Across {scope.ownerEvents.length} recorded service events
+              </span>
+            </div>
+          </div>
+
           {/* Spend progression chart */}
           <ChartCard
             title="Monthly Owner-Borne Maintenance Spend"
@@ -797,24 +867,130 @@ export function Analytics() {
               <span className="hq-status hq-status--warning">{metrics.pastLifeCount} units past useful life</span>
             </div>
 
-            <div style={{ display: 'grid', gap: 14, padding: '0 8px 16px' }}>
-              {ageBands.map(([label, count]) => (
-                <div key={label} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 280px) 1fr 60px', alignItems: 'center', gap: 16 }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--white)' }}>{label}</span>
-                  <div className="hq-bar-track">
-                    <div
-                      className={`hq-bar-fill ${label.includes('15+') ? '' : label.includes('10–14') ? 'hq-bar-fill--muted' : 'hq-bar-fill--green'}`}
-                      style={{
-                        width: `${scope.scopedAssets.length ? Math.max(count ? 3 : 0, (count / scope.scopedAssets.length) * 100) : 0}%`,
-                      }}
-                    />
-                  </div>
-                  <strong className="mono" style={{ textAlign: 'right', fontSize: '0.85rem' }}>{count}</strong>
+            {/* 4-Tier Lifecycle Scorecards */}
+            <div className="hq-lifecycle-grid">
+              <div className="hq-lifecycle-card hq-lifecycle-card--good">
+                <div className="hq-lifecycle-card__head">
+                  <span className="hq-lifecycle-card__tier">TIER 1</span>
+                  <span className="hq-lifecycle-card__badge hq-lifecycle-card__badge--good">Prime Life</span>
                 </div>
-              ))}
+                <strong className="hq-lifecycle-card__title">&lt; 5 Years</strong>
+                <div className="hq-lifecycle-card__stat-row">
+                  <span className="hq-lifecycle-card__value">{ageBands[0]?.[1] ?? 0}</span>
+                  <span className="hq-lifecycle-card__pct">
+                    {scope.scopedAssets.length ? Math.round(((ageBands[0]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}% fleet
+                  </span>
+                </div>
+                <p className="hq-lifecycle-card__desc">
+                  Under warranty or low failure window. Negligible component risk.
+                </p>
+              </div>
+
+              <div className="hq-lifecycle-card hq-lifecycle-card--good">
+                <div className="hq-lifecycle-card__head">
+                  <span className="hq-lifecycle-card__tier">TIER 2</span>
+                  <span className="hq-lifecycle-card__badge hq-lifecycle-card__badge--good">Mid-Life</span>
+                </div>
+                <strong className="hq-lifecycle-card__title">5–9 Years</strong>
+                <div className="hq-lifecycle-card__stat-row">
+                  <span className="hq-lifecycle-card__value">{ageBands[1]?.[1] ?? 0}</span>
+                  <span className="hq-lifecycle-card__pct">
+                    {scope.scopedAssets.length ? Math.round(((ageBands[1]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}% fleet
+                  </span>
+                </div>
+                <p className="hq-lifecycle-card__desc">
+                  Routine maintenance baseline. Standard consumable parts and minor adjustments.
+                </p>
+              </div>
+
+              <div className="hq-lifecycle-card hq-lifecycle-card--warn">
+                <div className="hq-lifecycle-card__head">
+                  <span className="hq-lifecycle-card__tier">TIER 3</span>
+                  <span className="hq-lifecycle-card__badge hq-lifecycle-card__badge--warn">Watchlist</span>
+                </div>
+                <strong className="hq-lifecycle-card__title">10–14 Years</strong>
+                <div className="hq-lifecycle-card__stat-row">
+                  <span className="hq-lifecycle-card__value">{ageBands[2]?.[1] ?? 0}</span>
+                  <span className="hq-lifecycle-card__pct">
+                    {scope.scopedAssets.length ? Math.round(((ageBands[2]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}% fleet
+                  </span>
+                </div>
+                <p className="hq-lifecycle-card__desc">
+                  Approaching useful life limit. Frequent board, pump, and valve replacements.
+                </p>
+              </div>
+
+              <div className="hq-lifecycle-card hq-lifecycle-card--danger">
+                <div className="hq-lifecycle-card__head">
+                  <span className="hq-lifecycle-card__tier">TIER 4</span>
+                  <span className="hq-lifecycle-card__badge hq-lifecycle-card__badge--danger">Cliff Risk</span>
+                </div>
+                <strong className="hq-lifecycle-card__title">15+ Years</strong>
+                <div className="hq-lifecycle-card__stat-row">
+                  <span className="hq-lifecycle-card__value">{ageBands[3]?.[1] ?? 0}</span>
+                  <span className="hq-lifecycle-card__pct">
+                    {scope.scopedAssets.length ? Math.round(((ageBands[3]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}% fleet
+                  </span>
+                </div>
+                <p className="hq-lifecycle-card__desc">
+                  Past manufacturer useful life. High risk of repair sinking funds and emergency failures.
+                </p>
+              </div>
             </div>
 
-            <div className="hq-banner">
+            {/* Visual Age Pipeline Multi-Segment Strip */}
+            <div className="hq-age-pipeline-strip">
+              <div className="hq-age-pipeline-bar" aria-label="Fleet Age Pipeline">
+                <div
+                  className="hq-age-pipeline-segment hq-age-pipeline-segment--good"
+                  style={{
+                    width: `${scope.scopedAssets.length ? ((ageBands[0]?.[1] ?? 0) / scope.scopedAssets.length) * 100 : 0}%`,
+                  }}
+                  title={`< 5 yrs: ${ageBands[0]?.[1] ?? 0} units`}
+                />
+                <div
+                  className="hq-age-pipeline-segment hq-age-pipeline-segment--subtle"
+                  style={{
+                    width: `${scope.scopedAssets.length ? ((ageBands[1]?.[1] ?? 0) / scope.scopedAssets.length) * 100 : 0}%`,
+                  }}
+                  title={`5–9 yrs: ${ageBands[1]?.[1] ?? 0} units`}
+                />
+                <div
+                  className="hq-age-pipeline-segment hq-age-pipeline-segment--warn"
+                  style={{
+                    width: `${scope.scopedAssets.length ? ((ageBands[2]?.[1] ?? 0) / scope.scopedAssets.length) * 100 : 0}%`,
+                  }}
+                  title={`10–14 yrs: ${ageBands[2]?.[1] ?? 0} units`}
+                />
+                <div
+                  className="hq-age-pipeline-segment hq-age-pipeline-segment--danger"
+                  style={{
+                    width: `${scope.scopedAssets.length ? ((ageBands[3]?.[1] ?? 0) / scope.scopedAssets.length) * 100 : 0}%`,
+                  }}
+                  title={`15+ yrs: ${ageBands[3]?.[1] ?? 0} units`}
+                />
+              </div>
+              <div className="hq-age-pipeline-legend">
+                <div className="hq-age-legend-item">
+                  <span className="hq-age-legend-dot" style={{ background: 'var(--np-verified-600)' }} />
+                  <span>&lt; 5 yrs: <strong>{ageBands[0]?.[1] ?? 0}</strong> ({scope.scopedAssets.length ? Math.round(((ageBands[0]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}%)</span>
+                </div>
+                <div className="hq-age-legend-item">
+                  <span className="hq-age-legend-dot" style={{ background: 'rgba(22, 163, 74, 0.55)' }} />
+                  <span>5–9 yrs: <strong>{ageBands[1]?.[1] ?? 0}</strong> ({scope.scopedAssets.length ? Math.round(((ageBands[1]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}%)</span>
+                </div>
+                <div className="hq-age-legend-item">
+                  <span className="hq-age-legend-dot" style={{ background: 'var(--np-caution-600)' }} />
+                  <span>10–14 yrs: <strong>{ageBands[2]?.[1] ?? 0}</strong> ({scope.scopedAssets.length ? Math.round(((ageBands[2]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}%)</span>
+                </div>
+                <div className="hq-age-legend-item">
+                  <span className="hq-age-legend-dot" style={{ background: 'var(--red)' }} />
+                  <span>15+ yrs: <strong>{ageBands[3]?.[1] ?? 0}</strong> ({scope.scopedAssets.length ? Math.round(((ageBands[3]?.[1] ?? 0) / scope.scopedAssets.length) * 100) : 0}%)</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="hq-banner" style={{ marginTop: 14 }}>
               💡 <strong>CapEx Recommendation:</strong> {metrics.pastLifeCount} assets have exceeded their manufacturer useful life benchmark. Bulk procurement orders placed 60 days in advance save an average of 18.5% over emergency unit replacements.
             </div>
           </section>
@@ -828,49 +1004,121 @@ export function Analytics() {
                   Cumulative maintenance expenditures grouped by equipment OEM.
                 </p>
               </div>
+              <div className="hq-view-toggle">
+                <button
+                  type="button"
+                  className={`hq-view-toggle-btn ${oemView === 'cards' ? 'is-active' : ''}`}
+                  onClick={() => setOemView('cards')}
+                >
+                  Scorecards
+                </button>
+                <button
+                  type="button"
+                  className={`hq-view-toggle-btn ${oemView === 'table' ? 'is-active' : ''}`}
+                  onClick={() => setOemView('table')}
+                >
+                  Table
+                </button>
+              </div>
             </div>
 
-            <div className="hq-table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Manufacturer</th>
-                    <th>Tracked Assets</th>
-                    <th>Service Events</th>
-                    <th>Owner Spend</th>
-                    <th>Avg Cost / Asset</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {byManufacturer.length ? (
-                    byManufacturer.map((r) => (
-                      <tr key={r.name}>
-                        <td><strong style={{ color: 'var(--white)' }}>{r.name}</strong></td>
-                        <td>{r.units}</td>
-                        <td>{r.events}</td>
-                        <td className="mono">{money(r.spend)}</td>
-                        <td className="mono">{money(r.units ? r.spend / r.units : 0)}</td>
-                        <td>
+            {oemView === 'cards' ? (
+              <div className="hq-oem-grid">
+                {byManufacturer.length ? (
+                  byManufacturer.map((r) => {
+                    const avgCost = r.units ? r.spend / r.units : 0;
+                    const spendPct = maxOemSpend > 0 ? (r.spend / maxOemSpend) * 100 : 0;
+                    return (
+                      <div key={r.name} className="hq-oem-card">
+                        <div className="hq-oem-card__head">
+                          <div className="hq-oem-card__brand-wrap">
+                            <span className="hq-oem-card__badge">{getInitials(r.name)}</span>
+                            <strong className="hq-oem-card__name" title={r.name}>{r.name}</strong>
+                          </div>
+                          <span className="hq-oem-card__units-pill mono">
+                            {r.units} {r.units === 1 ? 'unit' : 'units'}
+                          </span>
+                        </div>
+                        <div className="hq-oem-card__bar" aria-hidden="true">
+                          <div className="hq-oem-card__bar-fill" style={{ width: `${Math.max(spendPct ? 4 : 0, spendPct)}%` }} />
+                        </div>
+                        <dl className="hq-oem-card__metrics">
+                          <div>
+                            <dt>Total Spend</dt>
+                            <dd className="mono">{money(r.spend)}</dd>
+                          </div>
+                          <div>
+                            <dt>Service Events</dt>
+                            <dd className="mono">{r.events}</dd>
+                          </div>
+                          <div>
+                            <dt>Avg / Unit</dt>
+                            <dd className="mono">{money(avgCost)}</dd>
+                          </div>
+                        </dl>
+                        <div className="hq-oem-card__foot">
+                          <span className="mono" style={{ fontSize: '0.68rem', color: 'var(--gray-400)' }}>
+                            Share: {metrics.spend > 0 ? Math.round((r.spend / metrics.spend) * 100) : 0}% of spend
+                          </span>
                           <Link
-                            className="hq-text-link"
+                            className="hq-scorecard__link"
                             to={`/assets?manufacturer=${encodeURIComponent(r.name)}&property=${propertyId}&focus=active`}
                           >
                             Open Assets →
                           </Link>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div style={{ textAlign: 'center', padding: 24, color: 'var(--gray-400)', gridColumn: '1 / -1' }}>
+                    No manufacturer data in this scope.
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="hq-table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Manufacturer</th>
+                      <th>Tracked Assets</th>
+                      <th>Service Events</th>
+                      <th>Owner Spend</th>
+                      <th>Avg Cost / Asset</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {byManufacturer.length ? (
+                      byManufacturer.map((r) => (
+                        <tr key={r.name}>
+                          <td><strong style={{ color: 'var(--white)' }}>{r.name}</strong></td>
+                          <td>{r.units}</td>
+                          <td>{r.events}</td>
+                          <td className="mono">{money(r.spend)}</td>
+                          <td className="mono">{money(r.units ? r.spend / r.units : 0)}</td>
+                          <td>
+                            <Link
+                              className="hq-text-link"
+                              to={`/assets?manufacturer=${encodeURIComponent(r.name)}&property=${propertyId}&focus=active`}
+                            >
+                              Open Assets →
+                            </Link>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: 'var(--gray-400)' }}>
+                          No manufacturer data in this scope.
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: 'var(--gray-400)' }}>
-                        No manufacturer data in this scope.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         </>
       )}
@@ -890,14 +1138,143 @@ export function Analytics() {
                   Instantly answers the property manager requirement: identifies appliances with repeated part failures, compares repair spend vs replacement cost, and prevents sinking maintenance funds into unrecoverable units.
                 </p>
               </div>
-              <span className="hq-status hq-status--danger">
-                {lemonAppliances.length} High-Risk Units Flagged
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <span className="hq-status hq-status--danger">
+                  {lemonAppliances.length} High-Risk Units Flagged
+                </span>
+                <div className="hq-view-toggle">
+                  <button
+                    type="button"
+                    className={`hq-view-toggle-btn ${lemonView === 'cards' ? 'is-active' : ''}`}
+                    onClick={() => setLemonView('cards')}
+                  >
+                    Scorecards
+                  </button>
+                  <button
+                    type="button"
+                    className={`hq-view-toggle-btn ${lemonView === 'table' ? 'is-active' : ''}`}
+                    onClick={() => setLemonView('table')}
+                  >
+                    Table
+                  </button>
+                </div>
+              </div>
             </div>
 
             {lemonAppliances.length === 0 ? (
               <div className="hq-banner">
                 ✓ No appliances in the selected scope have recorded 2 or more repeat service events. Fleet reliability is optimal.
+              </div>
+            ) : lemonView === 'cards' ? (
+              <div className="hq-lemon-grid">
+                {lemonAppliances.map((l) => {
+                  const brand = l.asset.assetModel?.manufacturer || l.asset.manufacturerRaw || 'OEM';
+                  const model = l.asset.assetModel?.modelNumber || l.asset.modelRaw || '';
+                  const category = l.asset.category?.displayName || 'Appliance';
+                  const loc = l.asset.currentUnit
+                    ? `${l.asset.currentProperty?.name || 'Property'} · Unit ${l.asset.currentUnit.label}`
+                    : (l.asset.currentProperty?.name || 'Storage');
+                  const schematicImg = getCategorySchematic(category);
+                  const ratioPct = Math.min(100, Math.round(l.ratio * 100));
+                  const tone = l.verdict === 'replace' ? 'replace' : 'monitor';
+
+                  return (
+                    <div key={l.asset.id} className={`hq-lemon-scorecard hq-lemon-scorecard--${tone}`}>
+                      <div className="hq-lemon-scorecard__media">
+                        <img
+                          src={schematicImg}
+                          alt={category}
+                          onError={(e) => {
+                            e.currentTarget.src = './images/schematics/hvac.png';
+                          }}
+                        />
+                        <div className="hq-lemon-scorecard__media-overlay" />
+                        <span className={`hq-lemon-scorecard__verdict hq-lemon-scorecard__verdict--${tone}`}>
+                          {l.verdict === 'replace' ? 'Replace Recommended' : 'Monitor Circuit'}
+                        </span>
+                        <Link
+                          to={`/assets?q=${encodeURIComponent(l.asset.npid)}`}
+                          className="hq-lemon-scorecard__npid mono"
+                          title="Inspect Plate Telemetry"
+                        >
+                          {l.asset.npid}
+                        </Link>
+                      </div>
+                      <div className="hq-lemon-scorecard__body">
+                        <div className="hq-lemon-scorecard__head">
+                          <strong className="hq-lemon-scorecard__title" title={`${brand} ${model}`}>
+                            {brand} {model || category}
+                          </strong>
+                          <span className="hq-lemon-scorecard__loc">{loc}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                          <div className="hq-lemon-scorecard__repairs-alert">
+                            <span className="hq-lemon-scorecard__pulse-dot" />
+                            <span>{l.events.length} Repeat Repairs</span>
+                          </div>
+                          <span className="mono" style={{ fontSize: '0.7rem', color: 'var(--gray-400)' }}>
+                            {category}
+                          </span>
+                        </div>
+
+                        {l.replacedParts.length > 0 && (
+                          <div className="hq-lemon-scorecard__parts">
+                            {l.replacedParts.slice(0, 3).map((part, idx) => (
+                              <span key={idx} className="hq-lemon-part-pill" title={part}>
+                                {part}
+                              </span>
+                            ))}
+                            {l.replacedParts.length > 3 && (
+                              <span className="hq-lemon-part-pill" style={{ color: 'var(--gray-500)' }}>
+                                +{l.replacedParts.length - 3} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="hq-lemon-meter">
+                          <div className="hq-lemon-meter__head">
+                            <span>Spend / Replace Ratio</span>
+                            <span className={`hq-lemon-meter__pct mono ${ratioPct >= 50 ? 'hq-lemon-meter__pct--danger' : 'hq-lemon-meter__pct--warn'}`}>
+                              {ratioPct}%
+                            </span>
+                          </div>
+                          <div className="hq-lemon-meter__bar" aria-hidden="true">
+                            <div
+                              className={`hq-lemon-meter__bar-fill ${ratioPct >= 50 ? 'hq-lemon-meter__bar-fill--danger' : 'hq-lemon-meter__bar-fill--warn'}`}
+                              style={{ width: `${ratioPct}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <dl className="hq-lemon-scorecard__metrics">
+                          <div>
+                            <dt>Repairs Spend</dt>
+                            <dd className="mono" style={{ color: 'var(--red)' }}>{money(l.totalSpend)}</dd>
+                          </div>
+                          <div>
+                            <dt>Replace Quote</dt>
+                            <dd className="mono">{money(l.replacementEstimate)}</dd>
+                          </div>
+                          <div>
+                            <dt>Net Delta</dt>
+                            <dd className="mono">{money(l.replacementEstimate - l.totalSpend)}</dd>
+                          </div>
+                        </dl>
+                      </div>
+
+                      <div className="hq-lemon-scorecard__foot">
+                        <Link to={`/assets?q=${encodeURIComponent(l.asset.npid)}`} className="hq-scorecard__link">
+                          Inspect Lemon Profile →
+                        </Link>
+                        <span className="hq-scorecard__foot-meta mono">
+                          {l.events.length} Work Orders
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="hq-table-wrap">
@@ -978,49 +1355,38 @@ export function Analytics() {
                   <p className="hq-card-description">Telemetry benchmarks by manufacturer</p>
                 </div>
               </div>
-              <div className="hq-table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>OEM Brand</th>
-                      <th>Units</th>
-                      <th>Repairs</th>
-                      <th>Avg Incident</th>
-                      <th>Grade</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { brand: 'GE Appliances', units: 8, repairs: 2, avgCost: 88, grade: 'A' },
-                      { brand: 'Carrier HVAC', units: 4, repairs: 1, avgCost: 260, grade: 'A-' },
-                      { brand: 'Whirlpool', units: 10, repairs: 4, avgCost: 142, grade: 'B+' },
-                      { brand: 'Rheem Water Heating', units: 6, repairs: 2, avgCost: 115, grade: 'B' },
-                      { brand: 'Samsung', units: 4, repairs: 3, avgCost: 210, grade: 'C-' },
-                    ].map((b) => (
-                      <tr key={b.brand}>
-                        <td><strong>{b.brand}</strong></td>
-                        <td>{b.units}</td>
-                        <td>{b.repairs}</td>
-                        <td className="mono">${b.avgCost}</td>
-                        <td>
-                          <span
-                            className="hq-status"
-                            style={{
-                              background: b.grade.startsWith('A')
-                                ? 'var(--np-verified-100)'
-                                : b.grade.startsWith('B')
-                                ? 'rgba(235, 43, 43, 0.1)'
-                                : 'rgba(235, 43, 43, 0.2)',
-                              color: b.grade.startsWith('A') ? 'var(--np-verified-600)' : 'var(--red)',
-                            }}
-                          >
-                            Grade {b.grade}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="hq-oem-rel-grid">
+                {[
+                  { brand: 'GE Appliances', category: 'Major Kitchen & Laundry', units: 8, repairs: 2, avgCost: 88, grade: 'A', tone: 'a' },
+                  { brand: 'Carrier HVAC', category: 'Heat Pumps & Compressors', units: 4, repairs: 1, avgCost: 260, grade: 'A-', tone: 'a' },
+                  { brand: 'Whirlpool', category: 'Dishwashing & Ranges', units: 10, repairs: 4, avgCost: 142, grade: 'B+', tone: 'b' },
+                  { brand: 'Rheem Water Heating', category: 'Tankless & Hybrid Water', units: 6, repairs: 2, avgCost: 115, grade: 'B', tone: 'b' },
+                  { brand: 'Samsung', category: 'Smart French-Door & Laundry', units: 4, repairs: 3, avgCost: 210, grade: 'C-', tone: 'c' },
+                ].map((b) => (
+                  <div key={b.brand} className="hq-oem-rel-card">
+                    <div className="hq-oem-rel-card__brand">
+                      <span className={`hq-grade-badge hq-grade-badge--${b.tone}`}>{b.grade}</span>
+                      <div>
+                        <strong className="hq-oem-rel-card__name">{b.brand}</strong>
+                        <div className="hq-oem-rel-card__sub">{b.category}</div>
+                      </div>
+                    </div>
+                    <div className="hq-oem-rel-card__stats">
+                      <div className="hq-oem-rel-stat">
+                        <span className="hq-oem-rel-stat__lbl">Fleet Units</span>
+                        <span className="hq-oem-rel-stat__val">{b.units}</span>
+                      </div>
+                      <div className="hq-oem-rel-stat">
+                        <span className="hq-oem-rel-stat__lbl">Repairs</span>
+                        <span className="hq-oem-rel-stat__val">{b.repairs}</span>
+                      </div>
+                      <div className="hq-oem-rel-stat">
+                        <span className="hq-oem-rel-stat__lbl">Avg Ticket</span>
+                        <span className="hq-oem-rel-stat__val">${b.avgCost}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
           </div>
@@ -1041,28 +1407,144 @@ export function Analytics() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gap: 14, padding: '0 8px 16px' }}>
-              {coverage.map(([label, value]) => (
-                <div key={label} style={{ display: 'grid', gridTemplateColumns: 'minmax(220px, 300px) 1fr 60px', alignItems: 'center', gap: 16 }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--white)' }}>{label}</span>
-                  <div className="hq-bar-track">
-                    <div
-                      className={`hq-bar-fill ${value >= 85 ? 'hq-bar-fill--green' : ''}`}
-                      style={{ width: `${value}%` }}
-                    />
-                  </div>
-                  <strong className="mono" style={{ textAlign: 'right', fontSize: '0.85rem' }}>{value}%</strong>
+            {/* 4 Telemetry Integrity Scorecards */}
+            <div className="hq-audit-grid">
+              <div className={`hq-audit-card ${coverage[0][1] >= 85 ? 'hq-audit-card--good' : 'hq-audit-card--warn'}`}>
+                <div className="hq-audit-card__head">
+                  <span className="hq-audit-card__code">01 / OEM MODEL</span>
+                  <span className={`hq-audit-card__badge ${coverage[0][1] >= 85 ? 'hq-audit-card__badge--good' : 'hq-audit-card__badge--warn'}`}>
+                    {coverage[0][1] >= 85 ? 'Verified' : 'Review'}
+                  </span>
                 </div>
-              ))}
+                <div className="hq-audit-card__value-row">
+                  <span className="hq-audit-card__value">{coverage[0][1]}%</span>
+                </div>
+                <div className="hq-audit-card__bar" aria-hidden="true">
+                  <div
+                    className={`hq-audit-card__bar-fill ${coverage[0][1] >= 85 ? 'hq-audit-card__bar-fill--good' : 'hq-audit-card__bar-fill--warn'}`}
+                    style={{ width: `${coverage[0][1]}%` }}
+                  />
+                </div>
+                <strong className="hq-audit-card__title">Resolved OEM Model</strong>
+                <p className="hq-audit-card__desc">
+                  Equipment nameplates resolved to clean manufacturer engineering model specs.
+                </p>
+              </div>
+
+              <div className={`hq-audit-card ${coverage[1][1] >= 85 ? 'hq-audit-card--good' : 'hq-audit-card--warn'}`}>
+                <div className="hq-audit-card__head">
+                  <span className="hq-audit-card__code">02 / INSTALL DATE</span>
+                  <span className={`hq-audit-card__badge ${coverage[1][1] >= 85 ? 'hq-audit-card__badge--good' : 'hq-audit-card__badge--warn'}`}>
+                    {coverage[1][1] >= 85 ? 'Audit Ready' : 'Incomplete'}
+                  </span>
+                </div>
+                <div className="hq-audit-card__value-row">
+                  <span className="hq-audit-card__value">{coverage[1][1]}%</span>
+                </div>
+                <div className="hq-audit-card__bar" aria-hidden="true">
+                  <div
+                    className={`hq-audit-card__bar-fill ${coverage[1][1] >= 85 ? 'hq-audit-card__bar-fill--good' : 'hq-audit-card__bar-fill--warn'}`}
+                    style={{ width: `${coverage[1][1]}%` }}
+                  />
+                </div>
+                <strong className="hq-audit-card__title">Documented Install Date</strong>
+                <p className="hq-audit-card__desc">
+                  Accurate commissioning records required to model remaining useful life and warranty.
+                </p>
+              </div>
+
+              <div className={`hq-audit-card ${coverage[2][1] >= 85 ? 'hq-audit-card--good' : 'hq-audit-card--warn'}`}>
+                <div className="hq-audit-card__head">
+                  <span className="hq-audit-card__code">03 / SERIAL NUMBER</span>
+                  <span className={`hq-audit-card__badge ${coverage[2][1] >= 85 ? 'hq-audit-card__badge--good' : 'hq-audit-card__badge--warn'}`}>
+                    {coverage[2][1] >= 85 ? 'High Confidence' : 'Unconfirmed'}
+                  </span>
+                </div>
+                <div className="hq-audit-card__value-row">
+                  <span className="hq-audit-card__value">{coverage[2][1]}%</span>
+                </div>
+                <div className="hq-audit-card__bar" aria-hidden="true">
+                  <div
+                    className={`hq-audit-card__bar-fill ${coverage[2][1] >= 85 ? 'hq-audit-card__bar-fill--good' : 'hq-audit-card__bar-fill--warn'}`}
+                    style={{ width: `${coverage[2][1]}%` }}
+                  />
+                </div>
+                <strong className="hq-audit-card__title">High Serial Confidence</strong>
+                <p className="hq-audit-card__desc">
+                  OCR & field-confirmed serial tags for tamper-proof asset traceability and warranty claims.
+                </p>
+              </div>
+
+              <div className={`hq-audit-card ${coverage[3][1] >= 85 ? 'hq-audit-card--good' : coverage[3][1] >= 70 ? 'hq-audit-card--warn' : 'hq-audit-card--danger'}`}>
+                <div className="hq-audit-card__head">
+                  <span className="hq-audit-card__code">04 / AUDIT VELOCITY</span>
+                  <span className={`hq-audit-card__badge ${coverage[3][1] >= 85 ? 'hq-audit-card__badge--good' : coverage[3][1] >= 70 ? 'hq-audit-card__badge--warn' : 'hq-audit-card__badge--danger'}`}>
+                    {coverage[3][1] >= 85 ? 'Fresh' : 'Stale Scans'}
+                  </span>
+                </div>
+                <div className="hq-audit-card__value-row">
+                  <span className="hq-audit-card__value">{coverage[3][1]}%</span>
+                </div>
+                <div className="hq-audit-card__bar" aria-hidden="true">
+                  <div
+                    className={`hq-audit-card__bar-fill ${coverage[3][1] >= 85 ? 'hq-audit-card__bar-fill--good' : coverage[3][1] >= 70 ? 'hq-audit-card__bar-fill--warn' : 'hq-audit-card__bar-fill--danger'}`}
+                    style={{ width: `${coverage[3][1]}%` }}
+                  />
+                </div>
+                <strong className="hq-audit-card__title">Confirmed ≤ 180 Days</strong>
+                <p className="hq-audit-card__desc">
+                  Physical barcode scan audit completed within past 6 months to eliminate phantom inventory.
+                </p>
+              </div>
             </div>
 
-            <div className="hq-banner">
+            <div className="hq-banner" style={{ marginTop: 14 }}>
               {metrics.unconfirmedCount} of {scope.scopedAssets.length} assets require physical plate verification or have not been scanned in &gt; 180 days.
             </div>
           </section>
 
-          {/* Work Order SLA Performance */}
+          {/* Work Order SLA Performance & Field Velocity */}
           <section className="hq-card">
+            {/* SLA KPI Summary Strip */}
+            <div className="hq-sla-kpi-grid" style={{ marginBottom: 16 }}>
+              <div className="hq-capex-kpi-card">
+                <span className="hq-capex-kpi-card__label">SLA Compliance Rate</span>
+                <span className="hq-capex-kpi-card__value mono" style={{ color: metrics.slaRate >= 85 ? 'var(--np-verified-600)' : 'var(--red)' }}>
+                  {metrics.slaRate}%
+                </span>
+                <span className="hq-capex-kpi-card__footnote">
+                  Contractual turnaround adherence
+                </span>
+              </div>
+              <div className="hq-capex-kpi-card">
+                <span className="hq-capex-kpi-card__label">Breached Work Orders</span>
+                <span className="hq-capex-kpi-card__value mono" style={{ color: metrics.breachedOrdersCount > 0 ? 'var(--red)' : 'inherit' }}>
+                  {metrics.breachedOrdersCount}
+                </span>
+                <span className="hq-capex-kpi-card__footnote">
+                  Completed or open past SLA deadline
+                </span>
+              </div>
+              <div className="hq-capex-kpi-card">
+                <span className="hq-capex-kpi-card__label">Active Field Orders</span>
+                <span className="hq-capex-kpi-card__value mono">
+                  {metrics.openOrdersCount}
+                </span>
+                <span className="hq-capex-kpi-card__footnote">
+                  Currently open / in-progress tickets
+                </span>
+              </div>
+              <div className="hq-capex-kpi-card">
+                <span className="hq-capex-kpi-card__label">Eligible Tracked Tickets</span>
+                <span className="hq-capex-kpi-card__value mono">
+                  {metrics.eligibleSlaCount}
+                </span>
+                <span className="hq-capex-kpi-card__footnote">
+                  Total work orders with SLA deadlines
+                </span>
+              </div>
+            </div>
+
             <div className="hq-card-header">
               <div>
                 <h2 className="hq-card-title">Work Order Field Velocity & SLA Compliance</h2>
@@ -1070,69 +1552,155 @@ export function Analytics() {
                   Live work order resolution tracking against contractual turnaround thresholds.
                 </p>
               </div>
-              <span className="hq-status hq-status--good">Overall SLA: {metrics.slaRate}%</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <span className={`hq-status ${metrics.slaRate >= 85 ? 'hq-status--good' : 'hq-status--warning'}`}>
+                  Overall SLA: {metrics.slaRate}%
+                </span>
+                <div className="hq-view-toggle">
+                  <button
+                    type="button"
+                    className={`hq-view-toggle-btn ${slaView === 'cards' ? 'is-active' : ''}`}
+                    onClick={() => setSlaView('cards')}
+                  >
+                    Scorecards
+                  </button>
+                  <button
+                    type="button"
+                    className={`hq-view-toggle-btn ${slaView === 'table' ? 'is-active' : ''}`}
+                    onClick={() => setSlaView('table')}
+                  >
+                    Table
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className="hq-table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>WO #</th>
-                    <th>Property</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>SLA Due Date</th>
-                    <th>Completed Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scope.scopedOrders.length ? (
-                    scope.scopedOrders.slice(0, 10).map((w) => {
-                      const breached =
-                        w.slaDueAt &&
-                        ((w.completedAt && new Date(w.completedAt).getTime() > new Date(w.slaDueAt).getTime()) ||
-                          (!w.completedAt && Date.now() > new Date(w.slaDueAt).getTime()));
+            {slaView === 'cards' ? (
+              <div className="hq-sla-grid">
+                {scope.scopedOrders.length ? (
+                  scope.scopedOrders.slice(0, 9).map((w) => {
+                    const breached =
+                      w.slaDueAt &&
+                      ((w.completedAt && new Date(w.completedAt).getTime() > new Date(w.slaDueAt).getTime()) ||
+                        (!w.completedAt && Date.now() > new Date(w.slaDueAt).getTime()));
+                    const tone = w.completedAt ? (breached ? 'breached' : 'completed') : breached ? 'breached' : 'active';
+                    const prio = (w.priority || 'normal').toLowerCase();
+                    const prioClass = prio === 'emergency' ? 'emergency' : prio === 'urgent' ? 'urgent' : 'normal';
+                    const propName = w.propertyName || properties.find((p) => p.id === w.propertyId)?.name || 'Property';
 
-                      return (
-                        <tr key={w.id}>
-                          <td>
-                            <Link className="hq-text-link" to={`/work-orders?search=${encodeURIComponent(w.number)}`}>
-                              #{w.number}
-                            </Link>{' '}
-                            <span style={{ color: 'var(--white)', marginLeft: 6 }}>{w.title}</span>
-                          </td>
-                          <td style={{ color: 'var(--gray-400)' }}>
-                            {w.propertyName || properties.find((p) => p.id === w.propertyId)?.name || '—'}
-                          </td>
-                          <td>
-                            <span className={`hq-status ${w.completedAt ? 'hq-status--good' : breached ? 'hq-status--danger' : 'hq-status--warning'}`}>
-                              {w.status.replaceAll('_', ' ')}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="mono" style={{ textTransform: 'uppercase', fontSize: '0.74rem' }}>
-                              {w.priority}
-                            </span>
-                          </td>
-                          <td className="mono" style={{ color: breached ? 'var(--red)' : 'inherit' }}>
-                            {w.slaDueAt ? new Date(w.slaDueAt).toLocaleDateString() : '—'}
-                          </td>
-                          <td className="mono">
-                            {w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'In Progress'}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
+                    return (
+                      <div key={w.id} className={`hq-sla-card hq-sla-card--${tone}`}>
+                        <div className="hq-sla-card__head">
+                          <Link to={`/work-orders?search=${encodeURIComponent(w.number)}`} className="hq-sla-card__wo-num">
+                            #{w.number}
+                          </Link>
+                          <span className={`hq-priority-pill hq-priority-pill--${prioClass}`}>
+                            {w.priority}
+                          </span>
+                        </div>
+                        <div>
+                          <strong className="hq-sla-card__title" title={w.title}>{w.title}</strong>
+                          <div className="hq-sla-card__loc">{propName}</div>
+                        </div>
+                        <div className="hq-sla-card__status-row">
+                          <span className="hq-sla-card__status-lbl">Resolution Status</span>
+                          <span className={`hq-status ${w.completedAt ? (breached ? 'hq-status--danger' : 'hq-status--good') : breached ? 'hq-status--danger' : 'hq-status--warning'}`}>
+                            {w.completedAt ? (breached ? 'COMPLETED (SLA BREACH)' : 'RESOLVED IN SLA') : breached ? 'SLA BREACHED' : w.status.replaceAll('_', ' ')}
+                          </span>
+                        </div>
+                        <dl className="hq-sla-card__timeline">
+                          <div className="hq-sla-timeline-point">
+                            <dt>SLA Target Due</dt>
+                            <dd style={{ color: breached ? 'var(--red)' : 'inherit' }}>
+                              {w.slaDueAt ? new Date(w.slaDueAt).toLocaleDateString() : '—'}
+                            </dd>
+                          </div>
+                          <div className="hq-sla-timeline-point">
+                            <dt>{w.completedAt ? 'Completed Date' : 'Current Status'}</dt>
+                            <dd>
+                              {w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'In Progress'}
+                            </dd>
+                          </div>
+                        </dl>
+                        <div className="hq-sla-card__foot">
+                          <Link to={`/work-orders?search=${encodeURIComponent(w.number)}`} className="hq-scorecard__link">
+                            View Work Order →
+                          </Link>
+                          <span className="hq-scorecard__foot-meta mono">
+                            {w.assignee || 'Field Tech'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div style={{ textAlign: 'center', padding: 24, color: 'var(--gray-400)', gridColumn: '1 / -1' }}>
+                    No work orders in this scope.
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="hq-table-wrap">
+                <table>
+                  <thead>
                     <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: 'var(--gray-400)' }}>
-                        No work orders in this scope.
-                      </td>
+                      <th>WO #</th>
+                      <th>Property</th>
+                      <th>Status</th>
+                      <th>Priority</th>
+                      <th>SLA Due Date</th>
+                      <th>Completed Date</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {scope.scopedOrders.length ? (
+                      scope.scopedOrders.slice(0, 10).map((w) => {
+                        const breached =
+                          w.slaDueAt &&
+                          ((w.completedAt && new Date(w.completedAt).getTime() > new Date(w.slaDueAt).getTime()) ||
+                            (!w.completedAt && Date.now() > new Date(w.slaDueAt).getTime()));
+
+                        return (
+                          <tr key={w.id}>
+                            <td>
+                              <Link className="hq-text-link" to={`/work-orders?search=${encodeURIComponent(w.number)}`}>
+                                #{w.number}
+                              </Link>{' '}
+                              <span style={{ color: 'var(--white)', marginLeft: 6 }}>{w.title}</span>
+                            </td>
+                            <td style={{ color: 'var(--gray-400)' }}>
+                              {w.propertyName || properties.find((p) => p.id === w.propertyId)?.name || '—'}
+                            </td>
+                            <td>
+                              <span className={`hq-status ${w.completedAt ? 'hq-status--good' : breached ? 'hq-status--danger' : 'hq-status--warning'}`}>
+                                {w.status.replaceAll('_', ' ')}
+                              </span>
+                            </td>
+                            <td>
+                              <span className="mono" style={{ textTransform: 'uppercase', fontSize: '0.74rem' }}>
+                                {w.priority}
+                              </span>
+                            </td>
+                            <td className="mono" style={{ color: breached ? 'var(--red)' : 'inherit' }}>
+                              {w.slaDueAt ? new Date(w.slaDueAt).toLocaleDateString() : '—'}
+                            </td>
+                            <td className="mono">
+                              {w.completedAt ? new Date(w.completedAt).toLocaleDateString() : 'In Progress'}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: 'center', padding: 24, color: 'var(--gray-400)' }}>
+                          No work orders in this scope.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         </>
       )}
