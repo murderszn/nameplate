@@ -17,12 +17,12 @@ jobs:
 
     steps:
       - name: Check out Nameplate
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Pin the scanner to a reviewed Cerberus commit so the security check
       # cannot change underneath this workflow without an explicit update.
       - name: Check out Cerberus
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: murderszn/cerberus
           ref: 97a557af313c4402dc31c33a992ee6c66c232d13
@@ -45,13 +45,13 @@ jobs:
       - name: Publish Cerberus findings to Code Security
         if: always()
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: cerberus.sarif
 
       - name: Upload Cerberus report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: cerberus-security-review
           path: |
