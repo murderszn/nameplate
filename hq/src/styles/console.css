@@ -19,6 +19,8 @@ body { background: var(--bg); color: var(--white); font-family: var(--font-sans)
 .np-nav__icon { color: #737373; }
 .np-nav__index { color: #525252; font-variant-numeric: tabular-nums; }
 .np-sidebar--collapsed .np-nav__group-label { display: none; }
+.np-sidebar--collapsed .np-sidebar__header { justify-content: center; padding: 2px 0 20px; }
+.np-sidebar--collapsed .np-sidebar__brand { justify-content: center; width: 100%; }
 .np-sidebar__actions-pinned { margin-top: auto; border-top: 1px solid rgba(255,255,255,.08); padding-top: 10px; display: flex; flex-direction: column; gap: 3px; }
 .np-sidebar__back-link { display: flex; align-items: center; gap: 10px; padding: 8px 10px; color: #a3a3a3; border-radius: 6px; font-size: .78rem; font-weight: 550; text-decoration: none; transition: all .15s ease; }
 .np-sidebar__back-link:hover, .np-sidebar__back-link.active { background: rgba(255,255,255,.06); color: #ffffff; }

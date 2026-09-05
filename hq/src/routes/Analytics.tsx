@@ -734,7 +734,7 @@ export function Analytics() {
                           style={{ width: `${pm.healthPct}%` }}
                         />
                       </div>
-                      <dl className="hq-scorecard__metrics">
+                      <dl className="hq-scorecard__metrics hq-scorecard__metrics--3">
                         <div>
                           <dt>Inventory</dt>
                           <dd>{pm.assetsCount}</dd>
@@ -744,16 +744,6 @@ export function Analytics() {
                           <dd className="mono">{pm.healthPct}%</dd>
                         </div>
                         <div>
-                          <dt>Shrinkage</dt>
-                          <dd>
-                            {pm.unconfirmed > 0 ? (
-                              <span className="hq-status hq-status--danger">{pm.unconfirmed} flagged</span>
-                            ) : (
-                              <span className="hq-status hq-status--good">Verified</span>
-                            )}
-                          </dd>
-                        </div>
-                        <div>
                           <dt>Period spend</dt>
                           <dd className="mono">{money(pm.spend)}</dd>
                         </div>
@@ -761,9 +751,8 @@ export function Analytics() {
                     </div>
                     <div className="hq-scorecard__foot">
                       <Link to={`/properties/${pm.id}`} className="hq-scorecard__link">
-                        Inspect →<span aria-hidden="true" />
+                        Inspect →
                       </Link>
-                      <span className="hq-scorecard__foot-meta mono">{pm.assetsCount} assets</span>
                     </div>
                   </div>
                 );

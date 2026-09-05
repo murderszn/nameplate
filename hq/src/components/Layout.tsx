@@ -300,31 +300,6 @@ export function Layout() {
               </div>
             )}
           </div>
-
-          <button
-            type="button"
-            className="np-sidebar__collapse-btn"
-            onClick={toggleSidebar}
-            title={collapsed ? 'Expand (⌘B)' : 'Collapse (⌘B)'}
-            aria-label="Toggle sidebar"
-          >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {collapsed ? (
-                <polyline points="9 18 15 12 9 6" />
-              ) : (
-                <polyline points="15 18 9 12 15 6" />
-              )}
-            </svg>
-          </button>
         </div>
 
         <nav className="np-nav" aria-label="HQ sections">

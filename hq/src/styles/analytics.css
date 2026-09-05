@@ -321,6 +321,10 @@
   margin: 2px 0 0;
 }
 
+.hq-scorecard__metrics--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .hq-scorecard__metrics > div {
   min-width: 0;
   display: flex;
