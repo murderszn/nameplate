@@ -287,115 +287,117 @@ class _Header extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 180px hero block with borderRadius:12, BoxFit.cover, black gradient scrim, and NpStatusPill overlaid top-right
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    height: 180,
-                    width: double.infinity,
-                    color: const Color(0xFF0A0C10),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        // Ambient dot grid texture
-                        const Opacity(
-                          opacity: 0.20,
-                          child: NpDotGrid(),
-                        ),
-                        // Radial crimson glow behind appliance
-                        Center(
-                          child: Container(
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
-                                colors: [
-                                  NpColors.red.withValues(alpha: 0.14),
-                                  Colors.transparent,
-                                ],
+                // 1:1 hero block with borderRadius:12, BoxFit.contain, black gradient scrim, and NpStatusPill overlaid top-right
+                AspectRatio(
+                  aspectRatio: 1.0,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      width: double.infinity,
+                      color: const Color(0xFF0A0C10),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          // Ambient dot grid texture
+                          const Opacity(
+                            opacity: 0.20,
+                            child: NpDotGrid(),
+                          ),
+                          // Radial crimson glow behind appliance
+                          Center(
+                            child: Container(
+                              width: 260,
+                              height: 260,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    NpColors.red.withValues(alpha: 0.16),
+                                    Colors.transparent,
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 24.0, top: 12.0),
-                            child: NpApplianceArt(
-                              categoryOrTitle: asset.categoryDisplayName,
-                              fit: BoxFit.contain,
-                              height: 120,
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 48.0, bottom: 64.0, left: 28.0, right: 28.0),
+                              child: NpApplianceArt(
+                                categoryOrTitle: asset.categoryDisplayName,
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           ),
-                        ),
-                        if (NpAssets.fleetItemFor(asset.categoryDisplayName) != null)
+                          if (NpAssets.fleetItemFor(asset.categoryDisplayName) != null)
+                            Positioned(
+                              top: 12,
+                              left: 14,
+                              child: Text(
+                                '${NpAssets.fleetItemFor(asset.categoryDisplayName)!.index} // ${NpAssets.fleetItemFor(asset.categoryDisplayName)!.code}',
+                                style: NpType.mono.copyWith(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.2,
+                                  color: context.npColors.white40,
+                                ),
+                              ),
+                            ),
+                          // Black gradient scrim
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withValues(alpha: 0.6),
+                                  Colors.transparent,
+                                  Colors.black.withValues(alpha: 0.85),
+                                ],
+                                stops: const [0.0, 0.45, 1.0],
+                              ),
+                            ),
+                          ),
+                          // Overlaid top-right NpStatusPill
                           Positioned(
                             top: 12,
-                            left: 14,
-                            child: Text(
-                              '${NpAssets.fleetItemFor(asset.categoryDisplayName)!.index} // ${NpAssets.fleetItemFor(asset.categoryDisplayName)!.code}',
-                              style: NpType.mono.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.2,
-                                color: context.npColors.white40,
-                              ),
-                            ),
+                            right: 12,
+                            child: _StatusChip(status: asset.status),
                           ),
-                        // Black gradient scrim
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.black.withValues(alpha: 0.6),
-                                Colors.transparent,
-                                Colors.black.withValues(alpha: 0.85),
+                          // Bottom asset title and category overlay
+                          Positioned(
+                            left: 16,
+                            right: 16,
+                            bottom: 14,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${asset.manufacturer ?? 'Portfolio Spec'} ${asset.modelNumber ?? ''}'.trim(),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                    letterSpacing: -0.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  asset.categoryDisplayName,
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.75),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ],
-                              stops: const [0.0, 0.45, 1.0],
                             ),
                           ),
-                        ),
-                        // Overlaid top-right NpStatusPill
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: _StatusChip(status: asset.status),
-                        ),
-                        // Bottom asset title and category overlay
-                        Positioned(
-                          left: 16,
-                          right: 16,
-                          bottom: 14,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${asset.manufacturer ?? 'Portfolio Spec'} ${asset.modelNumber ?? ''}'.trim(),
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  letterSpacing: -0.3,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                asset.categoryDisplayName,
-                                style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.75),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

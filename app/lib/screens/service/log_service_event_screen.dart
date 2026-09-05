@@ -507,153 +507,179 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
     );
   }
 
-  /// Full-Bleed Instagram Media Stage Header
+  /// Full-Bleed 1:1 Aspect Ratio Media Stage Header
   Widget _buildInstagramMediaStage(String? schematic) {
-    return Container(
-      width: double.infinity,
-      height: 156,
-      decoration: BoxDecoration(
-        color: const Color(0xFF0C0C0C),
-        border: Border(
-          bottom: BorderSide(color: context.npColors.lineStrong),
+    return AspectRatio(
+      aspectRatio: 1.0,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: const Color(0xFF0C0C0C),
+          border: Border(
+            bottom: BorderSide(color: context.npColors.lineStrong),
+          ),
         ),
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background ambient grid texture
-          const Opacity(
-            opacity: 0.25,
-            child: NpDotGrid(),
-          ),
-          // Branded Isometric Fleet Hero
-          Center(
-            child: NpApplianceArt(
-              categoryOrTitle: widget.asset.categoryDisplayName,
-              height: 112,
-              fit: BoxFit.contain,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background ambient grid texture
+            const Opacity(
+              opacity: 0.25,
+              child: NpDotGrid(),
             ),
-          ),
-          // Top Overlaid Telemetry Bar
-          Positioned(
-            top: 12,
-            left: 16,
-            right: 16,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Crockford Base32 Tag Pill
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: NpColors.redBorder, width: 0.8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          color: NpColors.red,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'NPID // ${widget.asset.npid}',
-                        style: NpType.mono.copyWith(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.8,
-                          color: Colors.white,
-                        ),
-                      ),
+            // Radial crimson ambient glow
+            Center(
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      NpColors.red.withValues(alpha: 0.16),
+                      Colors.transparent,
                     ],
                   ),
                 ),
-                // Work Order Badge if attached
-                if (widget.workOrder != null)
-                  Flexible(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.75),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                            color: context.npColors.lineStrong, width: 0.8),
-                      ),
-                      child: Text(
-                        '${widget.workOrder!.id} · ${widget.workOrder!.slaLabel.toUpperCase()}',
-                        style: NpType.mono.copyWith(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: NpColors.red,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
-          // Bottom Category & Location Bar
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.85),
-                    Colors.transparent,
-                  ],
+            // Branded Isometric Fleet Hero — prominent 1:1 showcase
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 52,
+                  bottom: 64,
+                  left: 32,
+                  right: 32,
+                ),
+                child: NpApplianceArt(
+                  categoryOrTitle: widget.asset.categoryDisplayName,
+                  fit: BoxFit.contain,
                 ),
               ),
+            ),
+            // Top Overlaid Telemetry Bar
+            Positioned(
+              top: 14,
+              left: 16,
+              right: 16,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  // Crockford Base32 Tag Pill
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: NpColors.redBorder, width: 0.8),
+                    ),
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        Container(
+                          width: 7,
+                          height: 7,
+                          decoration: const BoxDecoration(
+                            color: NpColors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 7),
                         Text(
-                          widget.asset.categoryDisplayName.toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 13,
+                          'NPID // ${widget.asset.npid}',
+                          style: NpType.mono.copyWith(
+                            fontSize: 11,
                             fontWeight: FontWeight.w800,
-                            letterSpacing: -0.2,
+                            letterSpacing: 0.8,
                             color: Colors.white,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          '${widget.asset.manufacturer ?? "Standard"} ${widget.asset.modelNumber ?? ""} · ${widget.asset.currentLocationLabel ?? "Unit Roster"}',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            color: Colors.white.withValues(alpha: 0.65),
-                          ),
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
+                  // Work Order Badge if attached
+                  if (widget.workOrder != null)
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.8),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                              color: context.npColors.lineStrong, width: 0.8),
+                        ),
+                        child: Text(
+                          '${widget.workOrder!.id} · ${widget.workOrder!.slaLabel.toUpperCase()}',
+                          style: NpType.mono.copyWith(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: NpColors.red,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
-          ),
-        ],
+            // Bottom Category & Location Bar
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.85),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            widget.asset.categoryDisplayName.toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.2,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${widget.asset.manufacturer ?? "Standard"} ${widget.asset.modelNumber ?? ""} · ${widget.asset.currentLocationLabel ?? "Unit Roster"}',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: Colors.white.withValues(alpha: 0.7),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -962,11 +988,16 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
     final isEconomical = ratio < 50;
 
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.npColors.bgElevated,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: context.npColors.lineStrong),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isEconomical
+              ? context.npSuccessFg.withValues(alpha: 0.35)
+              : context.npDangerFg.withValues(alpha: 0.35),
+          width: 1.2,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -975,71 +1006,151 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '05 // REPAIR VS REPLACE GAUGE',
+                '05 // REPAIR VS REPLACE',
                 style: NpType.mono.copyWith(
-                  fontSize: 10,
+                  fontSize: 12,
                   color: context.npColors.gray400,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.8,
                 ),
               ),
-              Text(
-                isEconomical ? 'CHEAPER TO REPAIR' : 'CONSIDER REPLACING',
-                style: NpType.mono.copyWith(
-                  fontSize: 10,
-                  color: isEconomical
-                      ? context.npSuccessFg
-                      : context.npDangerFg,
-                  fontWeight: FontWeight.w700,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: (isEconomical
+                          ? context.npSuccessFg
+                          : context.npDangerFg)
+                      .withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: (isEconomical
+                            ? context.npSuccessFg
+                            : context.npDangerFg)
+                        .withValues(alpha: 0.45),
+                    width: 1.0,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isEconomical
+                          ? Icons.check_circle_outline
+                          : Icons.warning_amber_rounded,
+                      size: 15,
+                      color: isEconomical
+                          ? context.npSuccessFg
+                          : context.npDangerFg,
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      isEconomical ? 'CHEAPER TO REPAIR' : 'CONSIDER REPLACING',
+                      style: NpType.mono.copyWith(
+                        fontSize: 11.5,
+                        color: isEconomical
+                            ? context.npSuccessFg
+                            : context.npDangerFg,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 14),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
                 'Total (Labor + Parts):',
-                style: TextStyle(fontSize: 12, color: context.npColors.white),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: context.npColors.white,
+                ),
               ),
               Text(
                 '\$${cost.toStringAsFixed(2)}',
                 style: NpType.mono.copyWith(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 12,
-                  color: context.npColors.white,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Replacement CapEx Baseline:',
-                style: TextStyle(fontSize: 11, color: context.npColors.gray400),
-              ),
-              Text(
-                '\$$_defaultReplacementCost (${ratio.toStringAsFixed(0)}%)',
-                style: NpType.mono.copyWith(
-                  fontSize: 11,
-                  color: context.npColors.gray400,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 24,
+                  color: isEconomical
+                      ? context.npSuccessFg
+                      : context.npDangerFg,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Replacement CapEx Baseline:',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: context.npColors.gray400,
+                ),
+              ),
+              Text(
+                '\$$_defaultReplacementCost  (${ratio.toStringAsFixed(0)}% of cap)',
+                style: NpType.mono.copyWith(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: context.npColors.gray300,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
           ClipRRect(
-            borderRadius: BorderRadius.circular(1),
+            borderRadius: BorderRadius.circular(6),
             child: LinearProgressIndicator(
               value: (ratio / 100).clamp(0.0, 1.0),
-              minHeight: 4,
+              minHeight: 12,
               color: isEconomical
                   ? context.npSuccessFg
                   : context.npDangerFg,
               backgroundColor: context.npColors.bg,
             ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '0% Repair',
+                style: NpType.mono.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: context.npColors.gray500,
+                ),
+              ),
+              Text(
+                '50% CapEx Guideline Threshold',
+                style: NpType.mono.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: isEconomical
+                      ? context.npColors.gray400
+                      : context.npDangerFg,
+                ),
+              ),
+              Text(
+                '100% Replace',
+                style: NpType.mono.copyWith(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: context.npColors.gray500,
+                ),
+              ),
+            ],
           ),
         ],
       ),
