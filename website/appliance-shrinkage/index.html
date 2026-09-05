@@ -1,174 +1,305 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Make-Ready Skim: Where Multifamily Appliances Quietly Disappear — Nameplate White Paper</title>
-  <meta name="description" content="Appliance shrinkage, phantom swaps, and dead warranties are a quiet tax on every multifamily turn. The math, the mechanism, and the Monday-morning fix.">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="The Make-Ready Skim: Where Multifamily Appliances Quietly Disappear">
-  <meta property="og:description" content="Every turn is an unsupervised inventory event. Here's the math, the mechanism, and the fix.">
-  <meta property="og:image" content="../images/fleet-collage.jpg">
-  <meta name="theme-color" content="#08080b">
+  <title>Nameplate — Design Language Still Sheet 01</title>
+  <meta name="description" content="Nameplate brand still sheet: color sets, typography, buttons, containers, appliance line-art, and logo lockups.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Nameplate — Design Language Still Sheet 01">
+  <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="../images/nameplate-logo-transparent.png" type="image/png">
   <link rel="stylesheet" href="../css/styles.css?v=presentation-2">
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Article",
-   "headline":"The Make-Ready Skim: Where Multifamily Appliances Quietly Disappear",
-   "description":"Appliance shrinkage, phantom swaps, and dead warranties are a quiet tax on every multifamily turn.",
-   "image":["../images/fleet-collage.jpg"],"author":{"@type":"Organization","name":"Nameplate"}}
-  </script>
   <style>
-    .paper-hero{position:relative;overflow:hidden;background:#08080b}
-    .paper-hero img.paper-collage{display:block;width:100%;height:auto;max-height:72vh;object-fit:cover;object-position:center 30%}
-    .paper-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.55) 0%,rgba(8,8,11,.05) 34%,rgba(8,8,11,.08) 62%,rgba(8,8,11,.94) 100%)}
-    .paper-hero-inner{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end}
-    .paper-hero-inner .wrap{padding-bottom:48px;width:100%}
-    .paper-eyebrow{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:.78rem;letter-spacing:.14em;color:#ff5a5a;border:1px solid rgba(197,31,45,.5);border-radius:999px;padding:6px 14px;margin-bottom:18px;background:rgba(8,8,11,.55)}
-    .paper-h1{font-size:clamp(2.4rem,6vw,4.6rem);line-height:1.02;font-weight:800;letter-spacing:-.02em;color:#fff;max-width:20ch;margin:0 0 16px}
-    .paper-h1 .red{color:#c51f2d}
-    .paper-sub{font-size:clamp(1.02rem,1.6vw,1.25rem);line-height:1.55;color:rgba(255,255,255,.78);max-width:62ch;margin:0 0 20px}
-    .paper-meta{display:flex;gap:16px;flex-wrap:wrap;font-family:ui-monospace,Menlo,monospace;font-size:.75rem;color:rgba(255,255,255,.55)}
-    .paper-body{background:var(--bg,#0b0b0e);color:var(--text,#e8e8ea)}
-    .paper-article{max-width:760px;margin:0 auto;padding:56px 24px 24px}
-    .paper-article h2{font-size:1.65rem;letter-spacing:-.01em;margin:52px 0 14px;line-height:1.2}
-    .paper-article h2 .num{color:#c51f2d;font-family:ui-monospace,Menlo,monospace;font-size:1rem;display:block;margin-bottom:6px;letter-spacing:.1em}
-    .paper-article p{font-size:1.06rem;line-height:1.75;color:rgba(232,232,234,.88);margin:0 0 18px}
-    .paper-article p.lede{font-size:1.28rem;line-height:1.65;color:#fff}
-    .paper-article blockquote{border-left:3px solid #c51f2d;margin:28px 0;padding:4px 0 4px 20px;font-size:1.2rem;line-height:1.6;font-style:italic;color:#fff}
-    .paper-article ul{margin:0 0 20px 20px;line-height:1.75;font-size:1.04rem;color:rgba(232,232,234,.88)}
-    .paper-article li{margin-bottom:8px}
-    .stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:34px 0}
-    .stat-card{border:1px solid var(--border-subtle,rgba(255,255,255,.12));border-radius:12px;padding:18px;background:rgba(255,255,255,.02)}
-    .stat-card .v{font-size:1.7rem;font-weight:800;color:#fff}
-    .stat-card .v em{color:#c51f2d;font-style:normal}
-    .stat-card .l{font-size:.85rem;color:rgba(255,255,255,.6);line-height:1.5;display:block;margin-top:6px}
-    .math-table{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:.95rem}
-    .math-table th,.math-table td{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.1)}
-    .math-table th{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;letter-spacing:.08em;color:rgba(255,255,255,.55)}
-    .math-table td:last-child,.math-table th:last-child{text-align:right}
-    .fineprint{font-size:.82rem;color:rgba(255,255,255,.5)}
-    .step-grid{display:grid;gap:12px;margin:24px 0}
-    .step-card{border:1px solid var(--border-subtle,rgba(255,255,255,.12));border-radius:12px;padding:18px 20px;background:rgba(255,255,255,.02)}
-    .step-card strong{color:#fff}
-    .step-card .k{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;letter-spacing:.1em;color:#c51f2d;display:block;margin-bottom:6px}
-    .cta-band{border:1px solid rgba(197,31,45,.4);border-radius:16px;padding:32px;margin:48px 0;background:linear-gradient(180deg,rgba(197,31,45,.08),rgba(197,31,45,.02))}
-    .cta-band h2{margin-top:0}
-    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
-    .paper-footer{border-top:1px solid rgba(255,255,255,.1);margin-top:40px;padding:28px 24px 60px;text-align:center;color:rgba(255,255,255,.5);font-size:.88rem}
-    .paper-footer a{color:#ff6b6b}
-    @media(max-width:640px){.stat-strip{grid-template-columns:1fr}.paper-hero img.paper-collage{max-height:60vh}}
+    /* Sheet-only scaffolding. Everything else reuses the marketing stylesheet. */
+    /* Still-sheet rule: flat surfaces, hairline borders — no drop shadows. */
+    .schematic-featured-frame{box-shadow:none}
+    :root[data-theme="light"] .hero-splash-pillar{box-shadow:none}
+    .schematic-tab-btn.is-active{box-shadow:none}
+    .sheet-masthead{padding:170px 0 70px;border-bottom:1px solid var(--line)}
+    .sheet-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+    .sheet-meta span{font-family:var(--font-mono);font-size:.72rem;font-weight:700;letter-spacing:.08em;
+      border:1px solid var(--line-strong);border-radius:var(--radius);padding:6px 12px;color:var(--white-90);background:var(--bg-card)}
+    .sheet-section{padding:90px 0;border-top:1px solid var(--line-light)}
+    .sheet-section > .wrap > .section-title{margin-bottom:8px}
+    .sheet-index{font-family:var(--font-mono);font-size:.75rem;font-weight:700;letter-spacing:.14em;color:var(--red);margin-bottom:14px;display:block}
+    /* Swatches */
+    .swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:34px}
+    .swatch{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+    .swatch .chip{height:96px}
+    .swatch .meta{padding:10px 12px;border-top:1px solid var(--line)}
+    .swatch .meta b{display:block;font-size:.82rem;color:#111}
+    .swatch .meta code{font-family:var(--font-mono);font-size:.7rem;color:#666}
+    .swatch-group{font-family:var(--font-mono);font-size:.72rem;font-weight:700;letter-spacing:.14em;color:var(--gray-500);margin:44px 0 0;text-transform:uppercase}
+    /* Type specimens */
+    .type-spec{border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:34px;margin-top:16px;position:relative}
+    .type-spec:first-of-type{margin-top:34px}
+    .type-spec .tag{position:absolute;top:12px;right:14px;font-family:var(--font-mono);font-size:.65rem;letter-spacing:.1em;color:var(--gray-500)}
+    /* Button rows */
+    .btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:34px}
+    .btn-note{font-family:var(--font-mono);font-size:.7rem;color:var(--gray-500);letter-spacing:.06em;margin-top:14px}
+    .spec-scroll{overflow-x:auto;margin-top:34px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+    .spec-table{width:100%;min-width:840px;border-collapse:collapse;font-size:.82rem}
+    .spec-table th{font-family:var(--font-mono);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-align:left;color:var(--gray-500);padding:12px 14px;border-bottom:1px solid var(--line);background:var(--bg-card);white-space:nowrap}
+    .spec-table td{padding:12px 14px;border-bottom:1px solid var(--line-light);color:#111;vertical-align:top}
+    .spec-table tr:last-child td{border-bottom:none}
+    .spec-table td.m{font-family:var(--font-mono);font-size:.72rem;white-space:nowrap;color:#333}
+    .spec-table td .live{line-height:1.35}
+    /* Callout grid */
+    .callout-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px;align-items:start}
+    /* Fleet */
+    .fleet-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:34px}
+    .fleet-cell{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px 12px 16px;
+      display:flex;flex-direction:column;align-items:center;gap:14px;color-scheme:light;transition:border-color .2s var(--ease),transform .2s var(--ease)}
+    .fleet-cell:hover{border-color:var(--red);transform:translateY(-3px)}
+    .fleet-cell img{width:100%;max-width:150px;height:auto}
+    .fleet-cell .t{font-size:.78rem;font-weight:800;letter-spacing:.06em;color:#111;text-align:center}
+    .fleet-cell code{font-family:var(--font-mono);font-size:.62rem;color:#888}
+    /* Logo lockups */
+    .logo-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:34px}
+    .logo-cell{border:1px solid var(--line);border-radius:var(--radius);padding:48px 24px;display:flex;align-items:center;justify-content:center;gap:14px}
+    .logo-cell.on-white{background:#fff}
+    .logo-cell.on-black{background:#000;border-color:#000}
+    .logo-cell img{height:56px;width:auto}
+    .logo-cell .wordmark{font-weight:800;font-size:1rem;letter-spacing:.14em}
+    .logo-cell.on-white .wordmark{color:#111}
+    .logo-cell.on-black .wordmark{color:#fff}
+    .sheet-footer{border-top:1px solid var(--line);padding:40px 0 70px;color:var(--gray-500);font-size:.85rem}
+    .sheet-footer a{color:var(--red)}
+    @media(max-width:900px){.fleet-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:640px){
+      .sheet-masthead{padding:140px 0 50px}
+      .sheet-section{padding:60px 0}
+      .fleet-grid{grid-template-columns:repeat(2,1fr)}
+      .logo-row{grid-template-columns:1fr}
+      .callout-grid{grid-template-columns:1fr}
+      .type-spec{padding:26px 20px}
+    }
   </style>
 </head>
-<body class="marketing-page paper-body">
+<body class="marketing-page">
 
-<header class="site-header">
+<header class="site-header is-scrolled">
   <div class="wrap header-row">
     <a class="brand" href="../index.html" aria-label="Nameplate home">
-      <img src="../images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="brand-logo-img theme-logo theme-logo--dark">
+      <img src="../images/nameplate-logo-light.png" alt="Nameplate Logo" class="brand-logo-img theme-logo theme-logo--light">
+      <img src="../images/nameplate-logo-transparent.png" alt="" aria-hidden="true" class="brand-logo-img theme-logo theme-logo--dark">
+      <span class="brand-name">NAMEPLATE</span>
     </a>
     <nav class="site-nav" aria-label="Primary">
       <a href="../index.html#concept">Problem</a>
       <a href="../index.html#field-app">App</a>
       <a href="../index.html#hq-console">HQ &amp; Audits</a>
-      <a href="https://www.biggerpockets.com/forums" target="_blank" rel="noopener">BiggerPockets ↗</a>
     </nav>
     <div class="nav-actions">
-      <a class="btn btn-red" href="../index.html#investors"><span>Talk to Us →</span></a>
+      <a class="btn btn-red btn-sm" href="../index.html#investors"><span>Talk to Us →</span></a>
     </div>
   </div>
 </header>
 
 <main id="main">
-  <!-- ================= Oversized dramatic header ================= -->
-  <section class="paper-hero" aria-label="The full appliance fleet">
-    <img class="paper-collage" src="../images/fleet-collage.jpg" alt="The full multifamily appliance fleet rendered in 3D: condenser, air handler, heat-pump water heater, french-door refrigerator, range, washer, dryer, dishwasher, microwave, and smart thermostat" fetchpriority="high">
-    <div class="paper-hero-inner">
-      <div class="wrap">
-        <span class="paper-eyebrow">WHITE PAPER // MULTIFAMILY APPLIANCE OPERATIONS</span>
-        <h1 class="paper-h1">The Make-Ready Skim: Where Appliances <span class="red">Quietly Disappear</span></h1>
-        <p class="paper-sub">Every unit turn is an unsupervised inventory event. Here's how fridges get downgraded, warranties die unclaimed, and CapEx goes blind — and the Monday-morning fix.</p>
-        <div class="paper-meta"><span>8 MIN READ</span><span>·</span><span>FOR OPERATORS &amp; INVESTORS</span><span>·</span><span>WITH ILLUSTRATIVE MATH</span></div>
+  <!-- ================= Masthead ================= -->
+  <div class="sheet-masthead">
+    <div class="wrap">
+      <p class="section-tag">Brand still sheet — 01</p>
+      <h1 class="section-title">Design Language,<br>frozen in one frame.</h1>
+      <p class="section-sub">Every color, button, box, container, line-art unit, and logo lockup on a single white sheet — a sister page to the marketing site, rendered in its real light theme.</p>
+      <div class="sheet-meta">
+        <span>BG #FFFFFF</span><span>INK #111111</span><span>RED #C51F2D</span><span>RADIUS 2PX</span><span>SANS → SYSTEM</span><span>MONO → PLEX MONO</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 01 Logos ================= -->
+  <section class="sheet-section" style="padding-top:60px">
+    <div class="wrap">
+      <span class="sheet-index">01 / LOGO LOCKUPS</span>
+      <p class="section-tag">Brand mark</p>
+      <h2 class="section-title" style="font-size:clamp(1.8rem,3.4vw,2.6rem)">One mark,<br>two fields.</h2>
+      <div class="logo-row">
+        <div class="logo-cell on-white">
+          <img src="../images/nameplate-logo.png" alt="Nameplate logo on white">
+          <span class="wordmark">NAMEPLATE</span>
+        </div>
+        <div class="logo-cell on-black">
+          <img src="../images/nameplate-logo-transparent.png" alt="Nameplate logo on black">
+          <span class="wordmark">NAMEPLATE</span>
+        </div>
+      </div>
+      <p class="btn-note">WORDMARK: 800 WEIGHT · 0.14EM TRACKING · ALWAYS PAIRED WITH MARK · MIN CLEAR-SPACE = MARK HEIGHT</p>
+    </div>
+  </section>
+
+  <!-- ================= 02 Colors ================= -->
+  <section class="sheet-section">
+    <div class="wrap">
+      <span class="sheet-index">02 / COLOR SETS</span>
+      <p class="section-tag">Core</p>
+      <h2 class="section-title" style="font-size:clamp(1.8rem,3.4vw,2.6rem)">Black, white, red.<br>Nothing else shouts.</h2>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="chip" style="background:#000000"></div><div class="meta"><b>Black / Bg</b><code>--bg · #000000</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#FFFFFF;border-bottom:1px solid var(--line)"></div><div class="meta"><b>White</b><code>--white · #FFFFFF</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#c51f2d"></div><div class="meta"><b>Signal Red</b><code>--red · #C51F2D</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#ac1926"></div><div class="meta"><b>Red Hover</b><code>--red-hover · #AC1926</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#bd1f1f"></div><div class="meta"><b>Red Deep</b><code>--red-deep · #BD1F1F</code></div></div>
+        <div class="swatch"><div class="chip" style="background:rgba(197,31,45,.08)"></div><div class="meta"><b>Red Subtle</b><code>--red-subtle · 8%</code></div></div>
+      </div>
+      <p class="swatch-group">Grays — light theme ramp</p>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="chip" style="background:#f3f3f3"></div><div class="meta"><b>Gray 900</b><code>#F3F3F3</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#e9e9e9"></div><div class="meta"><b>Gray 800</b><code>#E9E9E9</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#d4d4d4"></div><div class="meta"><b>Gray 700</b><code>#D4D4D4</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#6b6b6b"></div><div class="meta"><b>Gray 500</b><code>#6B6B6B</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#555555"></div><div class="meta"><b>Gray 400</b><code>#555555</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#333333"></div><div class="meta"><b>Gray 300</b><code>#333333</code></div></div>
+      </div>
+      <p class="swatch-group">Status dots</p>
+      <div class="swatch-grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))">
+        <div class="swatch"><div class="chip" style="background:#fff;display:flex;align-items:center;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#22c55e"></span></div><div class="meta"><b>Go Green</b><code>#22C55E</code></div></div>
+        <div class="swatch"><div class="chip" style="background:#fff;display:flex;align-items:center;justify-content:center"><span style="width:14px;height:14px;border-radius:50%;background:#c51f2d"></span></div><div class="meta"><b>Alert Red</b><code>--red</code></div></div>
       </div>
     </div>
   </section>
 
-  <article class="paper-article">
-    <p class="lede">That $1,400 french-door refrigerator you bought in 2022? There is a meaningful chance it is not in unit 214 anymore — and nobody can prove where it went.</p>
-    <p>Not because your team is dishonest. Because the turn process makes it effortless: a dead fridge in a vacant unit, a working fridge in the unit being made ready next door, a 45-minute inspection window, and zero physical chain of custody. The swap solves today's problem and creates a $1,000 loss that surfaces eighteen months later as "premature failure."</p>
-    <p>Multiply that by every make-ready, every work order, every vendor visit — across every door you own. That is the skim.</p>
-
-    <div class="stat-strip">
-      <div class="stat-card"><span class="v">$10k–$14k</span><span class="l">of in-unit appliance equipment per door under management</span></div>
-      <div class="stat-card"><span class="v"><em>~3%</em> drift</span><span class="l">of appliances quietly swapped or lost between turns in untracked portfolios</span></div>
-      <div class="stat-card"><span class="v">$380–$1.2k</span><span class="l">of OEM warranty value left unclaimed on a typical covered failure</span></div>
+  <!-- ================= 03 Type ================= -->
+  <section class="sheet-section">
+    <div class="wrap">
+      <span class="sheet-index">03 / TYPOGRAPHY</span>
+      <p class="section-tag">Type system</p>
+      <h2 class="section-title" style="font-size:clamp(1.8rem,3.4vw,2.6rem)">Oversized headlines,<br>mono whispers.</h2>
+      <div class="type-spec"><span class="tag">.hero-dramatic-h1 · 900 · −0.045em</span>
+        <p class="hero-dramatic-h1" style="margin:0"><span class="h1-line">EVERY MACHINE,</span><span class="h1-line red-accent">ON RECORD.</span></p>
+      </div>
+      <div class="type-spec"><span class="tag">.section-title · 900 · −0.035em</span>
+        <p class="section-title" style="margin:0">The physical asset record for multifamily portfolios.</p>
+      </div>
+      <div class="type-spec"><span class="tag">.section-sub · gray-400</span>
+        <p class="section-sub" style="margin:0">Legacy software was built for accountants in offices, not techs in utility closets. Nameplate binds an immutable record to the machine itself.</p>
+      </div>
+      <div class="type-spec"><span class="tag">.section-tag / .hero-kicker / mono labels</span>
+        <p class="hero-kicker" style="margin-bottom:12px">White paper // Multifamily appliance operations</p>
+        <p class="mono" style="font-size:.8rem;letter-spacing:.08em">NP-7F42-0913 · UNIT 214 · 8 MIN READ · FOR OPERATORS &amp; INVESTORS</p>
+      </div>
+      <div class="spec-scroll">
+        <table class="spec-table" aria-label="Typography specification">
+          <thead><tr><th>STYLE</th><th>CLASS</th><th>FAMILY</th><th>SIZE</th><th>WEIGHT</th><th>TRACKING</th><th>LEADING</th></tr></thead>
+          <tbody>
+            <tr><td><span class="live" style="font-weight:900;font-size:1.3rem;letter-spacing:-.045em">Display</span></td><td class="m">.hero-dramatic-h1</td><td class="m">Sans</td><td class="m">clamp(3.2–6.4rem) ≈ 51–102px</td><td class="m">900</td><td class="m">−0.045em</td><td class="m">0.94</td></tr>
+            <tr><td><span class="live" style="font-weight:900;font-size:1.1rem;letter-spacing:-.035em">Headline</span></td><td class="m">.section-title</td><td class="m">Sans</td><td class="m">clamp(2.4–4.2rem) ≈ 38–67px</td><td class="m">900</td><td class="m">−0.035em</td><td class="m">1.05</td></tr>
+            <tr><td><span class="live" style="font-size:.95rem;color:#555">Lead paragraph</span></td><td class="m">.section-sub</td><td class="m">Sans</td><td class="m">1.22rem ≈ 19.5px</td><td class="m">400</td><td class="m">0</td><td class="m">1.6</td></tr>
+            <tr><td><span class="live mono" style="font-size:.72rem;letter-spacing:.12em;color:#c51f2d">KICKER</span></td><td class="m">.hero-kicker / .section-tag</td><td class="m">Mono</td><td class="m">0.78–0.82rem ≈ 12.5–13px</td><td class="m">700–800</td><td class="m">+0.12em</td><td class="m">1.4 · UPPER</td></tr>
+            <tr><td><span class="live" style="font-weight:750;font-size:.85rem">Button</span></td><td class="m">.btn (46px tall)</td><td class="m">Sans</td><td class="m">0.88rem ≈ 14px</td><td class="m">750</td><td class="m">+0.02em</td><td class="m">1</td></tr>
+            <tr><td><span class="live" style="font-weight:750;font-size:.75rem">Button small</span></td><td class="m">.btn-sm (36px tall)</td><td class="m">Sans</td><td class="m">0.78rem ≈ 12.5px</td><td class="m">750</td><td class="m">+0.02em</td><td class="m">1</td></tr>
+            <tr><td><span class="live mono" style="font-size:.7rem;letter-spacing:.08em">MONO LABEL</span></td><td class="m">.mono / meta / tags</td><td class="m">Mono</td><td class="m">0.62–0.8rem ≈ 10–13px</td><td class="m">600–700</td><td class="m">+0.06–0.16em</td><td class="m">1.45</td></tr>
+            <tr><td><span class="live" style="font-size:.85rem">Body base</span></td><td class="m">body</td><td class="m">Sans</td><td class="m">1rem ≈ 16px</td><td class="m">400</td><td class="m">0</td><td class="m">1.5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="btn-note">SANS: −APPLE-SYSTEM · BLINKMACSYSTEMFONT · “SEGOE UI” · INTER · “HELVETICA NEUE” · ARIAL — MONO: “IBM PLEX MONO” · “SF MONO” · MENLO · CONSOLAS — RULE: SANS SHOUTS (900, TIGHT, BLACK), MONO WHISPERS (SMALL, WIDE, RED/GRAY)</p>
     </div>
+  </section>
 
-    <h2><span class="num">01 / THE THREE LEAKS</span>How the money actually leaves</h2>
-    <p><strong>Leak one: the phantom swap.</strong> During turns, working appliances migrate toward the units that need to lease fastest. Donor parts — boards, handles, racks, elements — migrate the same way. Without a tag on the machine and a scan at the door, the ledger says everything is fine while the assets quietly downgrade.</p>
-    <p><strong>Leak two: the dead warranty.</strong> A tech replaces a failed control board for $600. The board was under a five-year manufacturer warranty. Nobody knew, because the model number, serial number, and install date live on a corroded plate nobody can read — or in a spreadsheet nobody trusts. You just paid for a repair that was already guaranteed.</p>
-    <p><strong>Leak three: blind CapEx.</strong> Ten water heaters installed the same month in 2017 are all dying the same summer. Without age visibility, each failure arrives as a midnight emergency instead of a planned Q2 replacement program. Emergency replacements cost more, lease worse, and wreck budgets.</p>
-
-    <blockquote>Your CMMS knows about the work order. It does not know about the machine.</blockquote>
-
-    <h2><span class="num">02 / ILLUSTRATIVE MATH</span>What the skim costs a 100-door property</h2>
-    <p>The numbers below are a deliberately simple illustration — plug in your own turn volume and replacement costs. The structure is what matters: small per-event losses at high frequency.</p>
-    <table class="math-table">
-      <thead><tr><th>Leak</th><th>Assumption</th><th>Annual cost</th></tr></thead>
-      <tbody>
-        <tr><td>Phantom swaps / shrinkage</td><td>2 units/yr × $900 downgrade</td><td>$1,800</td></tr>
-        <tr><td>Unclaimed warranties</td><td>6 covered failures/yr × $600 missed</td><td>$3,600</td></tr>
-        <tr><td>Emergency vs. planned replacement</td><td>4 emergencies/yr × $400 premium</td><td>$1,600</td></tr>
-        <tr><td>Turn inspection labor</td><td>40 turns/yr × 45 min @ $35/hr</td><td>$1,050</td></tr>
-        <tr><td><strong>Total, 100 doors</strong></td><td></td><td><strong>~$8,050/yr</strong></td></tr>
-      </tbody>
-    </table>
-    <p class="fineprint">Illustrative only — not a study, not a promise. At 1,000 doors with the same per-door rates, the same structure clears $80k a year. Most operators we talk to find the warranty row alone pays for a tracking program.</p>
-
-    <h2><span class="num">03 / WHY NOTHING CATCHES IT</span>The basement problem</h2>
-    <p>Legacy property software was built for accountants in offices, not techs in utility closets:</p>
-    <ul>
-      <li><strong>No signal, no record.</strong> Basements and mechanical rooms kill cell coverage. Cloud-dependent apps fail exactly where the assets live.</li>
-      <li><strong>Serial plates are unreadable.</strong> Heat, grease, and corrosion destroy manufacturer labels within years. Manual serial entry dies on contact with reality.</li>
-      <li><strong>Tickets track labor, not lineage.</strong> "Replaced board" tells you what a tech did. It doesn't tell you which board, from which donor, under which warranty, in which unit.</li>
-      <li><strong>Accounts are siloed.</strong> A fridge that walks across properties — or across operators — is invisible to every system that only sees one portfolio.</li>
-    </ul>
-
-    <h2><span class="num">04 / THE WHITE-PAPER CORE</span>The physical asset record</h2>
-    <p>The fix is structural, not motivational: <strong>bind an immutable record to the machine itself.</strong> A tamper-evident tag with a unique ID goes on every appliance at install. Every subsequent event — install, turn audit, repair, part swap, warranty claim, retirement — is scanned against that ID and appended to an offline-first ledger that reconciles when signal returns.</p>
-    <div class="step-grid">
-      <div class="step-card"><span class="k">STEP 01 — TAG</span><strong>One tag per machine.</strong> Tamper-destructible plate with a unique ID, applied at install or during the next turn. The plate <em>is</em> the record's anchor.</div>
-      <div class="step-card"><span class="k">STEP 02 — SCAN</span><strong>Sub-second verification in dead zones.</strong> The field app resolves the asset offline — no bars required — and walks the tech through a turn audit in minutes, not three quarters of an hour.</div>
-      <div class="step-card"><span class="k">STEP 03 — LEDGER</span><strong>Every event appends.</strong> Swaps, donor parts, warranty checks, and retirements accumulate into a per-asset service history no competitor — or departing vendor — can take with them.</div>
-      <div class="step-card"><span class="k">STEP 04 — FORECAST</span><strong>HQ sees the fleet age in real time.</strong> Replacement liability by quarter, failure-prone brands, dead warranties resurrected — the board deck writes itself.</div>
-    </div>
-    <p>This is what Nameplate is: the tag, the offline field app, and the portfolio ledger. But the playbook below works even if you never talk to us.</p>
-
-    <h2><span class="num">05 / MONDAY-MORNING PLAYBOOK</span>Five moves, no software required</h2>
-    <ul>
-      <li><strong>Photograph every data plate at install.</strong> Model, serial, install date, unit. Store it where turns happen — not in a regional manager's inbox.</li>
-      <li><strong>Make the turn audit an asset audit.</strong> Verify each major appliance against the unit's expected list before sign-off. Five minutes; catches 90% of drift.</li>
-      <li><strong>Check warranty before you buy the part.</strong> One lookup — manufacturer warranty by model + install date — before every board, element, and compressor order.</li>
-      <li><strong>Log donor parts.</strong> "Board from unit 118 → unit 214" on paper beats a perfect memory. Parts amnesia is how lemons hide.</li>
-      <li><strong>Age your fleet once a quarter.</strong> A one-page list of every water heater, HVAC, and fridge past 80% of expected life. That page is your CapEx plan.</li>
-    </ul>
-
-    <div class="cta-band">
-      <span class="paper-eyebrow">PILOT // ONE PROPERTY, 30 DAYS</span>
-      <h2>Stop absorbing the skim.</h2>
-      <p>We tag one property, run turn audits with your techs, and hand you the first real ledger you've ever had: what's actually in your units, what's under warranty, and what's about to die. Bring the report to your next asset meeting — or bring it to the forums and argue with us.</p>
-      <div class="cta-row">
-        <a class="btn btn-red" href="../index.html#investors"><span>Start the Conversation →</span></a>
+  <!-- ================= 04 Buttons ================= -->
+  <section class="sheet-section">
+    <div class="wrap">
+      <span class="sheet-index">04 / BUTTONS</span>
+      <p class="section-tag">Actions</p>
+      <h2 class="section-title" style="font-size:clamp(1.8rem,3.4vw,2.6rem)">Rigid corners.<br>Decisive hovers.</h2>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="../index.html"><span>Primary →</span></a>
+        <a class="btn btn-red" href="../index.html"><span>Talk to Us →</span></a>
         <a class="btn btn-ghost" href="../field/"><span>See the Field App</span></a>
-        <a class="btn btn-ghost" href="../hq/"><span>See HQ Audits</span></a>
-        <a class="btn btn-ghost" href="https://www.biggerpockets.com/forums" target="_blank" rel="noopener"><span>Discuss on BiggerPockets ↗</span></a>
+        <a class="btn btn-red btn-sm" href="../index.html"><span>Small Red</span></a>
+        <a class="btn btn-primary btn-sm" href="../index.html"><span>Small</span></a>
+      </div>
+      <p class="btn-note">HOVER: PRIMARY → RED FILL · RED → #AC1926 · GHOST → BORDER + LIFT · ALL: TRANSLATEY(−2PX) · RADIUS ALWAYS 2PX</p>
+      <div class="btn-row" style="margin-top:26px">
+        <div class="schematic-tab-row">
+          <button class="schematic-tab-btn is-active" type="button">ACTIVE TAB</button>
+          <button class="schematic-tab-btn" type="button">IDLE TAB</button>
+          <button class="schematic-tab-btn" type="button">IDLE TAB</button>
+        </div>
+      </div>
+      <p class="btn-note">SCHEMATIC TABS: ACTIVE = RED FILL · IDLE = MONO GRAY</p>
+    </div>
+  </section>
+
+  <!-- ================= 05 Containers ================= -->
+  <section class="sheet-section">
+    <div class="wrap">
+      <span class="sheet-index">05 / BOXES &amp; CONTAINERS</span>
+      <p class="section-tag">Surfaces</p>
+      <h2 class="section-title" style="font-size:clamp(1.8rem,3.4vw,2.6rem)">Cards, pillars,<br>ticks &amp; badges.</h2>
+      <div class="hero-splash-strip" style="margin-top:34px">
+        <div class="hero-splash-pillar has-corner-ticks">
+          <div class="splash-pillar-header"><span class="splash-pillar-tag">FIELD APP</span><span class="splash-status-dot green"></span></div>
+          <p class="splash-pillar-title">Scan in the dead zone.</p>
+          <p class="splash-pillar-desc">Sub-second asset verification with zero bars. The turn audit takes minutes, not three quarters of an hour.</p>
+          <div class="splash-pillar-badges"><span>OFFLINE-FIRST</span><span>TURN AUDIT</span><span>iOS + ANDROID</span></div>
+        </div>
+        <div class="hero-splash-pillar has-corner-ticks">
+          <div class="splash-pillar-header"><span class="splash-pillar-tag">HQ CONSOLE</span><span class="splash-status-dot red"></span></div>
+          <p class="splash-pillar-title">The fleet, aged live.</p>
+          <p class="splash-pillar-desc">Replacement liability by quarter, failure-prone brands, dead warranties resurrected.</p>
+          <div class="splash-pillar-badges"><span>LEDGER</span><span>FORECAST</span><span>AUDITS</span></div>
+        </div>
+      </div>
+      <p class="btn-note">SPLASH PILLARS: 2PX RADIUS · STATUS DOT (GREEN/RED) · MONO TAG · BADGE ROW · CORNER “+” REGISTRATION TICKS</p>
+      <div class="schematic-featured-frame" style="margin-top:22px">
+        <div class="schematic-image-wrap has-corner-ticks">
+          <img src="../images/iso/fridge.svg" alt="French-door refrigerator line art in featured frame" style="max-width:280px">
+        </div>
+        <div class="schematic-intel-panel">
+          <p class="schematic-intel-tag">Featured frame</p>
+          <p class="schematic-intel-title">Schematic + intel panel</p>
+          <p class="splash-pillar-desc">Dark canvas stays dark in light mode. Image left, mono tag + headline + body right. Hover zooms the artifact 1.02×.</p>
+        </div>
+      </div>
+      <p class="btn-note">FEATURED FRAME: DARK CANVAS · 2PX RADIUS · FLAT, NO SHADOW · INTEL PANEL RIGHT</p>
+      <div class="callout-grid">
+        <div class="anatomy-callout-chip is-active">
+          <div class="chip-header"><span class="chip-num">01</span><span class="chip-title">CALLOUT CHIP — ACTIVE</span></div>
+          <p class="chip-body">Borderless. Red left rule. Nudges +4px on hover. Used for tag-anatomy annotations.</p>
+        </div>
+        <div class="anatomy-callout-chip">
+          <div class="chip-header"><span class="chip-num">02</span><span class="chip-title">CALLOUT CHIP — IDLE</span></div>
+          <p class="chip-body">Gray left rule until hover. Titles snap to full ink when active.</p>
+        </div>
+      </div>
+      <div class="hero-dramatic-ticker" style="margin-top:22px">
+        <span class="ticker-badge"><span class="ticker-dot"></span>LIVE</span>
+        <span class="ticker-sep">/</span><span>TICKER — PILOT OPEN</span>
+        <span class="ticker-sep">/</span><span>ONE PROPERTY · 30 DAYS</span>
       </div>
     </div>
-  </article>
+  </section>
 
-  <footer class="paper-footer">
-    <p>Built by <a href="../index.html">Nameplate</a> — the physical asset record for multifamily portfolios.</p>
-    <p class="fineprint">Sharing this with an operator who needs it? Send them the link. Arguing with our math? <a href="https://www.biggerpockets.com/forums" target="_blank" rel="noopener">Bring it to BiggerPockets</a> — we read everything.</p>
+  <!-- ================= 06 Fleet ================= -->
+  <section class="sheet-section">
+    <div class="wrap">
+      <span class="sheet-index">06 / APPLIANCE LINE-ART · 10 UNITS</span>
+      <p class="section-tag">The fleet</p>
+      <h2 class="section-title" style="font-size:clamp(1.8rem,3.4vw,2.6rem)">Thin iso strokes,<br>red hardware accents.</h2>
+      <div class="fleet-grid">
+        <div class="fleet-cell"><img src="../images/iso/fridge.svg" alt="French-door refrigerator line art"><span class="t">FRENCH-DOOR FRIDGE</span><code>iso/fridge.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/range.svg" alt="Range line art"><span class="t">RANGE</span><code>iso/range.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/washer.svg" alt="Washer line art"><span class="t">WASHER</span><code>iso/washer.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/dryer.svg" alt="Dryer line art"><span class="t">DRYER</span><code>iso/dryer.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/dishwasher.svg" alt="Dishwasher line art"><span class="t">DISHWASHER</span><code>iso/dishwasher.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/microwave.svg" alt="Microwave line art"><span class="t">MICROWAVE</span><code>iso/microwave.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/water-heater.svg" alt="Water heater line art"><span class="t">WATER HEATER</span><code>iso/water-heater.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/hvac.svg" alt="Air handler line art"><span class="t">AIR HANDLER</span><code>iso/hvac.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/thermostat.svg" alt="Thermostat line art"><span class="t">THERMOSTAT</span><code>iso/thermostat.svg</code></div>
+        <div class="fleet-cell"><img src="../images/iso/condenser.svg" alt="Condenser line art"><span class="t">CONDENSER</span><code>iso/condenser.svg</code></div>
+      </div>
+      <p class="btn-note">STROKE #161616 ON LIGHT · RED #C51F2D ACCENTS ONLY · DARK-MODE VARIANT AUTO-SWAPS VIA PREFERS-COLOR-SCHEME</p>
+    </div>
+  </section>
+
+  <footer class="sheet-footer">
+    <div class="wrap">
+      <p>Still sheet 01 — <a href="../index.html">Nameplate</a> design language. Colors, type, buttons, containers, fleet, lockups. White field, rigid 2px corners, red reserved for signal.</p>
+    </div>
   </footer>
 </main>
 </body>
