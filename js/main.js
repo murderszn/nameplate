@@ -406,32 +406,319 @@
     }
   }
 
-  // ================= 3. Interactive Schematics Viewer Tabs =================
-  function initSchematicsViewer() {
-    var tabs = document.querySelectorAll('#schematicTabs .schematic-tab-btn');
-    var trioCards = document.querySelectorAll('.schematic-card-mini');
+  // ================= 3. Interactive Portfolio HQ Yield & Dossier Gallery =================
+  var HQ_YIELD_DATA = {
+    'report-depreciation': {
+      type: 'PRINTABLE PDF AUDIT',
+      id: 'NP-AUDIT-CAPEX-2026',
+      scope: 'Sonoran Portfolio · 1,840 Assets',
+      title: 'Equipment Depreciation & CapEx Replacement Forecast',
+      desc: '10-year straight-line depreciation schedule across 1,840 fleet appliances, forecasting $241,800 in 2026 replacement liability with serial-level confidence. Identifies equipment crossing 85% of useful lifespan before catastrophic failure occurs.',
+      img: 'images/reports/report_depreciation_audit.png',
+      stat1Val: '$241,800',
+      stat1Lbl: '2026 CAPEX EXPOSURE',
+      stat2Val: '182 Units',
+      stat2Lbl: 'IMPENDING FAILURE (>85% LIFE)',
+      stat2Alert: true,
+      stat3Val: '4.8 Yrs',
+      stat3Lbl: 'AVG OPERATING AGE',
+      tags: ['Straight-Line Depreciation', 'Reserve Planning', 'Boardroom Ready'],
+      primaryBtn: { text: 'Open Printable PDF Dossier', url: 'reports/depreciation_audit.html', target: '_blank' },
+      secondaryBtn: { text: 'Launch in HQ Console', url: 'hq/index.html#/analytics', target: '_self' }
+    },
+    'report-lemon': {
+      type: 'PRINTABLE PDF AUDIT',
+      id: 'NP-AUDIT-LEMON-2026',
+      scope: 'Sonoran Portfolio · OEM Analysis',
+      title: 'Appliance Brand & Failure Rate Benchmark Matrix',
+      desc: 'Statistical MTBF and warranty claims analysis across OEM brands. Flags Whirlpool compressor failure rate at 8.4% (vs 2.1% fleet benchmark) as a portfolio lemon outlier requiring manufacturer warranty recovery.',
+      img: 'images/reports/report_failure_rate_matrix.png',
+      stat1Val: '8.4%',
+      stat1Lbl: 'WHIRLPOOL DEFECT RATE (ANOMALY)',
+      stat1Alert: true,
+      stat2Val: '16 Units',
+      stat2Lbl: 'QUARANTINED LEMON UNITS',
+      stat2Alert: true,
+      stat3Val: '$14,200',
+      stat3Lbl: 'RECOVERABLE OEM CLAIMS',
+      tags: ['OEM Failure Benchmark', 'Lemon Quarantine', 'Warranty Recovery'],
+      primaryBtn: { text: 'Open Printable PDF Dossier', url: 'reports/failure_rate_matrix.html', target: '_blank' },
+      secondaryBtn: { text: 'Inspect Lemons in HQ', url: 'hq/index.html#/analytics', target: '_self' }
+    },
+    'report-sla': {
+      type: 'PRINTABLE PDF AUDIT',
+      id: 'NP-AUDIT-SLA-2026',
+      scope: 'Sonoran Portfolio · 6 Properties',
+      title: 'Work Order SLA Performance & Operations Velocity Audit',
+      desc: 'Audits technician first-time fix rates (94.2%), average repair resolution velocity (1.8 hours), and 100% on-time preventive maintenance compliance across all 6 properties in Sonoran Portfolio.',
+      img: 'images/reports/report_sla_operations_audit.png',
+      stat1Val: '94.2%',
+      stat1Lbl: 'FIRST-TIME FIX VELOCITY',
+      stat2Val: '1.8 Hrs',
+      stat2Lbl: 'AVERAGE REPAIR DURATION',
+      stat3Val: '100%',
+      stat3Lbl: 'ON-TIME PM AUDIT VELOCITY',
+      tags: ['Technician Performance', 'SLA Velocity', 'PM Compliance'],
+      primaryBtn: { text: 'Open Printable PDF Dossier', url: 'reports/sla_operations_audit.html', target: '_blank' },
+      secondaryBtn: { text: 'View Field Stream in HQ', url: 'hq/index.html#/work-orders', target: '_self' }
+    },
+    'hq-capex': {
+      type: 'LIVE HQ CONSOLE',
+      id: 'HQ-MODULE // CAPEX FORECASTER',
+      scope: 'Sonoran Portfolio · Multi-Property Rollup',
+      title: 'CapEx Replacement Engine & Reserve Planner',
+      desc: 'Multi-property CapEx budget forecaster projecting quarterly asset retirement dates, replacement costs, and inflation adjustments across all 6 properties over a 12-quarter predictive horizon.',
+      img: 'images/reports/hq_capex_forecaster.png',
+      stat1Val: '$4.2M',
+      stat1Lbl: 'TOTAL FLEET REPLACEMENT VALUE',
+      stat2Val: '1,840',
+      stat2Lbl: 'ACTIVE MANAGED APPLIANCES',
+      stat3Val: '12 Qtrs',
+      stat3Lbl: 'PREDICTIVE HORIZON',
+      tags: ['Interactive Forecasting', 'Reserve Modeling', 'Capital Planning'],
+      primaryBtn: { text: 'Launch CapEx in HQ', url: 'hq/index.html#/analytics', target: '_self' },
+      secondaryBtn: { text: 'View CapEx Audit PDF', url: 'reports/depreciation_audit.html', target: '_blank' }
+    },
+    'hq-lemon': {
+      type: 'LIVE HQ CONSOLE',
+      id: 'HQ-MODULE // DEFECT ENGINE',
+      scope: 'Sonoran Portfolio · OEM Analysis',
+      title: 'Lemon Defect Radar & Serial Batch Anomaly Matrix',
+      desc: 'Algorithmic lemon detector highlighting serial batches with recurring burnouts, premature capacitor failures, and vendor installation errors across properties.',
+      img: 'images/reports/hq_lemon_detection.png',
+      stat1Val: '3 Clusters',
+      stat1Lbl: 'FLAGGED UNDER OEM WARRANTY',
+      stat1Alert: true,
+      stat2Val: '100%',
+      stat2Lbl: 'SERIAL-TO-UNIT TRACEABILITY',
+      stat3Val: '$28,400',
+      stat3Lbl: 'ACTIVE CLAIM PIPELINE',
+      tags: ['Anomaly Detection', 'Serial Batching', 'Chargeback Defense'],
+      primaryBtn: { text: 'Launch Lemon Radar in HQ', url: 'hq/index.html#/analytics', target: '_self' },
+      secondaryBtn: { text: 'View Failure Matrix PDF', url: 'reports/failure_rate_matrix.html', target: '_blank' }
+    },
+    'hq-macro': {
+      type: 'LIVE HQ CONSOLE',
+      id: 'HQ-MODULE // EXECUTIVE MACRO',
+      scope: 'Sonoran Portfolio · Executive Suite',
+      title: 'Executive Portfolio Overview & Health Scorecards',
+      desc: 'High-altitude macro view tracking $4.2M in total fleet asset value, health indices, warranty recovery pipeline, and property-by-property work order velocity.',
+      img: 'images/reports/hq_executive_overview.png',
+      stat1Val: '98.6%',
+      stat1Lbl: 'FLEET OPERATIONAL UPTIME',
+      stat2Val: '6 Props',
+      stat2Lbl: 'MANAGED APARTMENT ASSETS',
+      stat3Val: '94.2%',
+      stat3Lbl: 'SLA ATTAINMENT RATE',
+      tags: ['Executive Scorecards', 'Fleet Uptime', 'Portfolio Health'],
+      primaryBtn: { text: 'Launch Executive HQ', url: 'hq/index.html', target: '_self' },
+      secondaryBtn: { text: 'View SLA Audit PDF', url: 'reports/sla_operations_audit.html', target: '_blank' }
+    },
+    'hq-telemetry': {
+      type: 'LIVE HQ CONSOLE',
+      id: 'HQ-MODULE // TELEMETRY STREAM',
+      scope: 'Field Network · Real-Time Edge Ledger',
+      title: 'Field Operations Telemetry & Audit Stream',
+      desc: 'Real-time cryptographic ledger recording every hardware tag minted, OCR serial scan performed, and maintenance checklist completed across the portfolio.',
+      img: 'images/reports/hq_telemetry_audit.png',
+      stat1Val: 'Real-Time',
+      stat1Lbl: 'CRYPTOGRAPHIC EVENT STREAM',
+      stat2Val: 'Zero-Loss',
+      stat2Lbl: 'OFFLINE-FIRST EDGE PROTOCOL',
+      stat3Val: '100%',
+      stat3Lbl: 'IMMUTABLE AUDIT TRAIL',
+      tags: ['Event Ledger', 'Zero Signal Sync', 'Tamper Evident'],
+      primaryBtn: { text: 'Inspect Live Stream in HQ', url: 'hq/index.html#/work-orders', target: '_self' },
+      secondaryBtn: { text: 'Launch Field Scanner', url: 'field/', target: '_self' }
+    }
+  };
 
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) { t.classList.remove('is-active'); });
-        tab.classList.add('is-active');
-        var key = tab.getAttribute('data-sch');
-        renderLiveAppRecord(key);
-      });
+  var currentSelectedYieldId = 'report-depreciation';
+
+  function updateFeaturedStage(id) {
+    var data = HQ_YIELD_DATA[id];
+    if (!data) return;
+    currentSelectedYieldId = id;
+
+    var badge = document.getElementById('stageTypeBadge');
+    var docId = document.getElementById('stageDocId');
+    var scope = document.getElementById('stageDocScope');
+    var title = document.getElementById('stageDocTitle');
+    var desc = document.getElementById('stageDocDesc');
+    var img = document.getElementById('stageFeaturedImg');
+    var stat1Val = document.getElementById('stageStat1Val');
+    var stat1Lbl = document.getElementById('stageStat1Lbl');
+    var stat2Val = document.getElementById('stageStat2Val');
+    var stat2Lbl = document.getElementById('stageStat2Lbl');
+    var stat3Val = document.getElementById('stageStat3Val');
+    var stat3Lbl = document.getElementById('stageStat3Lbl');
+    var tagsRow = document.getElementById('stageTagsRow');
+    var primaryBtn = document.getElementById('stagePrimaryBtn');
+    var secondaryBtn = document.getElementById('stageSecondaryBtn');
+
+    if (badge) badge.textContent = data.type;
+    if (docId) docId.textContent = data.id;
+    if (scope) scope.textContent = data.scope;
+    if (title) title.textContent = data.title;
+    if (desc) desc.textContent = data.desc;
+
+    if (stat1Val) stat1Val.textContent = data.stat1Val;
+    if (stat1Lbl) stat1Lbl.textContent = data.stat1Lbl;
+    if (stat2Val) stat2Val.textContent = data.stat2Val;
+    if (stat2Lbl) stat2Lbl.textContent = data.stat2Lbl;
+    if (stat3Val) stat3Val.textContent = data.stat3Val;
+    if (stat3Lbl) stat3Lbl.textContent = data.stat3Lbl;
+
+    var stat2Tile = stat2Val ? stat2Val.closest('.stage-metric-tile') : null;
+    if (stat2Tile) {
+      if (data.stat2Alert) stat2Tile.classList.add('stage-metric-alert');
+      else stat2Tile.classList.remove('stage-metric-alert');
+    }
+
+    if (tagsRow && data.tags) {
+      tagsRow.innerHTML = data.tags.map(function (t) {
+        return '<span class="stage-tag mono">' + t + '</span>';
+      }).join('');
+    }
+
+    if (primaryBtn) {
+      primaryBtn.href = data.primaryBtn.url;
+      primaryBtn.target = data.primaryBtn.target;
+      primaryBtn.innerHTML = '<span>' + data.primaryBtn.text + '</span><span class="btn-arrow" aria-hidden="true">↗</span>';
+    }
+
+    if (secondaryBtn) {
+      secondaryBtn.href = data.secondaryBtn.url;
+      secondaryBtn.target = data.secondaryBtn.target;
+      secondaryBtn.innerHTML = '<span>' + data.secondaryBtn.text + '</span><span class="btn-arrow" aria-hidden="true">↗</span>';
+    }
+
+    if (img) {
+      img.style.opacity = '0.3';
+      setTimeout(function () {
+        img.src = data.img;
+        img.alt = data.title;
+        img.style.opacity = '1';
+      }, 120);
+    }
+
+    document.querySelectorAll('.hq-yield-card').forEach(function (card) {
+      if (card.getAttribute('data-id') === id) card.classList.add('is-active');
+      else card.classList.remove('is-active');
     });
+  }
 
-    trioCards.forEach(function (card) {
+  function openHqLightbox(id) {
+    var data = HQ_YIELD_DATA[id || currentSelectedYieldId];
+    if (!data) return;
+    var modal = document.getElementById('hqYieldLightboxModal');
+    var lbBadge = document.getElementById('lbModalBadge');
+    var lbTitle = document.getElementById('lbModalTitle');
+    var lbSub = document.getElementById('lbModalSub');
+    var lbImg = document.getElementById('lbModalImg');
+    var lbAction = document.getElementById('lbModalActionBtn');
+
+    if (lbBadge) lbBadge.textContent = data.type;
+    if (lbTitle) lbTitle.textContent = data.title;
+    if (lbSub) lbSub.textContent = 'DOC ID: ' + data.id + ' · SCOPE: ' + data.scope.toUpperCase();
+    if (lbImg) {
+      lbImg.src = data.img;
+      lbImg.alt = data.title;
+    }
+    if (lbAction) {
+      lbAction.href = data.primaryBtn.url;
+      lbAction.target = data.primaryBtn.target;
+      lbAction.innerHTML = '<span>' + data.primaryBtn.text + ' ↗</span>';
+    }
+    if (modal) {
+      modal.classList.add('is-active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeHqLightbox() {
+    var modal = document.getElementById('hqYieldLightboxModal');
+    if (modal) {
+      modal.classList.remove('is-active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function initHqYieldGallery() {
+    var cards = document.querySelectorAll('.hq-yield-card');
+    cards.forEach(function (card) {
       card.addEventListener('click', function () {
-        var key = card.getAttribute('data-select-sch');
-        tabs.forEach(function (t) {
-          if (t.getAttribute('data-sch') === key) t.classList.add('is-active');
-          else t.classList.remove('is-active');
-        });
-        renderLiveAppRecord(key);
-        var simEl = document.getElementById('appSimulatorView');
-        if (simEl) simEl.scrollIntoView({ behavior: 'smooth' });
+        var id = card.getAttribute('data-id');
+        updateFeaturedStage(id);
+        var stage = document.getElementById('hqFeaturedStage');
+        if (stage && window.innerWidth < 800) {
+          stage.scrollIntoView({ behavior: 'smooth' });
+        }
       });
     });
+
+    var filterPills = document.querySelectorAll('#hqYieldFilterTabs .hq-filter-pill');
+    var countDisplay = document.getElementById('galleryCountDisplay');
+
+    filterPills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        filterPills.forEach(function (p) { p.classList.remove('is-active'); });
+        pill.classList.add('is-active');
+        var filter = pill.getAttribute('data-filter');
+
+        var visibleCount = 0;
+        cards.forEach(function (card) {
+          var cats = (card.getAttribute('data-category') || '').split(' ');
+          var isMatch = (filter === 'all') || (cats.indexOf(filter) !== -1);
+          if (isMatch) {
+            card.classList.remove('is-filtered-out');
+            visibleCount++;
+          } else {
+            card.classList.add('is-filtered-out');
+          }
+        });
+
+        if (countDisplay) {
+          countDisplay.textContent = 'SHOWING ' + visibleCount + ' OF ' + cards.length + ' ARTIFACTS';
+        }
+      });
+    });
+
+    var btnEnlarge = document.getElementById('btnEnlargeFeatured');
+    var imgWrapper = document.getElementById('stageImgWrapper');
+    if (btnEnlarge) {
+      btnEnlarge.addEventListener('click', function (e) {
+        e.stopPropagation();
+        openHqLightbox(currentSelectedYieldId);
+      });
+    }
+    if (imgWrapper) {
+      imgWrapper.addEventListener('click', function () {
+        openHqLightbox(currentSelectedYieldId);
+      });
+      imgWrapper.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openHqLightbox(currentSelectedYieldId);
+        }
+      });
+    }
+
+    var closeBtn = document.getElementById('closeHqLightboxBtn');
+    var modal = document.getElementById('hqYieldLightboxModal');
+    if (closeBtn) closeBtn.addEventListener('click', closeHqLightbox);
+    if (modal) {
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) closeHqLightbox();
+      });
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeHqLightbox();
+    });
+
+    updateFeaturedStage('report-depreciation');
   }
 
 
@@ -478,6 +765,7 @@
     var fineprint = document.querySelector('.tag-large-fineprint');
     var rivets = document.querySelectorAll('.hex-rivet');
     var slits = document.querySelectorAll('.tamper-slit');
+    var tagCard = document.getElementById('oversizedTagCard');
     var chips = document.querySelectorAll('.anatomy-callout-chip');
 
     function triggerMintFlash() {
@@ -509,7 +797,7 @@
       });
     }
 
-    // Interactive callout hover connections
+    // Interactive callout hover connections — slits now highlights refined card edging (no hash marks)
     chips.forEach(function (chip) {
       var pointer = chip.getAttribute('data-pointer');
 
@@ -518,6 +806,7 @@
         if (pointer === 'finder' || pointer === 'ecc') {
           if (qrBox) qrBox.classList.add('is-highlighted');
         } else if (pointer === 'slits') {
+          if (tagCard) tagCard.classList.add('is-highlighted');
           slits.forEach(function (s) { s.classList.add('is-highlighted'); });
         } else if (pointer === 'rivets') {
           rivets.forEach(function (r) { r.classList.add('is-highlighted'); });
@@ -531,6 +820,7 @@
       chip.addEventListener('mouseleave', function () {
         chip.classList.remove('is-active');
         if (qrBox) qrBox.classList.remove('is-highlighted');
+        if (tagCard) tagCard.classList.remove('is-highlighted');
         slits.forEach(function (s) { s.classList.remove('is-highlighted'); });
         rivets.forEach(function (r) { r.classList.remove('is-highlighted'); });
         if (npidDisplay) npidDisplay.classList.remove('is-highlighted');
@@ -551,16 +841,20 @@
     function closeNavigation() {
       if (!nav || !toggle) return;
       nav.classList.remove('is-open');
+      if (header) header.classList.remove('nav-open');
       toggle.setAttribute('aria-expanded', 'false');
       toggle.setAttribute('aria-label', 'Open navigation');
+      onScroll();
     }
 
     if (nav && toggle) {
       toggle.addEventListener('click', function () {
         var isOpen = toggle.getAttribute('aria-expanded') === 'true';
         nav.classList.toggle('is-open', !isOpen);
+        if (header) header.classList.toggle('nav-open', !isOpen);
         toggle.setAttribute('aria-expanded', String(!isOpen));
         toggle.setAttribute('aria-label', isOpen ? 'Open navigation' : 'Close navigation');
+        onScroll();
       });
 
       nav.querySelectorAll('a').forEach(function (link) {
@@ -581,7 +875,7 @@
 
     function onScroll() {
       if (!header) return;
-      if (window.scrollY > 10) {
+      if (window.scrollY > 180 || header.classList.contains('nav-open')) {
         header.classList.add('is-scrolled');
       } else {
         header.classList.remove('is-scrolled');
@@ -1012,24 +1306,22 @@
       initTheme();
       initHeroIsoCarousel();
       initOversizedQrStudio();
-      initSchematicsViewer();
+      initHqYieldGallery();
       initScreensFilter();
       initInvestorAudioPlayer();
       initSlideDeckViewer();
       initContactModal();
-      renderLiveAppRecord('hvac');
     });
   } else {
     initHeader();
     initTheme();
     initHeroIsoCarousel();
     initOversizedQrStudio();
-    initSchematicsViewer();
+    initHqYieldGallery();
     initScreensFilter();
     initInvestorAudioPlayer();
     initSlideDeckViewer();
     initContactModal();
-    renderLiveAppRecord('hvac');
   }
 
 })();
