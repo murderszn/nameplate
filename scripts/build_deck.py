@@ -2,7 +2,7 @@
 """Nameplate Asset Infrastructure Deck generator.
 
 Renders 15 slides (1920x1080 PNG masters) in the current Nameplate
-marketing style (black / white / #eb2b2b, open layouts, no running chrome),
+marketing style (black / white / #c51f2d, open layouts, no running chrome),
 using live product screenshots and asset photography. Drop-in replacement
 for website/images/deck/slide_*.png (viewer keeps 15 slides, same names).
 
@@ -25,8 +25,8 @@ BG = (11, 11, 12)
 WHITE = (255, 255, 255)
 GRAY70 = (163, 163, 163)
 GRAY40 = (110, 110, 110)
-RED = (235, 43, 43)
-RED_DEEP = (201, 31, 31)
+RED = (197, 31, 45)
+RED_DEEP = (189, 31, 31)
 CARD = (20, 20, 22)
 LINE = (255, 255, 255, 26)
 LINE_STRONG = (255, 255, 255, 55)

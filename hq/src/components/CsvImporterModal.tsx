@@ -437,7 +437,7 @@ export const CsvImporterModal: React.FC<CsvImporterModalProps> = ({
           </div>
 
           {parseError && (
-            <div style={{ padding: '10px 14px', background: 'rgba(235, 43, 43, 0.1)', border: '1px solid var(--red)', color: 'var(--red)', borderRadius: 2, fontSize: '0.8rem' }}>
+            <div style={{ padding: '10px 14px', background: 'rgba(197, 31, 45, 0.1)', border: '1px solid var(--red)', color: 'var(--red)', borderRadius: 2, fontSize: '0.8rem' }}>
               ⚠️ {parseError}
             </div>
           )}

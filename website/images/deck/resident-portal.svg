@@ -7,7 +7,7 @@
     <path d="M194 59h51l17 17v75h-68zM245 59v19h17M209 99h37M209 115h28M209 131h18"/>
     <path d="M337 70h14v-9h29v9h14v80h-57zM351 70v9h29v-9"/>
   </g>
-  <g fill="none" stroke="#eb2b2b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="#c51f2d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <path d="M139 105h30m-7-7 7 7-7 7M282 105h30m-7-7 7 7-7 7M349 114l11 11 22-24"/>
   </g>
 </svg>

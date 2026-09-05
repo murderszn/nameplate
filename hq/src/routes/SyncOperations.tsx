@@ -448,7 +448,7 @@ export function SyncOperations() {
                 </div>
                 <div className="np-crypto-spec-row" style={{ borderTop: '1px solid rgba(var(--overlay-rgb), 0.06)', paddingTop: 10 }}>
                   <span className="lbl">Checksum Status</span>
-                  <span className="np-badge" style={{ minWidth: 150, background: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.1)' : 'rgba(235, 43, 43,0.1)', color: inspectParsed.isCheckValid ? '#22c55e' : 'var(--red)', borderColor: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.3)' : 'rgba(235, 43, 43,0.3)' }}>
+                  <span className="np-badge" style={{ minWidth: 150, background: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.1)' : 'rgba(197, 31, 45,0.1)', color: inspectParsed.isCheckValid ? '#22c55e' : 'var(--red)', borderColor: inspectParsed.isCheckValid ? 'rgba(34,197,94,0.3)' : 'rgba(197, 31, 45,0.3)' }}>
                     {inspectParsed.isCheckValid ? 'VALID CROCKFORD-32' : 'CHECKSUM MISMATCH'}
                   </span>
                 </div>

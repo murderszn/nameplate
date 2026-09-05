@@ -562,13 +562,13 @@ class _TurnCard extends StatelessWidget {
     final isDone = turn.status == TurnStatus.completed;
     final blockColor = isDone
         ? const Color(0xFF10B981).withValues(alpha: 0.15)
-        : const Color(0xFFEB2B2B).withValues(alpha: 0.15);
+        : const Color(0xFFC51F2D).withValues(alpha: 0.15);
     final blockIcon = isDone
         ? Icons.task_alt_rounded
         : Icons.pending_actions_rounded;
     final blockIconColor = isDone
         ? const Color(0xFF10B981)
-        : const Color(0xFFEB2B2B);
+        : const Color(0xFFC51F2D);
 
     final propertyImage = NpAssets.propertyImageFor(turn.unitLabel);
 

@@ -3,9 +3,9 @@
 .ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
 .thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
 .face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-.red{fill:none;stroke:#EB2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-.red-thin{fill:none;stroke:#EB2B2B;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-.red-fill{fill:#EB2B2B;stroke:none}
+.red{fill:none;stroke:#c51f2d;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red-thin{fill:none;stroke:#c51f2d;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.red-fill{fill:#c51f2d;stroke:none}
 @media (prefers-color-scheme:dark){
 .ln,.thin{stroke:#F2F2F2}
 .face{stroke:#F2F2F2}

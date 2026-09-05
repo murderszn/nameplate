@@ -128,9 +128,9 @@
 }
 
 .hq-verdict-tag--replace {
-  background: rgba(235, 43, 43, 0.12);
+  background: rgba(197, 31, 45, 0.12);
   color: var(--red);
-  border: 1px solid rgba(235, 43, 43, 0.3);
+  border: 1px solid rgba(197, 31, 45, 0.3);
 }
 
 .hq-verdict-tag--monitor {
@@ -192,7 +192,7 @@
   border-color: rgba(245, 158, 11, 0.32);
 }
 .hq-scorecard--danger:hover {
-  border-color: rgba(235, 43, 43, 0.32);
+  border-color: rgba(197, 31, 45, 0.32);
 }
 
 .hq-scorecard__media {
@@ -520,7 +520,7 @@
 .hq-filter-field:focus-within {
   border-color: var(--red);
   background: var(--bg-card);
-  box-shadow: 0 0 0 3px rgba(235, 43, 43, 0.12);
+  box-shadow: 0 0 0 3px rgba(197, 31, 45, 0.12);
 }
 
 .hq-filter-field__label {
@@ -602,7 +602,7 @@
   border-radius: 50%;
   background: var(--red);
   flex-shrink: 0;
-  box-shadow: 0 0 0 2px rgba(235, 43, 43, 0.25);
+  box-shadow: 0 0 0 2px rgba(197, 31, 45, 0.25);
 }
 
 .hq-analytics-toolbar__meta-text strong {
@@ -786,7 +786,7 @@
   border-top: 3px solid var(--red);
 }
 .hq-lifecycle-card--danger:hover {
-  border-color: rgba(235, 43, 43, 0.35);
+  border-color: rgba(197, 31, 45, 0.35);
 }
 
 .hq-lifecycle-card__head {
@@ -825,9 +825,9 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 .hq-lifecycle-card__badge--danger {
-  background: rgba(235, 43, 43, 0.12);
+  background: rgba(197, 31, 45, 0.12);
   color: var(--red);
-  border: 1px solid rgba(235, 43, 43, 0.25);
+  border: 1px solid rgba(197, 31, 45, 0.25);
 }
 
 .hq-lifecycle-card__title {
@@ -1080,7 +1080,7 @@
 }
 
 .hq-lemon-scorecard--replace:hover {
-  border-color: rgba(235, 43, 43, 0.45);
+  border-color: rgba(197, 31, 45, 0.45);
 }
 
 .hq-lemon-scorecard--monitor {
@@ -1207,8 +1207,8 @@
   font-size: 0.72rem;
   font-weight: 800;
   color: var(--red);
-  background: rgba(235, 43, 43, 0.08);
-  border: 1px solid rgba(235, 43, 43, 0.22);
+  background: rgba(197, 31, 45, 0.08);
+  border: 1px solid rgba(197, 31, 45, 0.22);
   padding: 4px 8px;
   border-radius: var(--np-radius);
 }
@@ -1218,7 +1218,7 @@
   height: 6px;
   border-radius: 50%;
   background: var(--red);
-  box-shadow: 0 0 0 2px rgba(235, 43, 43, 0.3);
+  box-shadow: 0 0 0 2px rgba(197, 31, 45, 0.3);
 }
 
 .hq-lemon-scorecard__parts {
@@ -1390,9 +1390,9 @@
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 .hq-grade-badge--c {
-  background: rgba(235, 43, 43, 0.14);
+  background: rgba(197, 31, 45, 0.14);
   color: var(--red);
-  border: 1px solid rgba(235, 43, 43, 0.3);
+  border: 1px solid rgba(197, 31, 45, 0.3);
 }
 
 .hq-oem-rel-card__name {
@@ -1477,7 +1477,7 @@
   border-top: 3px solid var(--red);
 }
 .hq-audit-card--danger:hover {
-  border-color: rgba(235, 43, 43, 0.35);
+  border-color: rgba(197, 31, 45, 0.35);
 }
 
 .hq-audit-card__head {
@@ -1516,9 +1516,9 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 .hq-audit-card__badge--danger {
-  background: rgba(235, 43, 43, 0.12);
+  background: rgba(197, 31, 45, 0.12);
   color: var(--red);
-  border: 1px solid rgba(235, 43, 43, 0.25);
+  border: 1px solid rgba(197, 31, 45, 0.25);
 }
 
 .hq-audit-card__value-row {
@@ -1606,7 +1606,7 @@
   border-top: 3px solid var(--red);
 }
 .hq-sla-card--breached:hover {
-  border-color: rgba(235, 43, 43, 0.4);
+  border-color: rgba(197, 31, 45, 0.4);
 }
 
 .hq-sla-card--completed {
@@ -1653,9 +1653,9 @@
 }
 
 .hq-priority-pill--emergency {
-  background: rgba(235, 43, 43, 0.15);
+  background: rgba(197, 31, 45, 0.15);
   color: var(--red);
-  border: 1px solid rgba(235, 43, 43, 0.35);
+  border: 1px solid rgba(197, 31, 45, 0.35);
 }
 .hq-priority-pill--urgent {
   background: rgba(245, 158, 11, 0.15);

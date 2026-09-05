@@ -72,7 +72,7 @@ export function openPrintReport(title: string, bodyHtml: string): void {
       font-size: 9pt;
       font-weight: 800;
       letter-spacing: 0.12em;
-      color: #eb2b2b;
+      color: #c51f2d;
       text-transform: uppercase;
       margin-bottom: 4px;
     }
@@ -115,7 +115,7 @@ export function openPrintReport(title: string, bodyHtml: string): void {
       color: #000000;
       margin-top: 4px;
     }
-    .kpi-val.red { color: #eb2b2b; }
+    .kpi-val.red { color: #c51f2d; }
     .kpi-val.green { color: #16a34a; }
     h3 {
       font-size: 11pt;
@@ -160,7 +160,7 @@ export function openPrintReport(title: string, bodyHtml: string): void {
       border: 1px solid #ccc;
       display: inline-block;
     }
-    .badge-critical { color: #eb2b2b; border-color: #eb2b2b; background: rgba(235,43,43,0.08); }
+    .badge-critical { color: #c51f2d; border-color: #c51f2d; background: rgba(197,31,45,0.08); }
     .badge-impending { color: #ea580c; border-color: #ea580c; background: rgba(234,88,12,0.08); }
     .badge-nominal { color: #16a34a; border-color: #16a34a; background: rgba(22,163,74,0.08); }
     .footer {
@@ -182,7 +182,7 @@ export function openPrintReport(title: string, bodyHtml: string): void {
 <body>
   <div class="no-print" style="margin-bottom: 16px; padding: 10px 14px; background: #111; color: #fff; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
     <span style="font-size: 13px; font-weight: 600;">Executive Document Ready · Click button or press Ctrl+P / Cmd+P to save as PDF</span>
-    <button onclick="window.print()" style="background: #eb2b2b; color: #fff; border: none; padding: 6px 14px; font-weight: 700; border-radius: 2px; cursor: pointer;">
+    <button onclick="window.print()" style="background: #c51f2d; color: #fff; border: none; padding: 6px 14px; font-weight: 700; border-radius: 2px; cursor: pointer;">
       Print / Save as PDF
     </button>
   </div>
@@ -395,7 +395,7 @@ export function printDepreciationReport(assets: Asset[], propertyName = 'Sonoran
             <td><strong>${r.manufacturer}</strong> · ${r.model} <span style="color:#666; font-size:7.5pt;">(${r.category})</span></td>
             <td>${r.property} · Unit ${r.unit}</td>
             <td class="mono">${r.ageYears} / ${r.usefulLifeYears} yrs</td>
-            <td class="mono" style="font-weight: 700; color: ${r.lifePctUsed >= 100 ? '#eb2b2b' : '#ea580c'};">${r.lifePctUsed}%</td>
+            <td class="mono" style="font-weight: 700; color: ${r.lifePctUsed >= 100 ? '#c51f2d' : '#ea580c'};">${r.lifePctUsed}%</td>
             <td class="mono">${money(r.netBookValue)}</td>
             <td class="mono" style="font-weight: 700;">${money(r.replacementCostEst)}</td>
             <td><span class="badge badge-${r.urgencyStatus.toLowerCase()}">${r.urgencyStatus}</span></td>
@@ -562,7 +562,7 @@ export function printFailureRateReport(assets: Asset[], events: ServiceEvent[], 
             <td><strong>${r.brand}</strong></td>
             <td class="mono">${r.fleetUnits}</td>
             <td class="mono">${r.repairEvents}</td>
-            <td class="mono" style="font-weight: 700; color: ${r.failureRatePct > 40 ? '#eb2b2b' : '#111'};">${r.failureRatePct}%</td>
+            <td class="mono" style="font-weight: 700; color: ${r.failureRatePct > 40 ? '#c51f2d' : '#111'};">${r.failureRatePct}%</td>
             <td class="mono">${money(r.totalSpend)}</td>
             <td class="mono">${money(r.avgIncidentCost)}</td>
             <td class="mono">${r.mtbfMonths} mos</td>
@@ -760,9 +760,9 @@ export function printSlaMetricsReport(workOrders: WorkOrder[], propertyName = 'S
             <td class="mono">${r.totalOrders}</td>
             <td class="mono">${r.closedOrders}</td>
             <td class="mono">${r.withinSla}</td>
-            <td class="mono" style="color: ${r.breachedSla > 0 ? '#eb2b2b' : '#111'}; font-weight: 700;">${r.breachedSla}</td>
+            <td class="mono" style="color: ${r.breachedSla > 0 ? '#c51f2d' : '#111'}; font-weight: 700;">${r.breachedSla}</td>
             <td class="mono">${r.avgResolutionHours} hrs</td>
-            <td class="mono" style="font-weight: 800; color: ${r.complianceRatePct >= 90 ? '#16a34a' : '#eb2b2b'};">${r.complianceRatePct}%</td>
+            <td class="mono" style="font-weight: 800; color: ${r.complianceRatePct >= 90 ? '#16a34a' : '#c51f2d'};">${r.complianceRatePct}%</td>
           </tr>
         `
           )

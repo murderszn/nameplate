@@ -15,7 +15,7 @@ const OPEN = ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_app
 const FLAGGED = ['unaccounted_for', 'needs_repair', 'in_repair'];
 const STATUS_COLORS: Record<string, string> = {
   active: '#ffffff',
-  needs_repair: '#eb2b2b',
+  needs_repair: '#c51f2d',
   in_repair: '#c91f1f',
   unaccounted_for: '#f44343',
   vacant: '#6b6b6b',

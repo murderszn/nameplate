@@ -226,7 +226,7 @@ export function generatePrintHtml(tags: TagPrintItem[], options: TagPrintOptions
       font-size: 5.5pt;
       font-weight: 700;
       letter-spacing: 0.08em;
-      color: #eb2b2b;
+      color: #c51f2d;
       text-transform: uppercase;
       white-space: nowrap;
       overflow: hidden;
@@ -296,7 +296,7 @@ export function generatePrintHtml(tags: TagPrintItem[], options: TagPrintOptions
       position: absolute;
       width: 6pt;
       height: 1pt;
-      background: #eb2b2b;
+      background: #c51f2d;
       opacity: 0.85;
     }
     .tamper-slit.tl { top: 4pt; left: 8pt; transform: rotate(-35deg); }

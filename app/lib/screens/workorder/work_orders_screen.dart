@@ -277,7 +277,7 @@ class _WorkOrderCard extends ConsumerWidget {
 
     final blockColor = switch (wo.priority) {
       WorkOrderPriority.emergency =>
-        const Color(0xFFEB2B2B).withValues(alpha: 0.15),
+        const Color(0xFFC51F2D).withValues(alpha: 0.15),
       WorkOrderPriority.urgent =>
         const Color(0xFFF59E0B).withValues(alpha: 0.15),
       _ => context.npColors.bgElevated,
@@ -288,7 +288,7 @@ class _WorkOrderCard extends ConsumerWidget {
       _ => Icons.build_outlined,
     };
     final blockIconColor = switch (wo.priority) {
-      WorkOrderPriority.emergency => const Color(0xFFEB2B2B),
+      WorkOrderPriority.emergency => const Color(0xFFC51F2D),
       WorkOrderPriority.urgent => const Color(0xFFF59E0B),
       _ => context.npColors.gray400,
     };

@@ -107,7 +107,7 @@ def split_one(src_path, out_dir, name):
                     "content": "".join(sub.itertext()),
                     "x": float(sub.get("x", 0)), "y": float(sub.get("y", 0)),
                     "size": float(sub.get("font-size", 24)),
-                    "red": "EB2B2B" in fill or (sub.get("class") or "") in RED_CLASSES,
+                    "red": ("EB2B2B" in fill or "C51F2D" in fill) or (sub.get("class") or "") in RED_CLASSES,
                 })
                 continue
             cls = (sub.get("class") or "").strip()
@@ -119,9 +119,9 @@ def split_one(src_path, out_dir, name):
             if cls == "face" or (not cls and (sub.get("fill") or "none") not in ("none", "")):
                 layers["faces"].append((d, {"fill": "#FFFFFF", "stroke": "none"}))
             elif cls == "red-fill":
-                layers["red"].append((d, {"fill": "#EB2B2B", "stroke": "none"}))
+                layers["red"].append((d, {"fill": "#c51f2d", "stroke": "none"}))
             elif cls in RED_CLASSES:
-                layers["red"].append((d, {"fill": "none", "stroke": "#EB2B2B", "stroke-width": sub.get("stroke-width") or "3"}))
+                layers["red"].append((d, {"fill": "none", "stroke": "#c51f2d", "stroke-width": sub.get("stroke-width") or "3"}))
             elif cls in GRAY_CLASSES:
                 w = "2" if cls == "thin" else "3.5"
                 layers["gray"].append((d, {"fill": "none", "stroke": "#888888", "stroke-width": w}))

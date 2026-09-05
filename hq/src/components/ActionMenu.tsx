@@ -140,7 +140,7 @@ export function ActionMenu({
                 onMouseEnter={(e) => {
                   if (!item.disabled) {
                     e.currentTarget.style.background = isDanger
-                      ? 'rgba(235, 43, 43, 0.12)'
+                      ? 'rgba(197, 31, 45, 0.12)'
                       : 'rgba(var(--overlay-rgb), 0.08)';
                   }
                 }}

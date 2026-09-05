@@ -4,12 +4,12 @@ import 'package:flutter/services.dart';
 class NpColors {
   NpColors._();
 
-  static const red = Color(0xFFEB2B2B);
-  static const redHover = Color(0xFFF44343);
-  static const redDeep = Color(0xFFC91F1F);
+  static const red = Color(0xFFC51F2D);
+  static const redHover = Color(0xFFAC1926);
+  static const redDeep = Color(0xFFBD1F1F);
   static const redGlow = Colors.transparent;
-  static const redSubtle = Color(0x14EB2B2B);
-  static const redBorder = Color(0x66EB2B2B);
+  static const redSubtle = Color(0x14C51F2D);
+  static const redBorder = Color(0x66C51F2D);
 
   /// Always-white ink for text sitting on a solid red or black fill.
   static const onSolid = Color(0xFFFFFFFF);

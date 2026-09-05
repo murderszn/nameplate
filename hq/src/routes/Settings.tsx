@@ -325,7 +325,7 @@ export function Settings() {
             <div style={{ padding: 20 }}>
               <div className="np-settings-v2__sla-grid">
                 {/* Emergency */}
-                <div className="np-settings-v2__sla-card" style={{ borderColor: 'rgba(235, 43, 43, 0.28)' }}>
+                <div className="np-settings-v2__sla-card" style={{ borderColor: 'rgba(197, 31, 45, 0.28)' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                       <span className="np-settings-v2__sla-badge np-settings-v2__sla-badge--emergency">

@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import * as d3 from 'd3';
 
-const RED = '#eb2b2b';
+const RED = '#c51f2d';
 const WHITE = '#ffffff';
 const TEXT = 'var(--white)';
 const GRAY = '#888888';

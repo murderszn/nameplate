@@ -425,7 +425,7 @@ export const TagSheetModal: React.FC<TagSheetModalProps> = ({
                               fontFamily: 'Courier New, monospace',
                               fontSize: '6px',
                               fontWeight: 800,
-                              color: '#eb2b2b',
+                              color: '#c51f2d',
                               textTransform: 'uppercase',
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',

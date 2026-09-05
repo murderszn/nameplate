@@ -332,7 +332,7 @@ export function Analytics() {
       const label = a.category?.displayName ?? 'Appliance';
       counts.set(label, (counts.get(label) || 0) + 1);
     }
-    const colors = ['#eb2b2b', '#ffffff', '#a3a3a3', '#525252', '#262626'];
+    const colors = ['#c51f2d', '#ffffff', '#a3a3a3', '#525252', '#262626'];
     return [...counts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)

@@ -266,7 +266,7 @@ code,
 
 .np-sidebar__back-link:hover {
   color: var(--red);
-  background: rgba(235, 43, 43, 0.08);
+  background: rgba(197, 31, 45, 0.08);
 }
 
 .np-sidebar__back-icon {
@@ -1580,7 +1580,7 @@ code,
   height: 8px;
   border-radius: 50%;
   background: var(--red);
-  box-shadow: 0 0 0 2px #181818, 0 0 0 3px rgba(235, 43, 43, 0.4);
+  box-shadow: 0 0 0 2px #181818, 0 0 0 3px rgba(197, 31, 45, 0.4);
 }
 .np-nameplate__rivet.tl { top: 12px; left: 12px; }
 .np-nameplate__rivet.tr { top: 12px; right: 12px; }
@@ -1938,8 +1938,8 @@ code,
   font-weight: 800;
   letter-spacing: 0.06em;
   color: var(--red);
-  background: rgba(235, 43, 43, 0.1);
-  border: 1px solid rgba(235, 43, 43, 0.3);
+  background: rgba(197, 31, 45, 0.1);
+  border: 1px solid rgba(197, 31, 45, 0.3);
   padding: 3px 8px;
   border-radius: var(--np-radius);
 }
@@ -1987,8 +1987,8 @@ code,
 }
 
 .np-asset-stat-box--expired {
-  border-color: rgba(235, 43, 43, 0.3);
-  background: rgba(235, 43, 43, 0.06);
+  border-color: rgba(197, 31, 45, 0.3);
+  background: rgba(197, 31, 45, 0.06);
 }
 
 .np-asset-stat-box__val {

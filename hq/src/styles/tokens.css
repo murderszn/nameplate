@@ -1,6 +1,6 @@
 /*
  * Nameplate HQ — Design Tokens
- * Strictly Red (#eb2b2b), Black (#000000), and White (#ffffff) brand identity.
+ * Strictly Red (#c51f2d), Black (#000000), and White (#ffffff) brand identity.
  */
 
 :root {
@@ -20,7 +20,7 @@
   --red-hover: #ac1926;
   --red-deep: #c91f1f;
   --red-subtle: rgba(197, 31, 45, 0.06);
-  --red-border: rgba(235, 43, 43, 0.35);
+  --red-border: rgba(197, 31, 45, 0.35);
 
   --gray-900: #111111;
   --gray-800: #222222;
@@ -90,11 +90,11 @@
   --white-15: rgba(255, 255, 255, 0.15);
   --white-08: rgba(255, 255, 255, 0.08);
 
-  --red: #eb2b2b;
-  --red-hover: #ff4747;
+  --red: #c51f2d;
+  --red-hover: #ac1926;
   --red-deep: #c91f1f;
-  --red-subtle: rgba(235, 43, 43, 0.14);
-  --red-border: rgba(235, 43, 43, 0.45);
+  --red-subtle: rgba(197, 31, 45, 0.14);
+  --red-border: rgba(197, 31, 45, 0.45);
 
   --gray-900: #121212;
   --gray-800: #1f1f1f;
@@ -116,20 +116,20 @@
   --np-mist-200: #262626;
   --np-paper: #000000;
 
-  --np-plate-600: #eb2b2b;
-  --np-plate-700: #ff4747;
-  --np-plate-100: rgba(235, 43, 43, 0.15);
-  --np-signal-500: #eb2b2b;
-  --np-signal-100: rgba(235, 43, 43, 0.15);
+  --np-plate-600: #c51f2d;
+  --np-plate-700: #ac1926;
+  --np-plate-100: rgba(197, 31, 45, 0.15);
+  --np-signal-500: #c51f2d;
+  --np-signal-100: rgba(197, 31, 45, 0.15);
 
   --np-verified-600: #22c55e;
   --np-verified-100: rgba(34, 197, 94, 0.15);
   --np-caution-600: #f59e0b;
-  --np-fault-600: #eb2b2b;
-  --np-fault-100: rgba(235, 43, 43, 0.18);
+  --np-fault-600: #c51f2d;
+  --np-fault-100: rgba(197, 31, 45, 0.18);
   --np-offline-500: #737373;
 
-  --np-viz-1: #eb2b2b;
+  --np-viz-1: #c51f2d;
   --np-viz-2: #ffffff;
   --np-viz-3: #a3a3a3;
   --np-viz-4: #525252;

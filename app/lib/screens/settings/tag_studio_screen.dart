@@ -448,16 +448,16 @@ class _MintedTagTile extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEB2B2B).withValues(alpha: 0.15),
+                    color: const Color(0xFFC51F2D).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(2),
-                    border: Border.all(color: const Color(0xFFEB2B2B)),
+                    border: Border.all(color: const Color(0xFFC51F2D)),
                   ),
                   child: Text(
                     'STAGED',
                     style: NpType.mono.copyWith(
                       fontSize: 8.5,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFFEB2B2B),
+                      color: const Color(0xFFC51F2D),
                     ),
                   ),
                 )

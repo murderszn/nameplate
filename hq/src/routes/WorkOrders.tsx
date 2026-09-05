@@ -12,7 +12,7 @@ const COLUMNS = [
 
 const PRIORITIES = [
   { value: 'all', label: 'All Priorities' },
-  { value: 'urgent', label: 'Urgent', color: '#eb2b2b' },
+  { value: 'urgent', label: 'Urgent', color: '#c51f2d' },
   { value: 'high', label: 'High', color: '#F97316' },
   { value: 'normal', label: 'Normal', color: 'var(--white)' },
   { value: 'low', label: 'Low', color: '#71717A' },
@@ -288,7 +288,7 @@ export function WorkOrders() {
                 setDragOverCol(null);
               }}
               style={{
-                background: isDragOver ? 'rgba(235, 43, 43, 0.08)' : undefined,
+                background: isDragOver ? 'rgba(197, 31, 45, 0.08)' : undefined,
                 borderColor: isDragOver ? 'var(--red)' : undefined,
                 borderStyle: isDragOver ? 'dashed' : undefined,
               }}
@@ -348,7 +348,7 @@ export function WorkOrders() {
                       onClick={() => setSelectedWo(wo)}
                       style={{
                         background: 'var(--bg-card)',
-                        border: isUrgent ? '1px solid rgba(235, 43, 43, 0.45)' : '1px solid var(--line)',
+                        border: isUrgent ? '1px solid rgba(197, 31, 45, 0.45)' : '1px solid var(--line)',
                         borderRadius: 2,
                         padding: 12,
                         cursor: 'pointer',
@@ -365,12 +365,12 @@ export function WorkOrders() {
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'none';
-                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(235, 43, 43, 0.45)' : 'var(--line)';
+                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(197, 31, 45, 0.45)' : 'var(--line)';
                       }}
                     >
                       {/* Card Topline: ID + Priority Chip + Category */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#eb2b2b', fontVariantNumeric: 'tabular-nums' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#c51f2d', fontVariantNumeric: 'tabular-nums' }}>
                           WO-{wo.number}
                         </span>
 
@@ -396,9 +396,9 @@ export function WorkOrders() {
                               textTransform: 'uppercase',
                               padding: '2px 6px',
                               borderRadius: 2,
-                              background: isUrgent ? 'rgba(235, 43, 43, 0.12)' : 'var(--bg-subtle)',
+                              background: isUrgent ? 'rgba(197, 31, 45, 0.12)' : 'var(--bg-subtle)',
                               color: isUrgent ? 'var(--red)' : 'var(--gray-500)',
-                              border: isUrgent ? '1px solid rgba(235, 43, 43, 0.35)' : '1px solid var(--line)',
+                              border: isUrgent ? '1px solid rgba(197, 31, 45, 0.35)' : '1px solid var(--line)',
                             }}
                           >
                             {wo.priority}
@@ -422,7 +422,7 @@ export function WorkOrders() {
                           fontVariantNumeric: 'tabular-nums',
                         }}
                       >
-                        <span style={{ color: '#eb2b2b' }}>●</span>
+                        <span style={{ color: '#c51f2d' }}>●</span>
                         <span>{wo.unitLabel ?? 'Unit 402'}</span>
                         <span>·</span>
                         <span style={{ color: 'var(--white)' }}>{wo.assetNpid ?? 'NP-ASSET'}</span>
@@ -560,7 +560,7 @@ export function WorkOrders() {
                   style={{
                     fontSize: '1rem',
                     fontWeight: 800,
-                    color: '#eb2b2b',
+                    color: '#c51f2d',
                     fontVariantNumeric: 'tabular-nums',
                   }}
                 >
@@ -677,7 +677,7 @@ export function WorkOrders() {
                   </span>
                   <Link
                     to={`/assets/${selectedWo.assetId ?? 'asset_hvac_402'}`}
-                    style={{ fontSize: '0.76rem', color: '#eb2b2b', fontWeight: 700 }}
+                    style={{ fontSize: '0.76rem', color: '#c51f2d', fontWeight: 700 }}
                   >
                     View Asset Plate →
                   </Link>
@@ -725,8 +725,8 @@ export function WorkOrders() {
                       <span
                         key={idx}
                         style={{
-                          background: 'rgba(235, 43, 43, 0.08)',
-                          border: '1px solid rgba(235, 43, 43, 0.3)',
+                          background: 'rgba(197, 31, 45, 0.08)',
+                          border: '1px solid rgba(197, 31, 45, 0.3)',
                           color: 'var(--red)',
                           padding: '4px 10px',
                           borderRadius: 2,

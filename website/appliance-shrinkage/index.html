@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Make-Ready Skim: Where Multifamily Appliances Quietly Disappear — Nameplate White Paper</title>
+  <meta name="description" content="Appliance shrinkage, phantom swaps, and dead warranties are a quiet tax on every multifamily turn. The math, the mechanism, and the Monday-morning fix.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="The Make-Ready Skim: Where Multifamily Appliances Quietly Disappear">
+  <meta property="og:description" content="Every turn is an unsupervised inventory event. Here's the math, the mechanism, and the fix.">
+  <meta property="og:image" content="../images/fleet-collage.jpg">
+  <meta name="theme-color" content="#08080b">
+  <link rel="icon" href="../images/nameplate-logo-transparent.png" type="image/png">
+  <link rel="stylesheet" href="../css/styles.css?v=presentation-2">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Article",
+   "headline":"The Make-Ready Skim: Where Multifamily Appliances Quietly Disappear",
+   "description":"Appliance shrinkage, phantom swaps, and dead warranties are a quiet tax on every multifamily turn.",
+   "image":["../images/fleet-collage.jpg"],"author":{"@type":"Organization","name":"Nameplate"}}
+  </script>
+  <style>
+    .paper-hero{position:relative;overflow:hidden;background:#08080b}
+    .paper-hero img.paper-collage{display:block;width:100%;height:auto;max-height:72vh;object-fit:cover;object-position:center 30%}
+    .paper-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,11,.55) 0%,rgba(8,8,11,.05) 34%,rgba(8,8,11,.08) 62%,rgba(8,8,11,.94) 100%)}
+    .paper-hero-inner{position:absolute;inset:0;z-index:2;display:flex;align-items:flex-end}
+    .paper-hero-inner .wrap{padding-bottom:48px;width:100%}
+    .paper-eyebrow{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-size:.78rem;letter-spacing:.14em;color:#ff5a5a;border:1px solid rgba(197,31,45,.5);border-radius:999px;padding:6px 14px;margin-bottom:18px;background:rgba(8,8,11,.55)}
+    .paper-h1{font-size:clamp(2.4rem,6vw,4.6rem);line-height:1.02;font-weight:800;letter-spacing:-.02em;color:#fff;max-width:20ch;margin:0 0 16px}
+    .paper-h1 .red{color:#c51f2d}
+    .paper-sub{font-size:clamp(1.02rem,1.6vw,1.25rem);line-height:1.55;color:rgba(255,255,255,.78);max-width:62ch;margin:0 0 20px}
+    .paper-meta{display:flex;gap:16px;flex-wrap:wrap;font-family:ui-monospace,Menlo,monospace;font-size:.75rem;color:rgba(255,255,255,.55)}
+    .paper-body{background:var(--bg,#0b0b0e);color:var(--text,#e8e8ea)}
+    .paper-article{max-width:760px;margin:0 auto;padding:56px 24px 24px}
+    .paper-article h2{font-size:1.65rem;letter-spacing:-.01em;margin:52px 0 14px;line-height:1.2}
+    .paper-article h2 .num{color:#c51f2d;font-family:ui-monospace,Menlo,monospace;font-size:1rem;display:block;margin-bottom:6px;letter-spacing:.1em}
+    .paper-article p{font-size:1.06rem;line-height:1.75;color:rgba(232,232,234,.88);margin:0 0 18px}
+    .paper-article p.lede{font-size:1.28rem;line-height:1.65;color:#fff}
+    .paper-article blockquote{border-left:3px solid #c51f2d;margin:28px 0;padding:4px 0 4px 20px;font-size:1.2rem;line-height:1.6;font-style:italic;color:#fff}
+    .paper-article ul{margin:0 0 20px 20px;line-height:1.75;font-size:1.04rem;color:rgba(232,232,234,.88)}
+    .paper-article li{margin-bottom:8px}
+    .stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:34px 0}
+    .stat-card{border:1px solid var(--border-subtle,rgba(255,255,255,.12));border-radius:12px;padding:18px;background:rgba(255,255,255,.02)}
+    .stat-card .v{font-size:1.7rem;font-weight:800;color:#fff}
+    .stat-card .v em{color:#c51f2d;font-style:normal}
+    .stat-card .l{font-size:.85rem;color:rgba(255,255,255,.6);line-height:1.5;display:block;margin-top:6px}
+    .math-table{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:.95rem}
+    .math-table th,.math-table td{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .math-table th{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;letter-spacing:.08em;color:rgba(255,255,255,.55)}
+    .math-table td:last-child,.math-table th:last-child{text-align:right}
+    .fineprint{font-size:.82rem;color:rgba(255,255,255,.5)}
+    .step-grid{display:grid;gap:12px;margin:24px 0}
+    .step-card{border:1px solid var(--border-subtle,rgba(255,255,255,.12));border-radius:12px;padding:18px 20px;background:rgba(255,255,255,.02)}
+    .step-card strong{color:#fff}
+    .step-card .k{font-family:ui-monospace,Menlo,monospace;font-size:.72rem;letter-spacing:.1em;color:#c51f2d;display:block;margin-bottom:6px}
+    .cta-band{border:1px solid rgba(197,31,45,.4);border-radius:16px;padding:32px;margin:48px 0;background:linear-gradient(180deg,rgba(197,31,45,.08),rgba(197,31,45,.02))}
+    .cta-band h2{margin-top:0}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+    .paper-footer{border-top:1px solid rgba(255,255,255,.1);margin-top:40px;padding:28px 24px 60px;text-align:center;color:rgba(255,255,255,.5);font-size:.88rem}
+    .paper-footer a{color:#ff6b6b}
+    @media(max-width:640px){.stat-strip{grid-template-columns:1fr}.paper-hero img.paper-collage{max-height:60vh}}
+  </style>
+</head>
+<body class="marketing-page paper-body">
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <a class="brand" href="../index.html" aria-label="Nameplate home">
+      <img src="../images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="brand-logo-img theme-logo theme-logo--dark">
+      <span class="brand-name">NAMEPLATE</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../index.html#concept">Problem</a>
+      <a href="../index.html#field-app">App</a>
+      <a href="../index.html#hq-console">HQ &amp; Audits</a>
+      <a href="https://www.biggerpockets.com/forums" target="_blank" rel="noopener">BiggerPockets ↗</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-red" href="../index.html#investors"><span>Talk to Us →</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ================= Oversized dramatic header ================= -->
+  <section class="paper-hero" aria-label="The full appliance fleet">
+    <img class="paper-collage" src="../images/fleet-collage.jpg" alt="The full multifamily appliance fleet rendered in 3D: condenser, air handler, heat-pump water heater, french-door refrigerator, range, washer, dryer, dishwasher, microwave, and smart thermostat" fetchpriority="high">
+    <div class="paper-hero-inner">
+      <div class="wrap">
+        <span class="paper-eyebrow">WHITE PAPER // MULTIFAMILY APPLIANCE OPERATIONS</span>
+        <h1 class="paper-h1">The Make-Ready Skim: Where Appliances <span class="red">Quietly Disappear</span></h1>
+        <p class="paper-sub">Every unit turn is an unsupervised inventory event. Here's how fridges get downgraded, warranties die unclaimed, and CapEx goes blind — and the Monday-morning fix.</p>
+        <div class="paper-meta"><span>8 MIN READ</span><span>·</span><span>FOR OPERATORS &amp; INVESTORS</span><span>·</span><span>WITH ILLUSTRATIVE MATH</span></div>
+      </div>
+    </div>
+  </section>
+
+  <article class="paper-article">
+    <p class="lede">That $1,400 french-door refrigerator you bought in 2022? There is a meaningful chance it is not in unit 214 anymore — and nobody can prove where it went.</p>
+    <p>Not because your team is dishonest. Because the turn process makes it effortless: a dead fridge in a vacant unit, a working fridge in the unit being made ready next door, a 45-minute inspection window, and zero physical chain of custody. The swap solves today's problem and creates a $1,000 loss that surfaces eighteen months later as "premature failure."</p>
+    <p>Multiply that by every make-ready, every work order, every vendor visit — across every door you own. That is the skim.</p>
+
+    <div class="stat-strip">
+      <div class="stat-card"><span class="v">$10k–$14k</span><span class="l">of in-unit appliance equipment per door under management</span></div>
+      <div class="stat-card"><span class="v"><em>~3%</em> drift</span><span class="l">of appliances quietly swapped or lost between turns in untracked portfolios</span></div>
+      <div class="stat-card"><span class="v">$380–$1.2k</span><span class="l">of OEM warranty value left unclaimed on a typical covered failure</span></div>
+    </div>
+
+    <h2><span class="num">01 / THE THREE LEAKS</span>How the money actually leaves</h2>
+    <p><strong>Leak one: the phantom swap.</strong> During turns, working appliances migrate toward the units that need to lease fastest. Donor parts — boards, handles, racks, elements — migrate the same way. Without a tag on the machine and a scan at the door, the ledger says everything is fine while the assets quietly downgrade.</p>
+    <p><strong>Leak two: the dead warranty.</strong> A tech replaces a failed control board for $600. The board was under a five-year manufacturer warranty. Nobody knew, because the model number, serial number, and install date live on a corroded plate nobody can read — or in a spreadsheet nobody trusts. You just paid for a repair that was already guaranteed.</p>
+    <p><strong>Leak three: blind CapEx.</strong> Ten water heaters installed the same month in 2017 are all dying the same summer. Without age visibility, each failure arrives as a midnight emergency instead of a planned Q2 replacement program. Emergency replacements cost more, lease worse, and wreck budgets.</p>
+
+    <blockquote>Your CMMS knows about the work order. It does not know about the machine.</blockquote>
+
+    <h2><span class="num">02 / ILLUSTRATIVE MATH</span>What the skim costs a 100-door property</h2>
+    <p>The numbers below are a deliberately simple illustration — plug in your own turn volume and replacement costs. The structure is what matters: small per-event losses at high frequency.</p>
+    <table class="math-table">
+      <thead><tr><th>Leak</th><th>Assumption</th><th>Annual cost</th></tr></thead>
+      <tbody>
+        <tr><td>Phantom swaps / shrinkage</td><td>2 units/yr × $900 downgrade</td><td>$1,800</td></tr>
+        <tr><td>Unclaimed warranties</td><td>6 covered failures/yr × $600 missed</td><td>$3,600</td></tr>
+        <tr><td>Emergency vs. planned replacement</td><td>4 emergencies/yr × $400 premium</td><td>$1,600</td></tr>
+        <tr><td>Turn inspection labor</td><td>40 turns/yr × 45 min @ $35/hr</td><td>$1,050</td></tr>
+        <tr><td><strong>Total, 100 doors</strong></td><td></td><td><strong>~$8,050/yr</strong></td></tr>
+      </tbody>
+    </table>
+    <p class="fineprint">Illustrative only — not a study, not a promise. At 1,000 doors with the same per-door rates, the same structure clears $80k a year. Most operators we talk to find the warranty row alone pays for a tracking program.</p>
+
+    <h2><span class="num">03 / WHY NOTHING CATCHES IT</span>The basement problem</h2>
+    <p>Legacy property software was built for accountants in offices, not techs in utility closets:</p>
+    <ul>
+      <li><strong>No signal, no record.</strong> Basements and mechanical rooms kill cell coverage. Cloud-dependent apps fail exactly where the assets live.</li>
+      <li><strong>Serial plates are unreadable.</strong> Heat, grease, and corrosion destroy manufacturer labels within years. Manual serial entry dies on contact with reality.</li>
+      <li><strong>Tickets track labor, not lineage.</strong> "Replaced board" tells you what a tech did. It doesn't tell you which board, from which donor, under which warranty, in which unit.</li>
+      <li><strong>Accounts are siloed.</strong> A fridge that walks across properties — or across operators — is invisible to every system that only sees one portfolio.</li>
+    </ul>
+
+    <h2><span class="num">04 / THE WHITE-PAPER CORE</span>The physical asset record</h2>
+    <p>The fix is structural, not motivational: <strong>bind an immutable record to the machine itself.</strong> A tamper-evident tag with a unique ID goes on every appliance at install. Every subsequent event — install, turn audit, repair, part swap, warranty claim, retirement — is scanned against that ID and appended to an offline-first ledger that reconciles when signal returns.</p>
+    <div class="step-grid">
+      <div class="step-card"><span class="k">STEP 01 — TAG</span><strong>One tag per machine.</strong> Tamper-destructible plate with a unique ID, applied at install or during the next turn. The plate <em>is</em> the record's anchor.</div>
+      <div class="step-card"><span class="k">STEP 02 — SCAN</span><strong>Sub-second verification in dead zones.</strong> The field app resolves the asset offline — no bars required — and walks the tech through a turn audit in minutes, not three quarters of an hour.</div>
+      <div class="step-card"><span class="k">STEP 03 — LEDGER</span><strong>Every event appends.</strong> Swaps, donor parts, warranty checks, and retirements accumulate into a per-asset service history no competitor — or departing vendor — can take with them.</div>
+      <div class="step-card"><span class="k">STEP 04 — FORECAST</span><strong>HQ sees the fleet age in real time.</strong> Replacement liability by quarter, failure-prone brands, dead warranties resurrected — the board deck writes itself.</div>
+    </div>
+    <p>This is what Nameplate is: the tag, the offline field app, and the portfolio ledger. But the playbook below works even if you never talk to us.</p>
+
+    <h2><span class="num">05 / MONDAY-MORNING PLAYBOOK</span>Five moves, no software required</h2>
+    <ul>
+      <li><strong>Photograph every data plate at install.</strong> Model, serial, install date, unit. Store it where turns happen — not in a regional manager's inbox.</li>
+      <li><strong>Make the turn audit an asset audit.</strong> Verify each major appliance against the unit's expected list before sign-off. Five minutes; catches 90% of drift.</li>
+      <li><strong>Check warranty before you buy the part.</strong> One lookup — manufacturer warranty by model + install date — before every board, element, and compressor order.</li>
+      <li><strong>Log donor parts.</strong> "Board from unit 118 → unit 214" on paper beats a perfect memory. Parts amnesia is how lemons hide.</li>
+      <li><strong>Age your fleet once a quarter.</strong> A one-page list of every water heater, HVAC, and fridge past 80% of expected life. That page is your CapEx plan.</li>
+    </ul>
+
+    <div class="cta-band">
+      <span class="paper-eyebrow">PILOT // ONE PROPERTY, 30 DAYS</span>
+      <h2>Stop absorbing the skim.</h2>
+      <p>We tag one property, run turn audits with your techs, and hand you the first real ledger you've ever had: what's actually in your units, what's under warranty, and what's about to die. Bring the report to your next asset meeting — or bring it to the forums and argue with us.</p>
+      <div class="cta-row">
+        <a class="btn btn-red" href="../index.html#investors"><span>Start the Conversation →</span></a>
+        <a class="btn btn-ghost" href="../field/"><span>See the Field App</span></a>
+        <a class="btn btn-ghost" href="../hq/"><span>See HQ Audits</span></a>
+        <a class="btn btn-ghost" href="https://www.biggerpockets.com/forums" target="_blank" rel="noopener"><span>Discuss on BiggerPockets ↗</span></a>
+      </div>
+    </div>
+  </article>
+
+  <footer class="paper-footer">
+    <p>Built by <a href="../index.html">Nameplate</a> — the physical asset record for multifamily portfolios.</p>
+    <p class="fineprint">Sharing this with an operator who needs it? Send them the link. Arguing with our math? <a href="https://www.biggerpockets.com/forums" target="_blank" rel="noopener">Bring it to BiggerPockets</a> — we read everything.</p>
+  </footer>
+</main>
+</body>
+</html>

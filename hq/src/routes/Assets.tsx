@@ -403,7 +403,7 @@ export function Assets() {
                   onClick={clearFilters}
                   style={{
                     background: 'transparent',
-                    border: '1px solid rgba(235, 43, 43, 0.4)',
+                    border: '1px solid rgba(197, 31, 45, 0.4)',
                     color: '#ff6666',
                     borderRadius: 2,
                     padding: '6px 10px',

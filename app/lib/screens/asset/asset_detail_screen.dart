@@ -253,7 +253,7 @@ class _Header extends StatelessWidget {
       case AssetStatus.inRepair:
         return const Color(0xFFF59E0B);
       case AssetStatus.unaccountedFor:
-        return const Color(0xFFEB2B2B);
+        return const Color(0xFFC51F2D);
       default:
         return const Color(0xFF6B7280);
     }
@@ -277,7 +277,7 @@ class _Header extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 4px top color bar by asset.status (active #10B981, needsRepair/awaitingParts #F59E0B, unaccountedFor #EB2B2B, else gray)
+          // 4px top color bar by asset.status (active #10B981, needsRepair/awaitingParts #F59E0B, unaccountedFor #c51f2d, else gray)
           Container(
             height: 4,
             width: double.infinity,

@@ -163,7 +163,7 @@ export function AssetDetail() {
             const ageMonths = (yearsOld(asset.installDate) ?? 0) * 12;
             const lifeRatio = expectedLifeMonths ? Math.min(ageMonths / expectedLifeMonths, 1.2) : null;
             if (lifeRatio == null) return null;
-            const fill = lifeRatio > 1 ? '#eb2b2b' : lifeRatio > 0.8 ? '#eb2b2b' : lifeRatio > 0.6 ? '#f5a623' : '#22c55e';
+            const fill = lifeRatio > 1 ? '#c51f2d' : lifeRatio > 0.8 ? '#c51f2d' : lifeRatio > 0.6 ? '#f5a623' : '#22c55e';
             return (
               <div className="np-life-bar">
                 <div className="np-life-bar__label">
@@ -270,7 +270,7 @@ export function AssetDetail() {
               </thead>
               <tbody>
                 {lineage.map((e: ServiceEvent) => (
-                  <tr key={e.id} style={e.isWarrantyClaim ? { background: 'rgba(235, 43, 43,0.06)' } : undefined}>
+                  <tr key={e.id} style={e.isWarrantyClaim ? { background: 'rgba(197, 31, 45,0.06)' } : undefined}>
                     <td className="mono">{isoDate(e.occurredAt)}</td>
                     <td>
                       <div className="np-lineage-findings">
