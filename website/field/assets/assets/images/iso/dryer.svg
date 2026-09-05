@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="Matching dryer isometric">
+<style>
+.ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red{fill:none;stroke:#EB2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red-thin{fill:none;stroke:#EB2B2B;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.red-fill{fill:#EB2B2B;stroke:none}
+@media (prefers-color-scheme:dark){
+.ln,.thin{stroke:#F2F2F2}
+.face{stroke:#F2F2F2}
+}
+</style>
+<!-- main chassis, shared corners (dx 70, dy -40) -->
+<path class="face" d="M126 156 L346 156 L346 436 L126 436 Z"/>
+<path class="face" d="M346 156 L416 116 L416 396 L346 436 Z"/>
+<path class="face" d="M126 156 L196 116 L416 116 L346 156 Z"/>
+<!-- top-mount pull-out lint filter (red) -->
+<path class="red" d="M250 144 L330 144 L350 132 L270 132 Z"/>
+<path class="thin" d="M265 138 H335"/>
+<!-- control panel header -->
+<path class="ln" d="M126 206 H346"/>
+<path class="thin" d="M346 206 L416 166"/>
+<!-- cycle knob on left (mirrored from washer for perfect pair harmony) -->
+<circle class="red" cx="174" cy="181" r="14"/>
+<circle cx="174" cy="181" r="3" class="red-fill"/>
+<!-- digital countdown display -->
+<rect class="thin" x="210" y="172" width="46" height="20" rx="2"/>
+<!-- push-to-start red button -->
+<circle class="red" cx="282" cy="181" r="8"/>
+<circle cx="282" cy="181" r="3" class="red-fill"/>
+<circle class="thin" cx="306" cy="181" r="5"/>
+<!-- square dryer door with window -->
+<rect class="ln" x="156" y="232" width="160" height="144" rx="12"/>
+<rect class="thin" x="174" y="250" width="124" height="108" rx="8"/>
+<path class="red-thin" d="M174 298 H298"/>
+<!-- drum tumbling baffles inside window -->
+<rect class="thin" x="188" y="268" width="22" height="6" rx="1"/>
+<rect class="thin" x="225" y="268" width="22" height="6" rx="1"/>
+<rect class="thin" x="262" y="268" width="22" height="6" rx="1"/>
+<!-- door handle on right -->
+<rect class="red" x="306" y="270" width="8" height="68" rx="3"/>
+<!-- kickplate -->
+<path class="thin" d="M126 406 H346"/>
+<path class="thin" d="M150 421 H240"/>
+<!-- side exhaust vent slots -->
+<path class="thin" d="M366 260 L396 243 M366 280 L396 263 M366 300 L396 283"/>
+<!-- leveling feet -->
+<path class="ln" d="M156 436 V446 M316 436 V446"/>
+</svg>
