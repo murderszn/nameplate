@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+        <path d="M126 96 L346 96 L346 436 L126 436 Z" fill="#161616" fill-opacity="0.04" stroke="#161616" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M346 96 L416 56 L416 396 L346 436 Z" fill="#161616" fill-opacity="0.04" stroke="#161616" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M126 96 L196 56 L416 56 L346 96 Z" fill="#161616" fill-opacity="0.04" stroke="#161616" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="142" y="82" width="36" height="14" rx="2" fill="none" stroke="#161616" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="294" y="82" width="36" height="14" rx="2" fill="none" stroke="#161616" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M236 96 V316" fill="none" stroke="#161616" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M126 316 H346" fill="none" stroke="#161616" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M346 316 L416 276" fill="none" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M220 126 V266 M252 126 V266" fill="none" stroke="#C51F2D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M156 342 H316" fill="none" stroke="#C51F2D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="142" y="166" width="64" height="88" rx="4" fill="none" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M152 184 H196 M152 196 H196" fill="none" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="156" y="210" width="36" height="26" rx="2" fill="none" stroke="#C51F2D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="174" cy="223" r="3" fill="#C51F2D" stroke="none" />
+        <path d="M256 166 H326 M256 200 H326 M256 240 H326" fill="none" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M146 396 H216 M256 396 H326" fill="none" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M366 350 L396 333 M366 366 L396 349 M366 382 L396 365" fill="none" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M126 422 H346" fill="none" stroke="#161616" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+      </svg>
