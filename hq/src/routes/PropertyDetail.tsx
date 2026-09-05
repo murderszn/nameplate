@@ -208,17 +208,17 @@ export function PropertyDetail() {
 
           <div style={{ display: 'flex', gap: 10, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '8px 14px', borderRadius: 2, border: '1px solid rgba(var(--overlay-rgb), 0.1)' }}>
             <div style={{ textAlign: 'center', padding: '0 8px' }}>
-              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: 'var(--white)' }}>{units.length}</div>
+              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--white)', fontVariantNumeric: 'tabular-nums' }}>{units.length}</div>
               <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Units</div>
             </div>
             <div style={{ width: 1, background: 'rgba(var(--overlay-rgb), 0.1)' }} />
             <div style={{ textAlign: 'center', padding: '0 8px' }}>
-              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: 'var(--white)' }}>{assets.length}</div>
+              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--white)', fontVariantNumeric: 'tabular-nums' }}>{assets.length}</div>
               <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Plates</div>
             </div>
             <div style={{ width: 1, background: 'rgba(var(--overlay-rgb), 0.1)' }} />
             <div style={{ textAlign: 'center', padding: '0 8px' }}>
-              <div style={{ fontFamily: 'monospace', fontWeight: 800, fontSize: '1.1rem', color: '#f44343' }}>{openWo}</div>
+              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#f44343', fontVariantNumeric: 'tabular-nums' }}>{openWo}</div>
               <div style={{ fontSize: '0.68rem', color: '#888', textTransform: 'uppercase' }}>Open Orders</div>
             </div>
           </div>

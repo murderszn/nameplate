@@ -279,7 +279,7 @@ export function WorkOrders() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: '0.78rem', color: '#A3A3A3', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: '0.78rem', color: '#A3A3A3', fontWeight: 650, letterSpacing: '0.04em' }}>
             {openCount} ACTIVE FIELD ORDERS
           </span>
           <button
@@ -304,15 +304,7 @@ export function WorkOrders() {
       </div>
 
       {/* Jira / Linear 4-Lane Dispatch Swimlanes */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, minmax(280px, 1fr))',
-          gap: 16,
-          overflowX: 'auto',
-          paddingBottom: 24,
-        }}
-      >
+      <div className="hq-kanban-board">
         {COLUMNS.map((col) => {
           const colItems = filteredWorkOrders.filter((w) => col.statuses.includes(w.status));
           const isDragOver = dragOverCol === col.id;
@@ -320,6 +312,7 @@ export function WorkOrders() {
           return (
             <div
               key={col.id}
+              className="hq-kanban-column"
               onDragOver={(e) => {
                 e.preventDefault();
                 setDragOverCol(col.id);
@@ -334,13 +327,9 @@ export function WorkOrders() {
                 setDragOverCol(null);
               }}
               style={{
-                background: isDragOver ? 'rgba(235, 43, 43, 0.08)' : 'var(--bg-subtle)',
-                border: isDragOver ? '1px dashed var(--red)' : '1px solid var(--line)',
-                borderRadius: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: 620,
-                transition: 'background 0.2s, border 0.2s',
+                background: isDragOver ? 'rgba(235, 43, 43, 0.08)' : undefined,
+                borderColor: isDragOver ? 'var(--red)' : undefined,
+                borderStyle: isDragOver ? 'dashed' : undefined,
               }}
             >
               {/* Column Header */}
@@ -372,13 +361,13 @@ export function WorkOrders() {
                 </div>
                 <span
                   style={{
-                    fontFamily: 'monospace',
                     fontSize: '0.74rem',
                     background: 'rgba(var(--overlay-rgb), 0.08)',
                     padding: '2px 8px',
                     borderRadius: 2,
                     color: 'var(--white)',
                     fontWeight: 700,
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   {colItems.length}
@@ -420,7 +409,7 @@ export function WorkOrders() {
                     >
                       {/* Card Topline: ID + Priority Chip + Category */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', fontWeight: 800, color: '#eb2b2b' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#eb2b2b', fontVariantNumeric: 'tabular-nums' }}>
                           WO-{wo.number}
                         </span>
 
@@ -469,7 +458,7 @@ export function WorkOrders() {
                           gap: 6,
                           fontSize: '0.72rem',
                           color: 'var(--gray-500)',
-                          fontFamily: 'monospace',
+                          fontVariantNumeric: 'tabular-nums',
                         }}
                       >
                         <span style={{ color: '#eb2b2b' }}>●</span>
@@ -555,7 +544,6 @@ export function WorkOrders() {
                       textAlign: 'center',
                       color: 'var(--gray-400)',
                       fontSize: '0.8rem',
-                      fontFamily: 'monospace',
                     }}
                   >
                     No tickets in lane
@@ -609,10 +597,10 @@ export function WorkOrders() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span
                   style={{
-                    fontFamily: 'monospace',
                     fontSize: '1rem',
                     fontWeight: 800,
                     color: '#eb2b2b',
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   WO-{selectedWo.number}
@@ -738,7 +726,7 @@ export function WorkOrders() {
                   {selectedWo.assetName ?? 'Carrier 2.5-Ton Variable Speed Air Handler'}
                 </div>
 
-                <div style={{ display: 'flex', gap: 14, fontSize: '0.78rem', color: '#A3A3A3', fontFamily: 'monospace' }}>
+                <div style={{ display: 'flex', gap: 14, fontSize: '0.78rem', color: '#A3A3A3', fontVariantNumeric: 'tabular-nums' }}>
                   <span>NPID: {selectedWo.assetNpid ?? 'NP-1M4K9X23'}</span>
                   <span>·</span>
                   <span>{selectedWo.propertyName ?? 'Sonoran Ridge'} ({selectedWo.unitLabel ?? 'Unit 402'})</span>
@@ -782,7 +770,7 @@ export function WorkOrders() {
                           padding: '4px 10px',
                           borderRadius: 3,
                           fontSize: '0.78rem',
-                          fontFamily: 'monospace',
+                          fontWeight: 600,
                         }}
                       >
                         {part}

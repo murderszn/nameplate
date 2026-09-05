@@ -34,9 +34,9 @@ def test_seed_counts():
         assert db.query(AssetCategory).count() == 7
         assert db.query(AssetModel).count() == 13
         assert db.query(Asset).count() == 13
-        assert db.query(WorkOrder).count() == 9
+        assert db.query(WorkOrder).count() == 16
         assert db.query(WorkOrderNote).count() == 6
-        assert db.query(ServiceEvent).count() == 2
+        assert db.query(ServiceEvent).count() == 48
         assert db.query(PartRecord).count() == 4
         assert db.query(MaintenanceUser).count() == 5
         assert db.query(SyncBatch).count() == 1

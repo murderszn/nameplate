@@ -22,7 +22,6 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/sync', label: 'Sync & Tag Ops', index: '05', icon: 'sync' },
   { to: '/users', label: 'Users', index: '06', icon: 'users' },
   { to: '/settings', label: 'Settings', index: '07', icon: 'settings' },
-  { to: '/architecture', label: 'Data Architecture', index: '08', icon: 'analytics' },
 ];
 
 function renderNavIcon(type: NavItem['icon']) {
@@ -339,35 +338,60 @@ export function Layout() {
         </div>
 
         <nav className="np-nav" aria-label="HQ sections">
-          <div className="np-nav__group"><span className="np-nav__group-label">Workspace</span>
-          {NAV_ITEMS.slice(0, 6).map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/'}
-              className={({ isActive }) =>
-                `np-nav__item ${isActive ? 'active' : ''}`
-              }
-              onClick={() => setMobileNavOpen(false)}
-              title={collapsed ? `${item.index} · ${item.label}` : undefined}
-            >
-              <span className="np-nav__icon">{renderNavIcon(item.icon)}</span>
-              {!collapsed && <span className="np-nav__label">{item.label}</span>}
-              {!collapsed && <span className="np-nav__index">{item.index}</span>}
-            </NavLink>
-          ))}</div>
-          <div className="np-nav__group"><span className="np-nav__group-label">Administration</span>
-          {NAV_ITEMS.slice(6).map((item) => (
-            <NavLink key={item.to} to={item.to} className={({ isActive }) => `np-nav__item ${isActive ? 'active' : ''}`} title={collapsed ? `${item.index} · ${item.label}` : undefined} onClick={() => setMobileNavOpen(false)}>
-              <span className="np-nav__icon">{renderNavIcon(item.icon)}</span>
-              {!collapsed && <span className="np-nav__label">{item.label}</span>}
-              {!collapsed && <span className="np-nav__index">{item.index}</span>}
-            </NavLink>
-          ))}</div>
+          <div className="np-nav__group">
+            <span className="np-nav__group-label">Workspace</span>
+            {NAV_ITEMS.slice(0, 5).map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  `np-nav__item ${isActive ? 'active' : ''}`
+                }
+                onClick={() => setMobileNavOpen(false)}
+                title={collapsed ? `${item.index} · ${item.label}` : undefined}
+              >
+                <span className="np-nav__icon">{renderNavIcon(item.icon)}</span>
+                {!collapsed && <span className="np-nav__label">{item.label}</span>}
+                {!collapsed && <span className="np-nav__index">{item.index}</span>}
+              </NavLink>
+            ))}
+          </div>
+
+          <div className="np-nav__group">
+            <span className="np-nav__group-label">Administration</span>
+            {NAV_ITEMS.slice(5).map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) => `np-nav__item ${isActive ? 'active' : ''}`}
+                title={collapsed ? `${item.index} · ${item.label}` : undefined}
+                onClick={() => setMobileNavOpen(false)}
+              >
+                <span className="np-nav__icon">{renderNavIcon(item.icon)}</span>
+                {!collapsed && <span className="np-nav__label">{item.label}</span>}
+                {!collapsed && <span className="np-nav__index">{item.index}</span>}
+              </NavLink>
+            ))}
+          </div>
         </nav>
 
-        {/* Minimalist Pinned Action */}
+        {/* Minimalist Pinned Actions (Marketing Site & Data Architecture) */}
         <div className="np-sidebar__actions-pinned">
+          <NavLink
+            to="/architecture"
+            className={({ isActive }) => `np-sidebar__back-link ${isActive ? 'active' : ''}`}
+            title="Data Schema & Architecture"
+            onClick={() => setMobileNavOpen(false)}
+          >
+            <span className="np-sidebar__back-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18M9 21V9" />
+              </svg>
+            </span>
+            {!collapsed && <span>Data Architecture</span>}
+          </NavLink>
           <a
             href="../"
             className="np-sidebar__back-link"
@@ -378,15 +402,17 @@ export function Layout() {
           </a>
         </div>
 
-        {/* Clean Footer */}
+        {/* Clean Footer with Logged In Demo User */}
         <div className="np-sidebar__footer">
-          {!collapsed ? (
-            <div className="np-sidebar__footer-meta">
-            <div className="np-sidebar__org-name">Nameplate HQ</div>
-            </div>
-          ) : (
-            <div className="np-sidebar__footer-dot" title="Nameplate HQ" />
-          )}
+          <div className="np-sidebar__user">
+            <div className="np-user-avatar" title="Marcus Vance · Portfolio Director">MV</div>
+            {!collapsed ? (
+              <div className="np-sidebar__user-meta">
+                <div className="np-sidebar__user-name">Marcus Vance</div>
+                <div className="np-sidebar__user-role">Portfolio Director</div>
+              </div>
+            ) : null}
+          </div>
         </div>
       </aside>
 
@@ -461,30 +487,29 @@ export function Layout() {
               type="button"
               className="np-theme-toggle"
               onClick={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
-              aria-label={`Use ${theme === 'light' ? 'dark' : 'light'} mode`}
-              title={`Use ${theme === 'light' ? 'dark' : 'light'} mode`}
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
-              <svg className="np-theme-toggle__icon np-theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M20 15.2A8.2 8.2 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2Z" />
-              </svg>
-              <svg className="np-theme-toggle__icon np-theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="12" r="3.5" />
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
-              </svg>
+              {theme === 'light' ? (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 15.2A8.2 8.2 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2Z" />
+                </svg>
+              ) : (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
+                </svg>
+              )}
             </button>
 
-            <a
-              href={window.location.port === '5173' ? 'http://localhost:8080' : '../field/index.html'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="np-topbar-btn"
-              title="Open Nameplate Field App (Tablet View)"
-            >
-              <span>Field App</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                <path d="M7 17L17 7M17 7H7M17 7V17" />
-              </svg>
-            </a>
+            {/* Logged in demo user pill */}
+            <div className="np-topbar-user" title="Logged in as Marcus Vance · Portfolio Director">
+              <div className="np-user-avatar">MV</div>
+              <div className="np-topbar-user__info">
+                <span className="np-topbar-user__name">Marcus Vance</span>
+                <span className="np-topbar-user__role">Portfolio Director</span>
+              </div>
+            </div>
           </div>
         </header>
 

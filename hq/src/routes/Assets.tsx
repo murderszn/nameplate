@@ -434,14 +434,14 @@ export function Assets() {
             </button>
           )}
 
-          <span style={{ marginLeft: 'auto', fontSize: '0.78rem', color: '#888', fontFamily: 'monospace' }}>
+          <span style={{ marginLeft: 'auto', fontSize: '0.78rem', color: '#888', fontWeight: 650, letterSpacing: '0.04em', fontVariantNumeric: 'tabular-nums' }}>
             {filteredAndSorted.length} of {assets.length} ASSETS
           </span>
         </div>
       </div>
 
       {lookupError && (
-        <div style={{ color: 'var(--red)', fontSize: '0.82rem', fontFamily: 'monospace' }}>
+        <div style={{ color: 'var(--red)', fontSize: '0.82rem', fontWeight: 550 }}>
           {lookupError}
         </div>
       )}

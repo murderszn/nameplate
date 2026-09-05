@@ -6,7 +6,7 @@ const WHITE = '#ffffff';
 const TEXT = 'var(--white)';
 const GRAY = '#888888';
 const LINE = 'var(--line)';
-const MONO = '"IBM Plex Mono", "SF Mono", Menlo, monospace';
+const MONO = 'var(--font-sans)';
 
 function clearTip() {
   d3.selectAll('.np-chart-tip').remove();

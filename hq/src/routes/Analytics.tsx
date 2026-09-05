@@ -603,7 +603,6 @@ export function Analytics() {
                 <div>
                   <div className="hq-export-title-row">
                     <span className="hq-export-code">01 / DEPRECIATION & CAPEX</span>
-                    <span className="hq-status hq-status--good">GAAP St-Line</span>
                   </div>
                   <p className="hq-export-desc">
                     Straight-line carrying valuation, useful life consumed (%), and 12–36 month equipment replacement pipeline.
@@ -634,7 +633,6 @@ export function Analytics() {
                 <div>
                   <div className="hq-export-title-row">
                     <span className="hq-export-code">02 / BRAND FAILURE MATRIX</span>
-                    <span className="hq-status hq-status--good">MTBF Telemetry</span>
                   </div>
                   <p className="hq-export-desc">
                     Manufacturer failure rates, repair frequencies, cost per incident, and component breakdown (elements, boards, pumps).
@@ -665,7 +663,6 @@ export function Analytics() {
                 <div>
                   <div className="hq-export-title-row">
                     <span className="hq-export-code">03 / WORK ORDER SLA AUDIT</span>
-                    <span className="hq-status hq-status--good">Field Velocity</span>
                   </div>
                   <p className="hq-export-desc">
                     SLA compliance by priority tier (Emergency 4h, Urgent 24h, Normal 72h), breach rates, and resolution durations.

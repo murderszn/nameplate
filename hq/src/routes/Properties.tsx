@@ -122,7 +122,7 @@ export function Properties() {
             placeholder="Filter properties by name, code, or city…"
             style={{ width: '100%', maxWidth: 380 }}
           />
-          <span style={{ fontSize: '0.78rem', color: '#888', fontFamily: 'monospace' }}>
+          <span style={{ fontSize: '0.78rem', color: '#888', fontWeight: 650, letterSpacing: '0.04em', fontVariantNumeric: 'tabular-nums' }}>
             {loading ? 'Loading…' : `${filteredAndSorted.length} of ${properties.length} PROPERTIES`}
           </span>
         </div>
