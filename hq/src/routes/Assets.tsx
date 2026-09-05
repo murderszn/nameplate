@@ -274,181 +274,160 @@ export function Assets() {
         </div>
       )}
 
-      {/* Filtering & Search Toolbar */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-          background: 'var(--bg-card)',
-          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
-          borderRadius: 2,
-          padding: '14px 16px',
-        }}
-      >
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{ flex: 1, minWidth: 260 }}>
-            <input
-              className="np-input"
-              aria-label="Search asset registry"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') void onLookup();
-              }}
-              placeholder="Search NPID, serial, model, room, unit… or press Enter to scan"
-              style={{ width: '100%' }}
-            />
+      {/* Unified Container List: Asset Registry */}
+      <div className="np-container-card">
+        {/* Integrated Container Toolbar */}
+        <div className="np-container-toolbar">
+          {/* Toolbar Top Row: Title, Counts, and Primary Action Buttons */}
+          <div className="np-container-toolbar__row">
+            <div className="np-container-toolbar__meta">
+              <h3 className="np-container-toolbar__title">Asset Registry</h3>
+              <span className="np-container-toolbar__count">
+                {filteredAndSorted.length} of {assets.length} equipment assets
+              </span>
+            </div>
+
+            <div className="np-container-toolbar__actions">
+              <button className="np-btn" onClick={() => void onLookup()} style={{ flexShrink: 0 }}>
+                Scan / Lookup
+              </button>
+
+              <button
+                type="button"
+                className="np-btn np-btn--primary"
+                onClick={() => setIsImporterOpen(true)}
+                style={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.78rem',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                Import CSV Roster
+              </button>
+
+              <button
+                type="button"
+                className="np-btn"
+                onClick={handleExportCsv}
+                style={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  background: 'var(--bg-elevated)',
+                  color: 'var(--white)',
+                  border: '1px solid var(--line)',
+                  fontSize: '0.78rem',
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Export CSV
+              </button>
+            </div>
           </div>
 
-          <button className="np-btn" onClick={() => void onLookup()} style={{ flexShrink: 0 }}>
-            Scan / Lookup
-          </button>
+          {/* Toolbar Bottom Row: Integrated Search + Filter Dropdowns */}
+          <div className="np-container-toolbar__row">
+            <div className="np-container-toolbar__search-wrap" style={{ flex: 1, minWidth: 260, maxWidth: 'none' }}>
+              <span className="np-container-toolbar__search-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input
+                className="np-input"
+                aria-label="Search asset registry"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') void onLookup();
+                }}
+                placeholder="Search NPID, serial, model, room, unit… or press Enter to scan"
+              />
+            </div>
 
-          <button
-            type="button"
-            className="np-btn np-btn--primary"
-            onClick={() => setIsImporterOpen(true)}
-            style={{
-              flexShrink: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: '0.78rem',
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="17 8 12 3 7 8" />
-              <line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
-            Import CSV Roster
-          </button>
+            <div className="np-container-toolbar__filters">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                aria-label="Filter by category"
+              >
+                <option value="all">All Categories ({categories.length})</option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
 
-          <button
-            type="button"
-            className="np-btn"
-            onClick={handleExportCsv}
-            style={{
-              flexShrink: 0,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              background: 'var(--bg-elevated)',
-              color: 'var(--white)',
-              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
-              fontSize: '0.78rem',
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Export CSV
-          </button>
-        </div>
+              <select
+                value={selectedProperty}
+                onChange={(e) => setSelectedProperty(e.target.value)}
+                aria-label="Filter by property"
+              >
+                <option value="all">All Properties ({properties.length})</option>
+                {properties.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
 
-        {/* Dropdown Filters */}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
-              borderRadius: 2,
-              padding: '6px 10px',
-              color: 'var(--white)',
-              fontSize: '0.8rem',
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="all">All Categories ({categories.length})</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                aria-label="Filter by status"
+              >
+                <option value="all">All Statuses ({statuses.length})</option>
+                {statuses.map((s) => (
+                  <option key={s} value={s}>
+                    {s.replaceAll('_', ' ')}
+                  </option>
+                ))}
+              </select>
 
-          <select
-            value={selectedProperty}
-            onChange={(e) => setSelectedProperty(e.target.value)}
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
-              borderRadius: 2,
-              padding: '6px 10px',
-              color: 'var(--white)',
-              fontSize: '0.8rem',
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="all">All Properties ({properties.length})</option>
-            {properties.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(235, 43, 43, 0.4)',
+                    color: '#ff6666',
+                    borderRadius: 4,
+                    padding: '6px 10px',
+                    fontSize: '0.76rem',
+                    cursor: 'pointer',
+                    height: 34,
+                  }}
+                >
+                  Clear Filters ✕
+                </button>
+              )}
+            </div>
+          </div>
 
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
-              borderRadius: 2,
-              padding: '6px 10px',
-              color: 'var(--white)',
-              fontSize: '0.8rem',
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="all">All Statuses ({statuses.length})</option>
-            {statuses.map((s) => (
-              <option key={s} value={s}>
-                {s.replaceAll('_', ' ')}
-              </option>
-            ))}
-          </select>
-
-          {hasActiveFilters && (
-            <button
-              onClick={clearFilters}
-              style={{
-                background: 'transparent',
-                border: '1px solid rgba(235, 43, 43,0.4)',
-                color: '#ff6666',
-                borderRadius: 2,
-                padding: '5px 10px',
-                fontSize: '0.76rem',
-                cursor: 'pointer',
-              }}
-            >
-              Clear Filters ✕
-            </button>
+          {lookupError && (
+            <div style={{ color: 'var(--red)', fontSize: '0.82rem', fontWeight: 550, marginTop: 4 }}>
+              {lookupError}
+            </div>
           )}
-
-          <span style={{ marginLeft: 'auto', fontSize: '0.78rem', color: '#888', fontWeight: 650, letterSpacing: '0.04em', fontVariantNumeric: 'tabular-nums' }}>
-            {filteredAndSorted.length} of {assets.length} ASSETS
-          </span>
         </div>
-      </div>
 
-      {lookupError && (
-        <div style={{ color: 'var(--red)', fontSize: '0.82rem', fontWeight: 550 }}>
-          {lookupError}
-        </div>
-      )}
-
-      {/* Sortable Asset Registry Table */}
-      <div className="np-table-wrapper" style={{ overflowX: 'auto' }}>
-        <table className="np-table">
+        {/* Seamless Container Table */}
+        <div className="np-container-table-wrap">
+          <table className="np-table">
           <thead>
             <tr>
               <th
@@ -577,6 +556,12 @@ export function Assets() {
           </tbody>
         </table>
       </div>
+
+      <div className="np-container-footer">
+        <span>Portfolio physical asset record · Sub-second offline sync</span>
+        <span>{filteredAndSorted.length} of {assets.length} assets displayed</span>
+      </div>
+    </div>
 
       {/* Bulk CSV Importer Modal */}
       <CsvImporterModal

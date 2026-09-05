@@ -199,107 +199,68 @@ export function WorkOrders() {
       <header className="hq-page-header"><div><p className="hq-eyebrow">KEEP THE WORK MOVING</p><h1 className="hq-page-title">Work orders</h1><p className="hq-page-description">Triage requests, track due dates, and follow the work through.</p></div></header>
       {error && <div className="hq-banner" role="alert"><span>{error}</span><button className="hq-button" onClick={loadData}>Reload work orders</button></div>}
       {(propertyScope || focus) && <div className="hq-banner" role="status"><span><strong>{focus === 'overdue' ? 'Past SLA due date' : focus === 'open' ? 'Open work orders' : 'Property scope'}</strong>{propertyScope ? ` · ${properties.find(p => p.id === propertyScope)?.name ?? propertyScope}` : ''} · {filteredWorkOrders.length} records</span><button className="hq-button" onClick={() => setSearchParams({})}>Clear scope</button></div>}
-      {/* Top Toolbar & Filter Bar */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 16,
-          background: 'var(--bg-card)',
-          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
-          borderRadius: 2,
-          padding: '12px 18px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative', minWidth: 240 }}>
-            <input
-              type="text"
-              aria-label="Search work orders"
-              placeholder="Search WO #, NPID, Title, Tech…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                background: 'var(--bg-elevated)',
-                border: '1px solid rgba(var(--overlay-rgb), 0.12)',
-                borderRadius: 2,
-                padding: '7px 12px',
-                color: 'var(--white)',
-                fontSize: '0.84rem',
-                outline: 'none',
-                fontFamily: 'inherit',
-              }}
-            />
+      {/* Top Toolbar & Filter Bar: Unified Container Bar */}
+      <div className="np-container-card" style={{ marginBottom: 16 }}>
+        <div className="np-container-toolbar np-container-toolbar--row">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', flex: 1, minWidth: 280 }}>
+            <div className="np-container-toolbar__meta">
+              <h3 className="np-container-toolbar__title">Dispatch & Queue</h3>
+              <span className="np-container-toolbar__count">{openCount} active tickets</span>
+            </div>
+
+            <div className="np-container-toolbar__search-wrap" style={{ maxWidth: 320 }}>
+              <span className="np-container-toolbar__search-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input
+                type="text"
+                className="np-input"
+                aria-label="Search work orders"
+                placeholder="Search WO #, NPID, Title, Tech…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            <div className="np-container-toolbar__filters">
+              <select
+                value={selectedPriority}
+                onChange={(e) => setSelectedPriority(e.target.value)}
+                aria-label="Filter by priority"
+              >
+                {PRIORITIES.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                aria-label="Filter by category"
+              >
+                <option value="all">All Categories</option>
+                <option value="HVAC">HVAC</option>
+                <option value="Appliance">Appliance</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Electrical">Electrical</option>
+              </select>
+            </div>
           </div>
 
-          <select
-            value={selectedPriority}
-            onChange={(e) => setSelectedPriority(e.target.value)}
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
-              borderRadius: 2,
-              padding: '7px 10px',
-              color: 'var(--white)',
-              fontSize: '0.82rem',
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            {PRIORITIES.map((p) => (
-              <option key={p.value} value={p.value}>
-                {p.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid rgba(var(--overlay-rgb), 0.12)',
-              borderRadius: 2,
-              padding: '7px 10px',
-              color: 'var(--white)',
-              fontSize: '0.82rem',
-              outline: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="all">All Categories</option>
-            <option value="HVAC">HVAC</option>
-            <option value="Appliance">Appliance</option>
-            <option value="Plumbing">Plumbing</option>
-            <option value="Electrical">Electrical</option>
-          </select>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: '0.78rem', color: '#A3A3A3', fontWeight: 650, letterSpacing: '0.04em' }}>
-            {openCount} ACTIVE FIELD ORDERS
-          </span>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            style={{
-              background: 'var(--np-plate-600)',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 2,
-              padding: '8px 16px',
-              fontWeight: 700,
-              fontSize: '0.84rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            <span>+</span> Create Work Order
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="np-btn np-btn--primary"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              <span>+</span> Create Work Order
+            </button>
+          </div>
         </div>
       </div>
 

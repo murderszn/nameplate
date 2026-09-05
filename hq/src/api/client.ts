@@ -1237,8 +1237,8 @@ const INITIAL_WORK_ORDERS: WorkOrder[] = [
     notesList: [],
   },
   {
-    id: 'wo_1039',
-    number: 1039,
+    id: 'wo_1038',
+    number: 1038,
     title: 'Water Heater — Anode Rod Cathodic Protection Inspection',
     description: 'Inspect magnesium anode rod in Rheem 50-gallon hybrid heat pump. Measure electrical potential.',
     status: 'awaiting_parts',
@@ -1313,8 +1313,8 @@ const INITIAL_WORK_ORDERS: WorkOrder[] = [
   },
 ];
 
-// Persistent state storage for Demo
-const STORAGE_KEY = 'nameplate_hq_workorders_v1';
+// Persistent state storage for Demo — bump to v2 to flush duplicate wo_1039
+const STORAGE_KEY = 'nameplate_hq_workorders_v2';
 
 function getStoredWorkOrders(): WorkOrder[] {
   try {

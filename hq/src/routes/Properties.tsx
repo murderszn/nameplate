@@ -100,39 +100,42 @@ export function Properties() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Top Search & Action Bar */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 12,
-          flexWrap: 'wrap',
-          background: 'var(--bg-card)',
-          border: '1px solid rgba(var(--overlay-rgb), 0.08)',
-          borderRadius: 2,
-          padding: '12px 16px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 260 }}>
-          <input
-            className="np-input"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filter properties by name, code, or city…"
-            style={{ width: '100%', maxWidth: 380 }}
-          />
-          <span style={{ fontSize: '0.78rem', color: '#888', fontWeight: 650, letterSpacing: '0.04em', fontVariantNumeric: 'tabular-nums' }}>
-            {loading ? 'Loading…' : `${filteredAndSorted.length} of ${properties.length} PROPERTIES`}
-          </span>
+      <div className="np-container-card">
+        {/* Integrated Container List Toolbar */}
+        <div className="np-container-toolbar np-container-toolbar--row">
+          <div className="np-container-toolbar__meta">
+            <h3 className="np-container-toolbar__title">Property Portfolio</h3>
+            <span className="np-container-toolbar__count">
+              {loading ? 'Loading…' : `${filteredAndSorted.length} of ${properties.length} communities`}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div className="np-container-toolbar__search-wrap">
+              <span className="np-container-toolbar__search-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+              </span>
+              <input
+                className="np-input"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Filter by name, code, or city…"
+                aria-label="Filter properties"
+              />
+            </div>
+
+            <button className="np-btn np-btn--primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span>+</span> Add property
+            </button>
+          </div>
         </div>
 
-        <button className="np-btn">+ Add property</button>
-      </div>
-
-      {/* Properties Table with High-Res Architecture Previews */}
-      <div className="np-table-wrapper" style={{ overflowX: 'auto' }}>
-        <table className="np-table">
+        {/* Properties Table */}
+        <div className="np-container-table-wrap">
+          <table className="np-table">
           <thead>
             <tr>
               <th style={{ width: 80 }}>Preview</th>
@@ -257,6 +260,12 @@ export function Properties() {
           </tbody>
         </table>
       </div>
+
+      <div className="np-container-footer">
+        <span>Active communities registered under management</span>
+        <span>{filteredAndSorted.length} of {properties.length} properties displayed</span>
+      </div>
     </div>
-  );
+  </div>
+);
 }
