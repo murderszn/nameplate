@@ -30,21 +30,21 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: #000000;
-      color: #ffffff;
+      background-color: #ffffff;
+      color: #111111;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     #np-loading-screen {
       position: fixed;
       inset: 0;
-      background: #000000;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 99999;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
+      background-image: radial-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 0);
       background-size: 28px 28px;
-      transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .np-loader-wrap {
       display: flex;
@@ -54,67 +54,37 @@
       padding: 24px;
     }
     .np-logo-box {
-      background: #141414;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 18px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      padding: 20px;
       border-radius: 4px;
-      margin-bottom: 24px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      margin-bottom: 28px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
     }
     .np-loader-logo {
-      height: 52px;
+      height: 56px;
       width: auto;
       display: block;
     }
-    .np-loader-kicker {
-      font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      color: #ff2a2a;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .np-loader-kicker::before {
-      content: "";
-      display: inline-block;
-      width: 3px;
-      height: 12px;
-      background: #ff2a2a;
-    }
     .np-loader-title {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 800;
-      letter-spacing: 0.08em;
-      color: #ffffff;
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .np-loader-title span {
-      font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 0.12em;
-      color: #ff2a2a;
-      background: rgba(255, 42, 42, 0.1);
-      border: 1px solid rgba(255, 42, 42, 0.4);
-      padding: 2px 6px;
-      border-radius: 2px;
+      letter-spacing: 1.5px;
+      color: #111111;
+      margin: 0;
     }
     .np-loader-sub {
       font-size: 13px;
-      color: rgba(255, 255, 255, 0.7);
-      margin-top: 6px;
-      margin-bottom: 28px;
+      color: rgba(17, 17, 17, 0.7);
+      margin-top: 8px;
+      margin-bottom: 36px;
+      font-weight: 400;
     }
     .np-loader-bar {
       width: 220px;
       height: 2px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 2px;
+      background: rgba(0, 0, 0, 0.12);
+      border-radius: 1px;
       overflow: hidden;
       position: relative;
     }
@@ -124,9 +94,8 @@
       left: 0;
       bottom: 0;
       width: 45%;
-      background: #ff2a2a;
-      border-radius: 2px;
-      box-shadow: 0 0 8px rgba(255, 42, 42, 0.8);
+      background: #eb2b2b;
+      border-radius: 1px;
       animation: np-progress 1.4s ease-in-out infinite alternate;
     }
     @keyframes np-progress {
@@ -134,27 +103,17 @@
       50% { width: 55%; }
       100% { left: 75%; width: 25%; }
     }
-    .np-loader-status {
-      font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
-      font-size: 9.5px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      color: rgba(255, 255, 255, 0.4);
-      margin-top: 14px;
-    }
   </style>
 </head>
 <body>
   <div id="np-loading-screen">
     <div class="np-loader-wrap">
       <div class="np-logo-box">
-        <img src="assets/assets/images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="np-loader-logo" />
+        <img src="nameplate-logo-light.png" alt="Nameplate" class="np-loader-logo" />
       </div>
-      <div class="np-loader-kicker">00 / OFFLINE LEDGER</div>
-      <div class="np-loader-title">NAMEPLATE <span>FIELD</span></div>
+      <h1 class="np-loader-title">NAMEPLATE</h1>
       <div class="np-loader-sub">Every appliance accounted for.</div>
       <div class="np-loader-bar"><div class="np-loader-progress"></div></div>
-      <div class="np-loader-status">INITIALIZING FIELD RUNTIME...</div>
     </div>
   </div>
 
