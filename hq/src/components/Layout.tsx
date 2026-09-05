@@ -289,7 +289,7 @@ export function Layout() {
         <div className="np-sidebar__header">
           <div className="np-sidebar__brand">
             <img
-              src={theme === 'light' ? './images/nameplate-logo-light.png' : './images/nameplate-logo-transparent.png'}
+              src="./images/nameplate-logo-transparent.png"
               alt="Nameplate"
               className="np-sidebar__logo-img"
             />
