@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,7 +9,13 @@ import 'theme/theme_controller.dart';
 import 'widgets/np_brand.dart';
 
 void main() {
-  runApp(ProviderScope(child: NameplateFieldApp(home: SplashScreen())));
+  runApp(
+    ProviderScope(
+      child: NameplateFieldApp(
+        home: kIsWeb ? const AppShell() : const SplashScreen(),
+      ),
+    ),
+  );
 }
 
 /// Nameplate Field — Flutter (iOS + Android) app for maintenance
