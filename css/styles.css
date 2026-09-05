@@ -788,8 +788,9 @@ html[data-theme="light"] .btn-ghost:hover {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  padding: 190px 0 96px;
-  min-height: 82vh;
+  padding: 190px 0 64px;
+  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
 }
@@ -1216,7 +1217,7 @@ html[data-theme="light"] .btn-ghost:hover {
 }
 
 @media (max-width: 900px) {
-  .hero--video { padding: 148px 0 72px; min-height: auto; }
+  .hero--video { padding: 148px 0 72px; min-height: 100vh; min-height: 100svh; }
   .hero-video { gap: 12px; padding: 28px 0; }
   .hero-video__track { gap: 24px; }
   .hero-video__track img { width: 132px; height: 132px; }
@@ -1252,7 +1253,8 @@ html[data-theme="light"] .btn-ghost:hover {
 @media (max-width: 900px) {
   .hero {
     padding: 150px 0 64px;
-    min-height: auto;
+    min-height: 100vh;
+    min-height: 100svh;
   }
   .hero-grid {
     grid-template-columns: 1fr;
@@ -4690,4 +4692,219 @@ textarea.form-control {
   .investor-deck-block {
     padding: 20px;
   }
+}
+
+/* ================= Marketing presentation system =================
+   Scoped to the landing page: product and report pages share this file.
+   Keep artwork dark; UI surfaces and text follow the selected theme. */
+.marketing-page {
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --section-space: 128px;
+  --wrap: 1280px;
+  --radius: 8px;
+  --bg-subtle: #08090b;
+  --bg-card: #0d0e10;
+  --bg-elevated: #141518;
+  --gray-500: #92949c;
+  --gray-400: #b0b2ba;
+  --card-shadow: 0 16px 40px -24px rgba(0, 0, 0, .6);
+  --title-size: clamp(2rem, 4.2vw, 3.5rem);
+  --sub-size: clamp(1rem, 1.4vw, 1.125rem);
+  --heading-size: clamp(1.25rem, 2.2vw, 1.75rem);
+}
+:root[data-theme="light"] .marketing-page {
+  --bg-subtle: #f6f7f8;
+  --bg-card: #fff;
+  --bg-elevated: #f3f4f6;
+  --border-subtle: #d9dce1;
+  --gray-400: #525660;
+  --gray-500: #60646d;
+  --red: #c51f2d;
+  --red-hover: #ac1926;
+  --red-subtle: rgba(197, 31, 45, .06);
+  --card-shadow: 0 16px 40px -24px rgba(25, 30, 40, .22);
+}
+.marketing-page .wrap { max-width: var(--wrap); padding-inline: 48px; }
+.marketing-page .section { padding-block: var(--section-space); min-height: 0; }
+.marketing-page .section-header { margin-bottom: var(--space-6); text-align: left; }
+.marketing-page .section-tag { margin-bottom: var(--space-3); font-size: .75rem; line-height: 1.6; letter-spacing: .1em; }
+.marketing-page .section-tag::before { flex-shrink: 0; }
+.marketing-page .section-title { font-size: var(--title-size); line-height: 1.08; letter-spacing: -.04em; margin-bottom: var(--space-3); max-width: 1000px; text-wrap: balance; }
+.marketing-page .section-sub { font-size: var(--sub-size); line-height: 1.7; max-width: 800px; }
+.marketing-page :is(.problem-grid, .tag-anatomy-stage, .architecture-track, .hq-featured-stage, .investor-grid) > * { min-width: 0; }
+.marketing-page :is(.btn, .nav-contact-btn, .hq-filter-pill, .btn-stage-enlarge) { min-height: 48px; height: auto; padding: 12px 24px; line-height: 1.4; }
+.marketing-page .btn { font-size: .875rem; gap: 8px; text-align: center; white-space: normal; }
+.marketing-page .btn svg { flex-shrink: 0; }
+.marketing-page :is(.btn-red, .btn-red-deck) { background: #c51f2d; border-color: #c51f2d; color: #fff; }
+.marketing-page :is(.btn-red, .btn-red-deck):hover { background: #ac1926; border-color: #ac1926; }
+.marketing-page :is(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 3px solid var(--red); outline-offset: 4px; }
+.marketing-page :is(.brand-logo-img, .hero-logo-img, .footer-brand-logo, .tag-brand-logo-icon) { object-fit: contain; }
+
+/* Hero: two clear lines, with a quiet center behind the typography. */
+.marketing-page .hero--video { min-height: 100vh; min-height: 100svh; padding: 190px 0 96px; }
+.marketing-page .hero-dramatic-wrap { gap: 0; }
+.marketing-page .hero-brand-mark { margin-bottom: 40px; }
+.marketing-page .hero-dramatic-h1 { font-size: clamp(2rem, 7.1vw, 6.25rem); line-height: 1.02; gap: 0; margin-bottom: 0; letter-spacing: -.05em; }
+.marketing-page .hero-dramatic-banner { margin: 0; }
+.marketing-page .hero-dramatic-actions { gap: 16px; margin-top: 40px; }
+.marketing-page .btn-hero-cta { min-height: 56px; min-width: 240px; padding: 16px 24px; }
+.marketing-page .hero-dramatic-actions .btn-ghost { background: var(--bg-card); border-color: var(--border-subtle); }
+.marketing-page .hero-dramatic-subaction { margin-top: 24px; }
+.marketing-page .hero-scroll-cue { min-height: 44px; color: var(--gray-400); }
+.marketing-page .hero-video__veil { background: radial-gradient(ellipse at 50% 48%, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 72%, transparent) 42%, transparent 85%), linear-gradient(180deg, var(--bg), transparent 25%, transparent 75%, var(--bg)); }
+
+/* 01: a shared header column, followed by a compact editorial split. */
+.marketing-page .problem-grid { max-width: none; margin: 0; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: 64px; }
+.marketing-page .problem-sidebar { border-top: 1px solid var(--border-subtle); padding-top: 24px; }
+.marketing-page .problem-sidebar p { font-size: 1.125rem; line-height: 1.7; }
+.marketing-page .problem-items-list, .marketing-page .problem-row { border-color: var(--border-subtle); }
+.marketing-page .problem-row { grid-template-columns: 32px minmax(0, 1fr); gap: 24px; padding-block: 24px; }
+.marketing-page .problem-idx { line-height: 1.75; font-size: .875rem; }
+.marketing-page .problem-row h4 { font-size: 1.125rem; line-height: 1.5; }
+.marketing-page .problem-row p { font-size: 1rem; line-height: 1.65; }
+
+/* 02: symmetric callouts around a centered hardware specimen. */
+.marketing-page .tag-anatomy-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 2.7fr) minmax(0, 1fr); gap: 32px; max-width: none; margin: 0; padding: 32px 0; }
+.marketing-page .anatomy-center-frame { grid-column: auto; order: 0; max-width: 560px; justify-self: center; gap: 32px; }
+.marketing-page .anatomy-callout-col { gap: 32px; }
+.marketing-page .anatomy-callout-chip { padding: 0 0 0 16px; }
+.marketing-page .chip-header { flex-wrap: wrap; font-size: .6875rem; gap: 8px; line-height: 1.5; }
+.marketing-page .chip-body { font-size: .875rem; line-height: 1.6; }
+.marketing-page .oversized-tag-card { --red: #ff6268; padding: 32px 24px; gap: 24px; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+.marketing-page .tag-qr-large-box { width: 100%; min-width: 0; }
+.marketing-page .tag-large-npid { font-size: clamp(1rem, 1.8vw, 1.5rem); }
+.marketing-page .studio-input-wrapper { gap: 8px; padding: 8px; }
+.marketing-page .studio-large-input { min-width: 0; width: 100%; font-size: .9375rem; height: 48px; }
+.marketing-page .studio-input-wrapper #btnRandomizeOversized { height: 48px; padding-inline: 16px; }
+.marketing-page .studio-subtext { color: var(--gray-500); line-height: 1.6; }
+
+/* 03: full-column montage and evenly spaced architecture cards. */
+.marketing-page .ios-montage-container { max-width: none; }
+.marketing-page .ios-montage-grid { gap: 24px; }
+.marketing-page .ios-montage-card { border-radius: var(--radius); border-color: var(--border-subtle); box-shadow: var(--card-shadow); }
+.marketing-page .field-actions-row { justify-content: flex-start; margin: 24px 0 0; gap: 16px; }
+.marketing-page .field-architecture-block { margin-top: 64px; padding-top: 64px; border-top: 1px solid var(--border-subtle); }
+.marketing-page .field-architecture-block h3.section-title { font-size: var(--heading-size); }
+.marketing-page .architecture-track { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; border: 0; margin-top: 0; }
+.marketing-page .arch-node { padding: 32px 24px; border: 1px solid var(--border-subtle); border-radius: var(--radius); background: var(--bg-card); }
+.marketing-page .arch-node h4 { font-size: 1.125rem; line-height: 1.4; margin-bottom: 16px; }
+.marketing-page .arch-node p { font-size: .9375rem; line-height: 1.65; }
+
+/* 04: the complete report remains readable; thumbnails use consistent crops. */
+.marketing-page .hq-yield-header { gap: 32px; margin-bottom: 32px; }
+.marketing-page .hq-yield-filter-row { gap: 8px; }
+.marketing-page .hq-filter-pill { padding: 12px 16px; white-space: normal; }
+.marketing-page .hq-featured-stage { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); margin-bottom: 48px; border-color: var(--border-subtle); box-shadow: var(--card-shadow); background: var(--bg-card); }
+.marketing-page .featured-stage-details { padding: 40px; gap: 24px; background: var(--bg-card); }
+.marketing-page .stage-doc-title { font-size: var(--heading-size); line-height: 1.2; }
+.marketing-page .stage-doc-desc { font-size: 1rem; line-height: 1.7; }
+.marketing-page .stage-img-wrapper { flex: none; aspect-ratio: 4 / 3; min-height: 0; padding: 24px; }
+.marketing-page .stage-featured-img { width: 100%; height: 100%; max-height: none; object-fit: contain; box-shadow: none; }
+.marketing-page .stage-visual-topbar { padding: 8px 16px; }
+.marketing-page .stage-actions-row { gap: 16px; }
+.marketing-page .hq-yield-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.marketing-page .hq-yield-card { border-color: var(--border-subtle); background: var(--bg-card); }
+.marketing-page .hq-yield-card.is-active { border-color: var(--red); }
+.marketing-page .yield-card-thumb { aspect-ratio: 16 / 10; }
+.marketing-page .yield-card-thumb img { display: block; }
+.marketing-page .yield-card-info { padding: 24px 16px 16px; }
+.marketing-page .yield-card-title { font-size: .9375rem; line-height: 1.5; }
+.marketing-page .yield-card-action { margin-top: auto; padding: 16px; }
+
+/* 05: horizontal scrolling is contained to the comparison region. */
+.marketing-page .comparison-table-wrap { margin-top: 0; overflow-x: auto; border-color: var(--border-subtle); scrollbar-color: var(--gray-500) var(--bg-subtle); }
+.marketing-page .comparison-table { min-width: 880px; table-layout: fixed; }
+.marketing-page .comparison-table :is(th, td) { padding: 24px; vertical-align: top; border-color: var(--border-subtle); line-height: 1.6; }
+.marketing-page .comparison-table th { position: static; background: var(--bg-elevated); color: var(--white); font-size: .75rem; letter-spacing: .04em; }
+.marketing-page .comparison-table tbody tr:nth-child(even) { background: var(--bg-elevated); }
+.marketing-page .comparison-table .nameplate-col { background: var(--red-subtle); }
+.marketing-page .tag-badge-bad { color: var(--gray-400); }
+.marketing-page :is(.tag-badge-bad, .tag-badge-good) { align-items: baseline; gap: 8px; }
+.marketing-page :is(.tag-badge-bad, .tag-badge-good)::before { flex-shrink: 0; }
+.marketing-page .tag-badge-bad::before { color: var(--gray-500); }
+.marketing-page .comparison-table tr:last-child td { border-bottom: 0; }
+
+/* 06: equal panels and a slide stage with controls below the artwork. */
+.marketing-page .investor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-top: 0; }
+.marketing-page :is(.investor-thesis-panel, .investor-audio-panel, .investor-deck-block) { padding: 32px; border: 1px solid var(--border-subtle); border-radius: var(--radius); box-shadow: var(--card-shadow); }
+.marketing-page :is(.investor-thesis-panel, .audio-panel-inner) { gap: 24px; }
+.marketing-page :is(.thesis-header h3, .podcast-title) { font-size: var(--heading-size); line-height: 1.25; }
+.marketing-page .thesis-card { grid-template-columns: 24px minmax(0, 1fr); gap: 16px; padding: 24px 16px; }
+.marketing-page :is(.thesis-body p, .podcast-desc) { font-size: .9375rem; line-height: 1.65; }
+.marketing-page .podcast-badge-row { gap: 16px; flex-wrap: wrap; padding-bottom: 24px; }
+.marketing-page .custom-audio-card { padding: 24px; border-radius: var(--radius); }
+.marketing-page .thesis-metrics-row { gap: 16px; padding-top: 24px; }
+.marketing-page .t-val { font-size: clamp(1.125rem, 1.7vw, 1.5rem); white-space: nowrap; }
+.marketing-page .investor-deck-block { margin-top: 48px; }
+.marketing-page .investor-deck-header { gap: 24px; }
+.marketing-page .deck-download-buttons { gap: 16px; }
+.marketing-page .deck-viewer-container { min-width: 0; gap: 16px; }
+.marketing-page .deck-main-viewport { aspect-ratio: 16 / 9; min-height: 0; }
+.marketing-page .deck-main-img { position: absolute; inset: 0; object-fit: contain; }
+.marketing-page .deck-nav-overlay { position: static; transform: none; align-self: center; padding: 0 8px; gap: 24px; background: var(--bg-elevated); border-color: var(--border-subtle); }
+.marketing-page .deck-nav-arrow { width: 48px; height: 48px; color: var(--white); }
+.marketing-page .deck-slide-counter { color: var(--white-90); }
+.marketing-page .deck-thumbs-track { gap: 16px; max-width: 100%; padding: 4px 4px 16px; }
+.marketing-page .deck-thumb { flex-basis: 144px; padding: 0; background: #000; opacity: .75; }
+.marketing-page .deck-thumb.is-active { opacity: 1; }
+.marketing-page .has-corner-ticks::before, .marketing-page .has-corner-ticks::after { pointer-events: none; }
+
+@media (max-width: 1100px) {
+  .marketing-page .wrap { padding-inline: 32px; }
+  .marketing-page .tag-anatomy-stage { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 32px; padding: 0; }
+  .marketing-page .anatomy-center-frame { grid-column: 1 / -1; order: -1; margin-inline: auto; }
+  .marketing-page .chip-header { flex-wrap: nowrap; }
+  .marketing-page .architecture-track { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .marketing-page .hq-yield-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .marketing-page .featured-stage-details { padding: 32px; }
+  .marketing-page .investor-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 800px) {
+  .marketing-page { --section-space: 64px; }
+  .marketing-page .problem-grid { gap: 32px; grid-template-columns: 1fr; }
+  .marketing-page .hq-featured-stage { grid-template-columns: 1fr; }
+  .marketing-page .featured-stage-visual { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
+  .marketing-page .hq-yield-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .marketing-page .ios-montage-grid { gap: 16px; }
+  .marketing-page .hero--video { min-height: 720px; padding-block: 128px 80px; }
+}
+@media (max-width: 600px) {
+  .marketing-page .wrap { padding-inline: 24px; }
+  .marketing-page .section-header { margin-bottom: 32px; }
+  .marketing-page .hero--video { min-height: 100svh; padding-block: 112px 64px; }
+  .marketing-page .hero-dramatic-h1 { font-size: clamp(1.75rem, 8.1vw, 3rem); letter-spacing: -.045em; }
+  .marketing-page .hero-brand-mark { margin-bottom: 32px; }
+  .marketing-page .hero-dramatic-actions { flex-direction: column; width: 100%; gap: 16px; margin-top: 32px; }
+  .marketing-page .btn-hero-cta { width: 100%; min-width: 0; }
+  .marketing-page .tag-anatomy-stage { grid-template-columns: 1fr; gap: 32px; }
+  .marketing-page .anatomy-callout-col { gap: 24px; }
+  .marketing-page .oversized-tag-card { grid-template-columns: 1fr; padding: 32px 24px; }
+  .marketing-page .tag-large-npid { font-size: 1.5rem; }
+  .marketing-page .studio-input-wrapper { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  .marketing-page .studio-input-wrapper #btnRandomizeOversized { grid-column: 1 / -1; }
+  .marketing-page .studio-input-prefix { padding-left: 8px; }
+  .marketing-page .ios-montage-grid { grid-template-columns: 1fr !important; gap: 24px; }
+  .marketing-page .field-actions-row .btn { width: 100%; }
+  .marketing-page .architecture-track { grid-template-columns: 1fr; }
+  .marketing-page .field-architecture-block { margin-top: 48px; padding-top: 48px; }
+  .marketing-page .hq-yield-grid { grid-template-columns: 1fr; }
+  .marketing-page :is(.featured-stage-details, .investor-thesis-panel, .investor-audio-panel, .investor-deck-block) { padding: 24px; }
+  .marketing-page .stage-img-wrapper { padding: 16px; }
+  .marketing-page .stage-zoom-hint { font-size: .5rem; }
+  .marketing-page .hq-filter-pill { font-size: .6875rem; padding-inline: 12px; }
+  .marketing-page .custom-audio-card { padding: 16px; }
+  .marketing-page .audio-controls-top { flex-wrap: wrap; }
+  .marketing-page .audio-track-meta { min-width: 0; }
+  .marketing-page .thesis-metrics-row { grid-template-columns: 1fr; }
+  .marketing-page .thesis-metric { padding-bottom: 16px; }
+  .marketing-page .deck-download-buttons, .marketing-page .deck-download-buttons .btn { width: 100%; }
+  .marketing-page .deck-thumb { flex-basis: 120px; }
+  .marketing-page .footer-brand { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-page *, .marketing-page *::before, .marketing-page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
