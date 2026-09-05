@@ -649,6 +649,14 @@
   function initHqYieldGallery() {
     var cards = document.querySelectorAll('.hq-yield-card');
     cards.forEach(function (card) {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          card.click();
+        }
+      });
       card.addEventListener('click', function () {
         var id = card.getAttribute('data-id');
         updateFeaturedStage(id);
@@ -1064,13 +1072,16 @@
       currentSlide = idx;
 
       var padIdx = (currentSlide < 10 ? '0' : '') + currentSlide;
-      mainSlide.src = 'images/deck/web/slide_' + padIdx + '.webp';
+      mainSlide.src = 'images/deck/web/slide_' + padIdx + '.webp?v=3';
+      mainSlide.alt = 'Nameplate presentation, slide ' + currentSlide + ' of ' + totalSlides;
       slideCounter.textContent = 'SLIDE ' + padIdx + ' / ' + (totalSlides < 10 ? '0' : '') + totalSlides;
 
       thumbs.forEach(function (thumb) {
+        thumb.setAttribute('aria-pressed', String(parseInt(thumb.getAttribute('data-slide'), 10) === currentSlide));
         if (parseInt(thumb.getAttribute('data-slide'), 10) === currentSlide) {
           thumb.classList.add('is-active');
-          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          // Scroll only the thumbnail strip, never the page or slide viewport.
+          thumbsTrack.scrollTo({ left: thumb.offsetLeft - thumbsTrack.offsetLeft - (thumbsTrack.clientWidth - thumb.clientWidth) / 2, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
         } else {
           thumb.classList.remove('is-active');
         }
@@ -1096,13 +1107,19 @@
       });
     });
 
-    // Keyboard Arrow Navigation
-    document.addEventListener('keydown', function (e) {
+    thumbs.forEach(function (thumb) {
+      thumb.setAttribute('aria-pressed', String(thumb.classList.contains('is-active')));
+    });
+
+    // Keep arrow navigation inside the deck so other controls retain their keys.
+    mainSlide.closest('.deck-viewer-container').addEventListener('keydown', function (e) {
       var tag = (document.activeElement && document.activeElement.tagName) || '';
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (e.key === 'ArrowLeft') {
+        e.preventDefault();
         updateSlide(currentSlide - 1);
       } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
         updateSlide(currentSlide + 1);
       }
     });
