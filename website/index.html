@@ -34,7 +34,6 @@
       <a href="#field-app">App</a>
       <a href="#hq-console">HQ &amp; Audits</a>
       <a href="#investors">Investors</a>
-      <a href="launch-roadmap.html" class="nav-roadmap-link" style="color: var(--crimson, #c51f2d); font-weight: 600;">Roadmap &amp; Costs</a>
     </nav>
 
     <div class="nav-actions">
@@ -938,39 +937,88 @@
 
 </main>
 
-<!-- ================= Minimalist Footer ================= -->
+<!-- ================= Polished Industrial Footer ================= -->
 <footer class="site-footer">
-  <div class="wrap footer-inner">
-    <div class="footer-left">
-      <div class="footer-brand">
-        <img loading="lazy" decoding="async" width="814" height="804" src="images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="footer-brand-logo theme-logo theme-logo--dark">
-        <img loading="lazy" decoding="async" width="800" height="800" src="images/nameplate-logo-light.png" alt="" aria-hidden="true" class="footer-brand-logo theme-logo theme-logo--light">
-        <span>NAMEPLATE SYSTEMS, INC.</span>
+  <div class="wrap">
+    <div class="footer-main-grid">
+      <!-- Brand Statement Column -->
+      <div class="footer-brand-col">
+        <a href="#top" class="footer-brand-lockup" aria-label="Nameplate home">
+          <div class="footer-brand-emblem">
+            <img loading="lazy" decoding="async" width="22" height="22" src="images/nameplate-logo-transparent.png" alt="Nameplate Logo" class="footer-brand-logo theme-logo theme-logo--dark">
+            <img loading="lazy" decoding="async" width="22" height="22" src="images/nameplate-logo-light.png" alt="" aria-hidden="true" class="footer-brand-logo theme-logo theme-logo--light">
+          </div>
+          <div class="footer-brand-meta">
+            <span class="footer-brand-name">NAMEPLATE</span>
+            <span class="footer-brand-sub mono">PHYSICAL ASSET LEDGER</span>
+          </div>
+        </a>
+
+        <p class="footer-tagline">
+          The offline-first operating record for multifamily physical infrastructure. Every high-value appliance bound directly to tamper-evident hardware.
+        </p>
+
+        <div class="footer-telemetry-badge mono">
+          <span class="live-pulse-dot" aria-hidden="true"></span>
+          <span>SYSTEM ONLINE · 3M-7881 VINYL STANDARD</span>
+        </div>
       </div>
-      <div class="footer-copy mono">
-        Every appliance accounted for. &copy; 2026.
+
+      <!-- Navigation Column: Platform -->
+      <div class="footer-nav-col">
+        <h4 class="footer-col-title mono">PLATFORM</h4>
+        <ul class="footer-nav-list mono">
+          <li><a href="#concept">The Core Leak</a></li>
+          <li><a href="#qr-studio">Tag Hardware</a></li>
+          <li><a href="#field-app">Field Scanner</a></li>
+          <li><a href="#hq-console">HQ Console</a></li>
+          <li><a href="#investors">CapEx Economics</a></li>
+        </ul>
+      </div>
+
+      <!-- Navigation Column: Solutions & Docs -->
+      <div class="footer-nav-col">
+        <h4 class="footer-col-title mono">RESOURCES</h4>
+        <ul class="footer-nav-list mono">
+          <li><a href="reports/depreciation_audit.html" target="_blank" rel="noopener">Audit Dossier ↗</a></li>
+          <li><a href="backend.html">Database Schema</a></li>
+          <li><a href="backend-blueprint.html">Architecture Blueprint</a></li>
+          <li><button type="button" class="footer-action-link open-contact-modal-trigger">Request Information →</button></li>
+        </ul>
       </div>
     </div>
 
-    <div class="footer-right">
-      <nav class="footer-links" aria-label="Footer Navigation">
-        <a href="#concept">Problem</a>
-        <a href="#qr-studio">Hardware</a>
-        <a href="#field-app">App</a>
-        <a href="#investors">Investors</a>
-        <a href="launch-roadmap.html" style="color: var(--crimson, #c51f2d); font-weight: 600;">Launch Roadmap</a>
-      </nav>
+    <!-- Bottom Bar -->
+    <div class="footer-bottom-bar">
+      <div class="footer-legal mono">
+        <span>&copy; 2026 Nameplate Systems, Inc.</span>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <span>All rights reserved.</span>
+        <span class="footer-sep" aria-hidden="true">·</span>
+        <span class="footer-legal-tag">Base32 Crockford · IP67 Hardware Standard</span>
+      </div>
 
-      <div class="footer-theme-wrap">
-        <button class="theme-btn footer-theme-btn" type="button" aria-label="Switch to light mode" title="Switch to light mode" id="footerThemeToggle">
-          <svg class="theme-icon theme-icon--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-          </svg>
-          <svg class="theme-icon theme-icon--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-          </svg>
+      <div class="footer-controls">
+        <button class="theme-btn footer-theme-pill" type="button" aria-label="Switch to light mode" title="Switch to light mode" id="footerThemeToggle">
+          <span class="footer-theme-icon-wrap" aria-hidden="true">
+            <svg class="theme-icon theme-icon--sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <svg class="theme-icon theme-icon--moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+          </span>
+          <span class="footer-theme-text mono" id="footerThemeLabel">Light Mode</span>
         </button>
+
+        <a href="#top" class="footer-back-top mono" aria-label="Back to top" title="Back to top">
+          <span>TOP</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+          </svg>
+        </a>
       </div>
     </div>
   </div>
