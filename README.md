@@ -121,24 +121,6 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 
 ---
 
-## 🏢 Portfolio Context & Properties
-
-<p align="center">
-  <img src="website/images/properties/scottsdale_vista.jpg" width="24%" alt="Scottsdale Vista" />
-  <img src="website/images/properties/sonoran_ridge.jpg" width="24%" alt="Sonoran Ridge" />
-  <img src="website/images/properties/camelback_vista.jpg" width="24%" alt="Camelback Vista" />
-  <img src="website/images/properties/desert_palm.jpg" width="24%" alt="Desert Palm Commons" />
-</p>
-
-| Property | Units | Core Equipment Standard | Active SLA Profile |
-|---|---|---|---|
-| **Scottsdale Vista** | 84 Units | Whirlpool Stainless Suite, Carrier HVAC, Rheem 50G Water Heaters | 4h Emergency / 24h Urgent |
-| **Sonoran Ridge** | 120 Units | GE EnergyStar Appliance Suite, Trane High-Efficiency Heat Pumps | 4h Emergency / 24h Urgent |
-| **Camelback Vista** | 64 Units | Samsung Commercial Stack, Goodman Split HVAC Systems | 4h Emergency / 24h Urgent |
-| **Desert Palm** | 96 Units | Frigidaire Pro Kitchen Suite, Rheem Performance Heaters | 4h Emergency / 24h Urgent |
-
----
-
 ## 🛠️ Stack & Repository Layout
 
 | Path | Surface / Module | Technology | Test / Build Status |
