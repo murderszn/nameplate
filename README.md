@@ -97,10 +97,25 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 - **Pre-Allocated Tag Block Allocator (`POST /v1/sync/allocate-block`)**: Allocates batches of 500 pre-signed cryptographic NPIDs to field devices for disconnected tagging.
 - **Relational Domain Schema**: Strict referential integrity for Organizations, Properties, Buildings, Units, Assets, Service Events, Part Usages, Parts, and Work Orders.
 
-### 🏷️ 5. Cryptographic Tag & QR Engine (Python CLI)
-- **Deterministic Minting**: Zero-dependency Python engine ([`scripts/nameplate_qr.py`](scripts/nameplate_qr.py)) implementing Crockford Base32 with check digits and HMAC-SHA256 signature generation.
+### 🐍 5. Python FastAPI Sync Engine & Supabase Bridge (`backend_py/`)
+- **Lightweight High-Throughput REST API**: FastAPI server running on Python 3 with SQLAlchemy models, Pydantic v2 schemas, and CORS middleware for local Flutter and web development.
+- **Bi-Directional Supabase Replication**: Real-time event propagation and batch sync hooks mirroring local mutations to Supabase PostgreSQL (`supabase_sync.py`).
+- **Offline Batch Processing**: Ingestion of offline technician service events, work orders, and asset status updates with conflict resolution and deterministic UUIDv5 mapping.
+- **Comprehensive Test Suite**: Fully automated test coverage across API endpoints, database seeding, and models (**24/24 tests passing** with `pytest`).
+
+### 🏷️ 6. Cryptographic Tag & QR Engine (Python CLI · `scripts/`)
+- **Deterministic Minting**: Zero-dependency Python engine ([`scripts/nameplate_qr.py`](scripts/nameplate_qr.py)) implementing Crockford Base32 with Luhn check digits and HMAC-SHA256 signature generation.
 - **Printable 30-Tag SVG Sheet**: Generates industrial 30-up sticker sheets (`sheet_30.svg`) formatted for thermal transfer and holographic polyester stock.
 - **Tag Verification & URL Parsing**: Resolves compact hardware URIs (`np://t/...`) and public web links (`https://np.app/a/...`).
+- **Asset Generation Utilities**: Parametric vector 3D isometric appliance modeler ([`scripts/iso3d_appliances.py`](scripts/iso3d_appliances.py)) and investor deck compiler ([`scripts/build_deck.py`](scripts/build_deck.py)).
+
+### 🌐 7. Interactive Public Web, Tools & Launch Systems (`website/`)
+- **Marketing Platform ([`website/index.html`](website/index.html))**: High-impact brand experience with interactive 3D hardware tag visualizer, dual schematic/physical vinyl flipper, live tag minting demo, and CapEx leak breakdown.
+- **Commercial Launch Roadmap & Cost Model ([`website/launch-roadmap.html`](website/launch-roadmap.html))**: Interactive hardware tag cost calculator (Matte Industrial Vinyl 3M 300LSE, Tamper-Evident Void Polyester, Anodized Aluminum), multi-year Supabase/compute infrastructure estimates, Apple App Store submission runbook, and 30-day pilot deployment checklist.
+- **Branded Appliance Screensaver ([`website/appliance-idle.html`](website/appliance-idle.html))**: 10-appliance rotating isometric visualizer with keyboard unit-cycling, pause/play, containerless Claude FM 24/7 Lo-Fi live radio telemetry strip, and PiP video monitor.
+- **Executive Printable Audit Dossiers ([`website/reports/`](website/reports/))**: Boardroom-ready, printable PDF reports including *Equipment Depreciation & CapEx Replacement Forecast* (`depreciation_audit.html`), *Brand Reliability & Failure Rate Matrix* (`failure_rate_matrix.html`), and *Make-Ready SLA Operations Audit* (`sla_operations_audit.html`).
+- **Interactive Schema Catalog & Architecture Explorer ([`website/backend.html`](website/backend.html) & [`website/backend-blueprint.html`](website/backend-blueprint.html))**: Visual database domain explorer, relational schema browser, and pipeline blueprints.
+- **Brand System & UI Spec Sheet ([`website/appliance-shrinkage/`](website/appliance-shrinkage/))**: Complete style guide (colors, typography, containers, appliance isometric line-art, rigid buttons, logo lockups).
 
 ---
 
@@ -129,10 +144,11 @@ Nameplate is the physical asset registry and offline-first maintenance ledger fo
 | [`app/`](app) | **Nameplate Field** | Flutter 3.x / Dart 3.x, Riverpod | **17/17 Tests Passing** (`flutter test`, `flutter analyze` clean) |
 | [`hq/`](hq) | **Nameplate HQ** | React 19, TypeScript, Vite, React Router | **Clean Production Build** (`npm run build` -> `website/hq/`) |
 | [`portal/`](portal) | **Nameplate Resident** | React 19, TypeScript, Vite | **Clean Production Build** (`npm run build` -> `website/portal/`) |
-| [`backend/`](backend) | **Nameplate API** | NestJS, Prisma ORM, PostgreSQL | **22/22 Tests Passing** (9/9 Jest suites, `npm run build` clean) |
-| [`scripts/`](scripts) | **Tag & QR Generator** | Python 3 (zero dependencies) | **7/7 Python Tests Passing** (`unittest`) |
-| [`website/`](website) | **Public Web & Assets** | HTML5, CSS3, Vanilla JS, Hosted Builds | Live static bundle ready for CDN deployment |
-| [`docs/`](docs) | **System Documentation** | Markdown, Specifications | Complete architecture and data models |
+| [`backend/`](backend) | **Nameplate API (NestJS)** | NestJS, Prisma ORM, PostgreSQL | **22/22 Tests Passing** (9/9 Jest suites, `npm run build` clean) |
+| [`backend_py/`](backend_py) | **Nameplate API (FastAPI)** | Python 3, FastAPI, SQLAlchemy, SQLite/Supabase | **24/24 Tests Passing** (`pytest backend_py/`) |
+| [`scripts/`](scripts) | **Tag & QR Generator** | Python 3 (zero dependencies) | **7/7 Python Tests Passing** (`unittest tests/`) |
+| [`website/`](website) | **Public Web, Roadmap & Demos** | HTML5, CSS3, Vanilla JS, Hosted Builds | Live static bundle, roadmap calculator, audit reports, idle screensaver |
+| [`docs/`](docs) | **System Documentation** | Markdown, Architecture Specs | 10 in-depth architectural guides, schema specs, and runbooks |
 
 ---
 
@@ -146,7 +162,7 @@ flutter run
 ```
 *Supports iOS Simulator, Android Emulator, and Web (`flutter run -d chrome`).*
 
-### 2. Backend Sync API
+### 2. NestJS Backend Sync API
 ```bash
 cd backend
 npm install
@@ -156,7 +172,17 @@ npm run start:dev
 ```
 *API runs at `http://localhost:3000`.*
 
-### 3. HQ Management Console
+### 3. Python FastAPI Sync Engine
+```bash
+# Run local FastAPI server with auto-reload
+python3 -m backend_py.run
+
+# Run full test suite
+pytest backend_py/
+```
+*API runs at `http://localhost:8000` (interactive Swagger docs at `/docs`).*
+
+### 4. HQ Management Console
 ```bash
 cd hq
 npm install
@@ -164,7 +190,7 @@ npm run dev
 ```
 *Console runs at `http://localhost:5173` (builds to `website/hq/`).*
 
-### 4. Resident Web Portal
+### 5. Resident Web Portal
 ```bash
 cd portal
 npm install
@@ -172,7 +198,14 @@ npm run dev
 ```
 *Resident portal runs at `http://localhost:5174` (builds to `website/portal/`).*
 
-### 5. Cryptographic Tag & Sheet CLI
+### 6. Public Website & Launch Roadmap Preview
+```bash
+# Serve the marketing site, launch roadmap, and interactive audit dossiers
+python3 -m http.server 8080 --directory website
+```
+*Open `http://localhost:8080` or `http://localhost:8080/launch-roadmap.html`.*
+
+### 7. Cryptographic Tag & Sheet CLI
 ```bash
 # Mint a batch of cryptographic NPIDs
 python3 scripts/nameplate_qr.py mint --batch BATCH-2026-08A
@@ -184,9 +217,22 @@ python3 scripts/nameplate_qr.py sheet --count 30 --out sheet_30.svg
 ---
 
 ## 📖 Deep-Dive Documentation
+
+Every architectural layer and design decision is documented in the [`docs/`](docs/) directory:
+
 - **[System Architecture](docs/architecture.md)** — Four product surfaces, offline sync protocol, backend design decisions, and data boundaries.
-- **[Data Model & Schema](docs/data-model.md)** — Complete Prisma schema, UUIDv7 conventions, ledger event types, and audit logging.
-- **[Asset Tagging Strategy](docs/asset-tagging-strategy.md)** — Physical substrate choices, Crockford Base32 encoding, QR error correction, and HMAC validation.
+- **[Data Model & Schema](docs/data-model.md)** — Complete 28-table schema, UUIDv7 conventions, ledger event types, and audit logging.
+- **[Product Overview & Thesis](docs/overview.md)** — The problem, the registry-as-a-product bet, two-tool system boundary, and field execution.
+- **[Asset Tagging Strategy](docs/asset-tagging-strategy.md)** — Physical substrate choices (3M 300LSE, Void Poly, Anodized Al), Crockford Base32 encoding, QR error correction, and HMAC validation.
+- **[Metrics & Analytics Guide](docs/metrics.md)** — Deterministic portfolio KPIs (spend T12M, unit costs, warranty leakage, Kaplan-Meier survival curves, brand reliability matrix).
+- **[Supabase Backend Runbook](docs/supabase-backend-runbook.md)** — Production deployment path, forward migration chain, tenant RLS isolation, private media storage policies, and user activation.
+- **[Backend Architecture & POC Options](docs/backend-poc-options.md)** — Trade-off matrix evaluating Supabase Postgres vs. MongoDB, Firebase, and Cloudflare D1/Workers for relational asset ledgers.
 - **[Resident Portal Backend Plan](docs/resident-portal-backend-plan.md)** — Resident authentication boundaries, tenant isolation, and work-order pipeline.
 - **[Product Scope & V0 Decisions](docs/v0-scope.md)** — Core scope, non-negotiable requirements, and operational workflows.
 - **[Brand & Design Standards](docs/branding.md)** — Typography, color tokens, voice guidelines, and logo specifications.
+
+---
+
+## 🔒 Security Policy
+
+Security vulnerabilities are managed under our private disclosure program. See **[`SECURITY.md`](SECURITY.md)** for disclosure channels, response time commitments, and pre-1.0 vulnerability scope. Do not file public GitHub issues for security vulnerabilities.
