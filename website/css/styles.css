@@ -2358,7 +2358,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 /* ================= Problem Washer Graphic (Containerless) ================= */
 .problem-washer-stage {
-  margin-top: 32px;
+  margin-top: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
