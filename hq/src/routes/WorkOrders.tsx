@@ -334,9 +334,9 @@ export function WorkOrders() {
                 setDragOverCol(null);
               }}
               style={{
-                background: isDragOver ? 'rgba(235, 43, 43,0.06)' : '#0A0A0A',
-                border: isDragOver ? '1px dashed #eb2b2b' : '1px solid rgba(var(--overlay-rgb), 0.07)',
-                borderRadius: 2,
+                background: isDragOver ? 'rgba(235, 43, 43, 0.08)' : 'var(--bg-subtle)',
+                border: isDragOver ? '1px dashed var(--red)' : '1px solid var(--line)',
+                borderRadius: 8,
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: 620,
@@ -347,11 +347,13 @@ export function WorkOrders() {
               <div
                 style={{
                   padding: '12px 16px',
-                  borderBottom: '1px solid rgba(var(--overlay-rgb), 0.07)',
+                  borderBottom: '1px solid var(--line)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   background: 'var(--bg-card)',
+                  borderTopLeftRadius: 8,
+                  borderTopRightRadius: 8,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -395,24 +397,25 @@ export function WorkOrders() {
                       onDragStart={() => setDraggedWoId(wo.id)}
                       onClick={() => setSelectedWo(wo)}
                       style={{
-                        background: 'var(--bg-elevated)',
-                        border: isUrgent ? '1px solid rgba(235, 43, 43,0.4)' : '1px solid rgba(var(--overlay-rgb), 0.08)',
-                        borderRadius: 2,
+                        background: 'var(--bg-card)',
+                        border: isUrgent ? '1px solid rgba(235, 43, 43, 0.45)' : '1px solid var(--line)',
+                        borderRadius: 6,
                         padding: 12,
                         cursor: 'pointer',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 8,
-                        transition: 'transform 0.15s, border-color 0.15s',
+                        boxShadow: 'var(--np-shadow-sm)',
+                        transition: 'transform 0.15s, border-color 0.15s, box-shadow 0.15s',
                         position: 'relative',
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-1px)';
-                        e.currentTarget.style.borderColor = isUrgent ? '#eb2b2b' : '#FFFFFF';
+                        e.currentTarget.style.borderColor = 'var(--red)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'none';
-                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(235, 43, 43,0.4)' : 'rgba(var(--overlay-rgb), 0.08)';
+                        e.currentTarget.style.borderColor = isUrgent ? 'rgba(235, 43, 43, 0.45)' : 'var(--line)';
                       }}
                     >
                       {/* Card Topline: ID + Priority Chip + Category */}
@@ -426,11 +429,11 @@ export function WorkOrders() {
                             <span
                               style={{
                                 fontSize: '0.66rem',
-                                background: 'rgba(var(--overlay-rgb), 0.06)',
-                                border: '1px solid rgba(var(--overlay-rgb), 0.1)',
+                                background: 'var(--bg-subtle)',
+                                border: '1px solid var(--line)',
                                 padding: '2px 5px',
                                 borderRadius: 3,
-                                color: '#D4D4D4',
+                                color: 'var(--gray-500)',
                               }}
                             >
                               {wo.category}
@@ -443,9 +446,9 @@ export function WorkOrders() {
                               textTransform: 'uppercase',
                               padding: '2px 6px',
                               borderRadius: 3,
-                              background: isUrgent ? 'rgba(235, 43, 43,0.2)' : 'rgba(var(--overlay-rgb), 0.08)',
-                              color: isUrgent ? '#f44343' : '#D4D4D4',
-                              border: isUrgent ? '1px solid rgba(235, 43, 43,0.4)' : 'none',
+                              background: isUrgent ? 'rgba(235, 43, 43, 0.12)' : 'var(--bg-subtle)',
+                              color: isUrgent ? 'var(--red)' : 'var(--gray-500)',
+                              border: isUrgent ? '1px solid rgba(235, 43, 43, 0.35)' : '1px solid var(--line)',
                             }}
                           >
                             {wo.priority}
@@ -465,7 +468,7 @@ export function WorkOrders() {
                           alignItems: 'center',
                           gap: 6,
                           fontSize: '0.72rem',
-                          color: '#A3A3A3',
+                          color: 'var(--gray-500)',
                           fontFamily: 'monospace',
                         }}
                       >
@@ -481,19 +484,19 @@ export function WorkOrders() {
                           display: 'flex',
                           justifyContent: 'space-between',
                           alignItems: 'center',
-                          borderTop: '1px solid rgba(var(--overlay-rgb), 0.06)',
+                          borderTop: '1px solid var(--line)',
                           paddingTop: 8,
                           marginTop: 2,
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.74rem', color: '#A3A3A3' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.74rem', color: 'var(--gray-500)' }}>
                           <span
                             style={{
                               width: 18,
                               height: 18,
                               borderRadius: '50%',
                               background: 'var(--bg-elevated)',
-                              border: '1px solid rgba(var(--overlay-rgb), 0.2)',
+                              border: '1px solid var(--line)',
                               display: 'inline-flex',
                               alignItems: 'center',
                               justifyContent: 'center',
@@ -550,7 +553,7 @@ export function WorkOrders() {
                     style={{
                       padding: '36px 12px',
                       textAlign: 'center',
-                      color: '#52525B',
+                      color: 'var(--gray-400)',
                       fontSize: '0.8rem',
                       fontFamily: 'monospace',
                     }}
@@ -744,18 +747,18 @@ export function WorkOrders() {
 
               {/* Description */}
               <div>
-                <span style={{ fontSize: '0.72rem', color: '#71717A', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--gray-500)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
                   Field Diagnostics & Work Description
                 </span>
                 <div
                   style={{
                     background: 'var(--bg-elevated)',
-                    border: '1px solid rgba(var(--overlay-rgb), 0.08)',
-                    borderRadius: 2,
+                    border: '1px solid var(--line)',
+                    borderRadius: 4,
                     padding: 14,
                     fontSize: '0.88rem',
                     lineHeight: 1.5,
-                    color: '#D4D4D4',
+                    color: 'var(--white)',
                   }}
                 >
                   {selectedWo.description || 'No detailed instructions provided.'}
@@ -764,7 +767,7 @@ export function WorkOrders() {
 
               {/* Parts Requisitioned */}
               <div>
-                <span style={{ fontSize: '0.72rem', color: '#71717A', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--gray-500)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>
                   Attached Parts & Requisitions
                 </span>
                 {selectedWo.partsRequired && selectedWo.partsRequired.length > 0 ? (
@@ -773,11 +776,11 @@ export function WorkOrders() {
                       <span
                         key={idx}
                         style={{
-                          background: 'rgba(235, 43, 43,0.1)',
-                          border: '1px solid rgba(235, 43, 43,0.3)',
-                          color: '#FF8888',
+                          background: 'rgba(235, 43, 43, 0.08)',
+                          border: '1px solid rgba(235, 43, 43, 0.3)',
+                          color: 'var(--red)',
                           padding: '4px 10px',
-                          borderRadius: 2,
+                          borderRadius: 3,
                           fontSize: '0.78rem',
                           fontFamily: 'monospace',
                         }}
@@ -787,12 +790,12 @@ export function WorkOrders() {
                     ))}
                   </div>
                 ) : (
-                  <span style={{ fontSize: '0.8rem', color: '#71717A' }}>No extra parts currently logged.</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--gray-500)' }}>No extra parts currently logged.</span>
                 )}
               </div>
 
               {/* Activity & Comments Thread (Linear Style) */}
-              <div style={{ borderTop: '1px solid rgba(var(--overlay-rgb), 0.1)', paddingTop: 20 }}>
+              <div style={{ borderTop: '1px solid var(--line)', paddingTop: 20 }}>
                 <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'var(--white)', display: 'block', marginBottom: 14 }}>
                   Activity & Field Notes Thread
                 </span>
@@ -804,19 +807,19 @@ export function WorkOrders() {
                       key={note.id}
                       style={{
                         background: 'var(--bg-elevated)',
-                        border: '1px solid rgba(var(--overlay-rgb), 0.06)',
-                        borderRadius: 2,
+                        border: '1px solid var(--line)',
+                        borderRadius: 4,
                         padding: '10px 14px',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 4,
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#71717A' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--gray-500)' }}>
                         <strong style={{ color: 'var(--white)' }}>{note.author}</strong>
                         <span>{new Date(note.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
-                      <div style={{ fontSize: '0.84rem', color: '#D4D4D4' }}>{note.text}</div>
+                      <div style={{ fontSize: '0.84rem', color: 'var(--white)' }}>{note.text}</div>
                     </div>
                   ))}
                 </div>
