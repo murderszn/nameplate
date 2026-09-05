@@ -28,6 +28,9 @@ jobs:
           ref: 97a557af313c4402dc31c33a992ee6c66c232d13
           path: .cerberus
 
+      - name: Exclude the scanner checkout
+        run: echo '.cerberus/' > .cerberusignore
+
       - name: Run Cerberus review
         id: scan
         continue-on-error: true
