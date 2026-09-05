@@ -713,7 +713,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 /* ================= Hero Section (Clean, Bold, No Master Image) ================= */
 .hero {
-  padding: 190px 0 120px;
+  padding: 190px 0 84px;
   min-height: 80vh;
   display: flex;
   align-items: center;
@@ -773,6 +773,79 @@ html[data-theme="light"] .btn-ghost:hover {
   border-radius: var(--radius);
   white-space: nowrap;
   box-sizing: border-box;
+}
+
+/* ================= Hero Asset Ornaments Strip ================= */
+.hero-ornament-strip {
+  margin-top: 44px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-light);
+  width: 100%;
+}
+
+.hero-ornament-list {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-ornament-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-ornament-card {
+  width: 44px;
+  height: 44px;
+  aspect-ratio: 1;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  padding: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color-scheme: light;
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.hero-ornament-card:hover {
+  border-color: rgba(235, 43, 43, 0.4);
+  transform: translateY(-1px);
+}
+
+:root[data-theme="light"] .hero-ornament-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+:root[data-theme="light"] .hero-ornament-card:hover {
+  border-color: rgba(235, 43, 43, 0.5);
+}
+
+.hero-ornament-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  color-scheme: light;
+  pointer-events: none;
+}
+
+.hero-ornament-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  line-height: 1;
+  user-select: none;
 }
 
 .hero-metrics-strip {
@@ -2758,6 +2831,14 @@ textarea.form-control {
 
 @media (max-width: 680px) {
   .hero { padding: 140px 0 80px; }
+  .hero-h1 { font-size: clamp(2.2rem, 9.5vw, 3.4rem); }
+  .hero-ornament-strip {
+    margin-top: 36px;
+    padding-top: 18px;
+  }
+  .hero-ornament-list {
+    gap: 8px 10px;
+  }
   .oversized-tag-card {
     grid-template-columns: 1fr;
     padding: 24px 20px;
