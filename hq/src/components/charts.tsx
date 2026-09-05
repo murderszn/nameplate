@@ -264,18 +264,21 @@ export function DonutChart({
 
     const filtered = data.filter((d) => d.value > 0);
     const total = d3.sum(filtered, (d) => d.value) || 1;
-    const radius = Math.min(width, height) / 2 - 8;
-    const g = svg.append('g').attr('transform', `translate(${width / 2 - 40},${height / 2})`);
-    const pie = d3.pie<(typeof filtered)[0]>().value((d) => d.value).sort(null);
-    const arc = d3.arc<d3.PieArcDatum<(typeof filtered)[0]>>().innerRadius(radius * 0.62).outerRadius(radius);
+    const radius = Math.min(width, height) / 2 - 10;
+    const g = svg.append('g').attr('transform', `translate(${width / 2 - 44},${height / 2})`);
+    const pie = d3.pie<(typeof filtered)[0]>().value((d) => d.value).sort(null).padAngle(0.025);
+    const arc = d3
+      .arc<d3.PieArcDatum<(typeof filtered)[0]>>()
+      .innerRadius(radius * 0.64)
+      .outerRadius(radius)
+      .cornerRadius(4);
 
     g.selectAll('path')
       .data(pie(filtered))
       .join('path')
       .attr('d', arc)
       .attr('fill', (d) => d.data.color)
-      .attr('stroke', '#000')
-      .attr('stroke-width', 2)
+      .attr('stroke', 'none')
       .on('mousemove', (event, d) =>
         tip(
           `<strong>${d.data.label}</strong><br/>${d.data.value} · ${Math.round((d.data.value / total) * 100)}%`,

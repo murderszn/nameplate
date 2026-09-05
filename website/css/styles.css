@@ -2083,17 +2083,19 @@ html[data-theme="light"] .btn-ghost:hover {
   box-sizing: border-box;
 }
 
-/* 3-Card Montage Grid */
+/* 3-Card Triptych Grid — ALWAYS three side-by-side, NEVER stack */
 .ios-montage-container {
   max-width: 1040px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .ios-montage-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 24px;
   width: 100%;
+  align-items: stretch;
 }
 
 .ios-montage-card {
@@ -2125,8 +2127,6 @@ html[data-theme="light"] .btn-ghost:hover {
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12);
 }
 
-
-
 @media (max-width: 860px) {
   .section-header-split {
     flex-direction: column;
@@ -2134,10 +2134,63 @@ html[data-theme="light"] .btn-ghost:hover {
   }
 
   .ios-montage-grid {
-    grid-template-columns: 1fr;
-    max-width: 320px;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 14px;
+    max-width: 100%;
     margin: 0 auto;
-    gap: 20px;
+  }
+
+  .ios-montage-card {
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ios-montage-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px;
+  }
+
+  .ios-montage-card {
+    border-radius: 10px;
+  }
+
+  .ios-montage-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .ios-montage-card.has-corner-ticks::before {
+    top: 4px;
+    left: 4px;
+    font-size: 8px;
+  }
+
+  .ios-montage-card.has-corner-ticks::after {
+    bottom: 4px;
+    right: 4px;
+    font-size: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ios-montage-grid {
+    gap: 5px;
+  }
+
+  .ios-montage-card {
+    border-radius: 7px;
+  }
+
+  .ios-montage-card.has-corner-ticks::before {
+    top: 3px;
+    left: 3px;
+    font-size: 7px;
+  }
+
+  .ios-montage-card.has-corner-ticks::after {
+    bottom: 3px;
+    right: 3px;
+    font-size: 7px;
   }
 }
 

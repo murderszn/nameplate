@@ -690,8 +690,8 @@ export function Analytics() {
             </div>
           </div>
 
-          {/* Property Health & Reliability Scorecard */}
-          <section className="hq-card">
+          {/* Property Health & Reliability Scorecard — grid scorecards */}
+          <section className="hq-card hq-scorecard-section">
             <div className="hq-card-header">
               <div>
                 <h2 className="hq-card-title">Property Fleet Distribution & Health Scorecard</h2>
@@ -699,83 +699,75 @@ export function Analytics() {
                   Real-time operational readiness, maintenance spend, and tag verification rate by community.
                 </p>
               </div>
+              <span className="hq-scorecard-count mono">{propertyScorecards.length} properties</span>
             </div>
 
-            <div className="hq-table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th style={{ width: 70 }}>Property</th>
-                    <th>Community</th>
-                    <th>Inventory</th>
-                    <th>Fleet Health Index</th>
-                    <th>Shrinkage Risk</th>
-                    <th>Period Spend</th>
-                    <th>Inspect</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {propertyScorecards.map((pm) => (
-                    <tr key={pm.id}>
-                      <td>
-                        <div className="hq-prop-thumb">
-                          <img
-                            src={`./images/properties/${pm.imgKey}.jpg`}
-                            alt={pm.name}
-                            onError={(e) => {
-                              e.currentTarget.src = './images/properties/sonoran_ridge.jpg';
-                            }}
-                          />
+            <div className="hq-scorecard-grid">
+              {propertyScorecards.map((pm) => {
+                const tone = pm.healthPct >= 90 ? 'good' : pm.healthPct >= 75 ? 'warn' : 'danger';
+                return (
+                  <div key={pm.id} className={`hq-scorecard hq-scorecard--${tone}`}>
+                    <div className="hq-scorecard__media">
+                      <img
+                        src={`./images/properties/${pm.imgKey}.jpg`}
+                        alt={pm.name}
+                        onError={(e) => {
+                          e.currentTarget.src = './images/properties/sonoran_ridge.jpg';
+                        }}
+                      />
+                      <div className="hq-scorecard__media-overlay" />
+                      <span className={`hq-scorecard__health hq-scorecard__health--${tone} mono`}>
+                        {pm.healthPct}%
+                      </span>
+                      <span className="hq-scorecard__code mono">{pm.code}</span>
+                    </div>
+                    <div className="hq-scorecard__body">
+                      <div className="hq-scorecard__head">
+                        <strong className="hq-scorecard__name">{pm.name}</strong>
+                        <span className="hq-scorecard__loc">
+                          {pm.city}, {pm.state}
+                        </span>
+                      </div>
+                      <div className="hq-scorecard__bar" aria-hidden="true">
+                        <div
+                          className={`hq-scorecard__bar-fill hq-scorecard__bar-fill--${tone}`}
+                          style={{ width: `${pm.healthPct}%` }}
+                        />
+                      </div>
+                      <dl className="hq-scorecard__metrics">
+                        <div>
+                          <dt>Inventory</dt>
+                          <dd>{pm.assetsCount}</dd>
                         </div>
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                          <strong style={{ color: 'var(--white)', fontSize: '0.88rem' }}>{pm.name}</strong>
-                          <span style={{ fontSize: '0.72rem', color: 'var(--gray-400)' }}>
-                            {pm.city}, {pm.state} · <span className="mono">{pm.code}</span>
-                          </span>
+                        <div>
+                          <dt>Health</dt>
+                          <dd className="mono">{pm.healthPct}%</dd>
                         </div>
-                      </td>
-                      <td>
-                        <span style={{ fontWeight: 700, color: 'var(--white)' }}>{pm.assetsCount}</span>
-                      </td>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ width: 80, height: 6, background: 'var(--bg-elevated)', borderRadius: 99, overflow: 'hidden' }}>
-                            <div
-                              style={{
-                                width: `${pm.healthPct}%`,
-                                height: '100%',
-                                background: pm.healthPct >= 90 ? 'var(--np-verified-600)' : pm.healthPct >= 75 ? 'var(--np-caution-600)' : 'var(--red)',
-                              }}
-                            />
-                          </div>
-                          <span className="mono" style={{ fontWeight: 700, fontSize: '0.78rem' }}>
-                            {pm.healthPct}%
-                          </span>
+                        <div>
+                          <dt>Shrinkage</dt>
+                          <dd>
+                            {pm.unconfirmed > 0 ? (
+                              <span className="hq-status hq-status--danger">{pm.unconfirmed} flagged</span>
+                            ) : (
+                              <span className="hq-status hq-status--good">Verified</span>
+                            )}
+                          </dd>
                         </div>
-                      </td>
-                      <td>
-                        {pm.unconfirmed > 0 ? (
-                          <span className="hq-status hq-status--danger">
-                            {pm.unconfirmed} Flagged
-                          </span>
-                        ) : (
-                          <span className="hq-status hq-status--good">
-                            ✓ 100% Verified
-                          </span>
-                        )}
-                      </td>
-                      <td className="mono" style={{ fontWeight: 650 }}>{money(pm.spend)}</td>
-                      <td>
-                        <Link to={`/properties/${pm.id}`} className="hq-text-link">
-                          Inspect →
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <div>
+                          <dt>Period spend</dt>
+                          <dd className="mono">{money(pm.spend)}</dd>
+                        </div>
+                      </dl>
+                    </div>
+                    <div className="hq-scorecard__foot">
+                      <Link to={`/properties/${pm.id}`} className="hq-scorecard__link">
+                        Inspect →<span aria-hidden="true" />
+                      </Link>
+                      <span className="hq-scorecard__foot-meta mono">{pm.assetsCount} assets</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
 

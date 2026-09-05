@@ -145,7 +145,257 @@
   border: 1px solid rgba(22, 163, 74, 0.3);
 }
 
-/* Property photo thumbnail in scorecards */
+/* Scorecard grid — replaces table layout */
+.hq-scorecard-section .hq-card-header {
+  align-items: center;
+}
+
+.hq-scorecard-count {
+  color: var(--gray-500);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  background: var(--bg-subtle);
+  padding: 6px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.hq-scorecard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hq-scorecard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-card);
+  overflow: hidden;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.hq-scorecard:hover {
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(var(--overlay-rgb), 0.08);
+}
+
+.hq-scorecard--good:hover {
+  border-color: rgba(22, 163, 74, 0.28);
+}
+.hq-scorecard--warn:hover {
+  border-color: rgba(245, 158, 11, 0.32);
+}
+.hq-scorecard--danger:hover {
+  border-color: rgba(235, 43, 43, 0.32);
+}
+
+.hq-scorecard__media {
+  position: relative;
+  height: 108px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+
+.hq-scorecard__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hq-scorecard__media-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 28%, rgba(0, 0, 0, 0.55) 100%);
+  pointer-events: none;
+}
+
+.hq-scorecard__health {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  min-width: 48px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.hq-scorecard__health--good {
+  background: var(--np-verified-600);
+}
+.hq-scorecard__health--warn {
+  background: var(--np-caution-600);
+}
+.hq-scorecard__health--danger {
+  background: var(--red);
+}
+
+.hq-scorecard__code {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  padding: 3px 7px;
+  border-radius: 999px;
+}
+
+.hq-scorecard__body {
+  padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.hq-scorecard__head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hq-scorecard__name {
+  color: var(--white);
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-scorecard__loc {
+  color: var(--gray-500);
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-scorecard__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+}
+
+.hq-scorecard__bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+.hq-scorecard__bar-fill--good {
+  background: var(--np-verified-600);
+}
+.hq-scorecard__bar-fill--warn {
+  background: var(--np-caution-600);
+}
+.hq-scorecard__bar-fill--danger {
+  background: var(--red);
+}
+
+.hq-scorecard__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+  margin: 2px 0 0;
+}
+
+.hq-scorecard__metrics > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.hq-scorecard__metrics dt {
+  color: var(--gray-500);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.hq-scorecard__metrics dd {
+  color: var(--white);
+  font-size: 0.84rem;
+  font-weight: 650;
+  margin: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hq-scorecard__metrics dd .hq-status {
+  font-size: 0.66rem;
+  padding: 3px 7px;
+}
+
+.hq-scorecard__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-subtle);
+}
+
+.hq-scorecard__link {
+  color: var(--white);
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.hq-scorecard__link:hover {
+  color: var(--red);
+}
+
+.hq-scorecard__foot-meta {
+  color: var(--gray-500);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1180px) {
+  .hq-scorecard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .hq-scorecard-grid {
+    grid-template-columns: 1fr;
+  }
+  .hq-scorecard__media {
+    height: 132px;
+  }
+}
+
+/* Legacy thumb retained for other tables */
 .hq-prop-thumb {
   width: 60px;
   height: 40px;
@@ -191,6 +441,27 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+}
+
+/* Flat modern chart cards — override global 2px radius/outline */
+.hq-analytics-page .np-chart-card {
+  border-radius: 10px;
+  border-color: var(--line);
+  background: var(--bg-card);
+  box-shadow: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.hq-analytics-page .np-chart-card:hover {
+  border-color: var(--line-strong);
+}
+
+.hq-analytics-page .np-chart-card__head h2 {
+  letter-spacing: 0.08em;
+}
+
+.hq-analytics-page .np-chart-el {
+  min-height: 220px;
 }
 
 @media (max-width: 960px) {
