@@ -8,6 +8,7 @@ import '../../theme/app_theme.dart';
 import '../../theme/theme_controller.dart';
 import '../../widgets/np_action_buttons.dart';
 import '../../widgets/np_brand.dart';
+import 'fleet_gallery_screen.dart';
 import 'tag_studio_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -117,6 +118,12 @@ class SettingsScreen extends ConsumerWidget {
             offlineRemainingCount: session.remainingOfflinePoolCount,
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const TagStudioScreen()),
+            ),
+          ),
+          Divider(height: 1, color: context.npColors.lineStrong),
+          _FleetGalleryBanner(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const FleetGalleryScreen()),
             ),
           ),
 
@@ -772,6 +779,115 @@ class _TagStudioBanner extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Mint NPID + QR payload for a physical plate',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.npColors.gray400,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: context.npColors.gray500,
+                size: 16,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FleetGalleryBanner extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _FleetGalleryBanner({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF18181B),
+                Color(0xFF09090B),
+              ],
+            ),
+            border: Border(
+              top: BorderSide(color: context.npColors.lineStrong),
+              bottom: BorderSide(color: context.npColors.lineStrong),
+              left: const BorderSide(color: NpColors.red, width: 3.5),
+            ),
+          ),
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: context.npColors.bgElevated,
+                  border: Border.all(color: context.npColors.lineStrong),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                padding: const EdgeInsets.all(5),
+                child: const Center(
+                  child: NpApplianceArt(
+                    assetPath: NpAssets.isoFridge,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Text(
+                          'The Fleet — Line Art Gallery',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: NpColors.red.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(2),
+                            border: Border.all(color: NpColors.red),
+                          ),
+                          child: Text(
+                            '10 UNITS',
+                            style: NpType.mono.copyWith(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: NpColors.red,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Isometric portfolio line art from iso.html',
                       style: TextStyle(
                         fontSize: 12,
                         color: context.npColors.gray400,

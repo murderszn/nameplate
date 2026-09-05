@@ -362,9 +362,9 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
   void _capturePhoto(TurnItem item) {
     final schematic =
         (item.category != null
-            ? NpAssets.schematicFor(item.category!)
+            ? NpAssets.svgFor(item.category!)
             : null) ??
-        NpAssets.schematicFridge;
+        NpAssets.isoFridge;
     ref.read(fieldSessionProvider).addPhotoToTurnItem(item, schematic);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -585,14 +585,18 @@ class _TurnItemCard extends StatelessWidget {
                 if (schematic != null) ...[
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: Image.asset(
-                      schematic,
+                    child: Container(
                       width: 44,
                       height: 44,
-                      fit: BoxFit.cover,
+                      padding: const EdgeInsets.all(3),
+                      color: const Color(0xFF070709),
+                      child: NpApplianceArt(
+                        categoryOrTitle: item.category ?? '',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                 ],
                 Expanded(
                   child: Column(
@@ -727,8 +731,8 @@ class _TurnItemCard extends StatelessWidget {
                             width: 58,
                             height: 58,
                             color: context.npColors.bg,
-                            child: Image.asset(
-                              item.photos[pIdx],
+                            child: NpAssetPhoto(
+                              path: item.photos[pIdx],
                               fit: BoxFit.cover,
                             ),
                           ),

@@ -408,7 +408,13 @@ class _WorkOrderCard extends ConsumerWidget {
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(2),
-                                  child: Image.asset(schematic, fit: BoxFit.cover),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: NpApplianceArt(
+                                      categoryOrTitle: wo.title,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 8),

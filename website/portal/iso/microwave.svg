@@ -1,48 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="Microwave oven isometric">
-<style>
-.ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-.thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
-.face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-.red{fill:none;stroke:#c51f2d;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-.red-thin{fill:none;stroke:#c51f2d;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-.red-fill{fill:#c51f2d;stroke:none}
-@media (prefers-color-scheme:dark){
-.ln,.thin{stroke:#F2F2F2}
-.face{stroke:#F2F2F2}
-}
-</style>
-<!-- main cabinet, shared corners (dx 70, dy -40) -->
-<path class="face" d="M106 150 L346 150 L346 360 L106 360 Z"/>
-<path class="face" d="M346 150 L416 110 L416 320 L346 360 Z"/>
-<path class="face" d="M106 150 L176 110 L416 110 L346 150 Z"/>
-<!-- door frame with window -->
-<rect class="ln" x="120" y="166" width="168" height="178" rx="6"/>
-<rect class="thin" x="132" y="178" width="144" height="136" rx="4"/>
-<!-- perforated microwave shield lines -->
-<path class="thin" d="M138 214 H270 M138 246 H270 M138 278 H270"/>
-<!-- full-height door handle (red) -->
-<path class="red" d="M280 174 V336"/>
-<!-- electronic control keypad panel -->
-<rect class="ln" x="294" y="166" width="42" height="178" rx="3"/>
-<!-- digital LED clock readout -->
-<rect class="thin" x="299" y="174" width="32" height="18" rx="2"/>
-<!-- keypad number matrix (1-6) -->
-<rect class="thin" x="300" y="200" width="13" height="9" rx="1"/>
-<rect class="thin" x="317" y="200" width="13" height="9" rx="1"/>
-<rect class="thin" x="300" y="214" width="13" height="9" rx="1"/>
-<rect class="thin" x="317" y="214" width="13" height="9" rx="1"/>
-<rect class="thin" x="300" y="228" width="13" height="9" rx="1"/>
-<rect class="thin" x="317" y="228" width="13" height="9" rx="1"/>
-<!-- RED START BUTTON with play triangle -->
-<rect class="red-fill" x="299" y="250" width="32" height="18" rx="3"/>
-<polygon points="312,255 320,259 312,263" fill="#ffffff"/>
-<!-- stop / cancel button -->
-<rect class="thin" x="299" y="274" width="32" height="14" rx="2"/>
-<!-- push-to-open door release button -->
-<rect class="thin" x="299" y="296" width="32" height="38" rx="2"/>
-<!-- top & side ventilation louvers (slope -40/70) -->
-<path class="thin" d="M190 126 L230 126 M250 126 L300 126 M320 126 L370 126"/>
-<path class="thin" d="M356 190 L400 165 M356 210 L400 185 M356 230 L400 205"/>
-<!-- non-slip feet -->
-<path class="ln" d="M126 360 V368 M326 360 V368"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+        <path d="M106 150 L346 150 L346 360 L106 360 Z" fill="#FFFFFF" fill-opacity="0.05" stroke="#F2F2F2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M346 150 L416 110 L416 320 L346 360 Z" fill="#FFFFFF" fill-opacity="0.05" stroke="#F2F2F2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M106 150 L176 110 L416 110 L346 150 Z" fill="#FFFFFF" fill-opacity="0.05" stroke="#F2F2F2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="120" y="166" width="168" height="178" rx="6" fill="none" stroke="#F2F2F2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="132" y="178" width="144" height="136" rx="4" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M138 214 H270 M138 246 H270 M138 278 H270" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M280 174 V336" fill="none" stroke="#C51F2D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="294" y="166" width="42" height="178" rx="3" fill="none" stroke="#F2F2F2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <rect x="299" y="174" width="32" height="18" rx="2" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="300" y="200" width="13" height="9" rx="1" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="317" y="200" width="13" height="9" rx="1" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="300" y="214" width="13" height="9" rx="1" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="317" y="214" width="13" height="9" rx="1" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="300" y="228" width="13" height="9" rx="1" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="317" y="228" width="13" height="9" rx="1" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="299" y="250" width="32" height="18" rx="3" fill="#C51F2D" stroke="none" />
+        <polygon points="312,255 320,259 312,263" fill="#ffffff" />
+        <rect x="299" y="274" width="32" height="14" rx="2" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <rect x="299" y="296" width="32" height="38" rx="2" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M190 126 L230 126 M250 126 L300 126 M320 126 L370 126" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M356 190 L400 165 M356 210 L400 185 M356 230 L400 205" fill="none" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M126 360 V368 M326 360 V368" fill="none" stroke="#F2F2F2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>

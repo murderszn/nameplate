@@ -124,23 +124,50 @@ class _FlagMissingBrokenScreenState
                   ],
                 ),
                 const SizedBox(height: 14),
-                Text(
-                  widget.asset.categoryDisplayName,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '${widget.asset.currentLocationLabel ?? 'Unknown location'} · Serial: ${widget.asset.serialNumber ?? 'UNSPECIFIED'}',
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: context.npColors.gray400,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.asset.categoryDisplayName,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            '${widget.asset.currentLocationLabel ?? 'Unknown location'} · Serial: ${widget.asset.serialNumber ?? 'UNSPECIFIED'}',
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              color: context.npColors.gray400,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      width: 52,
+                      height: 52,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF070709),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(color: context.npColors.lineStrong),
+                      ),
+                      child: NpApplianceArt(
+                        categoryOrTitle: widget.asset.categoryDisplayName,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

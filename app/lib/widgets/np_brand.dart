@@ -1,7 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../theme/app_theme.dart';
 import 'responsive_layout.dart';
+
+class NpFleetItem {
+  final String index;
+  final String code;
+  final String displayName;
+  final String category;
+  final String darkAsset;
+  final String lightAsset;
+
+  const NpFleetItem({
+    required this.index,
+    required this.code,
+    required this.displayName,
+    required this.category,
+    required this.darkAsset,
+    required this.lightAsset,
+  });
+}
 
 class NpAssets {
   NpAssets._();
@@ -9,6 +28,31 @@ class NpAssets {
   static const logoDark = 'assets/images/nameplate-logo-transparent.png';
   static const logoLight = 'assets/images/nameplate-logo-light.png';
 
+  // Branded Fleet Isometric Line Art (from website/fleet/iso.html)
+  static const isoFridge = 'assets/images/iso/fridge.svg';
+  static const isoRange = 'assets/images/iso/range.svg';
+  static const isoWasher = 'assets/images/iso/washer.svg';
+  static const isoDryer = 'assets/images/iso/dryer.svg';
+  static const isoDishwasher = 'assets/images/iso/dishwasher.svg';
+  static const isoMicrowave = 'assets/images/iso/microwave.svg';
+  static const isoWaterHeater = 'assets/images/iso/water-heater.svg';
+  static const isoHvac = 'assets/images/iso/hvac.svg';
+  static const isoThermostat = 'assets/images/iso/thermostat.svg';
+  static const isoCondenser = 'assets/images/iso/condenser.svg';
+
+  // Light-mode variants
+  static const isoLightFridge = 'assets/images/iso/light/fridge.svg';
+  static const isoLightRange = 'assets/images/iso/light/range.svg';
+  static const isoLightWasher = 'assets/images/iso/light/washer.svg';
+  static const isoLightDryer = 'assets/images/iso/light/dryer.svg';
+  static const isoLightDishwasher = 'assets/images/iso/light/dishwasher.svg';
+  static const isoLightMicrowave = 'assets/images/iso/light/microwave.svg';
+  static const isoLightWaterHeater = 'assets/images/iso/light/water-heater.svg';
+  static const isoLightHvac = 'assets/images/iso/light/hvac.svg';
+  static const isoLightThermostat = 'assets/images/iso/light/thermostat.svg';
+  static const isoLightCondenser = 'assets/images/iso/light/condenser.svg';
+
+  // Preserved schematic paths for backward compatibility
   static const schematicFridge = 'assets/images/schematics/fridge.png';
   static const schematicWasher = 'assets/images/schematics/washer.png';
   static const schematicDryer = 'assets/images/schematics/dryer.png';
@@ -16,6 +60,89 @@ class NpAssets {
   static const schematicMicrowave = 'assets/images/schematics/microwave.png';
   static const schematicDishwasher = 'assets/images/schematics/dishwasher.png';
   static const schematicThermostat = 'assets/images/schematics/thermostat.png';
+
+  static const List<NpFleetItem> fleet = [
+    NpFleetItem(
+      index: '001',
+      code: 'FRIDGE',
+      displayName: 'French-Door Refrigerator',
+      category: 'Refrigerator',
+      darkAsset: isoFridge,
+      lightAsset: isoLightFridge,
+    ),
+    NpFleetItem(
+      index: '002',
+      code: 'RANGE',
+      displayName: 'Electric Range',
+      category: 'Range',
+      darkAsset: isoRange,
+      lightAsset: isoLightRange,
+    ),
+    NpFleetItem(
+      index: '003',
+      code: 'WASHER',
+      displayName: 'Front-Load Washer',
+      category: 'Washer',
+      darkAsset: isoWasher,
+      lightAsset: isoLightWasher,
+    ),
+    NpFleetItem(
+      index: '004',
+      code: 'DRYER',
+      displayName: 'Front-Load Dryer',
+      category: 'Dryer',
+      darkAsset: isoDryer,
+      lightAsset: isoLightDryer,
+    ),
+    NpFleetItem(
+      index: '005',
+      code: 'DISHWASHER',
+      displayName: 'Built-In Dishwasher',
+      category: 'Dishwasher',
+      darkAsset: isoDishwasher,
+      lightAsset: isoLightDishwasher,
+    ),
+    NpFleetItem(
+      index: '006',
+      code: 'MICROWAVE',
+      displayName: 'Over-The-Range Microwave',
+      category: 'Microwave',
+      darkAsset: isoMicrowave,
+      lightAsset: isoLightMicrowave,
+    ),
+    NpFleetItem(
+      index: '007',
+      code: 'WATER HEATER',
+      displayName: 'Heat Pump Water Heater',
+      category: 'Water heater',
+      darkAsset: isoWaterHeater,
+      lightAsset: isoLightWaterHeater,
+    ),
+    NpFleetItem(
+      index: '008',
+      code: 'AIR HANDLER',
+      displayName: 'Air Handler / HVAC',
+      category: 'HVAC',
+      darkAsset: isoHvac,
+      lightAsset: isoLightHvac,
+    ),
+    NpFleetItem(
+      index: '009',
+      code: 'THERMOSTAT',
+      displayName: 'Smart Thermostat',
+      category: 'Thermostat',
+      darkAsset: isoThermostat,
+      lightAsset: isoLightThermostat,
+    ),
+    NpFleetItem(
+      index: '010',
+      code: 'CONDENSER',
+      displayName: 'Outdoor Condenser',
+      category: 'Condenser',
+      darkAsset: isoCondenser,
+      lightAsset: isoLightCondenser,
+    ),
+  ];
 
   static const propertyScottsdale = 'assets/images/properties/scottsdale_vista.jpg';
   static const propertyCamelback = 'assets/images/properties/camelback_vista.jpg';
@@ -33,22 +160,70 @@ class NpAssets {
     return propertyScottsdale;
   }
 
-  static String? schematicFor(String categoryOrTitle) {
+  /// Maps any category name or work-order title to the branded isometric SVG fleet asset.
+  static String? svgFor(String? categoryOrTitle, {bool lightMode = false}) {
+    if (categoryOrTitle == null) return null;
     final key = categoryOrTitle.toLowerCase();
     if (key.contains('fridge') || key.contains('refrigerator')) {
-      return schematicFridge;
+      return lightMode ? isoLightFridge : isoFridge;
     }
-    if (key.contains('washer') && !key.contains('dish')) return schematicWasher;
-    if (key.contains('dryer')) return schematicDryer;
+    if (key.contains('range') ||
+        key.contains('stove') ||
+        key.contains('oven') ||
+        key.contains('cooktop')) {
+      return lightMode ? isoLightRange : isoRange;
+    }
+    if (key.contains('washer') && !key.contains('dish')) {
+      return lightMode ? isoLightWasher : isoWasher;
+    }
+    if (key.contains('dryer')) {
+      return lightMode ? isoLightDryer : isoDryer;
+    }
+    if (key.contains('dishwasher') || key.contains('dish')) {
+      return lightMode ? isoLightDishwasher : isoDishwasher;
+    }
+    if (key.contains('microwave')) {
+      return lightMode ? isoLightMicrowave : isoMicrowave;
+    }
+    if (key.contains('water heater') ||
+        key.contains('waterheater') ||
+        key.contains('water-heater') ||
+        key.contains('boiler')) {
+      return lightMode ? isoLightWaterHeater : isoWaterHeater;
+    }
+    if (key.contains('condenser') ||
+        key.contains('compressor') ||
+        key.contains('outdoor')) {
+      return lightMode ? isoLightCondenser : isoCondenser;
+    }
+    if (key.contains('thermostat') || key.contains('tstat')) {
+      return lightMode ? isoLightThermostat : isoThermostat;
+    }
     if (key.contains('hvac') ||
         key.contains('air handler') ||
-        key.contains('water heater')) {
-      return schematicHvac;
+        key.contains('handler') ||
+        key.contains('furnace') ||
+        key.contains('heat pump') ||
+        key.contains('blower') ||
+        key.contains('ac')) {
+      return lightMode ? isoLightHvac : isoHvac;
     }
-    if (key.contains('microwave')) return schematicMicrowave;
-    if (key.contains('dishwasher')) return schematicDishwasher;
-    if (key.contains('thermostat')) return schematicThermostat;
     return null;
+  }
+
+  static NpFleetItem? fleetItemFor(String? categoryOrTitle) {
+    if (categoryOrTitle == null) return null;
+    final svg = svgFor(categoryOrTitle, lightMode: false);
+    if (svg == null) return null;
+    for (final item in fleet) {
+      if (item.darkAsset == svg) return item;
+    }
+    return null;
+  }
+
+  /// Backward-compatible schematic lookup; defaults to branded SVG fleet art.
+  static String? schematicFor(String categoryOrTitle) {
+    return svgFor(categoryOrTitle) ?? schematicFridge;
   }
 }
 
@@ -58,8 +233,10 @@ class NpDotGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dotColor = Theme.of(context).extension<NpPalette>()?.dotGrid ??
+        const Color(0x06FFFFFF);
     return CustomPaint(
-      painter: _DotGridPainter(context.npColors.dotGrid),
+      painter: _DotGridPainter(dotColor),
       child: const SizedBox.expand(),
     );
   }
@@ -240,3 +417,240 @@ class NpStatusPill extends StatelessWidget {
 }
 
 enum NpPillTone { verified, caution, fault, neutral }
+
+/// Renders the branded isometric line art from The Fleet (website/fleet/iso.html)
+/// for any appliance category or work order title.
+class NpApplianceArt extends StatelessWidget {
+  final String? categoryOrTitle;
+  final String? assetPath;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final bool? lightMode;
+  final Widget? fallback;
+
+  const NpApplianceArt({
+    super.key,
+    this.categoryOrTitle,
+    this.assetPath,
+    this.width,
+    this.height,
+    this.fit = BoxFit.contain,
+    this.alignment = Alignment.center,
+    this.lightMode,
+    this.fallback,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isLight =
+        lightMode ?? (Theme.of(context).brightness == Brightness.light);
+    final path =
+        assetPath ?? NpAssets.svgFor(categoryOrTitle, lightMode: isLight);
+
+    if (path == null) {
+      return fallback ??
+          SizedBox(
+            width: width,
+            height: height,
+            child: Center(
+              child: Icon(
+                Icons.inventory_2_outlined,
+                size: (height != null && height! < 32) ? 16 : 28,
+                color: context.npColors.gray500,
+              ),
+            ),
+          );
+    }
+
+    if (path.endsWith('.svg')) {
+      return SvgPicture.asset(
+        path,
+        width: width,
+        height: height,
+        fit: fit,
+        alignment: alignment,
+      );
+    }
+
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit,
+      alignment: alignment,
+    );
+  }
+}
+
+/// Hero block showcasing the branded isometric appliance line art
+/// with dot grid ambient texture, radial crimson glow, and fleet telemetry.
+class NpFleetHero extends StatelessWidget {
+  final String categoryOrTitle;
+  final double height;
+  final String? statusLabel;
+  final NpPillTone statusTone;
+  final Widget? overlayTopRight;
+  final Widget? overlayBottom;
+
+  const NpFleetHero({
+    super.key,
+    required this.categoryOrTitle,
+    this.height = 180,
+    this.statusLabel,
+    this.statusTone = NpPillTone.neutral,
+    this.overlayTopRight,
+    this.overlayBottom,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fleetItem = NpAssets.fleetItemFor(categoryOrTitle);
+
+    return Container(
+      height: height,
+      width: double.infinity,
+      clipBehavior: Clip.antiAlias,
+      decoration: const BoxDecoration(
+        color: Color(0xFF070709),
+      ),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Subtle ambient dot grid
+          const Opacity(
+            opacity: 0.22,
+            child: NpDotGrid(),
+          ),
+          // Radial red glow behind the appliance
+          Center(
+            child: Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: RadialGradient(
+                  colors: [
+                    NpColors.red.withValues(alpha: 0.14),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+          ),
+          // Centered isometric art
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: NpApplianceArt(
+                categoryOrTitle: categoryOrTitle,
+                fit: BoxFit.contain,
+                height: height * 0.78,
+              ),
+            ),
+          ),
+          // Fleet Index & Name (e.g. 001 // FRIDGE)
+          if (fleetItem != null)
+            Positioned(
+              top: 12,
+              left: 14,
+              child: Text(
+                '${fleetItem.index} // ${fleetItem.code}',
+                style: NpType.mono.copyWith(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.2,
+                  color: context.npColors.white40,
+                ),
+              ),
+            ),
+          // Status Pill or custom widget overlaid top right
+          if (overlayTopRight != null)
+            Positioned(
+              top: 10,
+              right: 12,
+              child: overlayTopRight!,
+            )
+          else if (statusLabel != null)
+            Positioned(
+              top: 10,
+              right: 12,
+              child: NpStatusPill(
+                label: statusLabel!,
+                tone: statusTone,
+              ),
+            ),
+          // Bottom overlay or gradient scrim
+          if (overlayBottom != null)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: overlayBottom!,
+            )
+          else
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 28,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      const Color(0xFF070709).withValues(alpha: 0.75),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Helper widget to render an asset photo, which can either be an SVG
+/// (e.g. from the branded fleet art) or a raster image (PNG/JPEG).
+class NpAssetPhoto extends StatelessWidget {
+  final String path;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+
+  const NpAssetPhoto({
+    super.key,
+    required this.path,
+    this.width,
+    this.height,
+    this.fit = BoxFit.cover,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (path.endsWith('.svg')) {
+      return Container(
+        width: width,
+        height: height,
+        color: const Color(0xFF0A0C10),
+        padding: const EdgeInsets.all(4),
+        child: SvgPicture.asset(
+          path,
+          fit: BoxFit.contain,
+          width: width,
+          height: height,
+        ),
+      );
+    }
+    return Image.asset(
+      path,
+      width: width,
+      height: height,
+      fit: fit,
+    );
+  }
+}

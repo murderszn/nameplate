@@ -526,18 +526,14 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             opacity: 0.25,
             child: NpDotGrid(),
           ),
-          // Schematic Hero
-          if (schematic != null)
-            Center(
-              child: Opacity(
-                opacity: 0.9,
-                child: Image.asset(
-                  schematic,
-                  height: 110,
-                  fit: BoxFit.contain,
-                ),
-              ),
+          // Branded Isometric Fleet Hero
+          Center(
+            child: NpApplianceArt(
+              categoryOrTitle: widget.asset.categoryDisplayName,
+              height: 112,
+              fit: BoxFit.contain,
             ),
+          ),
           // Top Overlaid Telemetry Bar
           Positioned(
             top: 12,

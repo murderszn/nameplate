@@ -264,7 +264,6 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final schematic = NpAssets.schematicFor(asset.categoryDisplayName);
     final topBarColor = _statusBarColor(asset.status);
 
     return Container(
@@ -298,17 +297,49 @@ class _Header extends StatelessWidget {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        if (schematic != null)
-                          Image.asset(
-                            schematic,
-                            fit: BoxFit.cover,
-                          )
-                        else
-                          Center(
-                            child: Icon(
-                              Icons.inventory_2_outlined,
-                              size: 48,
-                              color: context.npColors.gray500,
+                        // Ambient dot grid texture
+                        const Opacity(
+                          opacity: 0.20,
+                          child: NpDotGrid(),
+                        ),
+                        // Radial crimson glow behind appliance
+                        Center(
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  NpColors.red.withValues(alpha: 0.14),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 24.0, top: 12.0),
+                            child: NpApplianceArt(
+                              categoryOrTitle: asset.categoryDisplayName,
+                              fit: BoxFit.contain,
+                              height: 120,
+                            ),
+                          ),
+                        ),
+                        if (NpAssets.fleetItemFor(asset.categoryDisplayName) != null)
+                          Positioned(
+                            top: 12,
+                            left: 14,
+                            child: Text(
+                              '${NpAssets.fleetItemFor(asset.categoryDisplayName)!.index} // ${NpAssets.fleetItemFor(asset.categoryDisplayName)!.code}',
+                              style: NpType.mono.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                                color: context.npColors.white40,
+                              ),
                             ),
                           ),
                         // Black gradient scrim
