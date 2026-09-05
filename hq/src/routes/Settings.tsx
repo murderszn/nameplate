@@ -28,8 +28,9 @@ export function Settings() {
   const [slaStandard, setSlaStandard] = useState(72);
   const [slaLow, setSlaLow] = useState(168);
 
-  // Active Tab
+  // Active Tab & Embedded Easter Egg
   const [activeTab, setActiveTab] = useState<'general' | 'slas' | 'field' | 'integrations' | 'easter-eggs'>('general');
+  const [embeddedEgg, setEmbeddedEgg] = useState<'idle' | 'invaders' | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -645,37 +646,215 @@ export function Settings() {
 
         {/* TAB 5: Nameplate Easter Eggs */}
         {activeTab === 'easter-eggs' && (
-          <div className="np-settings-v2__grid">
+          <div className="np-settings-v2__grid" style={{ gridTemplateColumns: '1fr' }}>
             <div className="np-settings-v2__card">
               <div className="np-settings-v2__card-head">
                 <div>
                   <h3 className="np-settings-v2__card-title">Nameplate Easter Eggs</h3>
-                  <p className="np-settings-v2__card-sub">A small collection of Nameplate things to leave running when the work is done.</p>
+                  <p className="np-settings-v2__card-sub">A curated collection of domestic retro games and screensavers built into Nameplate.</p>
                 </div>
                 <span className="np-badge np-badge--status-active">2 EXPERIENCES</span>
               </div>
-              <div style={{ display: 'grid', gap: 14 }}>
-                <a className="np-settings-v2__integration-item" href="../appliance-idle.html" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
+                {/* Option 1: Appliance Idle */}
+                <div
+                  className="np-settings-v2__integration-item"
+                  style={{
+                    borderColor: embeddedEgg === 'idle' ? 'var(--red)' : undefined,
+                    background: embeddedEgg === 'idle' ? 'rgba(197, 31, 45, 0.08)' : undefined,
+                    cursor: 'pointer',
+                    transition: 'border-color 0.2s, background 0.2s'
+                  }}
+                  onClick={() => setEmbeddedEgg(embeddedEgg === 'idle' ? null : 'idle')}
+                >
                   <div className="np-settings-v2__integration-info">
                     <div className="np-settings-v2__integration-icon">◌</div>
                     <div>
                       <strong style={{ color: 'var(--white)', fontSize: '0.9rem', display: 'block' }}>Appliance Idle Screen</strong>
-                      <span style={{ fontSize: '0.74rem', color: 'var(--gray-400)' }}>The living Nameplate appliance grid · fullscreen with F</span>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--gray-400)' }}>Living appliance catalog screensaver · press F for fullscreen</span>
                     </div>
                   </div>
-                  <span className="mono" style={{ fontSize: '0.74rem', color: 'var(--red)', fontWeight: 700 }}>OPEN ↗</span>
-                </a>
-                <a className="np-settings-v2__integration-item" href="../home-invaders/" target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <button
+                      type="button"
+                      className="mono"
+                      style={{
+                        background: embeddedEgg === 'idle' ? 'var(--red)' : 'rgba(255,255,255,0.06)',
+                        border: '1px solid var(--border)',
+                        color: embeddedEgg === 'idle' ? '#fff' : 'var(--gray-200)',
+                        borderRadius: 4,
+                        padding: '5px 10px',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEmbeddedEgg(embeddedEgg === 'idle' ? null : 'idle');
+                      }}
+                    >
+                      {embeddedEgg === 'idle' ? '✕ CLOSE' : '▶ RUN IN HQ'}
+                    </button>
+                    <a
+                      href="../appliance-idle.html"
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ textDecoration: 'none', color: 'var(--red)', fontSize: '0.74rem', fontWeight: 700 }}
+                      className="mono"
+                      title="Open in new window"
+                    >
+                      OPEN ↗
+                    </a>
+                  </div>
+                </div>
+
+                {/* Option 2: Home Invaders */}
+                <div
+                  className="np-settings-v2__integration-item"
+                  style={{
+                    borderColor: embeddedEgg === 'invaders' ? 'var(--red)' : undefined,
+                    background: embeddedEgg === 'invaders' ? 'rgba(197, 31, 45, 0.08)' : undefined,
+                    cursor: 'pointer',
+                    transition: 'border-color 0.2s, background 0.2s'
+                  }}
+                  onClick={() => setEmbeddedEgg(embeddedEgg === 'invaders' ? null : 'invaders')}
+                >
                   <div className="np-settings-v2__integration-info">
                     <div className="np-settings-v2__integration-icon">✦</div>
                     <div>
                       <strong style={{ color: 'var(--white)', fontSize: '0.9rem', display: 'block' }}>Home Invaders</strong>
-                      <span style={{ fontSize: '0.74rem', color: 'var(--gray-400)' }}>Defend the home · arrows to move · space to blast</span>
+                      <span style={{ fontSize: '0.74rem', color: 'var(--gray-400)' }}>Retro arcade defense · arrows to move · space to blast</span>
                     </div>
                   </div>
-                  <span className="mono" style={{ fontSize: '0.74rem', color: 'var(--red)', fontWeight: 700 }}>PLAY ↗</span>
-                </a>
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <button
+                      type="button"
+                      className="mono"
+                      style={{
+                        background: embeddedEgg === 'invaders' ? 'var(--red)' : 'rgba(255,255,255,0.06)',
+                        border: '1px solid var(--border)',
+                        color: embeddedEgg === 'invaders' ? '#fff' : 'var(--gray-200)',
+                        borderRadius: 4,
+                        padding: '5px 10px',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        cursor: 'pointer'
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEmbeddedEgg(embeddedEgg === 'invaders' ? null : 'invaders');
+                      }}
+                    >
+                      {embeddedEgg === 'invaders' ? '✕ CLOSE' : '▶ PLAY IN HQ'}
+                    </button>
+                    <a
+                      href="../home-invaders/"
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ textDecoration: 'none', color: 'var(--red)', fontSize: '0.74rem', fontWeight: 700 }}
+                      className="mono"
+                      title="Open in new window"
+                    >
+                      PLAY ↗
+                    </a>
+                  </div>
+                </div>
               </div>
+
+              {/* Embedded Player Console */}
+              {embeddedEgg && (
+                <div
+                  style={{
+                    marginTop: 18,
+                    border: '1px solid var(--border)',
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                    background: '#050607',
+                    boxShadow: '0 16px 40px rgba(0,0,0,0.6)'
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '10px 16px',
+                      background: '#0d0f12',
+                      borderBottom: '1px solid var(--border)',
+                      fontSize: '0.75rem',
+                      fontFamily: 'ui-monospace, monospace'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--red)', display: 'inline-block', boxShadow: '0 0 8px var(--red)' }} />
+                      <span style={{ color: '#fff', fontWeight: 600, letterSpacing: '0.08em' }}>
+                        {embeddedEgg === 'invaders' ? 'ARCADE // HOME INVADERS' : 'DOMESTIC ARCHIVE // APPLIANCE IDLE'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+                      <a
+                        href={embeddedEgg === 'invaders' ? '../home-invaders/' : '../appliance-idle.html'}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mono"
+                        style={{ color: 'var(--gray-300)', textDecoration: 'none', fontSize: '0.72rem', fontWeight: 600 }}
+                      >
+                        EXPAND NEW TAB ↗
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setEmbeddedEgg(null)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: 'var(--gray-400)',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          lineHeight: 1,
+                          padding: '0 4px'
+                        }}
+                        title="Close player"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                  <iframe
+                    src={embeddedEgg === 'invaders' ? '../home-invaders/' : '../appliance-idle.html'}
+                    title={embeddedEgg === 'invaders' ? 'Home Invaders' : 'Appliance Idle Screen'}
+                    style={{
+                      width: '100%',
+                      height: 560,
+                      border: 'none',
+                      display: 'block'
+                    }}
+                    allow="fullscreen"
+                  />
+                  <div
+                    style={{
+                      padding: '8px 16px',
+                      background: '#08090a',
+                      borderTop: '1px solid rgba(255,255,255,0.06)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '0.72rem',
+                      color: 'var(--gray-400)',
+                      fontFamily: 'ui-monospace, monospace'
+                    }}
+                  >
+                    <span>
+                      {embeddedEgg === 'invaders'
+                        ? 'CONTROLS: ← → MOVE · SPACE SHOOT / START · F FULLSCREEN · CLICK INSIDE TO FOCUS'
+                        : 'CONTROLS: ← → SWITCH UNIT · SPACE PAUSE / RESUME · F FULLSCREEN'}
+                    </span>
+                    <span style={{ color: 'var(--red)' }}>LIVE EMULATOR</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
