@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nameplate — The Fleet</title>
-  <meta name="description" content="Ten multifamily appliances, drawn in isometric line art. Full-screen gallery.">
+  <title>The Fleet — 10 Units</title>
+  <meta name="description" content="Ten appliances rendered in 3D. Full-screen gallery.">
   <meta name="theme-color" content="#050507">
   <link rel="icon" href="../images/nameplate-logo-transparent.png" type="image/png">
   <style>
@@ -21,20 +21,13 @@
         radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.5px);
       background-size:auto,26px 26px;
     }
-    /* ---- the fleet controls every stroke: light lines on dark, always ---- */
-    .fleet svg .ln{fill:none;stroke:#F2F2F2;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-    .fleet svg .thin{fill:none;stroke:#F2F2F2;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
-    .fleet svg .face{fill:#fff;fill-opacity:.05;stroke:#F2F2F2;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-    .fleet svg .red{fill:none;stroke:#c51f2d;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
-    .fleet svg .red-thin{fill:none;stroke:#c51f2d;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-    .fleet svg .red-fill{fill:#c51f2d;stroke:none}
     .fleet{
       position:relative;z-index:1;height:100dvh;
       display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);
     }
     .cell{
-      position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
-      min-height:0;min-width:0;padding:4vh 2vw 3vh;
+      position:relative;display:flex;align-items:center;justify-content:center;
+      min-height:0;min-width:0;padding:3vh 1.5vw;overflow:hidden;
       border-right:1px solid rgba(255,255,255,.08);
       border-bottom:1px solid rgba(255,255,255,.08);
       transition:background .3s ease;
@@ -43,341 +36,63 @@
     .cell:nth-child(n+6){border-bottom:none}
     .cell:hover{background:rgba(197,31,45,.06)}
     .cell .idx{
-      position:absolute;top:14px;left:16px;
+      position:absolute;top:14px;left:16px;z-index:2;
       font-family:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace;
       font-size:.65rem;letter-spacing:.16em;color:rgba(255,255,255,.32);
     }
     .cell .dot{
       position:absolute;top:18px;right:16px;width:6px;height:6px;border-radius:50%;
-      background:var(--red,#c51f2d);opacity:0;transition:opacity .3s;
+      background:#c51f2d;opacity:0;transition:opacity .3s;
     }
     .cell:hover .dot{opacity:1}
-    .cell svg{
-      height:100%;width:100%;max-height:100%;min-height:0;flex:1 1 auto;
-      filter:drop-shadow(0 18px 40px rgba(0,0,0,.6));
-      transition:transform .4s cubic-bezier(.16,1,.3,1);
+    .cell img{
+      max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;
+      filter:drop-shadow(0 24px 50px rgba(0,0,0,.65));
+      transition:transform .45s cubic-bezier(.16,1,.3,1);
     }
-    .cell:hover svg{transform:scale(1.045)}
-    .cell .name{
-      flex:0 0 auto;margin-top:2vh;
-      font-family:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace;
-      font-size:.68rem;font-weight:700;letter-spacing:.22em;color:rgba(255,255,255,.6);
-    }
-    .cell:hover .name{color:#fff}
-    /* ---- minimal chrome ---- */
-    .chrome{
-      position:fixed;z-index:2;left:0;right:0;top:0;
-      display:flex;justify-content:space-between;align-items:center;
-      padding:20px 24px;pointer-events:none;
-      font-family:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace;
-      font-size:.68rem;font-weight:700;letter-spacing:.2em;color:rgba(255,255,255,.55);
-    }
-    .chrome .brand b{color:#fff}
-    .chrome .brand .r{color:#c51f2d}
-    .chrome a{pointer-events:auto;color:rgba(255,255,255,.55);text-decoration:none}
-    .chrome a:hover{color:#fff}
-    .cell{padding-top:calc(4vh + 20px)}
+    .cell:hover img{transform:scale(1.05)}
     @media(max-width:900px){
       body{overflow:auto}
       .fleet{height:auto;min-height:100dvh;grid-template-columns:repeat(2,1fr);grid-template-rows:none}
-      .cell{border-right:none;border-bottom:1px solid rgba(255,255,255,.08);aspect-ratio:4/5;padding:12px 12px 16px}
+      .cell{border-right:none;border-bottom:1px solid rgba(255,255,255,.08);aspect-ratio:1/1;padding:16px}
       .cell:nth-child(odd){border-right:1px solid rgba(255,255,255,.08)}
-      .cell:nth-child(5n){border-right:1px solid rgba(255,255,255,.08)}
-      .cell:nth-child(even){border-right:none}
-      .chrome{position:sticky}
     }
     @media (prefers-reduced-motion:reduce){
-      .cell svg,.cell,.cell .dot{transition:none}
+      .cell img,.cell,.cell .dot{transition:none}
     }
   </style>
 </head>
 <body>
-  <div class="chrome">
-    <span class="brand"><b>NAMEPLATE</b> <span class="r">—</span> THE FLEET · 10 UNITS</span>
-    <a href="../appliance-shrinkage/">STYLE SHEET →</a>
-  </div>
-
-  <main class="fleet" aria-label="Appliance fleet gallery">
+  <main class="fleet" aria-label="Appliance render gallery">
     <figure class="cell"><span class="idx">001</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="French-door refrigerator isometric">
-        <path class="face" d="M126 96 L346 96 L346 436 L126 436 Z"/>
-        <path class="face" d="M346 96 L416 56 L416 396 L346 436 Z"/>
-        <path class="face" d="M126 96 L196 56 L416 56 L346 96 Z"/>
-        <rect class="ln" x="142" y="82" width="36" height="14" rx="2"/>
-        <rect class="ln" x="294" y="82" width="36" height="14" rx="2"/>
-        <path class="ln" d="M236 96 V316"/>
-        <path class="ln" d="M126 316 H346"/>
-        <path class="thin" d="M346 316 L416 276"/>
-        <path class="red" d="M220 126 V266 M252 126 V266"/>
-        <path class="red" d="M156 342 H316"/>
-        <rect class="thin" x="142" y="166" width="64" height="88" rx="4"/>
-        <path class="thin" d="M152 184 H196 M152 196 H196"/>
-        <rect class="red-thin" x="156" y="210" width="36" height="26" rx="2"/>
-        <circle cx="174" cy="223" r="3" class="red-fill"/>
-        <path class="thin" d="M256 166 H326 M256 200 H326 M256 240 H326"/>
-        <path class="thin" d="M146 396 H216 M256 396 H326"/>
-        <path class="thin" d="M366 350 L396 333 M366 366 L396 349 M366 382 L396 365"/>
-        <path class="thin" d="M126 422 H346"/>
-      </svg>
-      <figcaption class="name">FRIDGE</figcaption>
+      <img src="../images/renders/fridge.png" alt="French-door refrigerator 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">002</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Electric range isometric">
-        <path class="face" d="M196 75 L416 75 L395 87 L175 87 Z"/>
-        <path class="face" d="M175 87 L395 87 L395 158 L175 158 Z"/>
-        <path class="face" d="M395 87 L416 75 L416 146 L395 158 Z"/>
-        <circle class="ln" cx="212" cy="122" r="9"/>
-        <circle class="ln" cx="242" cy="122" r="9"/>
-        <rect class="thin" x="268" y="111" width="24" height="22" rx="2"/>
-        <circle class="ln" cx="318" cy="122" r="9"/>
-        <circle class="red" cx="348" cy="122" r="9"/>
-        <circle cx="348" cy="122" r="2.5" class="red-fill"/>
-        <path class="face" d="M126 196 L346 196 L395 158 L175 158 Z"/>
-        <ellipse class="red" cx="192" cy="184" rx="26" ry="8"/>
-        <ellipse class="ln" cx="292" cy="184" rx="24" ry="7.5"/>
-        <ellipse class="ln" cx="236" cy="170" rx="18" ry="5.5"/>
-        <ellipse class="red-thin" cx="334" cy="170" rx="22" ry="7"/>
-        <ellipse class="thin" cx="334" cy="170" rx="13" ry="4"/>
-        <path class="face" d="M126 196 L346 196 L346 438 L126 438 Z"/>
-        <path class="face" d="M346 196 L416 146 L416 388 L346 438 Z"/>
-        <rect class="red" x="144" y="212" width="184" height="14" rx="4"/>
-        <rect class="ln" x="146" y="240" width="180" height="124" rx="6"/>
-        <rect class="thin" x="160" y="254" width="152" height="96" rx="4"/>
-        <path class="thin" d="M160 292 H312 M160 322 H312"/>
-        <path class="red-thin" d="M176 286 V328 M206 286 V328 M236 286 V328 M266 286 V328 M296 286 V328"/>
-        <path class="ln" d="M126 384 H346"/>
-        <path class="thin" d="M346 384 L416 334"/>
-        <rect class="thin" x="210" y="402" width="52" height="8" rx="2"/>
-        <path class="ln" d="M146 438 V448 M326 438 V448"/>
-      </svg>
-      <figcaption class="name">RANGE</figcaption>
+      <img src="../images/renders/range.png" alt="Range 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">003</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Front-load washer isometric">
-        <path class="face" d="M126 156 L346 156 L346 436 L126 436 Z"/>
-        <path class="face" d="M346 156 L416 116 L416 396 L346 436 Z"/>
-        <path class="face" d="M126 156 L196 116 L416 116 L346 156 Z"/>
-        <path class="ln" d="M126 206 H346"/>
-        <path class="thin" d="M346 206 L416 166"/>
-        <rect class="thin" x="144" y="170" width="56" height="24" rx="2"/>
-        <path class="thin" d="M154 182 H190"/>
-        <rect class="thin" x="214" y="172" width="46" height="20" rx="2"/>
-        <circle class="red" cx="298" cy="181" r="14"/>
-        <circle cx="298" cy="181" r="3" class="red-fill"/>
-        <circle class="ln" cx="236" cy="310" r="70"/>
-        <circle class="thin" cx="236" cy="310" r="54"/>
-        <circle class="red-thin" cx="236" cy="310" r="38"/>
-        <circle cx="218" cy="296" r="2.5" class="red-fill"/>
-        <circle cx="236" cy="292" r="2.5" class="red-fill"/>
-        <circle cx="254" cy="296" r="2.5" class="red-fill"/>
-        <circle cx="218" cy="324" r="2.5" class="red-fill"/>
-        <circle cx="236" cy="328" r="2.5" class="red-fill"/>
-        <circle cx="254" cy="324" r="2.5" class="red-fill"/>
-        <circle cx="236" cy="310" r="3.5" class="red-fill"/>
-        <rect class="ln" x="162" y="296" width="6" height="28" rx="1"/>
-        <rect class="red" x="296" y="296" width="8" height="28" rx="2"/>
-        <path class="thin" d="M126 406 H346"/>
-        <circle class="thin" cx="310" cy="421" r="8"/>
-        <circle cx="310" cy="421" r="2.5" class="red-fill"/>
-        <path class="thin" d="M148 421 H210"/>
-        <path class="thin" d="M366 220 L396 203 M366 240 L396 223 M366 260 L396 243"/>
-        <path class="ln" d="M156 436 V446 M316 436 V446"/>
-      </svg>
-      <figcaption class="name">WASHER</figcaption>
+      <img src="../images/renders/washer.png" alt="Washer 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">004</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Dryer isometric">
-        <path class="face" d="M126 156 L346 156 L346 436 L126 436 Z"/>
-        <path class="face" d="M346 156 L416 116 L416 396 L346 436 Z"/>
-        <path class="face" d="M126 156 L196 116 L416 116 L346 156 Z"/>
-        <path class="red" d="M250 144 L330 144 L350 132 L270 132 Z"/>
-        <path class="thin" d="M265 138 H335"/>
-        <path class="ln" d="M126 206 H346"/>
-        <path class="thin" d="M346 206 L416 166"/>
-        <circle class="red" cx="174" cy="181" r="14"/>
-        <circle cx="174" cy="181" r="3" class="red-fill"/>
-        <rect class="thin" x="210" y="172" width="46" height="20" rx="2"/>
-        <circle class="red" cx="282" cy="181" r="8"/>
-        <circle cx="282" cy="181" r="3" class="red-fill"/>
-        <circle class="thin" cx="306" cy="181" r="5"/>
-        <rect class="ln" x="156" y="232" width="160" height="144" rx="12"/>
-        <rect class="thin" x="174" y="250" width="124" height="108" rx="8"/>
-        <path class="red-thin" d="M174 298 H298"/>
-        <rect class="thin" x="188" y="268" width="22" height="6" rx="1"/>
-        <rect class="thin" x="225" y="268" width="22" height="6" rx="1"/>
-        <rect class="thin" x="262" y="268" width="22" height="6" rx="1"/>
-        <rect class="red" x="306" y="270" width="8" height="68" rx="3"/>
-        <path class="thin" d="M126 406 H346"/>
-        <path class="thin" d="M150 421 H240"/>
-        <path class="thin" d="M366 260 L396 243 M366 280 L396 263 M366 300 L396 283"/>
-        <path class="ln" d="M156 436 V446 M316 436 V446"/>
-      </svg>
-      <figcaption class="name">DRYER</figcaption>
+      <img src="../images/renders/dryer.png" alt="Dryer 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">005</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Dishwasher isometric">
-        <path class="face" d="M126 146 L346 146 L346 436 L126 436 Z"/>
-        <path class="face" d="M346 146 L416 106 L416 396 L346 436 Z"/>
-        <path class="face" d="M126 146 L196 106 L416 106 L346 146 Z"/>
-        <path class="ln" d="M126 186 H346"/>
-        <path class="thin" d="M346 186 L416 146"/>
-        <circle cx="152" cy="166" r="4" class="red-fill"/>
-        <circle class="thin" cx="172" cy="166" r="4"/>
-        <circle class="thin" cx="190" cy="166" r="4"/>
-        <path class="thin" d="M220 166 H320"/>
-        <rect class="ln" x="144" y="194" width="8" height="18" rx="1"/>
-        <rect class="ln" x="320" y="194" width="8" height="18" rx="1"/>
-        <rect class="red" x="136" y="196" width="200" height="14" rx="4"/>
-        <rect class="ln" x="146" y="226" width="180" height="154" rx="6"/>
-        <path class="thin" d="M154 250 H318 M154 274 H318"/>
-        <path class="thin" d="M170 242 V282 M196 242 V282 M222 242 V282 M248 242 V282 M274 242 V282 M300 242 V282"/>
-        <path class="thin" d="M154 306 H318 M154 330 H318"/>
-        <path class="red-thin" d="M170 298 V338 M196 298 V338 M222 298 V338 M248 298 V338 M274 298 V338 M300 298 V338"/>
-        <circle class="red" cx="236" cy="354" r="7"/>
-        <path class="red" d="M182 354 Q208 351 236 354 Q264 357 290 354"/>
-        <circle cx="196" cy="353" r="2" class="red-fill"/>
-        <circle cx="276" cy="355" r="2" class="red-fill"/>
-        <path class="ln" d="M126 396 H346 V436 H126 Z"/>
-        <path class="thin" d="M150 416 H240"/>
-        <path class="thin" d="M366 170 L396 153 M366 320 L396 303"/>
-        <path class="ln" d="M156 436 V444 M316 436 V444"/>
-      </svg>
-      <figcaption class="name">DISHWASHER</figcaption>
+      <img src="../images/renders/dishwasher.png" alt="Dishwasher 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">006</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Microwave oven isometric">
-        <path class="face" d="M106 150 L346 150 L346 360 L106 360 Z"/>
-        <path class="face" d="M346 150 L416 110 L416 320 L346 360 Z"/>
-        <path class="face" d="M106 150 L176 110 L416 110 L346 150 Z"/>
-        <rect class="ln" x="120" y="166" width="168" height="178" rx="6"/>
-        <rect class="thin" x="132" y="178" width="144" height="136" rx="4"/>
-        <path class="thin" d="M138 214 H270 M138 246 H270 M138 278 H270"/>
-        <path class="red" d="M280 174 V336"/>
-        <rect class="ln" x="294" y="166" width="42" height="178" rx="3"/>
-        <rect class="thin" x="299" y="174" width="32" height="18" rx="2"/>
-        <rect class="thin" x="300" y="200" width="13" height="9" rx="1"/>
-        <rect class="thin" x="317" y="200" width="13" height="9" rx="1"/>
-        <rect class="thin" x="300" y="214" width="13" height="9" rx="1"/>
-        <rect class="thin" x="317" y="214" width="13" height="9" rx="1"/>
-        <rect class="thin" x="300" y="228" width="13" height="9" rx="1"/>
-        <rect class="thin" x="317" y="228" width="13" height="9" rx="1"/>
-        <rect class="red-fill" x="299" y="250" width="32" height="18" rx="3"/>
-        <polygon points="312,255 320,259 312,263" fill="#ffffff"/>
-        <rect class="thin" x="299" y="274" width="32" height="14" rx="2"/>
-        <rect class="thin" x="299" y="296" width="32" height="38" rx="2"/>
-        <path class="thin" d="M190 126 L230 126 M250 126 L300 126 M320 126 L370 126"/>
-        <path class="thin" d="M356 190 L400 165 M356 210 L400 185 M356 230 L400 205"/>
-        <path class="ln" d="M126 360 V368 M326 360 V368"/>
-      </svg>
-      <figcaption class="name">MICROWAVE</figcaption>
+      <img src="../images/renders/microwave.png" alt="Microwave 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">007</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Heat pump water heater isometric">
-        <path class="face" d="M160 155 V415 A 96 32 0 0 0 352 415 V155 A 96 32 0 0 1 160 155 Z"/>
-        <path class="ln" d="M160 415 A 96 32 0 0 0 352 415"/>
-        <path class="ln" d="M184 134 A 96 32 0 0 0 160 155 A 96 32 0 0 0 352 155 A 96 32 0 0 0 328 134"/>
-        <path class="face" d="M184 80 V155 A 72 24 0 0 0 328 155 V80 A 72 24 0 0 1 184 80 Z"/>
-        <ellipse class="face" cx="256" cy="80" rx="72" ry="24"/>
-        <path class="ln" d="M184 155 A 72 24 0 0 0 328 155"/>
-        <path class="thin" d="M196 114 A 60 20 0 0 0 316 114"/>
-        <path class="thin" d="M196 128 A 60 20 0 0 0 316 128"/>
-        <path class="thin" d="M196 142 A 60 20 0 0 0 316 142"/>
-        <circle class="red" cx="256" cy="128" r="7"/>
-        <circle cx="256" cy="128" r="2.5" class="red-fill"/>
-        <path class="ln" d="M224 80 V50 M288 80 V50"/>
-        <path class="red" d="M224 50 H198 V80"/>
-        <path class="red" d="M350 215 H374 V390"/>
-        <circle cx="374" cy="215" r="5" class="red-fill"/>
-        <path class="red-thin" d="M374 215 L382 209"/>
-        <rect class="ln" x="206" y="202" width="100" height="72" rx="4"/>
-        <rect class="thin" x="216" y="212" width="80" height="26" rx="2"/>
-        <circle cx="228" cy="225" r="3.5" class="red-fill"/>
-        <path class="thin" d="M240 221 H284 M240 229 H272"/>
-        <rect class="red-thin" x="216" y="246" width="36" height="16" rx="2"/>
-        <rect class="thin" x="260" y="246" width="36" height="16" rx="2"/>
-        <rect class="thin" x="220" y="294" width="72" height="42" rx="3"/>
-        <circle cx="256" cy="315" r="2.5" class="thin"/>
-        <rect class="thin" x="220" y="350" width="72" height="42" rx="3"/>
-        <circle cx="256" cy="371" r="2.5" class="thin"/>
-        <path class="thin" d="M160 404 L136 414 V426"/>
-        <path class="ln" d="M200 435 V445 M312 435 V445"/>
-      </svg>
-      <figcaption class="name">WATER HEATER</figcaption>
+      <img src="../images/renders/water-heater.png" alt="Water heater 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">008</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Air handler isometric">
-        <path class="face" d="M136 84 L336 84 L336 444 L136 444 Z"/>
-        <path class="face" d="M336 84 L406 44 L406 404 L336 444 Z"/>
-        <path class="face" d="M136 84 L206 44 L406 44 L336 84 Z"/>
-        <path class="ln" d="M136 116 H336"/>
-        <path class="thin" d="M336 116 L406 76"/>
-        <path class="thin" d="M156 100 H220"/>
-        <rect class="ln" x="154" y="132" width="164" height="124" rx="4"/>
-        <path class="thin" d="M164 150 H308 M164 166 H308 M164 182 H308 M164 198 H308 M164 214 H308 M164 230 H308 M164 246 H308"/>
-        <rect class="red" x="222" y="136" width="28" height="6" rx="1"/>
-        <path class="ln" d="M136 270 H336"/>
-        <path class="thin" d="M336 270 L406 230"/>
-        <rect class="ln" x="154" y="284" width="164" height="136" rx="4"/>
-        <circle class="red" cx="298" cy="352" r="7"/>
-        <circle cx="298" cy="352" r="2.5" class="red-fill"/>
-        <circle class="thin" cx="236" cy="352" r="34"/>
-        <circle class="red-thin" cx="236" cy="352" r="16"/>
-        <rect class="thin" x="168" y="300" width="52" height="24" rx="2"/>
-        <path class="red" d="M336 340 L376 317 V250"/>
-        <path class="ln" d="M336 360 L388 330 V260"/>
-        <path class="thin" d="M136 414 L112 428 V444 H124"/>
-        <path class="thin" d="M136 432 H336"/>
-        <path class="thin" d="M336 432 L406 392"/>
-      </svg>
-      <figcaption class="name">AIR HANDLER</figcaption>
+      <img src="../images/renders/hvac.png" alt="Air handler 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">009</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Smart thermostat isometric">
-        <path class="face" d="M146 146 L336 146 L336 386 L146 386 Z"/>
-        <path class="face" d="M336 146 L371 126 L371 366 L336 386 Z"/>
-        <path class="face" d="M146 146 L181 126 L371 126 L336 146 Z"/>
-        <circle class="thin" cx="241" cy="164" r="4"/>
-        <circle class="ln" cx="241" cy="266" r="88"/>
-        <circle class="thin" cx="241" cy="266" r="76"/>
-        <path class="red-thin" d="M184 233 A70 70 0 0 1 298 233"/>
-        <circle cx="241" cy="196" r="5" class="red-fill"/>
-        <circle class="face" cx="241" cy="266" r="54"/>
-        <text x="241" y="276" text-anchor="middle" font-family="Menlo, Monaco, monospace" font-size="36" font-weight="800" fill="#c51f2d" letter-spacing="-1">72°</text>
-        <path class="red-fill" d="M241 288 C243 291 245 293 245 296 C245 298.5 243.2 300.5 241 300.5 C238.8 300.5 237 298.5 237 296 C237 294 239 292 241 288 Z"/>
-        <path class="thin" d="M346 160 L365 149"/>
-      </svg>
-      <figcaption class="name">THERMOSTAT</figcaption>
+      <img src="../images/renders/thermostat.png" alt="Thermostat 3D render">
     </figure>
-
     <figure class="cell"><span class="idx">010</span><span class="dot"></span>
-      <svg viewBox="0 0 512 512" fill="none" role="img" aria-label="Outdoor condenser isometric">
-        <path class="face" d="M126 166 L346 166 L346 436 L126 436 Z"/>
-        <path class="face" d="M346 166 L416 126 L416 396 L346 436 Z"/>
-        <path class="face" d="M126 166 L196 126 L416 126 L346 166 Z"/>
-        <ellipse class="ln" cx="271" cy="146" rx="74" ry="22"/>
-        <ellipse class="thin" cx="271" cy="146" rx="52" ry="15"/>
-        <circle class="red" cx="271" cy="146" r="9"/>
-        <path class="red-thin" d="M271 137 C260 125 240 128 225 138 M271 155 C282 167 302 164 317 154 M280 146 C295 140 310 130 320 134 M262 146 C247 152 232 162 222 158"/>
-        <path class="thin" d="M142 196 H330 M142 214 H330 M142 232 H330 M142 250 H330 M142 268 H330 M142 286 H330 M142 304 H330 M142 322 H330"/>
-        <path class="thin" d="M356 186 L406 157 M356 204 L406 175 M356 222 L406 193 M356 240 L406 211 M356 258 L406 229 M356 276 L406 247 M356 294 L406 265"/>
-        <rect class="ln" x="142" y="342" width="100" height="74" rx="4"/>
-        <circle class="red" cx="166" cy="378" r="6"/>
-        <circle class="red-thin" cx="190" cy="378" r="6"/>
-        <circle class="thin" cx="220" cy="378" r="5"/>
-        <path class="thin" d="M154 358 H200 M154 366 H190"/>
-        <path class="thin" d="M126 424 H346"/>
-        <path class="thin" d="M346 424 L416 384"/>
-        <path class="ln" d="M146 436 V446 M326 436 V446 M396 396 V406"/>
-      </svg>
-      <figcaption class="name">CONDENSER</figcaption>
+      <img src="../images/renders/condenser.png" alt="Condenser 3D render">
     </figure>
   </main>
 </body>
