@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { getDataSourceStatus, subscribeDataSource } from '../api/client';
 
 const STORAGE_KEY = 'np_sidebar_collapsed';
 const THEME_STORAGE_KEY = 'nameplate-theme';
@@ -109,15 +108,6 @@ export function Layout() {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const dataSourceStatus = useSyncExternalStore(subscribeDataSource, getDataSourceStatus, getDataSourceStatus);
-  const dataSourceLabel = {
-    checking: 'Connecting…',
-    live: 'Connected workspace',
-    demo: 'Demo workspace',
-    unavailable: 'Connection unavailable',
-  }[dataSourceStatus];
-  const dataSourceDetail = dataSourceStatus === 'demo' ? 'Sample data · local demo' : dataSourceLabel;
-  const dataSourceColor = dataSourceStatus === 'live' ? '#22c55e' : dataSourceStatus === 'demo' ? '#eb2b2b' : dataSourceStatus === 'unavailable' ? '#ef4444' : '#a3a3a3';
   const [theme, setTheme] = useState<Theme>(() => {
     try {
       return localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light';
@@ -402,10 +392,13 @@ export function Layout() {
           </a>
         </div>
 
-        {/* Clean Footer with Logged In Demo User */}
+        {/* User Profile Card */}
         <div className="np-sidebar__footer">
-          <div className="np-sidebar__user">
-            <div className="np-user-avatar" title="Marcus Vance · Portfolio Director">MV</div>
+          <div className="np-sidebar__user" title="Marcus Vance · Portfolio Director">
+            <div className="np-sidebar__user-avatar">
+              MV
+              <span className="np-sidebar__user-status" />
+            </div>
             {!collapsed ? (
               <div className="np-sidebar__user-meta">
                 <div className="np-sidebar__user-name">Marcus Vance</div>
@@ -478,11 +471,6 @@ export function Layout() {
               <kbd>⌘K</kbd>
             </form>
 
-            <div className="np-topbar-status" title={dataSourceDetail} aria-label={dataSourceDetail}>
-              <span className="np-status-dot" style={{ background: dataSourceColor, boxShadow: 'none' }} />
-              <span>{dataSourceLabel}</span>
-            </div>
-
             <button
               type="button"
               className="np-theme-toggle"
@@ -491,24 +479,21 @@ export function Layout() {
               title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 15.2A8.2 8.2 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2Z" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
                 </svg>
               ) : (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="4" />
-                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
                 </svg>
               )}
             </button>
 
-            {/* Logged in demo user pill */}
+            {/* Clean, un-squashed user pill */}
             <div className="np-topbar-user" title="Logged in as Marcus Vance · Portfolio Director">
-              <div className="np-user-avatar">MV</div>
-              <div className="np-topbar-user__info">
-                <span className="np-topbar-user__name">Marcus Vance</span>
-                <span className="np-topbar-user__role">Portfolio Director</span>
-              </div>
+              <span className="np-topbar-user__avatar">MV</span>
+              <span className="np-topbar-user__name">Marcus Vance</span>
             </div>
           </div>
         </header>

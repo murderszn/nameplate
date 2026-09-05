@@ -53,7 +53,7 @@ export function Architecture() {
   const [group, setGroup] = useState('All domains');
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>(() => Object.fromEntries(tables.map((table) => [table.name, { x: table.x, y: table.y }])));
   const [zoom, setZoom] = useState(1);
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const dragRef = useRef<{ name: string; dx: number; dy: number } | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const groups = ['All domains', ...Array.from(new Set(tables.map((table) => table.group)))];
@@ -83,7 +83,7 @@ export function Architecture() {
     };
     setPositions(next);
     setSelected('service_event');
-    setDrawerOpen(true);
+    setDrawerOpen(false);
     requestAnimationFrame(() => canvasRef.current?.scrollTo({ left: 550, top: 260, behavior: 'smooth' }));
   };
 
