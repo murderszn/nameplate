@@ -281,24 +281,6 @@ class _UnitCard extends StatelessWidget {
     final isTurning = unit.occupancyStatus == OccupancyStatus.turning;
     final isVacant = unit.occupancyStatus == OccupancyStatus.vacant;
 
-    final blockColor = switch (unit.occupancyStatus) {
-      OccupancyStatus.turning =>
-        const Color(0xFFF59E0B).withValues(alpha: 0.15),
-      OccupancyStatus.vacant =>
-        const Color(0xFF10B981).withValues(alpha: 0.15),
-      _ => context.npColors.bgElevated,
-    };
-    final tone = switch (unit.occupancyStatus) {
-      OccupancyStatus.turning => NpPillTone.caution,
-      OccupancyStatus.vacant => NpPillTone.verified,
-      _ => NpPillTone.neutral,
-    };
-    final microHeaderBg = isTurning
-        ? const Color(0xFFF59E0B).withValues(alpha: 0.08)
-        : (isVacant
-            ? const Color(0xFF10B981).withValues(alpha: 0.08)
-            : context.npColors.bgCard);
-
     final propertyImage = NpAssets.propertyImageFor(unit.propertyName);
 
     return Material(
@@ -356,171 +338,97 @@ class _UnitCard extends StatelessWidget {
               // Right content
               Padding(
                 padding: const EdgeInsets.only(left: 68),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Key row 1: Micro-header with soft tinted background
-                    Container(
-                      color: microHeaderBg,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: isTurning
-                                  ? const Color(0xFFF59E0B).withValues(alpha: 0.12)
-                                  : (isVacant
-                                      ? const Color(0xFF10B981).withValues(alpha: 0.12)
-                                      : context.npColors.bgElevated),
-                              border: Border.all(
-                                color: isTurning
-                                    ? const Color(0xFFF59E0B).withValues(alpha: 0.4)
-                                    : (isVacant
-                                        ? const Color(0xFF10B981).withValues(alpha: 0.4)
-                                        : context.npColors.lineStrong),
-                                width: 0.8,
-                              ),
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                            child: Text(
-                              unit.label.toUpperCase(),
-                              style: NpType.mono.copyWith(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 11,
-                                color: isTurning
-                                    ? const Color(0xFFF59E0B)
-                                    : (isVacant
-                                        ? const Color(0xFF10B981)
-                                        : context.npColors.white),
-                                letterSpacing: 0.6,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          NpStatusPill(
-                            label: unit.occupancyStatus.label.toUpperCase(),
-                            tone: tone,
-                          ),
-                          const Spacer(),
-                          Flexible(
-                            child: Text(
-                              '${unit.buildingName.toUpperCase()} · ${unit.propertyName.toUpperCase()}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.end,
-                              style: NpType.mono.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: context.npColors.gray500,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 10,
-                            color: context.npColors.gray500,
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Key row 2: Details (full width) + Icon Action Button
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Text(
-                                  unit.displayName,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14.5,
-                                    color: context.npColors.white,
-                                    height: 1.25,
-                                    letterSpacing: -0.2,
+                                Expanded(
+                                  child: Text(
+                                    unit.displayName,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14.5,
+                                      color: context.npColors.white,
+                                      height: 1.25,
+                                      letterSpacing: -0.2,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(height: 3),
+                                const SizedBox(width: 6),
                                 Text(
-                                  '${unit.propertyName}${assetCount != null ? ' · $assetCount appliances' : ''}',
-                                  style: TextStyle(
-                                    color: context.npColors.gray400,
-                                    fontSize: 12,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  isTurning
-                                      ? 'READY FOR TURNOVER AUDIT'
-                                      : (isVacant
-                                          ? 'VACANT // PRE-LEASE AUDIT'
-                                          : 'ACTIVE LEASE // AUDIT READY'),
+                                  unit.label.toUpperCase(),
                                   style: NpType.mono.copyWith(
-                                    fontSize: 9,
+                                    fontSize: 9.5,
                                     fontWeight: FontWeight.w700,
-                                    color: isTurning
-                                        ? const Color(0xFFF59E0B)
-                                        : (isVacant
-                                            ? const Color(0xFF10B981)
-                                            : context.npColors.gray500),
-                                    letterSpacing: 0.5,
+                                    color: context.npColors.gray400,
+                                    letterSpacing: 0.4,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          // Icon-only start button replacing the old text button
-                          Material(
-                            color: isTurning || isVacant
-                                ? NpColors.red
-                                : context.npColors.bgElevated,
-                            borderRadius: BorderRadius.circular(12),
-                            child: InkWell(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                onStart();
-                              },
+                            const SizedBox(height: 4),
+                            Text(
+                              '${unit.propertyName}${unit.buildingName.isNotEmpty ? ' · ${unit.buildingName}' : ''}${assetCount != null ? ' · $assetCount appliances' : ''}',
+                              style: TextStyle(
+                                color: context.npColors.gray400,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      // Icon-only start button replacing the old text button
+                      Material(
+                        color: isTurning || isVacant
+                            ? NpColors.red
+                            : context.npColors.bgElevated,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            onStart();
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: 42,
-                                height: 42,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: isTurning || isVacant
-                                        ? NpColors.redBorder
-                                        : context.npColors.lineStrong,
-                                    width: 0.8,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  Icons.play_arrow_rounded,
-                                  color: isTurning || isVacant
-                                      ? Colors.white
-                                      : context.npColors.white,
-                                  size: 24,
-                                ),
+                              border: Border.all(
+                                color: isTurning || isVacant
+                                    ? NpColors.redBorder
+                                    : context.npColors.lineStrong,
+                                width: 0.8,
                               ),
                             ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              isTurning
+                                  ? Icons.play_arrow_rounded
+                                  : Icons.qr_code_scanner,
+                              color: isTurning || isVacant
+                                  ? Colors.white
+                                  : context.npColors.white,
+                              size: 24,
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -605,191 +513,123 @@ class _TurnCard extends StatelessWidget {
               // Right content
               Padding(
                 padding: const EdgeInsets.only(left: 68),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Key row 1: Micro-header
-                    Container(
-                      color: isActive
-                          ? NpColors.redSubtle
-                          : context.npColors.bgCard,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    turn.unitLabel,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14.5,
+                                      color: context.npColors.white,
+                                      height: 1.25,
+                                      letterSpacing: -0.2,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  turn.type.label.toUpperCase(),
+                                  style: NpType.mono.copyWith(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: context.npColors.gray400,
+                                    letterSpacing: 0.4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '${turn.inspectedCount}/${turn.items.length} INSPECTED',
+                                  style: NpType.mono.copyWith(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: context.npColors.gray400,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                Text(
+                                  '${(progress * 100).round()}%',
+                                  style: NpType.mono.copyWith(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: isDone
+                                        ? const Color(0xFF10B981)
+                                        : NpColors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(3),
+                              child: LinearProgressIndicator(
+                                value: progress.clamp(0.0, 1.0),
+                                minHeight: 5,
+                                color: isDone
+                                    ? const Color(0xFF10B981)
+                                    : NpColors.red,
+                                backgroundColor: context.npColors.white08,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Material(
+                        color: isActive
+                            ? NpColors.red
+                            : context.npColors.bgElevated,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            onOpen();
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 42,
+                            height: 42,
                             decoration: BoxDecoration(
-                              color: isActive
-                                  ? NpColors.red.withValues(alpha: 0.12)
-                                  : context.npColors.bgElevated,
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isActive
                                     ? NpColors.redBorder
                                     : context.npColors.lineStrong,
                                 width: 0.8,
                               ),
-                              borderRadius: BorderRadius.circular(2),
                             ),
-                            child: Text(
-                              turn.type.label.toUpperCase(),
-                              style: NpType.mono.copyWith(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 11,
-                                color: isActive
-                                    ? NpColors.red
-                                    : context.npColors.white,
-                                letterSpacing: 0.6,
-                              ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              isActive
+                                  ? Icons.arrow_forward_rounded
+                                  : Icons.visibility_outlined,
+                              color: isActive
+                                  ? Colors.white
+                                  : context.npColors.white,
+                              size: 22,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          NpStatusPill(
-                            label: turn.status.label.toUpperCase(),
-                            tone: isDone ? NpPillTone.verified : NpPillTone.caution,
-                          ),
-                          if (isActive) ...[
-                            const SizedBox(width: 6),
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                color: NpColors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ],
-                          const Spacer(),
-                          Flexible(
-                            child: Text(
-                              turn.unitLabel.toUpperCase(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.end,
-                              style: NpType.mono.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: isActive
-                                    ? NpColors.red
-                                    : context.npColors.gray500,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 10,
-                            color: context.npColors.gray500,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    // Key row 2: Progress details (full width) + Action Icon Button
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  turn.unitLabel,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14.5,
-                                    color: context.npColors.white,
-                                    height: 1.25,
-                                    letterSpacing: -0.2,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      '${turn.inspectedCount}/${turn.items.length} INSPECTED',
-                                      style: NpType.mono.copyWith(
-                                        fontSize: 9.5,
-                                        fontWeight: FontWeight.w700,
-                                        color: context.npColors.gray400,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                    Text(
-                                      '${(progress * 100).round()}%',
-                                      style: NpType.mono.copyWith(
-                                        fontSize: 9.5,
-                                        fontWeight: FontWeight.w800,
-                                        color: isDone
-                                            ? const Color(0xFF10B981)
-                                            : NpColors.red,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(3),
-                                  child: LinearProgressIndicator(
-                                    value: progress.clamp(0.0, 1.0),
-                                    minHeight: 5,
-                                    color: isDone
-                                        ? const Color(0xFF10B981)
-                                        : NpColors.red,
-                                    backgroundColor: context.npColors.white08,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Material(
-                            color: isActive
-                                ? NpColors.red
-                                : context.npColors.bgElevated,
-                            borderRadius: BorderRadius.circular(12),
-                            child: InkWell(
-                              onTap: () {
-                                HapticFeedback.lightImpact();
-                                onOpen();
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: 42,
-                                height: 42,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: isActive
-                                        ? NpColors.redBorder
-                                        : context.npColors.lineStrong,
-                                    width: 0.8,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  isActive
-                                      ? Icons.arrow_forward_rounded
-                                      : Icons.visibility_outlined,
-                                  color: isActive
-                                      ? Colors.white
-                                      : context.npColors.white,
-                                  size: 22,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

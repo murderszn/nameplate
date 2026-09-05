@@ -83,13 +83,10 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
             ),
             child: Row(
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF10B981),
-                    shape: BoxShape.circle,
-                  ),
+                Icon(
+                  Icons.shield_outlined,
+                  size: 16,
+                  color: context.npColors.gray400,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -102,7 +99,7 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
                         style: NpType.mono.copyWith(
                           fontSize: 9,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF10B981),
+                          color: context.npColors.gray400,
                           letterSpacing: 0.8,
                         ),
                       ),

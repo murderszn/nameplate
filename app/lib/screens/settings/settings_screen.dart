@@ -110,6 +110,14 @@ class SettingsScreen extends ConsumerWidget {
                 ref.read(fieldSessionProvider).setPhotoWifiOnly(v),
           ),
 
+          // ── Waiting to Upload (Outbox) ─────────────────────────────────────
+          if (session.outbox.isNotEmpty) ...[
+            const _FullBleedSectionHeader(
+              title: 'Upload queue buffer',
+            ),
+            ...session.outbox.take(8).map((op) => _OutboxTile(op: op)),
+          ],
+
           // ── Hardware Minting Studio ────────────────────────────────────────
           const _FullBleedSectionHeader(
             title: 'Hardware & tag commissioning',
@@ -126,30 +134,6 @@ class SettingsScreen extends ConsumerWidget {
               MaterialPageRoute(builder: (_) => const FleetGalleryScreen()),
             ),
           ),
-
-          // ── Waiting to Upload (Outbox) ─────────────────────────────────────
-          if (session.outbox.isNotEmpty) ...[
-            _FullBleedSectionHeader(
-              title: 'Upload queue buffer',
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEF4444).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(2),
-                  border: Border.all(color: const Color(0xFFEF4444)),
-                ),
-                child: Text(
-                  '${session.outbox.length} OPS',
-                  style: NpType.mono.copyWith(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFFEF4444),
-                  ),
-                ),
-              ),
-            ),
-            ...session.outbox.take(8).map((op) => _OutboxTile(op: op)),
-          ],
 
           // ── Device & App Diagnostics ───────────────────────────────────────
           const _FullBleedSectionHeader(
@@ -488,15 +472,6 @@ class _AccountAndRoleHero extends StatelessWidget {
             // Technician Mode Card
             Row(
               children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF10B981),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     session.tech.name,
@@ -612,15 +587,6 @@ class _AccountAndRoleHero extends StatelessWidget {
             // Resident Mode Card
             Row(
               children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF0EA5E9),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     session.tech.name,
@@ -736,15 +702,12 @@ class _SyncTelemetryRibbon extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: isOffline
-                  ? const Color(0xFFF59E0B)
-                  : const Color(0xFF10B981),
-              shape: BoxShape.circle,
-            ),
+          Icon(
+            isOffline ? Icons.cloud_off_rounded : Icons.cloud_done_rounded,
+            size: 16,
+            color: isOffline
+                ? const Color(0xFFF59E0B)
+                : context.npColors.gray400,
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -759,7 +722,7 @@ class _SyncTelemetryRibbon extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     color: isOffline
                         ? const Color(0xFFF59E0B)
-                        : const Color(0xFF10B981),
+                        : context.npColors.gray400,
                     letterSpacing: 0.8,
                   ),
                 ),
@@ -794,11 +757,9 @@ class _SyncTelemetryRibbon extends StatelessWidget {
 
 class _FullBleedSectionHeader extends StatelessWidget {
   final String title;
-  final Widget? trailing;
 
   const _FullBleedSectionHeader({
     required this.title,
-    this.trailing,
   });
 
   @override
@@ -821,10 +782,6 @@ class _FullBleedSectionHeader extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          if (trailing != null) ...[
-            const SizedBox(width: 8),
-            trailing!,
-          ],
         ],
       ),
     );
@@ -964,7 +921,12 @@ class _FullBleedSwitchTile extends StatelessWidget {
               Switch(
                 value: value,
                 onChanged: onChanged,
-                activeThumbColor: accentColor,
+                activeThumbColor: Colors.white,
+                activeTrackColor: accentColor,
+                inactiveThumbColor: context.npColors.gray400,
+                inactiveTrackColor: context.npColors.bgElevated,
+                trackOutlineColor:
+                    WidgetStatePropertyAll(context.npColors.lineStrong),
               ),
             ],
           ),

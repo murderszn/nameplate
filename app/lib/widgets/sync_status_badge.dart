@@ -18,42 +18,43 @@ class SyncStatusBadge extends ConsumerWidget {
   }
 
   Widget _badge(BuildContext context, SyncStatusSnapshot snapshot) {
-    final (label, icon, color) = switch (snapshot.state) {
-      SyncState.synced => (
-        'Synced',
-        Icons.check_circle_outline,
-        context.npColors.gray400,
-      ),
-      SyncState.offline => (
-        'Offline',
-        Icons.cloud_off_outlined,
-        NpColors.pending,
-      ),
-      SyncState.pending => (
-        '${snapshot.pendingCount} to upload',
-        Icons.cloud_upload_outlined,
-        NpColors.pending,
-      ),
+    final isPending = snapshot.state == SyncState.pending;
+    final isOffline = snapshot.state == SyncState.offline;
+
+    final color = isPending
+        ? NpColors.pending
+        : (isOffline ? const Color(0xFFF59E0B) : context.npColors.gray400);
+
+    final icon = isPending
+        ? Icons.cloud_upload_outlined
+        : (isOffline ? Icons.cloud_off_outlined : Icons.cloud_done_outlined);
+
+    final tooltip = switch (snapshot.state) {
+      SyncState.synced => 'Synced',
+      SyncState.offline => 'Offline',
+      SyncState.pending => '${snapshot.pendingCount} pending upload',
     };
 
     return Padding(
-      padding: EdgeInsets.only(right: 12),
-      child: Semantics(
-        label: label,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 17, color: color),
-            SizedBox(width: 5),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+      padding: const EdgeInsets.only(right: 14),
+      child: Tooltip(
+        message: tooltip,
+        child: Semantics(
+          label: tooltip,
+          child: Badge(
+            isLabelVisible: isPending && snapshot.pendingCount > 0,
+            label: Text(
+              '${snapshot.pendingCount}',
+              style: NpType.mono.copyWith(
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                color: Colors.black,
               ),
             ),
-          ],
+            backgroundColor: NpColors.pending,
+            offset: const Offset(4, -4),
+            child: Icon(icon, size: 20, color: color),
+          ),
         ),
       ),
     );

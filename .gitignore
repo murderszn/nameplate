@@ -55,3 +55,8 @@ __pycache__/
 *.db-shm
 *.db-wal
 /nameplate.db
+
+# Local legal documents and generated review packages
+/legal/
+/output/pdf/nameplate-formation-and-handoff-drafts.pdf
+/output/nameplate-legal-draft-package.zip

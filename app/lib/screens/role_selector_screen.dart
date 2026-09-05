@@ -21,8 +21,8 @@ class RoleSelectorScreen extends ConsumerWidget {
     session.setRole(role, unitId: role == AppRole.renter ? 'unit-214' : null);
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const AppShell(),
-        transitionsBuilder: (_, anim, __, child) => FadeTransition(opacity: anim, child: child),
+        pageBuilder: (context, animation, secondaryAnimation) => const AppShell(),
+        transitionsBuilder: (context, anim, secondaryAnimation, child) => FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 280),
       ),
     );

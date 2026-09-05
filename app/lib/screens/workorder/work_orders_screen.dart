@@ -330,75 +330,17 @@ class _WorkOrderCard extends ConsumerWidget {
               // Right content
               Padding(
                 padding: const EdgeInsets.only(left: 68),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Key row 1: Micro-header with soft tinted background
-                    Container(
-                      color: isUrgent ? NpColors.redSubtle : context.npColors.bgCard,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      child: Row(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Flexible(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: isUrgent ? NpColors.red.withValues(alpha: 0.12) : context.npColors.bgElevated,
-                                      border: Border.all(color: isUrgent ? NpColors.redBorder : context.npColors.lineStrong, width: 0.8),
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                    child: Text(
-                                      wo.id,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: NpType.mono.copyWith(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 10,
-                                        color: isUrgent ? NpColors.red : context.npColors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                if (wo.status == WorkOrderStatus.inProgress) ...[
-                                  const SizedBox(width: 6),
-                                  Container(width: 6, height: 6, decoration: const BoxDecoration(color: NpColors.red, shape: BoxShape.circle)),
-                                ],
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            flex: 2,
+                          Expanded(
                             child: Text(
-                              wo.slaLabel.toUpperCase(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.end,
-                              style: NpType.mono.copyWith(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w600,
-                                color: isUrgent ? NpColors.red : context.npColors.gray500,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_ios_rounded, size: 10, color: context.npColors.gray500),
-                        ],
-                      ),
-                    ),
-                      // Key row 2: title + location (full width)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 8, 12, 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
                               wo.title,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
@@ -410,16 +352,28 @@ class _WorkOrderCard extends ConsumerWidget {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(height: 5),
-                            Row(
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 10,
+                            color: context.npColors.gray500,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.place_outlined,
+                            size: 12,
+                            color: context.npColors.gray500,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Row(
                               children: [
-                                Icon(
-                                  Icons.place_outlined,
-                                  size: 12,
-                                  color: context.npColors.gray500,
-                                ),
-                                const SizedBox(width: 4),
-                                Expanded(
+                                Flexible(
                                   child: Text(
                                     wo.unitLabel,
                                     style: TextStyle(
@@ -430,14 +384,33 @@ class _WorkOrderCard extends ConsumerWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '·',
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    color: context.npColors.gray500,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  wo.id,
+                                  style: NpType.mono.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 10,
+                                    color: isUrgent ? NpColors.red : context.npColors.gray400,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
+              ),
               ],
             ),
           ),
