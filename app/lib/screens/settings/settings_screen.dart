@@ -855,12 +855,16 @@ class _FleetGalleryBanner extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          'The Fleet — Line Art Gallery',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
+                        const Flexible(
+                          child: Text(
+                            'The Fleet — Line Art',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 8),

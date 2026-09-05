@@ -240,11 +240,6 @@ class _WorkOrderCard extends ConsumerWidget {
     final isUrgent =
         wo.priority == WorkOrderPriority.urgent ||
         wo.priority == WorkOrderPriority.emergency;
-    final tone = switch (wo.priority) {
-      WorkOrderPriority.emergency => NpPillTone.fault,
-      WorkOrderPriority.urgent => NpPillTone.caution,
-      _ => NpPillTone.neutral,
-    };
     final schematic = NpAssets.schematicFor(wo.title);
     final session = ref.watch(fieldSessionProvider);
 
@@ -362,10 +357,8 @@ class _WorkOrderCard extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 6),
-                                Flexible(child: NpStatusPill(label: wo.priority.label.toUpperCase(), tone: tone)),
                                 if (wo.status == WorkOrderStatus.inProgress) ...[
-                                  const SizedBox(width: 5),
+                                  const SizedBox(width: 6),
                                   Container(width: 6, height: 6, decoration: const BoxDecoration(color: NpColors.red, shape: BoxShape.circle)),
                                 ],
                               ],
