@@ -567,44 +567,50 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Crockford Base32 Tag Pill
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: NpColors.redBorder, width: 0.8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 7,
-                          height: 7,
-                          decoration: const BoxDecoration(
-                            color: NpColors.red,
-                            shape: BoxShape.circle,
+                  Flexible(
+                    child: Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.8),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: NpColors.redBorder, width: 0.8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                              color: NpColors.red,
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 7),
-                        Text(
-                          'NPID // ${widget.asset.npid}',
-                          style: NpType.mono.copyWith(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.8,
-                            color: Colors.white,
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              'NPID // ${widget.asset.npid}',
+                              style: NpType.mono.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.6,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 8),
                   // Work Order Badge if attached
                   if (widget.workOrder != null)
                     Flexible(
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.8),
                           borderRadius: BorderRadius.circular(6),
@@ -614,7 +620,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                         child: Text(
                           '${widget.workOrder!.id} · ${widget.workOrder!.slaLabel.toUpperCase()}',
                           style: NpType.mono.copyWith(
-                            fontSize: 11,
+                            fontSize: 10,
                             fontWeight: FontWeight.w700,
                             color: NpColors.red,
                           ),
@@ -1005,18 +1011,22 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '05 // REPAIR VS REPLACE',
-                style: NpType.mono.copyWith(
-                  fontSize: 12,
-                  color: context.npColors.gray400,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.8,
+              Flexible(
+                child: Text(
+                  '05 // REPAIR VS REPLACE',
+                  style: NpType.mono.copyWith(
+                    fontSize: 11,
+                    color: context.npColors.gray400,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.6,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: (isEconomical
                           ? context.npSuccessFg
@@ -1038,21 +1048,21 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                       isEconomical
                           ? Icons.check_circle_outline
                           : Icons.warning_amber_rounded,
-                      size: 15,
+                      size: 14,
                       color: isEconomical
                           ? context.npSuccessFg
                           : context.npDangerFg,
                     ),
-                    const SizedBox(width: 5),
+                    const SizedBox(width: 4),
                     Text(
                       isEconomical ? 'CHEAPER TO REPAIR' : 'CONSIDER REPLACING',
                       style: NpType.mono.copyWith(
-                        fontSize: 11.5,
+                        fontSize: 10.5,
                         color: isEconomical
                             ? context.npSuccessFg
                             : context.npDangerFg,
                         fontWeight: FontWeight.w800,
-                        letterSpacing: 0.6,
+                        letterSpacing: 0.4,
                       ),
                     ),
                   ],
@@ -1066,19 +1076,23 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(
-                'Total (Labor + Parts):',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: context.npColors.white,
+              Flexible(
+                child: Text(
+                  'Total (Labor + Parts)',
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w600,
+                    color: context.npColors.white,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Text(
                 '\$${cost.toStringAsFixed(2)}',
                 style: NpType.mono.copyWith(
                   fontWeight: FontWeight.w900,
-                  fontSize: 24,
+                  fontSize: 22,
                   color: isEconomical
                       ? context.npSuccessFg
                       : context.npDangerFg,
@@ -1090,18 +1104,22 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Replacement CapEx Baseline:',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: context.npColors.gray400,
+              Flexible(
+                child: Text(
+                  'CapEx Replacement Baseline',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w500,
+                    color: context.npColors.gray400,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Text(
-                '\$$_defaultReplacementCost  (${ratio.toStringAsFixed(0)}% of cap)',
+                '\$$_defaultReplacementCost (${ratio.toStringAsFixed(0)}%)',
                 style: NpType.mono.copyWith(
-                  fontSize: 13.5,
+                  fontSize: 12.5,
                   fontWeight: FontWeight.w700,
                   color: context.npColors.gray300,
                 ),
@@ -1125,28 +1143,31 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '0% Repair',
+                '0% REPAIR',
                 style: NpType.mono.copyWith(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
                   color: context.npColors.gray500,
                 ),
               ),
               Text(
-                '50% CapEx Guideline Threshold',
+                '50% THRESHOLD',
                 style: NpType.mono.copyWith(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
                   color: isEconomical
                       ? context.npColors.gray400
                       : context.npDangerFg,
                 ),
               ),
               Text(
-                '100% Replace',
+                '100% REPLACE',
                 style: NpType.mono.copyWith(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
                   color: context.npColors.gray500,
                 ),
               ),
