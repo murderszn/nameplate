@@ -595,15 +595,18 @@ def generate_printable_sheet_svg(
 
         card_svg = f"""
         <g id="tag-{idx+1}">
-          <!-- Card Background & Border -->
-          <rect x="{pos_x}" y="{pos_y}" width="{card_w}" height="{card_h}" rx="6" fill="#0A0A0A" stroke="#222222" stroke-width="2"/>
-          <rect x="{pos_x+4}" y="{pos_y+4}" width="{card_w-8}" height="{card_h-8}" rx="4" fill="none" stroke="#181818" stroke-width="1" stroke-dasharray="4 2"/>
+          <!-- Isometric ground shadow + layered edging -->
+          <ellipse cx="{pos_x+card_w/2}" cy="{pos_y+card_h+10}" rx="{card_w*0.42}" ry="10" fill="#000000" opacity="0.32"/>
+          <!-- Card Background — refined edging, no hash marks -->
+          <rect x="{pos_x}" y="{pos_y}" width="{card_w}" height="{card_h}" rx="6" fill="#0A0A0A" stroke="#2A2A2A" stroke-width="1.8"/>
+          <rect x="{pos_x+1.2}" y="{pos_y+1.2}" width="{card_w-2.4}" height="{card_h-2.4}" rx="5" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+          <rect x="{pos_x}" y="{pos_y+card_h-2}" width="{card_w}" height="7" rx="3" fill="#000000" opacity="0.22"/>
           
-          <!-- Hex Rivets -->
-          <circle cx="{pos_x+10}" cy="{pos_y+10}" r="3" fill="#333333"/>
-          <circle cx="{pos_x+card_w-10}" cy="{pos_y+10}" r="3" fill="#333333"/>
-          <circle cx="{pos_x+10}" cy="{pos_y+card_h-10}" r="3" fill="#333333"/>
-          <circle cx="{pos_x+card_w-10}" cy="{pos_y+card_h-10}" r="3" fill="#333333"/>
+          <!-- Hex Rivets — refined highlight -->
+          <circle cx="{pos_x+10}" cy="{pos_y+10}" r="3" fill="#3A3A3A" stroke="#4A4A4A" stroke-width="0.6"/>
+          <circle cx="{pos_x+card_w-10}" cy="{pos_y+10}" r="3" fill="#3A3A3A" stroke="#4A4A4A" stroke-width="0.6"/>
+          <circle cx="{pos_x+10}" cy="{pos_y+card_h-10}" r="3" fill="#3A3A3A" stroke="#4A4A4A" stroke-width="0.6"/>
+          <circle cx="{pos_x+card_w-10}" cy="{pos_y+card_h-10}" r="3" fill="#3A3A3A" stroke="#4A4A4A" stroke-width="0.6"/>
 
           <!-- QR White Backing Plate -->
           <rect x="{pos_x+12}" y="{pos_y+26}" width="{qr_size+8}" height="{qr_size+8}" rx="3" fill="#FFFFFF"/>
