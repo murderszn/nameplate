@@ -341,7 +341,7 @@ class _AccountAndRoleHero extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: accentColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: accentColor),
                 ),
                 child: Text(
@@ -362,7 +362,7 @@ class _AccountAndRoleHero extends StatelessWidget {
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               color: context.npColors.bgElevated,
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(10),
               border: Border.all(color: context.npColors.lineStrong),
             ),
             child: Row(
@@ -371,14 +371,14 @@ class _AccountAndRoleHero extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: isRenter ? () => onSelectRole(AppRole.technician) : null,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 7),
                       decoration: BoxDecoration(
                         color: !isRenter
                             ? NpColors.red.withValues(alpha: 0.16)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: !isRenter
                               ? NpColors.red
@@ -418,14 +418,14 @@ class _AccountAndRoleHero extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: !isRenter ? () => onSelectRole(AppRole.renter) : null,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
                       decoration: BoxDecoration(
                         color: isRenter
                             ? const Color(0xFF0EA5E9).withValues(alpha: 0.16)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: isRenter
                               ? const Color(0xFF0EA5E9)
@@ -488,12 +488,12 @@ class _AccountAndRoleHero extends StatelessWidget {
                 const SizedBox(width: 8),
                 InkWell(
                   onTap: onPickTech,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(8),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
                     decoration: BoxDecoration(
                       color: context.npColors.bgElevated,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: context.npColors.lineStrong),
                     ),
                     child: Row(
@@ -534,12 +534,12 @@ class _AccountAndRoleHero extends StatelessWidget {
             const SizedBox(height: 8),
             InkWell(
               onTap: onPickProperties,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(8),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 decoration: BoxDecoration(
                   color: context.npColors.bgElevated,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: context.npColors.lineStrong, width: 0.8),
                 ),
                 child: Row(
@@ -605,7 +605,7 @@ class _AccountAndRoleHero extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0EA5E9).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: const Color(0xFF0EA5E9)),
                   ),
                   child: Text(
@@ -636,7 +636,7 @@ class _AccountAndRoleHero extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
               decoration: BoxDecoration(
                 color: const Color(0xFF0EA5E9).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: const Color(0xFF0EA5E9).withValues(alpha: 0.25),
                   width: 0.8,
@@ -979,7 +979,7 @@ class _TagStudioBanner extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: context.npColors.bgElevated,
                   border: Border.all(color: context.npColors.lineStrong),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Center(
                   child: Icon(
@@ -1017,7 +1017,7 @@ class _TagStudioBanner extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: NpColors.red.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(6),
                             border: Border.all(color: NpColors.red),
                           ),
                           child: Text(
@@ -1093,7 +1093,7 @@ class _FleetGalleryBanner extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: context.npColors.bgElevated,
                   border: Border.all(color: context.npColors.lineStrong),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 padding: const EdgeInsets.all(5),
                 child: const Center(
@@ -1130,7 +1130,7 @@ class _FleetGalleryBanner extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: NpColors.red.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(6),
                             border: Border.all(color: NpColors.red),
                           ),
                           child: Text(

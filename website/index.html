@@ -10,12 +10,13 @@
     (function () {
       var savedTheme;
       try { savedTheme = localStorage.getItem('nameplate-theme'); } catch (error) {}
-      var theme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      var urlTheme = (new URLSearchParams(window.location.search)).get('theme');
+      var theme = urlTheme || savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
   <link rel="icon" href="images/nameplate-logo-transparent.png" type="image/png">
-  <link rel="stylesheet" href="css/styles.css?v=presentation-2">
+  <link rel="stylesheet" href="css/styles.css?v=presentation-3">
 </head>
 <body class="marketing-page">
 
@@ -216,25 +217,55 @@
         <div class="problem-items-list">
           <div class="problem-row">
             <span class="problem-idx">01</span>
-            <div>
+            <div class="problem-text">
               <h4>Silent Turnover Shrinkage</h4>
               <p>Equipment moves during make-ready turns or functional components get swapped without records. Without a physical chain of custody, the loss is quietly absorbed as operating friction.</p>
+            </div>
+            <div class="problem-icon" aria-hidden="true">
+              <svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="14" y="12" width="34" height="72" rx="2" />
+                <line x1="14" y1="44" x2="48" y2="44" />
+                <line x1="42" y1="22" x2="42" y2="34" class="icon-accent" />
+                <rect x="54" y="24" width="28" height="48" rx="2" stroke-dasharray="6 6" opacity="0.55" />
+                <path d="M58 78 L74 78 M62 84 L70 84" opacity="0.55" />
+                <path d="M62 48 L78 48 M78 48 L72 42 M78 48 L72 54" class="icon-accent" />
+              </svg>
             </div>
           </div>
 
           <div class="problem-row">
             <span class="problem-idx">02</span>
-            <div>
+            <div class="problem-text">
               <h4>Uncaptured Warranty Coverage</h4>
               <p>Technicians replace failed components on active equipment with zero awareness that the part is covered under manufacturer warranty. Portfolios pay out of pocket for repairs that are already guaranteed.</p>
+            </div>
+            <div class="problem-icon" aria-hidden="true">
+              <svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M48 10 L80 22 V46 C80 64 66 78 48 86 C30 78 16 64 16 46 V22 Z" />
+                <path d="M48 30 V66" class="icon-accent" />
+                <path d="M56 38 C56 34 52 32 48 32 C44 32 40 34 40 38 C40 44 56 42 56 50 C56 54 52 56 48 56 C44 56 40 54 40 50" class="icon-accent" />
+                <path d="M68 68 L88 88 M88 68 L68 88" class="icon-accent" />
+              </svg>
             </div>
           </div>
 
           <div class="problem-row">
             <span class="problem-idx">03</span>
-            <div>
+            <div class="problem-text">
               <h4>Blind Capital Allocation</h4>
               <p>Asset managers discover aging equipment clusters only when failures cause emergency tenant disruption. CapEx is forced into reactive crisis management instead of planned lifecycle replacement.</p>
+            </div>
+            <div class="problem-icon" aria-hidden="true">
+              <svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="14" y1="14" x2="14" y2="82" />
+                <line x1="14" y1="82" x2="82" y2="82" />
+                <rect x="26" y="52" width="10" height="22" rx="1" />
+                <rect x="43" y="40" width="10" height="34" rx="1" />
+                <rect x="60" y="58" width="10" height="16" rx="1" opacity="0.55" stroke-dasharray="4 4" />
+                <path d="M26 34 L46 24 L58 30 L78 14" class="icon-accent" />
+                <path d="M78 14 L68 14 M78 14 L78 24" class="icon-accent" />
+                <circle cx="60" cy="58" r="1.5" fill="currentColor" stroke="none" />
+              </svg>
             </div>
           </div>
         </div>

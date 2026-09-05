@@ -178,7 +178,7 @@ class TurnsScreen extends ConsumerWidget {
                     child: Material(
                       color: context.npColors.bgElevated,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                        borderRadius: BorderRadius.circular(10),
                         side: BorderSide(color: context.npColors.lineStrong),
                       ),
                       child: ListTile(
@@ -186,7 +186,7 @@ class TurnsScreen extends ConsumerWidget {
                           padding: EdgeInsets.all(6),
                           decoration: BoxDecoration(
                             color: context.npColors.bgCard,
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: context.npColors.lineStrong,
                             ),

@@ -400,7 +400,7 @@ class NpStatusPill extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(color: border),
       ),
       child: Text(

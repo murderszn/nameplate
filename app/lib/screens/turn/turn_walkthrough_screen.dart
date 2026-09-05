@@ -133,7 +133,7 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: context.npColors.bgElevated,
-                              borderRadius: BorderRadius.circular(2),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -164,7 +164,7 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: context.npSuccessBg,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                     color: context.npSuccessFg.withValues(alpha: 0.4),
                   ),
@@ -403,7 +403,7 @@ class _TurnWalkthroughScreenState extends ConsumerState<TurnWalkthroughScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: context.npColors.bgElevated,
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: context.npColors.lineStrong),
                       ),
                       child: Text(
@@ -726,7 +726,7 @@ class _TurnItemCard extends StatelessWidget {
                     return Stack(
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(8),
                           child: Container(
                             width: 58,
                             height: 58,

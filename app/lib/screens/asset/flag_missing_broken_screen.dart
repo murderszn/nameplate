@@ -87,7 +87,7 @@ class _FlagMissingBrokenScreenState
                       ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEF4444).withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(6),
                         border: Border.all(color: const Color(0xFFEF4444)),
                       ),
                       child: Row(
@@ -331,7 +331,7 @@ class _FlagReasonTile extends StatelessWidget {
           ? accentColor.withValues(alpha: 0.08)
           : context.npColors.bgCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: isSelected ? accentColor : context.npColors.lineStrong,
           width: isSelected ? 1.5 : 1.0,
@@ -339,6 +339,7 @@ class _FlagReasonTile extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -350,7 +351,7 @@ class _FlagReasonTile extends StatelessWidget {
                   color: isSelected
                       ? accentColor.withValues(alpha: 0.16)
                       : context.npColors.bgElevated,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,

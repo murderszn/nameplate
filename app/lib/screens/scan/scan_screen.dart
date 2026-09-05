@@ -96,7 +96,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
       builder: (ctx) => AlertDialog(
         backgroundColor: context.npColors.bgCard,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(4)),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
           side: BorderSide(color: context.npColors.lineStrong),
         ),
         title: Row(
@@ -105,7 +105,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
               padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: NpColors.redSubtle,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: NpColors.redBorder),
               ),
               child: Icon(Icons.verified, color: NpColors.red, size: 18),
@@ -148,7 +148,7 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: context.npColors.bgElevated,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: context.npColors.lineStrong),
               ),
               child: Column(
@@ -336,15 +336,15 @@ class _ScanScreenState extends ConsumerState<ScanScreen> {
               filled: true,
               fillColor: context.npColors.bgElevated,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: context.npColors.lineStrong),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide(color: context.npColors.lineStrong),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(10),
                 borderSide: const BorderSide(color: NpColors.red, width: 1.5),
               ),
               suffixIcon: Row(
@@ -737,13 +737,13 @@ class _QuickTagChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: context.npColors.bgElevated,
           border: Border.all(color: context.npColors.lineStrong),
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -833,7 +833,7 @@ class _VerificationBanner extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(
@@ -902,12 +902,12 @@ class _CenterScanButton extends StatelessWidget {
       label: 'Scan with camera',
       child: Material(
         color: onPressed == null ? const Color(0xFF6B6B6B) : NpColors.red,
-        borderRadius: BorderRadius.circular(3),
+        borderRadius: BorderRadius.circular(12),
         elevation: 6,
         shadowColor: Colors.black.withValues(alpha: 0.45),
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(3),
+          borderRadius: BorderRadius.circular(12),
           child: SizedBox(
             width: 236,
             height: 56,

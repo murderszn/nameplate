@@ -197,7 +197,7 @@ class NpButton extends StatelessWidget {
             margin: EdgeInsets.only(right: iconGap),
             decoration: BoxDecoration(
               color: iconBoxBg,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, size: iconSize, color: fg),
           ),
@@ -220,7 +220,7 @@ class NpButton extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: iconBoxBg,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
               badge!,
@@ -249,7 +249,7 @@ class NpButton extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: horizontalPad),
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: border, width: 1),
         ),
         child: isExpanded ? Center(child: content) : content,
@@ -310,7 +310,7 @@ class NpIconButton extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: border),
         ),
         child: Center(
@@ -372,7 +372,7 @@ class NpActionTile extends StatelessWidget {
         padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: border, width: isSelected ? 1.5 : 1),
         ),
         child: Row(
@@ -383,7 +383,7 @@ class NpActionTile extends StatelessWidget {
               height: 38,
               decoration: BoxDecoration(
                 color: isSelected ? effectiveAccent : context.npColors.bgCard,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isSelected
                       ? effectiveAccent
@@ -485,7 +485,7 @@ class NpIconChip extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(color: border),
         ),
         child: Row(
@@ -554,7 +554,7 @@ class NpMenuButton<T> extends StatelessWidget {
       color: context.npColors.bgElevated,
       elevation: 8,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: context.npColors.lineStrong),
       ),
       onSelected: (val) {
@@ -593,7 +593,7 @@ class NpMenuButton<T> extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           color: context.npColors.bgElevated,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: context.npColors.lineStrong),
         ),
         child: Center(

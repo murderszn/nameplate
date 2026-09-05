@@ -436,7 +436,7 @@ class _RenterAppliancesScreen extends ConsumerWidget {
             decoration: BoxDecoration(
               color: context.npColors.bgCard,
               border: Border.all(color: context.npColors.line),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(12),
             ),
             padding: const EdgeInsets.all(14),
             child: Row(
@@ -447,7 +447,7 @@ class _RenterAppliancesScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: context.npColors.bgElevated,
                     border: Border.all(color: context.npColors.lineLight),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(Icons.kitchen_outlined, size: 20, color: context.npColors.gray400),
                 ),
@@ -477,7 +477,7 @@ class _RenterAppliancesScreen extends ConsumerWidget {
                     backgroundColor: context.npColors.white,
                     foregroundColor: context.npColors.bg,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text('Report', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
                 ),

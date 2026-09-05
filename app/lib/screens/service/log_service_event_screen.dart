@@ -268,7 +268,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                             color: tempSelected.isNotEmpty
                                 ? NpColors.red.withValues(alpha: 0.12)
                                 : context.npColors.bgElevated,
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: BorderRadius.circular(6),
                             border: Border.all(
                               color: tempSelected.isNotEmpty
                                   ? NpColors.redBorder
@@ -409,7 +409,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                         : NpColors.redBorder,
                     width: 0.8,
                   ),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   hasSelection ? 'RESOLVED' : 'REQUIRED',
@@ -425,10 +425,10 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
         const SizedBox(height: 8),
         Material(
           color: context.npColors.bgElevated,
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           child: InkWell(
             onTap: _openSymptomBottomSheet,
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(10),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
@@ -440,7 +440,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                             : context.npColors.lineStrong),
                   width: 1,
                 ),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
@@ -462,7 +462,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                                     horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: NpColors.red,
-                                  borderRadius: BorderRadius.circular(2),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   '${_symptoms.length} LOGGED',
@@ -548,7 +548,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.75),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: NpColors.redBorder, width: 0.8),
                   ),
                   child: Row(
@@ -577,21 +577,25 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
                 ),
                 // Work Order Badge if attached
                 if (widget.workOrder != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.75),
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(
-                          color: context.npColors.lineStrong, width: 0.8),
-                    ),
-                    child: Text(
-                      '${widget.workOrder!.id} · ${widget.workOrder!.slaLabel.toUpperCase()}',
-                      style: NpType.mono.copyWith(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color: NpColors.red,
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: context.npColors.lineStrong, width: 0.8),
+                      ),
+                      child: Text(
+                        '${widget.workOrder!.id} · ${widget.workOrder!.slaLabel.toUpperCase()}',
+                        style: NpType.mono.copyWith(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: NpColors.red,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
@@ -961,7 +965,7 @@ class _LogServiceEventScreenState extends ConsumerState<LogServiceEventScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.npColors.bgElevated,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: context.npColors.lineStrong),
       ),
       child: Column(
@@ -1177,7 +1181,7 @@ class _SymptomSheetRow extends StatelessWidget {
                   color: isSelected
                       ? NpColors.red.withValues(alpha: 0.14)
                       : context.npColors.bgElevated,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isSelected
                         ? NpColors.redBorder
@@ -1225,7 +1229,7 @@ class _SymptomSheetRow extends StatelessWidget {
                 height: 20,
                 decoration: BoxDecoration(
                   color: isSelected ? NpColors.red : Colors.transparent,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(5),
                   border: Border.all(
                     color: isSelected
                         ? NpColors.red

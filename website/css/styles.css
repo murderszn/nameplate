@@ -832,20 +832,21 @@ html[data-theme="light"] .btn-ghost:hover {
   width: 184px;
   height: 184px;
   object-fit: contain;
-  opacity: 0.24;
+  opacity: 0.38;
   filter: grayscale(0.12);
 }
 
 :root[data-theme="light"] .hero-video__track img {
-  opacity: 0.15;
+  opacity: 0.28;
+  filter: invert(1) hue-rotate(180deg) grayscale(0.08);
 }
 
 .hero-video__veil {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(900px 520px at 50% 46%, transparent 32%, var(--bg) 82%),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg) 88%, transparent) 0%, transparent 22%, transparent 68%, var(--bg) 100%);
+    radial-gradient(ellipse 1100px 600px at 50% 48%, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 45%, transparent) 48%, transparent 88%),
+    linear-gradient(180deg, var(--bg) 0%, transparent 20%, transparent 80%, var(--bg) 100%);
   pointer-events: none;
 }
 
@@ -2113,14 +2114,42 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .problem-row {
   display: grid;
-  grid-template-columns: 60px 1fr;
+  grid-template-columns: 60px 1fr auto;
   gap: 20px;
   padding: 32px 0;
   border-bottom: 1px solid var(--line);
   transition: all 0.2s var(--ease);
+  align-items: center;
 }
 .problem-row:hover {
   background: rgba(197, 31, 45, 0.02);
+}
+.problem-row:hover .problem-icon {
+  border-color: transparent;
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.problem-icon {
+  width: 112px;
+  height: 112px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--white-70);
+  padding: 0;
+  transition: color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.problem-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.problem-icon .icon-accent {
+  stroke: var(--red);
 }
 
 .problem-idx {
@@ -4758,14 +4787,21 @@ textarea.form-control {
 .marketing-page .hero-dramatic-actions .btn-ghost { background: var(--bg-card); border-color: var(--border-subtle); }
 .marketing-page .hero-dramatic-subaction { margin-top: 24px; }
 .marketing-page .hero-scroll-cue { min-height: 44px; color: var(--gray-400); }
-.marketing-page .hero-video__veil { background: radial-gradient(ellipse at 50% 48%, color-mix(in srgb, var(--bg) 94%, transparent) 0%, color-mix(in srgb, var(--bg) 72%, transparent) 42%, transparent 85%), linear-gradient(180deg, var(--bg), transparent 25%, transparent 75%, var(--bg)); }
+.marketing-page .hero-video__veil { background: radial-gradient(ellipse 1100px 600px at 50% 48%, color-mix(in srgb, var(--bg) 80%, transparent) 0%, color-mix(in srgb, var(--bg) 45%, transparent) 48%, transparent 88%), linear-gradient(180deg, var(--bg) 0%, transparent 20%, transparent 80%, var(--bg) 100%); }
 
 /* 01: a shared header column, followed by a compact editorial split. */
 .marketing-page .problem-grid { max-width: none; margin: 0; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: 64px; }
 .marketing-page .problem-sidebar { border-top: 1px solid var(--border-subtle); padding-top: 24px; }
 .marketing-page .problem-sidebar p { font-size: 1.125rem; line-height: 1.7; }
 .marketing-page .problem-items-list, .marketing-page .problem-row { border-color: var(--border-subtle); }
-.marketing-page .problem-row { grid-template-columns: 32px minmax(0, 1fr); gap: 24px; padding-block: 24px; }
+.marketing-page .problem-row { grid-template-columns: 32px minmax(0, 1fr) auto; gap: 24px; padding-block: 24px; align-items: center; }
+.marketing-page .problem-icon {
+  width: clamp(88px, 10vw, 120px);
+  height: clamp(88px, 10vw, 120px);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
 .marketing-page .problem-idx { line-height: 1.75; font-size: .875rem; }
 .marketing-page .problem-row h4 { font-size: 1.125rem; line-height: 1.5; }
 .marketing-page .problem-row p { font-size: 1rem; line-height: 1.65; }
@@ -4910,4 +4946,18 @@ textarea.form-control {
 }
 @media (prefers-reduced-motion: reduce) {
   .marketing-page *, .marketing-page *::before, .marketing-page *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Core Leak icons: keep large on desktop, compact on small screens. */
+@media (max-width: 600px) {
+  .problem-row,
+  .marketing-page .problem-row { grid-template-columns: 28px minmax(0, 1fr); }
+  .problem-icon,
+  .marketing-page .problem-icon {
+    grid-column: 2;
+    width: 84px;
+    height: 84px;
+    padding: 0;
+    margin-top: 4px;
+  }
 }

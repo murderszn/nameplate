@@ -27,7 +27,7 @@ class FleetGalleryScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: NpColors.red.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: NpColors.redBorder),
                 ),
                 child: Text(

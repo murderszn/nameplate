@@ -121,7 +121,7 @@ class _TagStudioScreenState extends ConsumerState<TagStudioScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                   decoration: BoxDecoration(
                     color: context.npColors.bgCard,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: context.npColors.lineStrong),
                   ),
                   child: Text(
@@ -275,7 +275,7 @@ class _TagStagingBay extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                         decoration: BoxDecoration(
                           color: context.npColors.bgElevated,
-                          borderRadius: BorderRadius.circular(2),
+                          borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: context.npColors.lineStrong),
                         ),
                         child: Row(
@@ -342,7 +342,7 @@ class _TagStagingBay extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: context.npColors.bgElevated,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: context.npColors.lineStrong),
                   ),
                   child: Text(
@@ -402,7 +402,7 @@ class _MintedTagTile extends StatelessWidget {
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: context.npColors.bgElevated,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: isSelected
                         ? NpColors.red
@@ -446,7 +446,7 @@ class _MintedTagTile extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: const Color(0xFFC51F2D).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: const Color(0xFFC51F2D)),
                   ),
                   child: Text(

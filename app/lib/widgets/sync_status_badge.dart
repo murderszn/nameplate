@@ -21,9 +21,8 @@ class SyncStatusBadge extends ConsumerWidget {
     final isPending = snapshot.state == SyncState.pending;
     final isOffline = snapshot.state == SyncState.offline;
 
-    final color = isPending
-        ? NpColors.pending
-        : (isOffline ? const Color(0xFFF59E0B) : context.npColors.gray400);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cloudIconColor = isDark ? Colors.white : Colors.black;
 
     final icon = isPending
         ? Icons.cloud_upload_outlined
@@ -48,12 +47,12 @@ class SyncStatusBadge extends ConsumerWidget {
               style: NpType.mono.copyWith(
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
-                color: Colors.black,
+                color: Colors.white,
               ),
             ),
-            backgroundColor: NpColors.pending,
+            backgroundColor: NpColors.red,
             offset: const Offset(4, -4),
-            child: Icon(icon, size: 20, color: color),
+            child: Icon(icon, size: 20, color: cloudIconColor),
           ),
         ),
       ),

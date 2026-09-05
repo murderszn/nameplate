@@ -24,8 +24,8 @@ class NpColors {
   static const dangerBgLight = Color(0xFFFBE4E4);
   static const dangerBgDark = Color(0xFF1F0A0A);
 
-  /// Offline / pending — not a fault color (branding.md §6).
-  static const pending = Color(0xFF7A5AA8);
+  /// Offline / pending red accent.
+  static const pending = red;
 
   // Category tints and backgrounds (12% opacity variants)
   static const hvacBlue = Color(0xFFD4D4D8);
@@ -40,9 +40,9 @@ class NpColors {
   static const kitchenEmeraldBgLight = Color(0x1F10B981);
   static const kitchenEmeraldBgDark = Color(0x1F10B981);
 
-  static const infoViolet = Color(0xFF7A5AA8);
-  static const infoVioletBgLight = Color(0x1F7A5AA8);
-  static const infoVioletBgDark = Color(0x1F7A5AA8);
+  static const infoViolet = red;
+  static const infoVioletBgLight = Color(0x1FC51F2D);
+  static const infoVioletBgDark = Color(0x1FC51F2D);
 }
 
 @immutable
@@ -227,7 +227,7 @@ class AppTheme {
       surfaceContainerHigh: c.bgElevated,
       surfaceContainer: c.bgCard,
     );
-    const radius = BorderRadius.all(Radius.circular(2));
+    const radius = BorderRadius.all(Radius.circular(12));
     final baseText = TextTheme(
       displayLarge: TextStyle(
         color: c.white,
@@ -395,19 +395,19 @@ class AppTheme {
           vertical: 14,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide(color: c.lineStrong),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: NpColors.red, width: 1.4),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: NpColors.red),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: NpColors.red, width: 1.4),
         ),
       ),
@@ -416,7 +416,7 @@ class AppTheme {
         contentTextStyle: TextStyle(color: c.white),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: c.line),
         ),
       ),

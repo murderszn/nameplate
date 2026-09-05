@@ -132,16 +132,16 @@ class _RoleCard extends StatelessWidget {
     final c = context.npColors;
     return Material(
       color: c.bgCard,
-      borderRadius: BorderRadius.circular(2),
+      borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
           decoration: BoxDecoration(
             border: Border.all(color: c.lineStrong),
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,7 +153,7 @@ class _RoleCard extends StatelessWidget {
                     height: 36,
                     decoration: BoxDecoration(
                       color: isRenter ? c.white : NpColors.red,
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(icon, size: 18, color: isRenter ? c.bg : Colors.white),
                   ),
@@ -179,7 +179,7 @@ class _RoleCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isRenter ? Colors.transparent : c.white,
                   border: Border.all(color: isRenter ? c.lineStrong : Colors.transparent),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Center(
                   child: Text(

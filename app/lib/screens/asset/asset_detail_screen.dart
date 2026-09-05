@@ -538,7 +538,7 @@ class _HistoryTile extends StatelessWidget {
             padding: EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: context.npColors.bgElevated,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: context.npColors.lineStrong),
             ),
             child: Icon(

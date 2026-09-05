@@ -169,14 +169,14 @@ class _FilterTab extends StatelessWidget {
           HapticFeedback.selectionClick();
           onTap();
         },
-        borderRadius: BorderRadius.circular(2),
+        borderRadius: BorderRadius.circular(8),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
           decoration: BoxDecoration(
             color: selected
                 ? context.npColors.white
                 : context.npColors.bgElevated,
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: selected
                   ? context.npColors.white
@@ -208,7 +208,7 @@ class _FilterTab extends StatelessWidget {
                     color: selected
                         ? context.npColors.bg.withValues(alpha: 0.12)
                         : context.npColors.bgCard,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     '$count',
@@ -331,53 +331,40 @@ class _WorkOrderCard extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 68),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
                               wo.title,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                fontSize: 13,
+                                fontSize: 14.5,
                                 color: context.npColors.white,
                                 height: 1.25,
                                 letterSpacing: -0.2,
                               ),
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            size: 10,
-                            color: context.npColors.gray500,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.place_outlined,
-                            size: 12,
-                            color: context.npColors.gray500,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Row(
+                            const SizedBox(height: 6),
+                            Row(
                               children: [
+                                Icon(
+                                  Icons.place_outlined,
+                                  size: 13,
+                                  color: context.npColors.gray400,
+                                ),
+                                const SizedBox(width: 4),
                                 Flexible(
                                   child: Text(
                                     wo.unitLabel,
                                     style: TextStyle(
-                                      fontSize: 11.5,
+                                      fontSize: 12,
                                       color: context.npColors.gray400,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -388,7 +375,7 @@ class _WorkOrderCard extends ConsumerWidget {
                                 Text(
                                   '·',
                                   style: TextStyle(
-                                    fontSize: 11.5,
+                                    fontSize: 12,
                                     color: context.npColors.gray500,
                                   ),
                                 ),
@@ -397,24 +384,58 @@ class _WorkOrderCard extends ConsumerWidget {
                                   wo.id,
                                   style: NpType.mono.copyWith(
                                     fontWeight: FontWeight.w700,
-                                    fontSize: 10,
-                                    color: isUrgent ? NpColors.red : context.npColors.gray400,
+                                    fontSize: 10.5,
+                                    color: isUrgent
+                                        ? NpColors.red
+                                        : context.npColors.gray400,
                                     letterSpacing: 0.3,
                                   ),
                                 ),
                               ],
                             ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Material(
+                        color: isUrgent
+                            ? NpColors.red
+                            : context.npColors.bgElevated,
+                        borderRadius: BorderRadius.circular(12),
+                        child: InkWell(
+                          onTap: openServiceLogger,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isUrgent
+                                    ? NpColors.redBorder
+                                    : context.npColors.lineStrong,
+                                width: 0.8,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.arrow_forward_rounded,
+                              color: isUrgent
+                                  ? Colors.white
+                                  : context.npColors.white,
+                              size: 22,
+                            ),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-              ],
-            ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }
