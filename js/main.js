@@ -20,7 +20,7 @@
   // ================= Theme =================
   function initTheme() {
     var root = document.documentElement;
-    var buttons = document.querySelectorAll('.theme-toggle, .footer-theme-toggle, #footerThemeToggle');
+    var buttons = document.querySelectorAll('.theme-toggle, .theme-btn, .footer-theme-toggle, #footerThemeToggle, #headerThemeToggle');
     var themeColor = document.querySelector('meta[name="theme-color"]');
     var media = window.matchMedia('(prefers-color-scheme: light)');
 
