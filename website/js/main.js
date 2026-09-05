@@ -20,7 +20,7 @@
   // ================= Theme =================
   function initTheme() {
     var root = document.documentElement;
-    var buttons = document.querySelectorAll('.theme-toggle, .theme-btn, .footer-theme-toggle, #footerThemeToggle, #headerThemeToggle');
+    var buttons = document.querySelectorAll('.theme-btn, .footer-theme-btn, #footerThemeToggle, .theme-toggle');
     var themeColor = document.querySelector('meta[name="theme-color"]');
     var media = window.matchMedia('(prefers-color-scheme: light)');
 
@@ -35,7 +35,7 @@
       }
       if (themeColor) themeColor.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
       var nextTheme = theme === 'light' ? 'dark' : 'light';
-      var label = 'Use ' + nextTheme + ' mode';
+      var label = 'Switch to ' + nextTheme + ' mode';
       buttons.forEach(function (button) {
         button.setAttribute('aria-label', label);
         button.setAttribute('title', label);

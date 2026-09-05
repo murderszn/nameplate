@@ -199,10 +199,11 @@ body { background: var(--bg); color: var(--white); font-family: var(--font-sans)
   font-family: var(--font-sans);
 }
 
-/* Flat Light / Dark theme button */
+/* Alternating Sun / Moon theme button */
 .np-theme-btn {
+  width: 36px;
   height: 36px;
-  padding: 0 12px;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -210,19 +211,20 @@ body { background: var(--bg); color: var(--white); font-family: var(--font-sans)
   border-radius: 8px;
   background: var(--bg-card);
   color: var(--gray-500);
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
   box-sizing: border-box;
   transition: all 0.15s ease;
-  white-space: nowrap;
 }
 .np-theme-btn:hover {
   color: var(--white);
   border-color: rgba(var(--overlay-rgb), 0.25);
   background: var(--bg-elevated);
+}
+.np-theme-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* Polished Topbar User Pill */
@@ -357,7 +359,6 @@ select:focus, .np-select:focus, .hq-filter select:focus {
   .np-topbar { padding-inline: 14px; }
   .np-topbar__right { gap: 6px; }
   .np-command-search { width: min(40vw, 200px); }
-  .np-theme-btn { padding: 0 8px; font-size: 0.72rem; }
   .np-topbar-user { padding: 0; width: 36px; justify-content: center; }
   .np-topbar-user__name { display: none; }
   .np-page { padding: 22px 14px 40px; }

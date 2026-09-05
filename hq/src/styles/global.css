@@ -425,8 +425,9 @@ code,
 }
 
 .np-theme-btn {
+  width: 36px;
   height: 36px;
-  padding: 0 12px;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -434,19 +435,20 @@ code,
   border-radius: 8px;
   background: var(--bg-card);
   color: var(--gray-500);
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
   box-sizing: border-box;
   transition: all 0.15s ease;
-  white-space: nowrap;
 }
 .np-theme-btn:hover {
   color: var(--white);
   border-color: rgba(var(--overlay-rgb), 0.25);
   background: var(--bg-elevated);
+}
+.np-theme-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .np-command-search {

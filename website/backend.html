@@ -817,7 +817,6 @@
     </nav>
 
     <div class="nav-actions">
-      <button class="theme-btn nav-theme-btn" type="button" aria-label="Toggle light or dark theme" title="Toggle light or dark theme" id="headerThemeToggle">Light / Dark</button>
       <button class="nav-contact-btn open-contact-modal-trigger" type="button" id="headerContactBtn">
         <span>Contact Us</span>
         <span class="btn-arrow" aria-hidden="true">→</span>
@@ -1252,7 +1251,15 @@
 
       <div class="footer-theme-wrap">
         <span class="footer-theme-lbl mono">THEME</span>
-        <button class="theme-btn" type="button" aria-label="Toggle light or dark theme" title="Toggle light or dark theme" id="footerThemeToggle">Light / Dark</button>
+        <button class="theme-btn footer-theme-btn" type="button" aria-label="Switch to light mode" title="Switch to light mode" id="footerThemeToggle">
+          <svg class="theme-icon theme-icon--sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="theme-icon theme-icon--moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
       </div>
     </div>
   </div>
@@ -1344,7 +1351,7 @@
   // --- Theme Management ---
   function initTheme() {
     var root = document.documentElement;
-    var buttons = document.querySelectorAll('.theme-toggle, .theme-btn, #footerThemeToggle, #headerThemeToggle');
+    var buttons = document.querySelectorAll('.theme-btn, .footer-theme-btn, #footerThemeToggle, .theme-toggle');
     var themeColor = document.querySelector('meta[name="theme-color"]');
     var media = window.matchMedia('(prefers-color-scheme: light)');
 
@@ -1356,8 +1363,8 @@
       if (themeColor) themeColor.setAttribute('content', theme === 'light' ? '#ffffff' : '#000000');
       var nextTheme = theme === 'light' ? 'dark' : 'light';
       buttons.forEach(function (b) {
-        b.setAttribute('aria-label', 'Use ' + nextTheme + ' mode');
-        b.setAttribute('title', 'Use ' + nextTheme + ' mode');
+        b.setAttribute('aria-label', 'Switch to ' + nextTheme + ' mode');
+        b.setAttribute('title', 'Switch to ' + nextTheme + ' mode');
       });
     }
 
