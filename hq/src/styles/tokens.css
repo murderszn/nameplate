@@ -1,14 +1,13 @@
 /*
- * Nameplate HQ — design tokens
- * Shared palette with website/css/styles.css (marketing sister page).
- * Black / white / red editorial system — no greens, ambers, or violets.
+ * Nameplate HQ — Design Tokens
+ * Strictly Red (#eb2b2b), Black (#000000), and White (#ffffff) brand identity.
  */
 
 :root {
-  --bg: #ffffff;
-  --bg-subtle: #f7f7f7;
-  --bg-elevated: #eeeeee;
-  --bg-card: #fafafa;
+  --bg: #f8f9fa;
+  --bg-subtle: #f1f3f5;
+  --bg-elevated: #e9ecef;
+  --bg-card: #ffffff;
 
   --white: #111111;
   --white-90: rgba(17, 17, 17, 0.9);
@@ -20,66 +19,67 @@
   --red: #eb2b2b;
   --red-hover: #f44343;
   --red-deep: #c91f1f;
-  --red-glow: none;
   --red-subtle: rgba(235, 43, 43, 0.08);
-  --red-border: rgba(235, 43, 43, 0.4);
+  --red-border: rgba(235, 43, 43, 0.35);
 
-  --gray-900: #f3f3f3;
-  --gray-800: #e9e9e9;
-  --gray-700: #d4d4d4;
-  --gray-500: #6b6b6b;
-  --gray-400: #555555;
-  --gray-300: #333333;
+  --gray-900: #111111;
+  --gray-800: #222222;
+  --gray-700: #444444;
+  --gray-500: #666666;
+  --gray-400: #888888;
+  --gray-300: #cccccc;
 
-  --line: rgba(0, 0, 0, 0.12);
-  --line-light: rgba(0, 0, 0, 0.06);
-  --line-strong: rgba(0, 0, 0, 0.24);
+  --line: rgba(0, 0, 0, 0.1);
+  --line-light: rgba(0, 0, 0, 0.05);
+  --line-strong: rgba(0, 0, 0, 0.2);
   --overlay-rgb: 0, 0, 0;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter',
-    'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'IBM Plex Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --font-sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Aliases used by existing HQ class names */
-  --np-ink: var(--white);
-  --np-slate-900: var(--bg);
-  --np-slate-700: var(--gray-800);
-  --np-steel-500: var(--gray-500);
-  --np-mist-200: var(--line);
-  --np-mist-100: var(--bg-subtle);
-  --np-paper: var(--bg);
-  --np-plate-600: var(--red);
-  --np-plate-700: var(--red-deep);
-  --np-plate-100: var(--red-subtle);
-  --np-signal-500: var(--red);
-  --np-signal-100: var(--red-subtle);
-  --np-verified-600: var(--white);
-  --np-verified-100: var(--white-08);
-  --np-caution-600: var(--red);
-  --np-fault-600: var(--red);
-  --np-fault-100: var(--red-subtle);
-  --np-offline-500: var(--gray-400);
-  --np-viz-1: var(--red);
-  --np-viz-2: var(--white);
-  --np-viz-3: var(--gray-400);
-  --np-viz-4: var(--gray-700);
-  --np-viz-5: var(--white-40);
-  --np-viz-6: var(--gray-800);
-  --np-radius: 2px;
-  --np-radius-sm: 1px;
+  --np-ink: #111111;
+  --np-slate-900: #0f1115;
+  --np-slate-700: #1e2229;
+  --np-steel-500: #666666;
+  --np-mist-200: #e2e4e8;
+  --np-mist-100: #f1f3f5;
+  --np-paper: #ffffff;
+
+  --np-plate-600: #eb2b2b;
+  --np-plate-700: #c91f1f;
+  --np-plate-100: rgba(235, 43, 43, 0.08);
+  --np-signal-500: #eb2b2b;
+  --np-signal-100: rgba(235, 43, 43, 0.08);
+
+  --np-verified-600: #16a34a;
+  --np-verified-100: rgba(22, 163, 74, 0.1);
+  --np-caution-600: #d97706;
+  --np-fault-600: #eb2b2b;
+  --np-fault-100: rgba(235, 43, 43, 0.1);
+  --np-offline-500: #888888;
+
+  --np-viz-1: #eb2b2b;
+  --np-viz-2: #111111;
+  --np-viz-3: #555555;
+  --np-viz-4: #888888;
+  --np-viz-5: #bbbbbb;
+  --np-viz-6: #e2e4e8;
+
+  --np-radius: 8px;
+  --np-radius-sm: 4px;
   --np-radius-none: 0px;
-  --np-shadow-sm: none;
-  --np-sidebar-width: 260px;
-  --np-sidebar-collapsed-width: 68px;
+  --np-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.03);
+  --np-sidebar-width: 256px;
+  --np-sidebar-collapsed-width: 72px;
   --np-font-sans: var(--font-sans);
   --np-font-mono: var(--font-mono);
 }
 
 :root[data-theme='dark'] {
   --bg: #000000;
-  --bg-subtle: #080808;
-  --bg-elevated: #111111;
+  --bg-subtle: #0a0a0a;
+  --bg-elevated: #1a1a1a;
   --bg-card: #141414;
 
   --white: #ffffff;
@@ -88,6 +88,12 @@
   --white-40: rgba(255, 255, 255, 0.4);
   --white-15: rgba(255, 255, 255, 0.15);
   --white-08: rgba(255, 255, 255, 0.08);
+
+  --red: #eb2b2b;
+  --red-hover: #ff4747;
+  --red-deep: #c91f1f;
+  --red-subtle: rgba(235, 43, 43, 0.14);
+  --red-border: rgba(235, 43, 43, 0.45);
 
   --gray-900: #121212;
   --gray-800: #1f1f1f;
@@ -98,6 +104,34 @@
 
   --line: rgba(255, 255, 255, 0.1);
   --line-light: rgba(255, 255, 255, 0.05);
-  --line-strong: rgba(255, 255, 255, 0.2);
+  --line-strong: rgba(255, 255, 255, 0.22);
   --overlay-rgb: 255, 255, 255;
+
+  --np-ink: #ffffff;
+  --np-slate-900: #0a0a0a;
+  --np-slate-700: #181818;
+  --np-steel-500: #a3a3a3;
+  --np-mist-100: #181818;
+  --np-mist-200: #262626;
+  --np-paper: #000000;
+
+  --np-plate-600: #eb2b2b;
+  --np-plate-700: #ff4747;
+  --np-plate-100: rgba(235, 43, 43, 0.15);
+  --np-signal-500: #eb2b2b;
+  --np-signal-100: rgba(235, 43, 43, 0.15);
+
+  --np-verified-600: #22c55e;
+  --np-verified-100: rgba(34, 197, 94, 0.15);
+  --np-caution-600: #f59e0b;
+  --np-fault-600: #eb2b2b;
+  --np-fault-100: rgba(235, 43, 43, 0.18);
+  --np-offline-500: #737373;
+
+  --np-viz-1: #eb2b2b;
+  --np-viz-2: #ffffff;
+  --np-viz-3: #a3a3a3;
+  --np-viz-4: #525252;
+  --np-viz-5: #262626;
+  --np-viz-6: #141414;
 }

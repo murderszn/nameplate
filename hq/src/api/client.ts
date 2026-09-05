@@ -119,6 +119,7 @@ export interface ServiceEvent {
   costBorneBy: string | null;
   isWarrantyClaim: boolean;
   occurredAt: string;
+  correctedByEventId?: string | null;
   technician?: { id: string; user?: { fullName: string } };
   workOrder?: { id: string; number: number; title: string } | null;
   partUsages?: { oemPartNumber?: string | null; action?: string }[];
@@ -139,6 +140,7 @@ export interface Asset {
   currentUnitId: string | null;
   currentLocationConfirmedAt: string | null;
   installDate: string | null;
+  installDateConfidence?: string | null;
   manufactureDate: string | null;
   warrantyExpiresOn: string | null;
   purchaseCost: string | number | null;
@@ -1192,23 +1194,75 @@ async function userApiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json();
 }
 
-const FASTAPI_BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8080/api';
+const FASTAPI_BASE = String(import.meta.env.VITE_API_URL || 'http://localhost:8080/api').replace(/\/$/, '');
+
+export type DataSourceStatus = 'checking' | 'live' | 'demo' | 'unavailable';
+let dataSourceStatus: DataSourceStatus = 'checking';
+let sourceOrganization: Organization | null = null;
+let sourceReady: Promise<void> | null = null;
+const sourceListeners = new Set<() => void>();
+
+export const getDataSourceStatus = (): DataSourceStatus => dataSourceStatus;
+export function subscribeDataSource(listener: () => void): () => void {
+  sourceListeners.add(listener);
+  return () => { sourceListeners.delete(listener); };
+}
+
+function setDataSourceStatus(status: DataSourceStatus) {
+  if (dataSourceStatus === status) return;
+  dataSourceStatus = status;
+  sourceListeners.forEach((listener) => listener());
+}
+
+// Select a single source for this session. Never blend sample rows into a
+// connected portfolio, or turn a failed server write into a local success.
+function resolveDataSource(): Promise<void> {
+  if (sourceReady) return sourceReady;
+  sourceReady = (async () => {
+    try {
+      const response = await fetch(`${FASTAPI_BASE}/org`, { signal: AbortSignal.timeout(5000) });
+      if (!response.ok) throw new Error(`Portfolio connection failed (${response.status}).`);
+      const organization: Organization = await response.json();
+      if (!organization?.id || !organization?.name) throw new Error('The portfolio API returned an invalid organization.');
+      sourceOrganization = organization;
+      setDataSourceStatus('live');
+    } catch (error) {
+      if (import.meta.env.VITE_API_URL) {
+        setDataSourceStatus('unavailable');
+        throw error instanceof Error ? error : new Error('Unable to connect to the portfolio API.');
+      }
+      setDataSourceStatus('demo');
+    }
+  })().catch((error) => {
+    sourceReady = null;
+    throw error;
+  });
+  return sourceReady;
+}
 
 async function fastApiFetch<T>(endpoint: string, options?: RequestInit): Promise<T | null> {
+  await resolveDataSource();
+  if (dataSourceStatus === 'demo') return null;
+  if (endpoint === '/org') return sourceOrganization as T;
   try {
     const res = await fetch(`${FASTAPI_BASE}${endpoint}`, {
       ...options,
+      signal: options?.signal ?? AbortSignal.timeout(15000),
       headers: {
         'Content-Type': 'application/json',
         ...(options?.headers || {}),
       },
     });
     if (res.ok) {
-      return (await res.json()) as T;
+      const result = (await res.json()) as T;
+      if (result === null) throw new Error('The portfolio API returned an empty response.');
+      setDataSourceStatus('live');
+      return result;
     }
-    return null;
-  } catch {
-    return null;
+    throw new Error(`Unable to ${options?.method && options.method !== 'GET' ? 'save' : 'load'} this record (${res.status}). Please try again.`);
+  } catch (error) {
+    setDataSourceStatus('unavailable');
+    throw error instanceof Error ? error : new Error('Unable to reach the portfolio API. Please try again.');
   }
 }
 
@@ -1221,12 +1275,12 @@ export const api = {
 
   listProperties: async (_orgId?: string): Promise<Property[]> => {
     const remote = await fastApiFetch<Property[]>('/properties');
-    return remote && remote.length > 0 ? remote : DEMO_PROPERTIES;
+    return remote ?? DEMO_PROPERTIES;
   },
 
   listUsers: async (): Promise<MaintenanceUser[]> => {
     const remote = await fastApiFetch<MaintenanceUser[]>('/users');
-    if (remote && remote.length > 0) return remote;
+    if (remote !== null) return remote;
     if (USER_API_BASE) return userApiRequest<MaintenanceUser[]>('/v1/users');
     return [...inMemoryUsers];
   },
@@ -1305,17 +1359,15 @@ export const api = {
   },
 
   listBuildings: async (propId?: string): Promise<Building[]> => {
-    if (propId) {
-      const remote = await fastApiFetch<Building[]>(`/properties/${propId}/buildings`);
-      if (remote && remote.length > 0) return remote;
-    }
+    const remote = await fastApiFetch<Building[]>(`/buildings${propId ? `?propertyId=${encodeURIComponent(propId)}` : ''}`);
+    if (remote !== null) return remote;
     return DEMO_BUILDINGS.filter((b) => !propId || b.propertyId === propId);
   },
 
   listUnits: async (propId?: string, buildingId?: string): Promise<Unit[]> => {
     if (propId) {
       const remote = await fastApiFetch<Unit[]>(`/properties/${propId}/units`);
-      if (remote && remote.length > 0) {
+      if (remote !== null) {
         return remote.filter((u) => !buildingId || u.buildingId === buildingId);
       }
     }
@@ -1325,6 +1377,8 @@ export const api = {
   },
 
   getUnit: async (id: string): Promise<Unit> => {
+    const remote = await fastApiFetch<Unit>(`/units/${encodeURIComponent(id)}`);
+    if (remote) return remote;
     const found = DEMO_UNITS.find((u) => u.id === id);
     if (!found) throw new Error('Unit not found: ' + id);
     return hydrateUnit(found);
@@ -1332,13 +1386,13 @@ export const api = {
 
   listCategories: async (): Promise<AssetCategory[]> => {
     const remote = await fastApiFetch<AssetCategory[]>('/categories');
-    return remote && remote.length > 0 ? remote : DEMO_CATEGORIES;
+    return remote ?? DEMO_CATEGORIES;
   },
 
   listAssets: async (_orgId?: string, params: Record<string, string> = {}): Promise<Asset[]> => {
     const qs = new URLSearchParams(params).toString();
     const remote = await fastApiFetch<Asset[]>(`/assets${qs ? '?' + qs : ''}`);
-    if (remote && remote.length > 0) return remote;
+    if (remote !== null) return remote;
 
     let list = [...DEMO_ASSETS];
     if (params.propertyId) {
@@ -1439,7 +1493,7 @@ export const api = {
   listWorkOrders: async (_orgId?: string, params: Record<string, string> = {}): Promise<WorkOrder[]> => {
     const qs = new URLSearchParams(params).toString();
     const remote = await fastApiFetch<WorkOrder[]>(`/work-orders${qs ? '?' + qs : ''}`);
-    if (remote && remote.length > 0) return remote;
+    if (remote !== null) return remote;
     return [...inMemoryWorkOrders];
   },
 
@@ -1516,7 +1570,7 @@ export const api = {
 
   listServiceEvents: async (_orgId?: string): Promise<ServiceEvent[]> => {
     const remote = await fastApiFetch<ServiceEvent[]>('/service-events');
-    if (remote && remote.length > 0) return remote;
+    if (remote !== null) return remote;
     return [
       {
         id: 'evt_1',
@@ -1545,4 +1599,3 @@ export const api = {
     ];
   },
 };
-

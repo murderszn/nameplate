@@ -3,8 +3,9 @@ import * as d3 from 'd3';
 
 const RED = '#eb2b2b';
 const WHITE = '#ffffff';
-const GRAY = '#6b6b6b';
-const LINE = 'rgba(var(--overlay-rgb), 0.10)';
+const TEXT = 'var(--white)';
+const GRAY = '#888888';
+const LINE = 'var(--line)';
 const MONO = '"IBM Plex Mono", "SF Mono", Menlo, monospace';
 
 function clearTip() {
@@ -235,7 +236,7 @@ export function HBarChart({
       .attr('x', (d) => x(d.value) + 8)
       .attr('y', (d) => (y(d.label) ?? 0) + y.bandwidth() / 2)
       .attr('dominant-baseline', 'middle')
-      .attr('fill', WHITE)
+      .attr('fill', TEXT)
       .attr('font-family', MONO)
       .attr('font-size', 10)
       .attr('font-weight', 700)
@@ -286,7 +287,7 @@ export function DonutChart({
     g.append('text')
       .attr('text-anchor', 'middle')
       .attr('dy', '-0.1em')
-      .attr('fill', WHITE)
+      .attr('fill', TEXT)
       .attr('font-family', MONO)
       .attr('font-size', 22)
       .attr('font-weight', 800)
@@ -467,8 +468,8 @@ export function Histogram({
       .attr('y', (d) => y(d.length))
       .attr('width', (d) => Math.max(0, x(d.x1 ?? 0) - x(d.x0 ?? 0) - 2))
       .attr('height', (d) => y(0) - y(d.length))
-      .attr('fill', WHITE)
-      .attr('opacity', 0.9)
+      .attr('fill', RED)
+      .attr('opacity', 0.85)
       .on('mousemove', (event, d) =>
         tip(
           `<strong>${(d.x0 ?? 0).toFixed(0)}–${(d.x1 ?? 0).toFixed(0)} ${xLabel}</strong><br/>${d.length} assets`,

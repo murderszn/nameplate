@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { getDataSourceStatus, subscribeDataSource } from '../api/client';
 
 const STORAGE_KEY = 'np_sidebar_collapsed';
 const THEME_STORAGE_KEY = 'nameplate-theme';
@@ -23,12 +24,6 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/settings', label: 'Settings', index: '07', icon: 'settings' },
   { to: '/architecture', label: 'Data Architecture', index: '08', icon: 'analytics' },
 ];
-
-const PROPERTY_NAMES: Record<string, string> = {
-  prop_sonoran_ridge: 'Sonoran Ridge Residences',
-  prop_camelback_vista: 'Camelback Vista Commons',
-  prop_desert_palm: 'Desert Palm Towers',
-};
 
 function renderNavIcon(type: NavItem['icon']) {
   switch (type) {
@@ -114,6 +109,16 @@ export function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const dataSourceStatus = useSyncExternalStore(subscribeDataSource, getDataSourceStatus, getDataSourceStatus);
+  const dataSourceLabel = {
+    checking: 'Connecting…',
+    live: 'Connected workspace',
+    demo: 'Demo workspace',
+    unavailable: 'Connection unavailable',
+  }[dataSourceStatus];
+  const dataSourceDetail = dataSourceStatus === 'demo' ? 'Sample data · local demo' : dataSourceLabel;
+  const dataSourceColor = dataSourceStatus === 'live' ? '#22c55e' : dataSourceStatus === 'demo' ? '#eb2b2b' : dataSourceStatus === 'unavailable' ? '#ef4444' : '#a3a3a3';
   const [theme, setTheme] = useState<Theme>(() => {
     try {
       return localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light';
@@ -146,6 +151,10 @@ export function Layout() {
     setCollapsed((prev) => !prev);
   };
 
+  const focusSearch = () => {
+    document.querySelector<HTMLInputElement>('.np-command-search input')?.focus();
+  };
+
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, String(collapsed));
@@ -165,6 +174,12 @@ export function Layout() {
       if ((e.key === 'b' || e.key === 'B') && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setCollapsed((prev) => !prev);
+      } else if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        focusSearch();
+      } else if (e.key === 'Escape') {
+        setMobileNavOpen(false);
+        (document.activeElement as HTMLElement | null)?.blur();
       } else if (e.key === '[' && !isInput && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
         setCollapsed((prev) => !prev);
@@ -195,7 +210,7 @@ export function Layout() {
         };
       }
       const propId = segments[1];
-      const propName = PROPERTY_NAMES[propId] || propId;
+      const propName = propId.replace(/^prop_/, '').replace(/_/g, ' ');
 
       if (segments.length === 2) {
         return {
@@ -279,15 +294,15 @@ export function Layout() {
   }, [path]);
 
   return (
-    <div className={`np-app-shell ${collapsed ? 'np-app-shell--collapsed' : ''}`}>
-      {/* Sleek Minimalist Sidebar */}
-      <aside className={`np-sidebar ${collapsed ? 'np-sidebar--collapsed' : ''}`}>
+    <div className={`np-app-shell ${collapsed ? 'np-app-shell--collapsed' : ''} ${mobileNavOpen ? 'np-app-shell--mobile-open' : ''}`}>
+      <button className="np-nav-backdrop" type="button" aria-label="Close navigation" onClick={() => setMobileNavOpen(false)} />
+      <aside className={`np-sidebar ${collapsed ? 'np-sidebar--collapsed' : ''}`} aria-label="Primary navigation">
         <div className="np-sidebar__header">
           <div className="np-sidebar__brand">
             <img
               src={theme === 'light' ? './images/nameplate-logo-light.png' : './images/nameplate-logo-transparent.png'}
               alt="Nameplate"
-              className="np-sidebar__logo"
+              className="np-sidebar__logo-img"
             />
             {!collapsed && (
               <div className="np-sidebar__brand-text">
@@ -323,9 +338,9 @@ export function Layout() {
           </button>
         </div>
 
-        {/* Clean Primary Navigation */}
-        <nav className="np-nav">
-          {NAV_ITEMS.map((item) => (
+        <nav className="np-nav" aria-label="HQ sections">
+          <div className="np-nav__group"><span className="np-nav__group-label">Workspace</span>
+          {NAV_ITEMS.slice(0, 6).map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -333,13 +348,22 @@ export function Layout() {
               className={({ isActive }) =>
                 `np-nav__item ${isActive ? 'active' : ''}`
               }
+              onClick={() => setMobileNavOpen(false)}
               title={collapsed ? `${item.index} · ${item.label}` : undefined}
             >
               <span className="np-nav__icon">{renderNavIcon(item.icon)}</span>
               {!collapsed && <span className="np-nav__label">{item.label}</span>}
               {!collapsed && <span className="np-nav__index">{item.index}</span>}
             </NavLink>
-          ))}
+          ))}</div>
+          <div className="np-nav__group"><span className="np-nav__group-label">Administration</span>
+          {NAV_ITEMS.slice(6).map((item) => (
+            <NavLink key={item.to} to={item.to} className={({ isActive }) => `np-nav__item ${isActive ? 'active' : ''}`} title={collapsed ? `${item.index} · ${item.label}` : undefined} onClick={() => setMobileNavOpen(false)}>
+              <span className="np-nav__icon">{renderNavIcon(item.icon)}</span>
+              {!collapsed && <span className="np-nav__label">{item.label}</span>}
+              {!collapsed && <span className="np-nav__index">{item.index}</span>}
+            </NavLink>
+          ))}</div>
         </nav>
 
         {/* Minimalist Pinned Action */}
@@ -358,10 +382,10 @@ export function Layout() {
         <div className="np-sidebar__footer">
           {!collapsed ? (
             <div className="np-sidebar__footer-meta">
-              <div className="np-sidebar__org-name">Sonoran Portfolio</div>
+            <div className="np-sidebar__org-name">Nameplate HQ</div>
             </div>
           ) : (
-            <div className="np-sidebar__footer-dot" title="Sonoran Portfolio" />
+            <div className="np-sidebar__footer-dot" title="Nameplate HQ" />
           )}
         </div>
       </aside>
@@ -383,9 +407,12 @@ export function Layout() {
                 <path d="M9 3v18" />
               </svg>
             </button>
+            <button type="button" className="np-mobile-menu-btn" onClick={() => setMobileNavOpen(true)} aria-label="Open navigation">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
 
             <div className="np-topbar__heading">
-              <div className="np-breadcrumbs">
+              <div className="np-breadcrumbs" role="navigation" aria-label="Breadcrumb">
                 {breadcrumbs.map((crumb, idx) => (
                   <span key={idx} className="np-breadcrumbs__item">
                     {crumb.to ? (
@@ -409,7 +436,7 @@ export function Layout() {
               className="np-command-search"
               onSubmit={(event) => {
                 event.preventDefault();
-                if (query.trim()) navigate(`/assets?search=${encodeURIComponent(query.trim())}`);
+                if (query.trim()) navigate(`/assets?q=${encodeURIComponent(query.trim())}`);
               }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -424,6 +451,11 @@ export function Layout() {
               />
               <kbd>⌘K</kbd>
             </form>
+
+            <div className="np-topbar-status" title={dataSourceDetail} aria-label={dataSourceDetail}>
+              <span className="np-status-dot" style={{ background: dataSourceColor, boxShadow: 'none' }} />
+              <span>{dataSourceLabel}</span>
+            </div>
 
             <button
               type="button"

@@ -1,0 +1,203 @@
+/*
+ * Nameplate HQ — Analytics & Operational Intelligence Styles
+ * Strictly Red, Black, and White design system.
+ */
+
+.hq-analytics-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hq-export-center {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--np-radius);
+  padding: 24px;
+}
+
+.hq-export-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.hq-export-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 16px;
+}
+
+.hq-export-card {
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: var(--np-radius);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color .15s ease;
+}
+
+.hq-export-card:hover {
+  border-color: var(--line-strong);
+}
+
+.hq-export-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hq-export-code {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--white);
+}
+
+.hq-export-desc {
+  font-size: 0.78rem;
+  color: var(--gray-500);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.hq-export-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.hq-export-btn {
+  flex: 1;
+  font-size: 0.75rem;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.hq-export-btn--secondary {
+  background: var(--bg-card);
+  color: var(--white);
+  border: 1px solid var(--line);
+}
+
+.hq-export-btn--secondary:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.hq-export-btn--primary {
+  background: var(--red);
+  color: #ffffff;
+  border: 1px solid var(--red);
+  font-weight: 700;
+}
+
+.hq-export-btn--primary:hover {
+  background: var(--red-hover);
+  border-color: var(--red-hover);
+}
+
+/* Lemon Appliance Detector */
+.hq-lemon-card {
+  border-left: 3px solid var(--red);
+}
+
+.hq-verdict-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.hq-verdict-tag--replace {
+  background: rgba(235, 43, 43, 0.12);
+  color: var(--red);
+  border: 1px solid rgba(235, 43, 43, 0.3);
+}
+
+.hq-verdict-tag--monitor {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--np-caution-600);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.hq-verdict-tag--good {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--np-verified-600);
+  border: 1px solid rgba(22, 163, 74, 0.3);
+}
+
+/* Property photo thumbnail in scorecards */
+.hq-prop-thumb {
+  width: 60px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.hq-prop-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Coverage & age charts */
+.hq-bar-track {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hq-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--red);
+  transition: width .2s ease;
+}
+
+.hq-bar-fill--green {
+  background: var(--np-verified-600);
+}
+
+.hq-bar-fill--muted {
+  background: var(--gray-400);
+}
+
+/* D3 Charts container grid */
+.hq-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .hq-charts-grid {
+    grid-template-columns: 1fr;
+  }
+  .hq-export-grid {
+    grid-template-columns: 1fr;
+  }
+}

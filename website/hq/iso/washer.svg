@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="Speed Queen front-load washer isometric">
+<style>
+.ln{fill:none;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.thin{fill:none;stroke:#161616;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.85}
+.face{fill:#fff;fill-opacity:.05;stroke:#161616;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red{fill:none;stroke:#EB2B2B;stroke-width:3.5;stroke-linejoin:round;stroke-linecap:round}
+.red-thin{fill:none;stroke:#EB2B2B;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.red-fill{fill:#EB2B2B;stroke:none}
+@media (prefers-color-scheme:dark){
+.ln,.thin{stroke:#F2F2F2}
+.face{stroke:#F2F2F2}
+}
+</style>
+<!-- main chassis, shared corners (dx 70, dy -40) -->
+<path class="face" d="M126 156 L346 156 L346 436 L126 436 Z"/>
+<path class="face" d="M346 156 L416 116 L416 396 L346 436 Z"/>
+<path class="face" d="M126 156 L196 116 L416 116 L346 156 Z"/>
+<!-- control panel header -->
+<path class="ln" d="M126 206 H346"/>
+<path class="thin" d="M346 206 L416 166"/>
+<!-- detergent dispenser drawer -->
+<rect class="thin" x="144" y="170" width="56" height="24" rx="2"/>
+<path class="thin" d="M154 182 H190"/>
+<!-- digital cycle display -->
+<rect class="thin" x="214" y="172" width="46" height="20" rx="2"/>
+<!-- program selector dial (red) -->
+<circle class="red" cx="298" cy="181" r="14"/>
+<circle cx="298" cy="181" r="3" class="red-fill"/>
+<!-- round drum door (centered cx 236 cy 310) -->
+<circle class="ln" cx="236" cy="310" r="70"/>
+<circle class="thin" cx="236" cy="310" r="54"/>
+<circle class="red-thin" cx="236" cy="310" r="38"/>
+<!-- stainless perforated drum pattern -->
+<circle cx="218" cy="296" r="2.5" class="red-fill"/>
+<circle cx="236" cy="292" r="2.5" class="red-fill"/>
+<circle cx="254" cy="296" r="2.5" class="red-fill"/>
+<circle cx="218" cy="324" r="2.5" class="red-fill"/>
+<circle cx="236" cy="328" r="2.5" class="red-fill"/>
+<circle cx="254" cy="324" r="2.5" class="red-fill"/>
+<circle cx="236" cy="310" r="3.5" class="red-fill"/>
+<!-- door hinge and red latch -->
+<rect class="ln" x="162" y="296" width="6" height="28" rx="1"/>
+<rect class="red" x="296" y="296" width="8" height="28" rx="2"/>
+<!-- kickplate & cleanout pump filter -->
+<path class="thin" d="M126 406 H346"/>
+<circle class="thin" cx="310" cy="421" r="8"/>
+<circle cx="310" cy="421" r="2.5" class="red-fill"/>
+<path class="thin" d="M148 421 H210"/>
+<!-- side panel stamp lines -->
+<path class="thin" d="M366 220 L396 203 M366 240 L396 223 M366 260 L396 243"/>
+<!-- leveling feet -->
+<path class="ln" d="M156 436 V446 M316 436 V446"/>
+</svg>

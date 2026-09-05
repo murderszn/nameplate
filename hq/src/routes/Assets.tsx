@@ -25,8 +25,8 @@ export function Assets() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [propertiesList, setPropertiesList] = useState<Property[]>([]);
   const [categoriesList, setCategoriesList] = useState<AssetCategory[]>([]);
-  const [search, setSearch] = useState(() => searchParams.get('search') ?? '');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? searchParams.get('search') ?? '');
+  const [selectedCategory, setSelectedCategory] = useState(() => searchParams.get('category') ?? 'all');
   const [selectedProperty, setSelectedProperty] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [sortKey, setSortKey] = useState<SortKey>('npid');
@@ -34,6 +34,10 @@ export function Assets() {
   const [lookupError, setLookupError] = useState<string | null>(null);
   const [isImporterOpen, setIsImporterOpen] = useState(false);
   const [importSuccessNotice, setImportSuccessNotice] = useState<string | null>(null);
+  const focus = searchParams.get('focus') ?? '';
+  const propertyScope = searchParams.get('property') ?? '';
+  const manufacturerScope = searchParams.get('manufacturer') ?? '';
+  const focusLabels: Record<string, string> = { active: 'Assets under management', unaccounted: 'Unaccounted for', unconfirmed: 'Locations unconfirmed for 180+ days', 'past-life': 'Past expected useful life', incomplete: 'Incomplete records' };
 
   useEffect(() => {
     let cancelled = false;
@@ -62,10 +66,8 @@ export function Assets() {
 
   // Sync search URL query param
   useEffect(() => {
-    const urlQuery = searchParams.get('search');
-    if (urlQuery != null && urlQuery !== search) {
-      setSearch(urlQuery);
-    }
+    setSearch(searchParams.get('q') ?? searchParams.get('search') ?? '');
+    setSelectedCategory(searchParams.get('category') ?? 'all');
   }, [searchParams]);
 
   // Unique categories and properties for dropdowns
@@ -106,6 +108,18 @@ export function Assets() {
   // Filtered and Sorted Assets
   const filteredAndSorted = useMemo(() => {
     let result = assets.filter((a) => {
+      if (propertyScope && a.currentPropertyId !== propertyScope) return false;
+      if (manufacturerScope && (a.assetModel?.manufacturer ?? a.manufacturerRaw ?? 'Unknown') !== manufacturerScope) return false;
+      const active = !['retired', 'disposed'].includes(a.status);
+      if (focus && !active) return false;
+      if (focus === 'unaccounted' && a.status !== 'unaccounted_for') return false;
+      if (focus === 'unconfirmed' && a.currentLocationConfirmedAt && Date.parse(a.currentLocationConfirmedAt) >= Date.now() - 180 * 86_400_000) return false;
+      if (focus === 'past-life') {
+        const life = a.expectedLifeMonths ?? a.assetModel?.expectedLifeMonths ?? a.category?.defaultUsefulLifeMonths;
+        const age = a.installDate && a.installDateConfidence !== 'unknown' ? (Date.now() - Date.parse(a.installDate)) / (365.25 * 86_400_000) * 12 : null;
+        if (life == null || age == null || !Number.isFinite(age) || age <= life) return false;
+      }
+      if (focus === 'incomplete' && a.assetModelId && a.installDate && a.installDateConfidence !== 'unknown' && a.serialNumber?.trim()) return false;
       if (selectedCategory !== 'all' && (a.category?.displayName ?? '') !== selectedCategory) {
         return false;
       }
@@ -175,7 +189,7 @@ export function Assets() {
     });
 
     return result;
-  }, [assets, search, selectedCategory, selectedProperty, selectedStatus, sortKey, sortAsc]);
+  }, [assets, search, selectedCategory, selectedProperty, selectedStatus, sortKey, sortAsc, propertyScope, manufacturerScope, focus]);
 
   async function onLookup() {
     setLookupError(null);
@@ -199,6 +213,7 @@ export function Assets() {
   };
 
   const hasActiveFilters =
+    Boolean(focus || propertyScope || manufacturerScope) ||
     search.trim() !== '' ||
     selectedCategory !== 'all' ||
     selectedProperty !== 'all' ||
@@ -231,6 +246,8 @@ export function Assets() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <header className="hq-page-header"><div><p className="hq-eyebrow">THE ASSET RECORD</p><h1 className="hq-page-title">Asset registry</h1><p className="hq-page-description">Every plate, location, and service history in one place.</p></div></header>
+      {(focus || propertyScope || manufacturerScope) && <div className="hq-banner" role="status"><span><strong>{focusLabels[focus] ?? 'Filtered registry'}</strong>{propertyScope ? ` · ${propertiesList.find(p => p.id === propertyScope)?.name ?? propertyScope}` : ''}{manufacturerScope ? ` · ${manufacturerScope}` : ''} · {filteredAndSorted.length} records</span><button className="hq-button" onClick={clearFilters}>Clear scope</button></div>}
       {importSuccessNotice && (
         <div
           style={{
@@ -273,6 +290,7 @@ export function Assets() {
           <div style={{ flex: 1, minWidth: 260 }}>
             <input
               className="np-input"
+              aria-label="Search asset registry"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => {

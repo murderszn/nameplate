@@ -7,6 +7,10 @@
     <meta name="theme-color" content="#ffffff" />
     <script>
       (function () {
+        if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+          location.replace(location.pathname + '/' + location.search + location.hash);
+          return;
+        }
         var theme = 'light';
         try { theme = localStorage.getItem('nameplate-theme') === 'dark' ? 'dark' : 'light'; } catch (error) {}
         document.documentElement.setAttribute('data-theme', theme);
@@ -161,8 +165,8 @@
         margin-top: 14px;
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-CzgYmw6q.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BKVM0Boi.css">
+    <script type="module" crossorigin src="./assets/index-BI2pPfBd.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BBxQ5zHI.css">
   </head>
   <body>
     <div id="root">
@@ -172,7 +176,7 @@
             <img src="./images/nameplate-logo-transparent.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--dark" />
             <img src="./images/nameplate-logo-light.png" alt="Nameplate" class="np-preloader__logo np-preloader__logo--light" />
           </div>
-
+          <div class="np-preloader__kicker">00 / PORTFOLIO CONSOLE</div>
           <div class="np-preloader__title">NAMEPLATE <span>HQ</span></div>
           <div class="np-preloader__sub">Every appliance accounted for.</div>
           <div class="np-preloader__bar">
@@ -182,6 +186,5 @@
         </div>
       </div>
     </div>
-
   </body>
 </html>

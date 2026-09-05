@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ActionMenu } from '../components/ActionMenu';
-import { api, type WorkOrder } from '../api/client';
+import { api, type Asset, type Property, type Unit, type WorkOrder } from '../api/client';
 
 const COLUMNS = [
-  { id: 'intake', statuses: ['open', 'assigned'], label: 'Backlog & Assigned', color: '#3B82F6' },
+  { id: 'intake', statuses: ['open', 'assigned', 'awaiting_approval'], label: 'Backlog & Assigned', color: '#3B82F6' },
   { id: 'in_progress', statuses: ['in_progress'], label: 'In Progress', color: '#F59E0B' },
   { id: 'awaiting_parts', statuses: ['awaiting_parts'], label: 'Awaiting Parts', color: '#EF4444' },
   { id: 'completed', statuses: ['completed'], label: 'Completed', color: '#10B981' },
@@ -19,7 +19,15 @@ const PRIORITIES = [
 ];
 
 export function WorkOrders() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const propertyScope = searchParams.get('property') ?? '';
+  const focus = searchParams.get('focus') ?? '';
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [units, setUnits] = useState<Unit[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
   const [selectedWo, setSelectedWo] = useState<WorkOrder | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -34,28 +42,50 @@ export function WorkOrders() {
 
   // New Note State in Modal
   const [noteInput, setNoteInput] = useState('');
-  const [noteAuthor, setNoteAuthor] = useState('Lead Tech Morales');
+  const [noteAuthor, setNoteAuthor] = useState('HQ Dispatch');
 
   // New Work Order Form State
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState('HVAC');
-  const [newPriority, setNewPriority] = useState('urgent');
-  const [newUnit, setNewUnit] = useState('Unit 402');
-  const [newAssetNpid, setNewAssetNpid] = useState('NP-1M4K9X23');
+  const [newPriority, setNewPriority] = useState('normal');
+  const [newProperty, setNewProperty] = useState(propertyScope);
+  const [newUnit, setNewUnit] = useState('');
+  const [newAssetId, setNewAssetId] = useState('');
   const [newDescription, setNewDescription] = useState('');
 
   // Load Work Orders
   const loadData = async () => {
     try {
-      const rows = await api.listWorkOrders();
+      setError(null);
+      const [rows, props, assetRows] = await Promise.all([api.listWorkOrders(), api.listProperties(), api.listAssets()]);
       setWorkOrders(rows);
-    } catch {
-      /* ignore */
+      setProperties(props);
+      setAssets(assetRows);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Work orders could not be loaded.');
     }
   };
 
   useEffect(() => {
     loadData();
+  }, []);
+
+  useEffect(() => {
+    const id = searchParams.get('wo');
+    if (id) setSelectedWo(workOrders.find(w => w.id === id) ?? null);
+  }, [searchParams, workOrders]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setUnits([]);
+    if (newProperty) api.listUnits(newProperty).then(rows => { if (!cancelled) setUnits(rows); }).catch(e => { if (!cancelled) setError(e instanceof Error ? e.message : 'Units could not be loaded.'); });
+    return () => { cancelled = true; };
+  }, [newProperty]);
+
+  useEffect(() => {
+    const closeOnEscape = (e: KeyboardEvent) => { if (e.key === 'Escape') { setSelectedWo(null); setShowCreateModal(false); } };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
   }, []);
 
   // Update Status
@@ -67,7 +97,7 @@ export function WorkOrders() {
         setSelectedWo(updated);
       }
     } catch (e) {
-      console.error(e);
+      setError(e instanceof Error ? e.message : 'The work order could not be updated.');
     }
   };
 
@@ -91,28 +121,32 @@ export function WorkOrders() {
       setWorkOrders((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
       setNoteInput('');
     } catch (err) {
-      console.error(err);
+      setError(err instanceof Error ? err.message : 'The note could not be saved.');
     }
   };
 
   // Create Work Order
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim() || !newProperty || saving) return;
+    setSaving(true);
+    setError(null);
+    const selectedProperty = properties.find(p => p.id === newProperty);
+    const selectedAsset = assets.find(a => a.id === newAssetId);
+    const selectedUnit = units.find(u => u.id === newUnit);
     try {
       const created = await api.createWorkOrder({
         title: newTitle.trim(),
         category: newCategory,
         priority: newPriority,
-        propertyId: 'prop_sonoran_ridge',
-        propertyName: 'Sonoran Ridge Residences',
-        unitId: 'unit_402',
-        unitLabel: newUnit,
-        assetId: 'asset_hvac_402',
-        assetNpid: newAssetNpid,
-        assetName: 'Carrier 2.5-Ton Variable Speed Air Handler',
-        assignee: 'J. Morales (Lead Tech)',
-        description: newDescription.trim() || 'Scheduled technician field inspection and component diagnostic sweep.',
+        propertyId: newProperty,
+        propertyName: selectedProperty?.name,
+        unitId: selectedAsset?.currentUnitId ?? (newUnit || null),
+        unitLabel: selectedAsset?.currentUnit?.label ?? selectedUnit?.label,
+        assetId: newAssetId || null,
+        assetNpid: selectedAsset?.npid,
+        assetName: selectedAsset?.assetModel?.displayName ?? selectedAsset?.modelRaw ?? undefined,
+        description: newDescription.trim() || null,
         status: 'open',
         slaDueAt: new Date(Date.now() + 48 * 3600 * 1000).toISOString(),
         completedAt: null,
@@ -133,13 +167,17 @@ export function WorkOrders() {
       setNewTitle('');
       setNewDescription('');
     } catch (err) {
-      console.error(err);
-    }
+      setError(err instanceof Error ? err.message : 'The work order could not be created.');
+    } finally { setSaving(false); }
   };
 
   // Filtered List
   const filteredWorkOrders = useMemo(() => {
     return workOrders.filter((w) => {
+      if (propertyScope && w.propertyId !== propertyScope) return false;
+      const isOpen = ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_approval'].includes(w.status) && !w.completedAt;
+      if (focus === 'open' && !isOpen) return false;
+      if (focus === 'overdue' && (!isOpen || !w.slaDueAt || Date.parse(w.slaDueAt) >= Date.now())) return false;
       if (selectedPriority !== 'all' && w.priority !== selectedPriority) return false;
       if (selectedCategory !== 'all' && (w.category ?? '') !== selectedCategory) return false;
       if (searchQuery.trim()) {
@@ -152,12 +190,15 @@ export function WorkOrders() {
       }
       return true;
     });
-  }, [workOrders, selectedPriority, selectedCategory, searchQuery]);
+  }, [workOrders, selectedPriority, selectedCategory, searchQuery, propertyScope, focus]);
 
-  const openCount = workOrders.filter((w) => w.status !== 'completed').length;
+  const openCount = filteredWorkOrders.filter((w) => ['open', 'assigned', 'in_progress', 'awaiting_parts', 'awaiting_approval'].includes(w.status) && !w.completedAt).length;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <header className="hq-page-header"><div><p className="hq-eyebrow">KEEP THE WORK MOVING</p><h1 className="hq-page-title">Work orders</h1><p className="hq-page-description">Triage requests, track due dates, and follow the work through.</p></div></header>
+      {error && <div className="hq-banner" role="alert"><span>{error}</span><button className="hq-button" onClick={loadData}>Reload work orders</button></div>}
+      {(propertyScope || focus) && <div className="hq-banner" role="status"><span><strong>{focus === 'overdue' ? 'Past SLA due date' : focus === 'open' ? 'Open work orders' : 'Property scope'}</strong>{propertyScope ? ` · ${properties.find(p => p.id === propertyScope)?.name ?? propertyScope}` : ''} · {filteredWorkOrders.length} records</span><button className="hq-button" onClick={() => setSearchParams({})}>Clear scope</button></div>}
       {/* Top Toolbar & Filter Bar */}
       <div
         style={{
@@ -176,6 +217,7 @@ export function WorkOrders() {
           <div style={{ position: 'relative', minWidth: 240 }}>
             <input
               type="text"
+              aria-label="Search work orders"
               placeholder="Search WO #, NPID, Title, Tech…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -243,8 +285,8 @@ export function WorkOrders() {
           <button
             onClick={() => setShowCreateModal(true)}
             style={{
-              background: '#eb2b2b',
-              color: 'var(--white)',
+              background: 'var(--np-plate-600)',
+              color: '#ffffff',
               border: 'none',
               borderRadius: 2,
               padding: '8px 16px',
@@ -876,6 +918,12 @@ export function WorkOrders() {
             </div>
 
             <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {error && <div className="hq-banner" role="alert">{error}</div>}
+              <label style={{ display: 'grid', gap: 6, fontSize: '0.8rem' }}>Property
+                <select className="np-input" required value={newProperty} onChange={e => { setNewProperty(e.target.value); setNewUnit(''); setNewAssetId(''); }}>
+                  <option value="">Select a property</option>{properties.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </label>
               <div>
                 <label style={{ fontSize: '0.74rem', color: '#A3A3A3', display: 'block', marginBottom: 4 }}>Work Order Title</label>
                 <input
@@ -930,22 +978,24 @@ export function WorkOrders() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={{ fontSize: '0.74rem', color: '#A3A3A3', display: 'block', marginBottom: 4 }}>Unit</label>
-                  <input
-                    type="text"
+                  <select
+                    aria-label="Work order unit"
                     value={newUnit}
-                    onChange={(e) => setNewUnit(e.target.value)}
+                    onChange={(e) => { setNewUnit(e.target.value); setNewAssetId(''); }}
+                    disabled={!newProperty}
                     style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid rgba(var(--overlay-rgb), 0.15)', borderRadius: 2, padding: '9px 12px', color: 'var(--white)' }}
-                  />
+                  ><option value="">Property-level work</option>{units.map(u => <option key={u.id} value={u.id}>Unit {u.label}</option>)}</select>
                 </div>
 
                 <div>
                   <label style={{ fontSize: '0.74rem', color: '#A3A3A3', display: 'block', marginBottom: 4 }}>Asset NPID</label>
-                  <input
-                    type="text"
-                    value={newAssetNpid}
-                    onChange={(e) => setNewAssetNpid(e.target.value)}
+                  <select
+                    aria-label="Work order asset"
+                    value={newAssetId}
+                    onChange={(e) => { setNewAssetId(e.target.value); const asset = assets.find(a => a.id === e.target.value); if (asset) setNewUnit(asset.currentUnitId ?? ''); }}
+                    disabled={!newProperty}
                     style={{ width: '100%', background: 'var(--bg-elevated)', border: '1px solid rgba(var(--overlay-rgb), 0.15)', borderRadius: 2, padding: '9px 12px', color: 'var(--white)' }}
-                  />
+                  ><option value="">No specific asset</option>{assets.filter(a => a.currentPropertyId === newProperty && (!newUnit || a.currentUnitId === newUnit)).map(a => <option key={a.id} value={a.id}>{a.npid} · {a.category?.displayName ?? a.modelRaw ?? 'Asset'}</option>)}</select>
                 </div>
               </div>
 
@@ -970,9 +1020,10 @@ export function WorkOrders() {
                 </button>
                 <button
                   type="submit"
-                  style={{ background: '#eb2b2b', border: 'none', color: 'var(--white)', borderRadius: 2, padding: '9px 20px', fontWeight: 700, cursor: 'pointer' }}
+                  disabled={saving || !newProperty}
+                  style={{ background: 'var(--np-plate-600)', border: 'none', color: '#ffffff', borderRadius: 8, padding: '9px 20px', fontWeight: 700, cursor: 'pointer', opacity: saving || !newProperty ? 0.6 : 1 }}
                 >
-                  Create Work Order
+                  {saving ? 'Creating…' : 'Create Work Order'}
                 </button>
               </div>
             </form>
