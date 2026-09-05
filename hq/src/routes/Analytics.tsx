@@ -485,7 +485,7 @@ export function Analytics() {
     );
   }
 
-  const dateLabel = `${scope.since.toLocaleDateString()} – ${new Date().toLocaleDateString()} (includes current month to date)`;
+  const dateRange = `${scope.since.toLocaleDateString()} – ${new Date().toLocaleDateString()}`;
 
   return (
     <main className="hq-page hq-analytics-page">
@@ -510,33 +510,65 @@ export function Analytics() {
         </div>
       </header>
 
-      {/* Filter Toolbar */}
-      <div className="hq-toolbar">
-        <label className="hq-filter">
-          Property
-          <select value={propertyId} onChange={(e) => setPropertyId(e.target.value)}>
-            <option value="all">All Properties ({properties.length})</option>
-            {properties.map((p) => (
-              <option value={p.id} key={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </label>
+      {/* Dedicated Analytics Filter Toolbar */}
+      <div className="hq-analytics-toolbar">
+        <div className="hq-analytics-toolbar__controls">
+          <label className="hq-filter-field">
+            <span className="hq-filter-field__label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+                <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+                <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+                <path d="M10 6h4" />
+                <path d="M10 10h4" />
+                <path d="M10 14h4" />
+                <path d="M10 18h4" />
+              </svg>
+              Property
+            </span>
+            <select
+              className="hq-filter-field__select"
+              value={propertyId}
+              onChange={(e) => setPropertyId(e.target.value)}
+              aria-label="Filter by property"
+            >
+              <option value="all">All Properties ({properties.length})</option>
+              {properties.map((p) => (
+                <option value={p.id} key={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <label className="hq-filter">
-          Period
-          <select value={months} onChange={(e) => setMonths(e.target.value)}>
-            <option value="1">Current Month (30d)</option>
-            <option value="3">Trailing 3 Months</option>
-            <option value="6">Trailing 6 Months</option>
-            <option value="12">Trailing 12 Months (T12)</option>
-          </select>
-        </label>
+          <label className="hq-filter-field">
+            <span className="hq-filter-field__label">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              Period
+            </span>
+            <select
+              className="hq-filter-field__select"
+              value={months}
+              onChange={(e) => setMonths(e.target.value)}
+              aria-label="Filter by reporting period"
+            >
+              <option value="1">Current Month (30d)</option>
+              <option value="3">Trailing 3 Months</option>
+              <option value="6">Trailing 6 Months</option>
+              <option value="12">Trailing 12 Months (T12)</option>
+            </select>
+          </label>
+        </div>
 
-        <span className="hq-data-note" style={{ marginLeft: 'auto' }}>
-          {dateLabel} · Owner-borne spend excludes warranty/tenant claims.
-        </span>
+        <div className="hq-analytics-toolbar__meta">
+          <span className="hq-analytics-toolbar__meta-dot" aria-hidden="true" />
+          <span className="hq-analytics-toolbar__meta-text">
+            <strong>{dateRange}</strong> (MTD incl.) · Owner-borne spend only
+          </span>
+        </div>
       </div>
 
       {/* Tabs */}

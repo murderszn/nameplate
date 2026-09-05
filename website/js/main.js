@@ -901,11 +901,116 @@
     }
   }
 
+  // ================= 9. Hero Iso Carousel — single large dramatic iso, cycling =================
+  function initHeroIsoCarousel() {
+    var img = document.getElementById('heroIsoImg');
+    var label = document.getElementById('heroIsoLabel');
+    var count = document.getElementById('heroIsoCount');
+    var dots = document.getElementById('heroIsoDots');
+    var stage = document.getElementById('heroIsoStage');
+    if (!img || !label || !count || !dots) return;
+
+    var items = [
+      { src: 'images/iso/hvac.svg', label: 'HVAC — Air Handler' },
+      { src: 'images/iso/condenser.svg', label: 'Condenser — Split System' },
+      { src: 'images/iso/fridge.svg', label: 'Refrigerator — French Door' },
+      { src: 'images/iso/range.svg', label: 'Range — Electric' },
+      { src: 'images/iso/dishwasher.svg', label: 'Dishwasher — Built-In' },
+      { src: 'images/iso/washer.svg', label: 'Washer — Front Load' },
+      { src: 'images/iso/dryer.svg', label: 'Dryer — Electric' },
+      { src: 'images/iso/water-heater.svg', label: 'Water Heater — Hybrid' },
+      { src: 'images/iso/microwave.svg', label: 'Microwave — OTR' },
+      { src: 'images/iso/thermostat.svg', label: 'Thermostat — Smart' }
+    ];
+
+    var index = 0;
+    var timer = null;
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+
+    // Build dots
+    items.forEach(function (_, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-label', items[i].label);
+      btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      if (i === 0) btn.classList.add('is-active');
+      btn.addEventListener('click', function () { goTo(i, true); });
+      dots.appendChild(btn);
+    });
+    var dotBtns = dots.querySelectorAll('button');
+
+    function render(i) {
+      var item = items[i];
+      img.classList.add('is-switching');
+      setTimeout(function () {
+        img.src = item.src;
+        img.alt = item.label;
+        label.textContent = item.label;
+        count.textContent = pad(i + 1) + ' / ' + pad(items.length);
+        dotBtns.forEach(function (b, idx) {
+          b.classList.toggle('is-active', idx === i);
+          b.setAttribute('aria-selected', idx === i ? 'true' : 'false');
+        });
+        img.classList.remove('is-switching');
+      }, 140);
+    }
+
+    function goTo(i, user) {
+      index = (i + items.length) % items.length;
+      render(index);
+      if (user) restart();
+    }
+
+    function next() { goTo(index + 1, false); }
+
+    function start() {
+      if (timer) return;
+      timer = setInterval(next, 2600);
+    }
+
+    function stop() {
+      if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    function restart() {
+      stop();
+      start();
+    }
+
+    if (stage) {
+      stage.addEventListener('mouseenter', stop);
+      stage.addEventListener('mouseleave', start);
+    }
+    dots.addEventListener('mouseenter', stop);
+    dots.addEventListener('mouseleave', start);
+
+    // Pause when tab hidden
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    // Keyboard: when carousel focused, arrow keys
+    var carousel = document.querySelector('.hero-iso-carousel');
+    if (carousel) {
+      carousel.setAttribute('tabindex', '0');
+      carousel.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(index - 1, true); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); goTo(index + 1, true); }
+      });
+    }
+
+    render(0);
+    start();
+  }
+
   // Initialize
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       initHeader();
       initTheme();
+      initHeroIsoCarousel();
       initOversizedQrStudio();
       initSchematicsViewer();
       initScreensFilter();
@@ -917,6 +1022,7 @@
   } else {
     initHeader();
     initTheme();
+    initHeroIsoCarousel();
     initOversizedQrStudio();
     initSchematicsViewer();
     initScreensFilter();

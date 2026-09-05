@@ -477,6 +477,190 @@
   }
 }
 
+/* ================= Dedicated Analytics Filter Toolbar ================= */
+.hq-analytics-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(var(--overlay-rgb), 0.04);
+}
+
+.hq-analytics-toolbar__controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hq-filter-field {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-subtle);
+  height: 38px;
+  padding: 0;
+  margin: 0;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.hq-filter-field:hover {
+  border-color: var(--line-strong);
+  background: var(--bg-elevated);
+}
+
+.hq-filter-field:focus-within {
+  border-color: var(--red);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 3px rgba(235, 43, 43, 0.12);
+}
+
+.hq-filter-field__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  background: var(--bg-elevated);
+  height: 100%;
+  border-right: 1px solid var(--line);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.hq-filter-field:hover .hq-filter-field__label {
+  color: var(--white);
+}
+
+.hq-filter-field__label svg {
+  color: var(--gray-500);
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.hq-filter-field:hover .hq-filter-field__label svg {
+  color: var(--red);
+}
+
+/* Ensure child select resets any nested global styles */
+.hq-filter-field select,
+.hq-filter-field .hq-filter-field__select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  border: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--white) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.82rem !important;
+  font-weight: 650 !important;
+  padding: 0 36px 0 14px !important;
+  height: 100% !important;
+  line-height: normal !important;
+  border-radius: 0 !important;
+  cursor: pointer;
+  outline: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 11px !important;
+  margin: 0 !important;
+}
+
+.hq-filter-field select option {
+  background-color: var(--bg-card);
+  color: var(--white);
+  padding: 8px 12px;
+}
+
+.hq-analytics-toolbar__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: var(--gray-400);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.hq-analytics-toolbar__meta-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(235, 43, 43, 0.25);
+}
+
+.hq-analytics-toolbar__meta-text strong {
+  color: var(--white);
+  font-weight: 650;
+}
+
+@media (max-width: 1080px) {
+  .hq-analytics-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .hq-analytics-toolbar__meta {
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    white-space: normal;
+  }
+}
+
+/* Tab list styling enhancements */
+.hq-analytics-page .hq-tab-list {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
+  margin-top: 2px;
+  overflow-x: auto;
+}
+
+.hq-analytics-page .hq-tab {
+  padding: 10px 16px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  color: var(--gray-400);
+  font-weight: 650;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+
+.hq-analytics-page .hq-tab:hover {
+  color: var(--white);
+  background: var(--bg-subtle);
+}
+
+.hq-analytics-page .hq-tab[aria-selected='true'],
+.hq-analytics-page .hq-tab.is-active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+  background: transparent;
+  font-weight: 750;
+}
+
 /* ================= View Toggle Buttons ================= */
 .hq-view-toggle {
   display: inline-flex;
